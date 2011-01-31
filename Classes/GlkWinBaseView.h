@@ -10,9 +10,9 @@
 #include "glk.h"
 
 @interface GlkWinBaseView : UIView {
-	glui32 id;
+	glui32 dispid;
 }
 
-@property (nonatomic) glui32 id;
+@property (nonatomic) glui32 dispid;
 
 @end

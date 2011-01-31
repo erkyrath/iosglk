@@ -40,11 +40,15 @@
 	return (GlkFrameView *)self.view;
 }
 
+
+// Allow all orientations
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return YES;
+}
+
 /*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	// Return YES for supported orientations
-	return (interfaceOrientation == UIInterfaceOrientationPortrait);
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)prevorient {
+	NSLog(@"Rotated!");
 }
 */
 

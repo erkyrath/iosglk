@@ -11,7 +11,7 @@
 
 @implementation GlkWinBaseView
 
-@synthesize id;
+@synthesize dispid;
 
 
 - (id)initWithFrame:(CGRect)frame {

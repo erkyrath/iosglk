@@ -1,1 +1,5 @@
 /* CSS data for all Glk windows. */
+
+body {
+	white-space: pre-wrap;
+}

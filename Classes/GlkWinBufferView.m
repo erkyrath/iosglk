@@ -14,7 +14,7 @@
 @synthesize cssurl;
 @synthesize webview;
 
-- (id)initWithFrame:(CGRect)frame {
+- (id) initWithFrame:(CGRect)frame {
     
 	self = [super initWithFrame:frame];
 	if (self) {
@@ -27,11 +27,16 @@
 	return self;
 }
 
-- (void)dealloc {
+- (void) dealloc {
 	self.cssurl = nil;
 	self.webview = nil;
 	[super dealloc];
 }
 
+- (void) layoutSubviews {
+	if (webview) {
+		webview.frame = self.bounds;
+	}
+}
 
 @end

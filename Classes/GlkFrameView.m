@@ -23,10 +23,10 @@
 	self.windows = [NSMutableDictionary dictionaryWithCapacity:8];
 	
 	//### temp stuff
-	GlkWinBufferView *win = [[GlkWinBufferView alloc] initWithFrame:self.bounds];
-	win.id = 111;
+	GlkWinBufferView *win = [[[GlkWinBufferView alloc] initWithFrame:self.bounds] autorelease];
+	win.dispid = 111;
 	[self addSubview:win];
-	[windows setObject:win forKey:[NSNumber numberWithUnsignedInt:win.id]];
+	[windows setObject:win forKey:[NSNumber numberWithUnsignedInt:win.dispid]];
 }
 
 - (void) dealloc {
@@ -34,27 +34,55 @@
 	[super dealloc];
 }
 
+- (void) layoutSubviews {
+	NSLog(@"frameview layoutSubviews");
+	
+	GlkWinBufferView *winv = [windows objectForKey:[NSNumber numberWithUnsignedInt:111]];
+	if (winv) {
+		winv.frame = self.bounds;
+	}
+}
+
 - (void) updateFromLibraryState:(GlkLibrary *)library {
 	NSLog(@"updateFromLibraryState");
 	
 	if (!library)
 		[NSException raise:@"GlkException" format:@"updateFromLibraryState: no library"];
-		
+	
+	//### the following should be window-specific
+
+	NSMutableArray *htmltext = [NSMutableArray arrayWithCapacity:16];
+	[htmltext addObject:@"<html>\n"];
+	[htmltext addObject:@"<link rel=\"stylesheet\" href=\"general.css\" type=\"text/css\">\n"];
+	
 	GlkWindowBuffer *win = (GlkWindowBuffer *)library.rootwin;
 	NSMutableArray *updates = win.updatetext;
+	
 	for (GlkStyledLine *sln in updates) {
 		if (sln.status)
-			NSLog(@"New line!");
-		for (GlkStyledString *str in sln.arr) {
-			NSLog(@"...'%@' (%d)", str.str, str.style);
+			[htmltext addObject:@"\n"];
+		for (GlkStyledString *stystr in sln.arr) {
+			NSMutableString *str = [NSMutableString stringWithString:stystr.str];
+			NSRange range;
+			range.location = 0;
+			range.length = str.length;
+			[str replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:range];
+			range.length = str.length;
+			[str replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:range];
+			range.length = str.length;
+			[str replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:range];
+			[htmltext addObject:str];
 		}
 	}
 	
 	[win.updatetext removeAllObjects];
-		
+	[htmltext addObject:@"</html>\n"];
+	
 	GlkWinBufferView *winv = [windows objectForKey:[NSNumber numberWithUnsignedInt:111]];
 	if (winv) {
-		[winv.webview loadHTMLString:@"<html>Hello.</html>" baseURL:winv.cssurl];
+		NSString *htmlstr = [htmltext componentsJoinedByString:@""];
+		NSLog(@"The HTML string: %@", htmlstr);
+		[winv.webview loadHTMLString:htmlstr baseURL:winv.cssurl];
 	}
 }
 
