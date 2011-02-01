@@ -35,10 +35,24 @@ typedef int32_t glsi32;
 
 /* These types are opaque object identifiers. They're pointers to opaque
     C structures, which are defined differently by each library. */
+
+/* For Objective C source files, we want to define these as class pointers. 
+    For C source files, they should remain as opaque object identifiers. */
+#ifdef __OBJC__
+@class GlkWindow;
+@class GlkStream;
+@class GlkFileRef;
+@class GlkSChannel;
+typedef GlkWindow *winid_t;
+typedef GlkStream *strid_t;
+typedef GlkFileRef *frefid_t;
+typedef GlkSChannel *schanid_t;
+#else /* __OBJC__ */
 typedef struct glk_window_struct  *winid_t;
 typedef struct glk_stream_struct  *strid_t;
 typedef struct glk_fileref_struct *frefid_t;
 typedef struct glk_schannel_struct *schanid_t;
+#endif /* __OBJC__ */
 
 #define gestalt_Version (0)
 #define gestalt_CharInput (1)
