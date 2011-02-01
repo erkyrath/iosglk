@@ -1,5 +1,5 @@
 //
-//  GlkWinBaseView.h
+//  GlkWindowView.h
 //  IosGlk
 //
 //  Created by Andrew Plotkin on 1/28/11.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #include "glk.h"
 
-@interface GlkWinBaseView : UIView {
+@interface GlkWindowView : UIView {
 	glui32 dispid;
 }
 

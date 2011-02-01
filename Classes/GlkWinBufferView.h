@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "GlkWinBaseView.h"
+#import "GlkWindowView.h"
 
 
-@interface GlkWinBufferView : GlkWinBaseView {
+@interface GlkWinBufferView : GlkWindowView {
 	NSURL *cssurl;
 	UIWebView *webview;
 }

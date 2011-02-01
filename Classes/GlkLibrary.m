@@ -30,7 +30,7 @@ static GlkLibrary *singleton = nil; /* retained forever */
 		singleton = [self retain];
 		self.windows = [NSMutableArray arrayWithCapacity:8];
 		
-		self.rootwin = [GlkWindowBase windowWithType:wintype_TextBuffer rock:1]; //###tmp
+		self.rootwin = nil;
 	}
 	
 	return self;
@@ -42,6 +42,9 @@ static GlkLibrary *singleton = nil; /* retained forever */
 	[super dealloc];
 }
 
++ (void) strict_warning:(NSString *)msg {
+	NSLog(@"strict warning: %@", msg);
+}
 
 @end
 
@@ -49,13 +52,9 @@ extern void GlkAppWrapperSelect(void); //### put in some header
 
 
 void glk_put_string(char *str) {
-	GlkWindowBase *win = [GlkLibrary singleton].rootwin;
-	[win put_string:str];
 }
 
 void glk_set_style(glui32 styl) {
-	GlkWindowBase *win = [GlkLibrary singleton].rootwin;
-	win->curstyle = styl;
 }
 
 void glk_select(event_t *event) {

@@ -22,11 +22,13 @@
 	
 	self.windows = [NSMutableDictionary dictionaryWithCapacity:8];
 	
-	//### temp stuff
+	//### temp stuff 
+	/*
 	GlkWinBufferView *win = [[[GlkWinBufferView alloc] initWithFrame:self.bounds] autorelease];
 	win.dispid = 111;
 	[self addSubview:win];
 	[windows setObject:win forKey:[NSNumber numberWithUnsignedInt:win.dispid]];
+	*/
 }
 
 - (void) dealloc {

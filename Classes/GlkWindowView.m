@@ -1,15 +1,15 @@
 //
-//  GlkWinBaseView.m
+//  GlkWindowView.m
 //  IosGlk
 //
 //  Created by Andrew Plotkin on 1/28/11.
 //  Copyright 2011 Andrew Plotkin. All rights reserved.
 //
 
-#import "GlkWinBaseView.h"
+#import "GlkWindowView.h"
 
 
-@implementation GlkWinBaseView
+@implementation GlkWindowView
 
 @synthesize dispid;
 
