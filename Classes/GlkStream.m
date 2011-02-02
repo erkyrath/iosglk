@@ -23,5 +23,9 @@
 	//###
 }
 
++ (void) setCurrentStream:(GlkStream *)str {
+	//###
+}
+
 
 @end

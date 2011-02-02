@@ -7,31 +7,34 @@
 //
 
 #import "GlkWindowView.h"
-
+#import "GlkWinBufferView.h"
+#import "GlkWindow.h"
 
 @implementation GlkWindowView
 
-@synthesize dispid;
+@synthesize win;
 
-
-- (id)initWithFrame:(CGRect)frame {
-    
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code.
-    }
-    return self;
++ (GlkWindowView *) viewForWindow:(GlkWindow *)win {
+	switch (win.type) {
+		case wintype_TextBuffer:
+			return [[[GlkWinBufferView alloc] initWithWindow:win frame:win.bbox] autorelease];
+		default:
+			[NSException raise:@"GlkException" format:@"no windowview class for this window"];
+			return nil; // not really
+	}
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code.
-}
-*/
 
-- (void)dealloc {
+- (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
+	self = [super initWithFrame:box];
+	if (self) {
+		self.win = winref;
+	}
+	return self;
+}
+
+- (void) dealloc {
+	self.win = nil;
     [super dealloc];
 }
 

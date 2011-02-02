@@ -11,11 +11,11 @@
 @class GlkLibrary;
 
 @interface GlkFrameView : UIView {
-	/* Maps Glk window IDs (as NSNumber objects) to GlkWin*View objects. */
-	NSMutableDictionary *windows;
+	/* Maps tags (NSNumbers) to GlkWindowViews. (But pair windows are excluded.) */
+	NSMutableDictionary *windowviews;
 }
 
-@property (nonatomic, retain) NSMutableDictionary *windows;
+@property (nonatomic, retain) NSMutableDictionary *windowviews;
 
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 

@@ -14,10 +14,10 @@
 @class GlkWindowPair;
 
 @interface GlkWindow : NSObject {
-	glui32 dispid;
-	
 	GlkLibrary *library;
+	BOOL inlibrary;
 	
+	NSNumber *tag;
 	glui32 type;
 	glui32 rock;
 	
@@ -31,21 +31,26 @@
 	
 	GlkStream *stream;
 	GlkStream *echostream;
+	
+	CGRect bbox;
 }
 
 @property (nonatomic, retain) GlkLibrary *library;
+@property (nonatomic, retain) NSNumber *tag;
 @property (nonatomic) glui32 type;
+@property (nonatomic) glui32 rock;
 @property (nonatomic, retain) GlkWindowPair *parent;
 @property (nonatomic) glui32 style;
 @property (nonatomic, retain) GlkStream *stream;
 @property (nonatomic, retain) GlkStream *echostream;
+@property (nonatomic) CGRect bbox;
 
 + (void) initialize;
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
 
 - (id) initWithType:(glui32)type rock:(glui32)rock;
-- (void) delete;
 - (void) windowCloseRecurse:(BOOL)recurse;
+- (void) windowRearrange:(CGRect)box;
 
 //- (void) put_string:(char *)str;
 
@@ -73,12 +78,21 @@
 	
 	GlkWindow *child1;
 	GlkWindow *child2;
+	
+	CGFloat split;
+	CGFloat splitwid;
 }
 
+@property (nonatomic) glui32 dir;
+@property (nonatomic) glui32 division;
+@property (nonatomic) BOOL hasborder;
+@property (nonatomic, retain) GlkWindow *key;
+@property (nonatomic) glui32 size;
+@property (nonatomic) BOOL keydamage;
+@property (nonatomic) BOOL vertical;
+@property (nonatomic) BOOL backward;
 @property (nonatomic, retain) GlkWindow *child1;
 @property (nonatomic, retain) GlkWindow *child2;
-@property (nonatomic, retain) GlkWindow *key;
-@property (nonatomic) BOOL keydamage;
 
 - (id) initWithType:(glui32)type rock:(glui32)rock method:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)size;
 

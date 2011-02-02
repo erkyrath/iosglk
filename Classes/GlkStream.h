@@ -16,6 +16,7 @@
 }
 
 + (GlkStream *) openForWindow:(GlkWindow *)win;
++ (void) setCurrentStream:(GlkStream *)str;
 
 - (void) delete;
 - (void) fillResult:(stream_result_t *)result;

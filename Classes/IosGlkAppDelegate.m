@@ -40,6 +40,9 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 	
 	self.library = [[[GlkLibrary alloc] init] autorelease];
 	self.glkapp = [[[GlkAppWrapper alloc] init] autorelease];
+	
+	GlkFrameView *frameview = [viewController viewAsFrameView];
+	[library setMetrics:frameview.bounds];
 
 	NSLog(@"AppDelegate finished launching");
 	

@@ -13,12 +13,19 @@
 @interface GlkLibrary : NSObject {
 	NSMutableArray *windows; /* GlkWindow objects */
 	GlkWindow *rootwin;
+	CGRect bounds;
+	
+	NSInteger tagCounter;
 }
 
 @property (nonatomic, retain) NSMutableArray *windows;
 @property (nonatomic, retain) GlkWindow *rootwin;
+@property (nonatomic) CGRect bounds;
 
 + (GlkLibrary *) singleton;
-+ (void) strict_warning:(NSString *)msg;
++ (void) strictWarning:(NSString *)msg;
+
+- (NSNumber *) newTag;
+- (void) setMetrics:(CGRect)box;
 
 @end

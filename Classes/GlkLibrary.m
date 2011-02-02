@@ -8,12 +8,14 @@
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#include "GlkUtilities.h"
 #include "glk.h"
 
 @implementation GlkLibrary
 
 @synthesize windows;
 @synthesize rootwin;
+@synthesize bounds;
 
 static GlkLibrary *singleton = nil; /* retained forever */
 
@@ -28,8 +30,10 @@ static GlkLibrary *singleton = nil; /* retained forever */
 		if (singleton)
 			[NSException raise:@"GlkException" format:@"cannot create two GlkLibrary objects"];
 		singleton = [self retain];
-		self.windows = [NSMutableArray arrayWithCapacity:8];
 		
+		tagCounter = 0;
+		
+		self.windows = [NSMutableArray arrayWithCapacity:8];
 		self.rootwin = nil;
 	}
 	
@@ -42,7 +46,17 @@ static GlkLibrary *singleton = nil; /* retained forever */
 	[super dealloc];
 }
 
-+ (void) strict_warning:(NSString *)msg {
+- (NSNumber *) newTag {
+	tagCounter++;
+	return [NSNumber numberWithInteger:tagCounter];
+}
+
+- (void) setMetrics:(CGRect)box {
+	bounds = box;
+	NSLog(@"library metrics now %@", StringFromRect(bounds));
+}
+
++ (void) strictWarning:(NSString *)msg {
 	NSLog(@"strict warning: %@", msg);
 }
 

@@ -16,41 +16,41 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 win
 	GlkWindow *newwin;
 	GlkWindowPair *oldparent;
 	glui32 val;
-	//CGRect box;
+	CGRect box;
 	
 	if (!library.rootwin) {
 		if (splitwin) {
-			[GlkLibrary strict_warning:@"window_open: ref must be NULL"];
+			[GlkLibrary strictWarning:@"window_open: ref must be NULL"];
 			return nil;
 		}
 		oldparent = NULL;
 
-		//box = content_box;
+		box = library.bounds;
 	}
 	else {
 		if (!splitwin) {
-			[GlkLibrary strict_warning:@"window_open: ref must not be NULL"];
+			[GlkLibrary strictWarning:@"window_open: ref must not be NULL"];
 			return nil;
 		}
 
 		val = (method & winmethod_DivisionMask);
 		if (val != winmethod_Fixed && val != winmethod_Proportional) {
-			[GlkLibrary strict_warning:@"window_open: invalid method (not fixed or proportional)"];
+			[GlkLibrary strictWarning:@"window_open: invalid method (not fixed or proportional)"];
 			return nil;
 		}
 
 		val = (method & winmethod_DirMask);
 		if (val != winmethod_Above && val != winmethod_Below
 			&& val != winmethod_Left && val != winmethod_Right) {
-			[GlkLibrary strict_warning:@"window_open: invalid method (bad direction)"];
+			[GlkLibrary strictWarning:@"window_open: invalid method (bad direction)"];
 			return nil;
 		}
 
-		//box = splitwin->bbox;
+		box = splitwin.bbox;
 
 		oldparent = splitwin.parent;
 		if (oldparent && oldparent.type != wintype_Pair) {
-			[GlkLibrary strict_warning:@"window_open: parent window is not Pair"];
+			[GlkLibrary strictWarning:@"window_open: parent window is not Pair"];
 			return nil;
 		}
 
@@ -60,7 +60,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 win
 	
 	if (!splitwin) {
 		library.rootwin = newwin;
-		//gli_window_rearrange(newwin, &box);
+		[newwin windowRearrange:box];
 		/* redraw everything, which is just the new first window */
 		//gli_windows_redraw();
 	}
@@ -87,7 +87,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 win
 			library.rootwin = pairwin;
 		}
 		
-		//gli_window_rearrange(pairwin, &box);
+		[pairwin windowRearrange:box];
 		/* redraw the new pairwin and all its contents */
 		//gli_window_redraw(pairwin);
 	}
@@ -98,7 +98,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 win
 void glk_window_close(winid_t win, stream_result_t *result)
 {
 	if (!win) {
-		[GlkLibrary strict_warning:@"window_close: invalid ref"];
+		[GlkLibrary strictWarning:@"window_close: invalid ref"];
 		return;
 	}
 	
@@ -118,7 +118,6 @@ void glk_window_close(winid_t win, stream_result_t *result)
 	}
 	else {
 		/* have to jigger parent */
-		//grect_t box;
 		GlkWindow *sibwin;
 		GlkWindowPair *pairwin, *grandparwin;
 
@@ -130,11 +129,11 @@ void glk_window_close(winid_t win, stream_result_t *result)
 			sibwin = pairwin.child1;
 		}
 		else {
-			[GlkLibrary strict_warning:@"window_close: window tree is corrupted"];
+			[GlkLibrary strictWarning:@"window_close: window tree is corrupted"];
 			return;
 		}
 
-		//box = pairwin->bbox;
+		CGRect box = pairwin.bbox;
 
 		grandparwin = pairwin.parent;
 		if (!grandparwin) {
@@ -180,17 +179,184 @@ void glk_window_close(winid_t win, stream_result_t *result)
 			}
 		}
 
-		/*
 		if (keydamage_flag) {
-			box = content_box;
-			gli_window_rearrange(gli_rootwin, &box);
-			gli_windows_redraw();
+			box = library.bounds;
+			[library.rootwin windowRearrange:box];
+			//gli_windows_redraw();
 		}
 		else {
-			gli_window_rearrange(sibwin, &box);
-			gli_window_redraw(sibwin);
+			[sibwin windowRearrange:box];
+			//gli_window_redraw(sibwin);
 		}
-		*/
 	}
 }
+
+void glk_window_get_arrangement(winid_t win, glui32 *method, glui32 *size, winid_t *keywin)
+{
+	GlkWindowPair *dwin;
+	glui32 val;
+
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_get_arrangement: invalid ref"];
+		return;
+	}
+
+	if (win.type != wintype_Pair) {
+		[GlkLibrary strictWarning:@"window_get_arrangement: not a Pair window"];
+		return;
+	}
+
+	dwin = (GlkWindowPair *)dwin;
+
+	val = dwin.dir | dwin.division;
+	if (!dwin.hasborder)
+		val |= winmethod_NoBorder;
+
+	if (size)
+		*size = dwin.size;
+	if (keywin) {
+		if (dwin.key)
+			*keywin = dwin.key;
+		else
+			*keywin = nil;
+	}
+	if (method)
+		*method = val;
+}
+
+void glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keywin) 
+{
+	//###
+}
+
+winid_t glk_window_iterate(winid_t win, glui32 *rock) 
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+
+	if (!win) {
+		win = library.rootwin;
+	}
+	else {
+		NSUInteger pos = [library.windows indexOfObject:win];
+		if (pos == NSNotFound) {
+			win = nil;
+			[GlkLibrary strictWarning:@"glk_window_iterate: unknown window ref"];
+		}
+		else {
+			pos++;
+			if (pos >= library.windows.count)
+				win = nil;
+			else 
+				win = [library.windows objectAtIndex:pos];
+		}
+	}
+	
+	if (win) {
+		if (rock)
+			*rock = win.rock;
+		return win;
+	}
+
+	if (rock)
+		*rock = 0;
+	return NULL;
+}
+
+
+glui32 glk_window_get_rock(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_get_rock: invalid ref"];
+		return 0;
+	}
+
+    return win.rock;
+}
+
+winid_t glk_window_get_root()
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+	return library.rootwin;
+}
+
+winid_t glk_window_get_parent(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_get_parent: invalid ref"];
+		return nil;
+	}
+	
+	return win.parent;
+}
+
+winid_t glk_window_get_sibling(winid_t win)
+{
+	GlkWindowPair *parwin;
+
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_get_sibling: invalid ref"];
+		return nil;
+	}
+	
+	parwin = win.parent;
+	if (!parwin)
+		return nil;
+
+	if (parwin.child1 == win)
+		return parwin.child2;
+	if (parwin.child2 == win)
+		return parwin.child1;
+	return nil;
+}
+
+glui32 glk_window_get_type(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_get_type: invalid ref"];
+		return 0;
+	}
+	
+	return win.type;
+}
+
+strid_t glk_window_get_stream(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_get_stream: invalid ref"];
+		return nil;
+	}
+
+	return win.stream;
+}
+
+strid_t glk_window_get_echo_stream(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_get_echo_stream: invalid ref"];
+		return nil;
+	}
+
+	return win.echostream;
+}
+
+void glk_window_set_echo_stream(winid_t win, strid_t str)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_set_echo_stream: invalid ref"];
+		return;
+	}
+
+	win.echostream = str;
+}
+
+void glk_set_window(winid_t win)
+{
+	if (!win) {
+		[GlkStream setCurrentStream:nil];
+	}
+	else {
+		[GlkStream setCurrentStream:win.stream];
+	}
+}
+
 

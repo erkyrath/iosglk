@@ -7,42 +7,29 @@
 //
 
 #import "GlkFrameView.h"
-#import "GlkWinBufferView.h" //###
-#import "GlkWindow.h" //###
-#import "GlkUtilTypes.h" //###
-#import "GlkLibrary.h" //###
+#import "GlkWindowView.h"
+#import "GlkLibrary.h"
+#import "GlkWindow.h"
+#include "GlkUtilities.h"
 
 @implementation GlkFrameView
 
-@synthesize windows;
+@synthesize windowviews;
 
 - (void) awakeFromNib {
 	[super awakeFromNib];
-	NSLog(@"GlkFrameView awakened");
+	NSLog(@"GlkFrameView awakened, bounds %@", StringFromRect(self.bounds));
 	
-	self.windows = [NSMutableDictionary dictionaryWithCapacity:8];
-	
-	//### temp stuff 
-	/*
-	GlkWinBufferView *win = [[[GlkWinBufferView alloc] initWithFrame:self.bounds] autorelease];
-	win.dispid = 111;
-	[self addSubview:win];
-	[windows setObject:win forKey:[NSNumber numberWithUnsignedInt:win.dispid]];
-	*/
+	self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 }
 
 - (void) dealloc {
-	self.windows = nil;
+	self.windowviews = nil;
 	[super dealloc];
 }
 
 - (void) layoutSubviews {
 	NSLog(@"frameview layoutSubviews");
-	
-	GlkWinBufferView *winv = [windows objectForKey:[NSNumber numberWithUnsignedInt:111]];
-	if (winv) {
-		winv.frame = self.bounds;
-	}
 }
 
 - (void) updateFromLibraryState:(GlkLibrary *)library {
@@ -51,40 +38,30 @@
 	if (!library)
 		[NSException raise:@"GlkException" format:@"updateFromLibraryState: no library"];
 	
-	//### the following should be window-specific
+	NSMutableDictionary *closed = [NSMutableDictionary dictionaryWithDictionary:windowviews];
+	for (GlkWindow *win in library.windows) {
+		[closed removeObjectForKey:win.tag];
+	}
 
-	NSMutableArray *htmltext = [NSMutableArray arrayWithCapacity:16];
-	[htmltext addObject:@"<html>\n"];
-	[htmltext addObject:@"<link rel=\"stylesheet\" href=\"general.css\" type=\"text/css\">\n"];
+	for (NSNumber *tag in closed) {
+		GlkWindowView *winv = [closed objectForKey:tag];
+		[winv removeFromSuperview];
+		[windowviews removeObjectForKey:tag];
+	}
 	
-	GlkWindowBuffer *win = (GlkWindowBuffer *)library.rootwin;
-	NSMutableArray *updates = win.updatetext;
+	closed = nil;
 	
-	for (GlkStyledLine *sln in updates) {
-		if (sln.status)
-			[htmltext addObject:@"\n"];
-		for (GlkStyledString *stystr in sln.arr) {
-			NSMutableString *str = [NSMutableString stringWithString:stystr.str];
-			NSRange range;
-			range.location = 0;
-			range.length = str.length;
-			[str replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:range];
-			range.length = str.length;
-			[str replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:range];
-			range.length = str.length;
-			[str replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:range];
-			[htmltext addObject:str];
+	for (GlkWindow *win in library.windows) {
+		if (win.type != wintype_Pair && ![windowviews objectForKey:win.tag]) {
+			GlkWindowView *winv = [GlkWindowView viewForWindow:win];
+			[windowviews setObject:winv forKey:win.tag];
+			[self addSubview:winv];
 		}
 	}
 	
-	[win.updatetext removeAllObjects];
-	[htmltext addObject:@"</html>\n"];
-	
-	GlkWinBufferView *winv = [windows objectForKey:[NSNumber numberWithUnsignedInt:111]];
-	if (winv) {
-		NSString *htmlstr = [htmltext componentsJoinedByString:@""];
-		NSLog(@"The HTML string: %@", htmlstr);
-		[winv.webview loadHTMLString:htmlstr baseURL:winv.cssurl];
+	NSLog(@"frameview has %d windows:", windowviews.count);
+	for (NSNumber *tag in windowviews) {
+		NSLog(@"... %d: %@", [tag intValue], [windowviews objectForKey:tag]);
 	}
 }
 

@@ -14,11 +14,14 @@
 @implementation GlkWindow
 
 @synthesize library;
+@synthesize tag;
 @synthesize type;
+@synthesize rock;
 @synthesize parent;
 @synthesize style;
 @synthesize stream;
 @synthesize echostream;
+@synthesize bbox;
 
 static NSCharacterSet *newlineCharSet; /* retained forever */
 
@@ -34,7 +37,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 			break;
 		case wintype_Pair:
 			/* You can't create a pair window this way. */
-			[GlkLibrary strict_warning:@"window_open: cannot open pair window directly"];
+			[GlkLibrary strictWarning:@"window_open: cannot open pair window directly"];
 			win = nil;
 			break;
 		default:
@@ -50,7 +53,9 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	
 	if (self) {
 		library = [GlkLibrary singleton];
+		inlibrary = YES;
 		
+		self.tag = [library newTag];
 		type = wintype;
 		rock = winrock;
 		
@@ -75,6 +80,15 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 }
 
 - (void) dealloc {
+	if (inlibrary)
+		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc while in library"];
+	if (!type)
+		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc with type unset"];
+	type = 0;
+	if (!tag)
+		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc with tag unset"];
+	self.tag = nil;
+	
 	self.stream = nil;
 	self.echostream = nil;
 	self.parent = nil;
@@ -84,22 +98,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	[super dealloc];
 }
 
-- (void) delete {
-	//### gidispa remove self
-		
-	if (stream) {
-		[stream delete];
-		self.stream = nil;
-	}
-	self.echostream = nil;
-	self.parent = nil;
+- (void) windowCloseRecurse:(BOOL)recurse {
+	//### subclasses: gidispa unregister inbuf
 	
-	if (![library.windows containsObject:self])
-		[NSException raise:@"GlkException" format:@"GlkWindow was not in library windows list"];
-	[library.windows removeObject:self];
-}
-
-- (void) windowCloseRecurse:(BOOL)recurse {	
+	[[self retain] autorelease];
+	
 	for (GlkWindowPair *wx=self.parent; wx; wx=wx.parent) {
 		if (wx.type == wintype_Pair) {
 			if (wx.key == self) {
@@ -117,7 +120,23 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 			[pwx.child2 windowCloseRecurse:YES];
 	}
 
-	[self delete];
+	//### gidispa remove self
+		
+	if (stream) {
+		[stream delete];
+		self.stream = nil;
+	}
+	self.echostream = nil;
+	self.parent = nil;
+	
+	if (![library.windows containsObject:self])
+		[NSException raise:@"GlkException" format:@"GlkWindow was not in library windows list"];
+	[library.windows removeObject:self];
+	inlibrary = NO;
+}
+
+- (void) windowRearrange:(CGRect)box {
+	[NSException raise:@"GlkException" format:@"windowRearrange: not implemented"];
 }
 
 @end
@@ -139,6 +158,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 - (void) dealloc {
 	self.updatetext = nil;
 	[super dealloc];
+}
+
+- (void) windowRearrange:(CGRect)box {
+	bbox = box;
+	//### count on-screen lines, maybe
 }
 
 - (void) put_string:(char *)cstr {
@@ -188,10 +212,16 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 
 @implementation GlkWindowPair
 
-@synthesize child1;
-@synthesize child2;
+@synthesize dir;
+@synthesize division;
 @synthesize key;
 @synthesize keydamage;
+@synthesize size;
+@synthesize hasborder;
+@synthesize vertical;
+@synthesize backward;
+@synthesize child1;
+@synthesize child2;
 
 - (id) initWithType:(glui32)wintype rock:(glui32)winrock method:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)initsize {
 	self = [super initWithType:wintype rock:winrock];
@@ -221,6 +251,104 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	[super dealloc];
 }
 
+struct temp_metrics_struct {
+	CGFloat buffercharwidth, buffercharheight;
+	CGFloat buffermarginx, buffermarginy;
+	CGFloat gridcharwidth, gridcharheight;
+	CGFloat gridmarginx, gridmarginy;
+} content_metrics = {
+	10, 14, 0, 0,
+	10, 14, 0, 0,
+};
+
+- (void) windowRearrange:(CGRect)box {
+	CGFloat min, max, diff;
+	
+	bbox = box;
+
+	if (vertical) {
+		min = bbox.origin.x;
+		max = min + bbox.size.width;
+		splitwid = 4; //content_metrics.inspacingx;
+	}
+	else {
+		min = bbox.origin.y;
+		max = min + bbox.size.height;
+		splitwid = 4; //content_metrics.inspacingy;
+	}
+	if (!hasborder)
+		splitwid = 0;
+	diff = max - min;
+
+	if (division == winmethod_Proportional) {
+		split = floorf((diff * size) / 100.0);
+	}
+	else if (division == winmethod_Fixed) {
+		split = 0;
+		if (key && key.type == wintype_TextBuffer) {
+			if (!vertical)
+				split = (size * content_metrics.buffercharheight + content_metrics.buffermarginy);
+			else
+				split = (size * content_metrics.buffercharwidth + content_metrics.buffermarginx);
+		}
+		if (key && key.type == wintype_TextGrid) {
+			if (!vertical)
+				split = (size * content_metrics.gridcharheight + content_metrics.gridmarginy);
+			else
+				split = (size * content_metrics.gridcharwidth + content_metrics.gridmarginx);
+		}
+		split = ceilf(split);
+	}
+	else {
+		/* default behavior for unknown division method */
+		split = floorf(diff / 2);
+	}
+
+	/* Split is now a number between 0 and diff. Convert that to a number
+	   between min and max; also apply upside-down-ness. */
+	if (!backward) {
+		split = max-split-splitwid;
+	}
+	else {
+		split = min+split;
+	}
+
+	/* Make sure it's really between min and max. */
+	if (min >= max) {
+		split = min;
+	}
+	else {
+		split = fminf(fmaxf(split, min), max-splitwid);
+	}
+	
+	CGRect box1 = bbox;
+	CGRect box2 = bbox;
+
+	if (vertical) {
+		box1.size.width = split - bbox.origin.x;
+		box2.origin.x = split + splitwid;
+		box2.size.width = (bbox.origin.x+bbox.size.width) - box2.origin.x;
+	}
+	else {
+		box1.size.height = split - bbox.origin.y;
+		box2.origin.y = split + splitwid;
+		box2.size.height = (bbox.origin.y+bbox.size.height) - box2.origin.y;
+	}
+	
+	GlkWindow *ch1, *ch2;
+
+	if (!backward) {
+		ch1 = child1;
+		ch2 = child2;
+	}
+	else {
+		ch1 = child2;
+		ch2 = child1;
+	}
+
+	[ch1 windowRearrange:box1];
+	[ch2 windowRearrange:box2];
+}
 
 @end
 

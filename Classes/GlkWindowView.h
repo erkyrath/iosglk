@@ -9,10 +9,16 @@
 #import <UIKit/UIKit.h>
 #include "glk.h"
 
+@class GlkWindow;
+
 @interface GlkWindowView : UIView {
-	glui32 dispid;
+	GlkWindow *win;
 }
 
-@property (nonatomic) glui32 dispid;
+@property (nonatomic, retain) GlkWindow *win;
+
++ (GlkWindowView *) viewForWindow:(GlkWindow *)win;
+
+- (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box;
 
 @end
