@@ -7,6 +7,8 @@
 //
 
 #import "GlkWinBufferView.h"
+#import "GlkWindow.h"
+#import "GlkUtilTypes.h"
 
 
 @implementation GlkWinBufferView
@@ -38,14 +40,14 @@
 	}
 }
 
-/*
-{
+- (void) updateFromWindowState {
+	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
+	
 	NSMutableArray *htmltext = [NSMutableArray arrayWithCapacity:16];
 	[htmltext addObject:@"<html>\n"];
 	[htmltext addObject:@"<link rel=\"stylesheet\" href=\"general.css\" type=\"text/css\">\n"];
 	
-	GlkWindowBuffer *win = (GlkWindowBuffer *)library.rootwin;
-	NSMutableArray *updates = win.updatetext;
+	NSMutableArray *updates = bufwin.updatetext;
 	
 	for (GlkStyledLine *sln in updates) {
 		if (sln.status)
@@ -64,16 +66,13 @@
 		}
 	}
 	
-	[win.updatetext removeAllObjects];
+	[bufwin.updatetext removeAllObjects];
 	[htmltext addObject:@"</html>\n"];
 	
-	GlkWinBufferView *winv = [windows objectForKey:[NSNumber numberWithUnsignedInt:111]];
-	if (winv) {
-		NSString *htmlstr = [htmltext componentsJoinedByString:@""];
-		NSLog(@"The HTML string: %@", htmlstr);
-		[winv.webview loadHTMLString:htmlstr baseURL:winv.cssurl];
-	}
+	NSString *htmlstr = [htmltext componentsJoinedByString:@""];
+	NSLog(@"The HTML string: %@", htmlstr);
+	[webview loadHTMLString:htmlstr baseURL:cssurl];
 }
-*/
+
 
 @end

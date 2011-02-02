@@ -65,13 +65,6 @@ static GlkAppWrapper *singleton = nil; /* retained forever */
 	NSLog(@"VM thread exiting");
 }
 
-void GlkAppWrapperSelect(void) {
-	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
-	if (!appwrap)
-		[NSException raise:@"GlkException" format:@"GlkAppWrapperSelect: no AppWrapper"];
-	[appwrap select]; 
-}
-
 - (void) select {
 	NSLog(@"VM thread glk_select");
 	self.iowait = YES;

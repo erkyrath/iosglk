@@ -15,6 +15,7 @@ void glk_main() {
 	event_t ev;
 	
 	winid_t mainwin = glk_window_open(NULL, 0, 0, wintype_TextBuffer, 111);
+	winid_t statwin = glk_window_open(mainwin, winmethod_Above+winmethod_Fixed, 5, wintype_TextBuffer, 222);
 	
 	while (1) {
 		glk_put_string("This is the output of glk_main.\n");

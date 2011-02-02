@@ -139,6 +139,9 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	[NSException raise:@"GlkException" format:@"windowRearrange: not implemented"];
 }
 
+- (void) putCString:(char *)cstr {
+}
+
 @end
 
 @implementation GlkWindowBuffer
@@ -165,13 +168,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	//### count on-screen lines, maybe
 }
 
-- (void) put_string:(char *)cstr {
+- (void) putCString:(char *)cstr {
 	NSString *str = [NSString stringWithCString:cstr encoding:NSISOLatin1StringEncoding];
 	if (!str.length)
 		return;
-		
-	//NSRange range = [str rangeOfCharacterFromSet:newlineCharSet];
-	
+			
 	NSArray *linearr = [str componentsSeparatedByCharactersInSet:newlineCharSet];
 	BOOL isfirst = YES;
 	for (NSString *ln in linearr) {
@@ -223,8 +224,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 @synthesize child1;
 @synthesize child2;
 
-- (id) initWithType:(glui32)wintype rock:(glui32)winrock method:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)initsize {
-	self = [super initWithType:wintype rock:winrock];
+- (id) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)initsize {
+	self = [super initWithType:wintype_Pair rock:0];
 	
 	if (self) {
 		dir = method & winmethod_DirMask;

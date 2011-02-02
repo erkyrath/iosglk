@@ -67,7 +67,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 win
 	else {
 		/* create pairwin, with newwin as the key */
 		GlkWindowPair *pairwin;
-		pairwin = [[[GlkWindowPair alloc] initWithType:wintype rock:rock method:method keywin:newwin size:size] autorelease];
+		pairwin = [[[GlkWindowPair alloc] initWithMethod:method keywin:newwin size:size] autorelease];
 
 		pairwin.child1 = splitwin;
 		pairwin.child2 = newwin;

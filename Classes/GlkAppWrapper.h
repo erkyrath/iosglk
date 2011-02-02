@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-
 @interface GlkAppWrapper : NSObject {
 	BOOL iowait; /* true when waiting for an event; becomes false when one arrives */
 	NSCondition *iowaitcond;

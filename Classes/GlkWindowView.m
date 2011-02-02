@@ -38,5 +38,8 @@
     [super dealloc];
 }
 
+- (void) updateFromWindowState {
+	[NSException raise:@"GlkException" format:@"updateFromWindowState not implemented"];
+}
 
 @end

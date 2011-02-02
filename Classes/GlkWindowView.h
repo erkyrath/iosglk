@@ -20,5 +20,6 @@
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win;
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box;
+- (void) updateFromWindowState;
 
 @end

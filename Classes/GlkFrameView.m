@@ -62,6 +62,13 @@
 	NSLog(@"frameview has %d windows:", windowviews.count);
 	for (NSNumber *tag in windowviews) {
 		NSLog(@"... %d: %@", [tag intValue], [windowviews objectForKey:tag]);
+		//GlkWindowView *winv = [windowviews objectForKey:tag];
+		//NSLog(@"... win is %@", winv.win);
+	}
+
+	for (NSNumber *tag in windowviews) {
+		GlkWindowView *winv = [windowviews objectForKey:tag];
+		[winv updateFromWindowState];
 	}
 }
 

@@ -62,16 +62,3 @@ static GlkLibrary *singleton = nil; /* retained forever */
 
 @end
 
-extern void GlkAppWrapperSelect(void); //### put in some header
-
-
-void glk_put_string(char *str) {
-}
-
-void glk_set_style(glui32 styl) {
-}
-
-void glk_select(event_t *event) {
-	GlkAppWrapperSelect();
-}
-

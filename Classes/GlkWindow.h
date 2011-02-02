@@ -52,7 +52,7 @@
 - (void) windowCloseRecurse:(BOOL)recurse;
 - (void) windowRearrange:(CGRect)box;
 
-//- (void) put_string:(char *)str;
+- (void) putCString:(char *)str;
 
 @end
 
@@ -94,7 +94,7 @@
 @property (nonatomic, retain) GlkWindow *child1;
 @property (nonatomic, retain) GlkWindow *child2;
 
-- (id) initWithType:(glui32)type rock:(glui32)rock method:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)size;
+- (id) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)size;
 
 @end
 
