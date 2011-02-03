@@ -41,6 +41,7 @@ static GlkLibrary *singleton = nil; /* retained forever */
 }
 
 - (void) dealloc {
+	NSLog(@"GlkLibrary dealloc %x", self);
 	self.windows = nil;
 	self.rootwin = nil;
 	[super dealloc];

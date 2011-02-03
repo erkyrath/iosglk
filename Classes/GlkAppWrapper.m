@@ -18,6 +18,7 @@
 
 @synthesize iowait;
 @synthesize iowaitcond;
+@synthesize timerinterval;
 
 static GlkAppWrapper *singleton = nil; /* retained forever */
 
@@ -35,12 +36,15 @@ static GlkAppWrapper *singleton = nil; /* retained forever */
 		
 		self.iowait = NO;
 		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
+		
+		timerinterval = nil;
 	}
 	
 	return self;
 }
 
 - (void) dealloc {
+	self.timerinterval = nil;
 	[super dealloc];
 }
 
@@ -54,26 +58,31 @@ static GlkAppWrapper *singleton = nil; /* retained forever */
 }
 
 - (void) appThreadMain:(id)rock {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	looppool = [[NSAutoreleasePool alloc] init];
 	NSLog(@"VM thread starting");
 
 	[iowaitcond lock];
 	glk_main();
 	[iowaitcond unlock];
 
-	[pool release];
+	[looppool drain]; // releases it
+	looppool = nil;
 	NSLog(@"VM thread exiting");
 }
 
-- (void) select {
+- (void) selectEvent:(event_t *)event {
 	NSLog(@"VM thread glk_select");
-	self.iowait = YES;
+	
+	/* This is a good time to drain and recreate the thread's autorelease pool. We'll also do this in glk_tick(). */
+	[looppool drain]; // releases it
+	looppool = [[NSAutoreleasePool alloc] init];
 	
 	GlkLibrary *library = [GlkLibrary singleton];
-	//### go through and do final captures in buffer windows, etc.
+	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
 	
-	IosGlkViewController *viewc = [IosGlkAppDelegate singleton].viewController;
-	GlkFrameView *frameview = viewc.viewAsFrameView;
+	bzero(event, sizeof(event_t));
+	self.iowait = YES;
+	
 	[frameview performSelectorOnMainThread:@selector(updateFromLibraryState:)
 		withObject:library waitUntilDone:NO];
 		
@@ -81,7 +90,46 @@ static GlkAppWrapper *singleton = nil; /* retained forever */
 		[iowaitcond wait];
 	}
 	
-	NSLog(@"VM thread glk_select returned");
+	NSLog(@"VM thread glk_select returned (evtype %d)", event->type);
 }
+
+/* This is called from the main thread. It synchronizes with the VM thread. */
+- (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2 {
+	if (!self.iowait)
+		return;
+		
+	[iowaitcond lock];
+	self.iowait = NO;
+	[iowaitcond signal];
+	[iowaitcond unlock];
+}
+
+/* This method must be run on the main thread.
+	The interval argument, if non-nil, must be retained by the caller. This method will release it. (This simplifies its transfer from the VM thread.) */
+- (void) setTimerInterval:(NSNumber *)interval {
+	if (timerinterval) {
+		[GlkAppWrapper cancelPreviousPerformRequestsWithTarget:self selector:@selector(fireTimer:) object:nil];
+		self.timerinterval = nil;
+	}
+	
+	if (interval) {
+		self.timerinterval = interval;
+		/* The delay value in this method is an NSTimeInterval, which is defined as double. */
+		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:[timerinterval doubleValue]];
+		[interval release];
+	}
+	
+}
+
+/* This fires on the main thread. */
+- (void) fireTimer:(id)dummy {
+	NSLog(@"Timer fires!");
+	if (timerinterval) {
+		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:[timerinterval doubleValue]];
+	}
+	
+	[self acceptEventType:evtype_Timer window:nil val1:0 val2:0];
+}
+
 
 @end

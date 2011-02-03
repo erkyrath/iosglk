@@ -33,6 +33,7 @@
 }
 
 - (void)dealloc {
+	NSLog(@"IosGlkViewController dealloc %x", self);
 	[super dealloc];
 }
 

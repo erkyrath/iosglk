@@ -52,7 +52,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	self = [super init];
 	
 	if (self) {
-		library = [GlkLibrary singleton];
+		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
 		self.tag = [library newTag];
@@ -69,7 +69,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		style = style_Normal;
 		
 		self.stream = [GlkStream openForWindow:self];
-		echostream = nil;
+		self.echostream = nil;
 		
 		[library.windows addObject:self];
 		
@@ -80,6 +80,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 }
 
 - (void) dealloc {
+	NSLog(@"GlkWindow dealloc %x", self);
+	
 	if (inlibrary)
 		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc while in library"];
 	if (!type)
