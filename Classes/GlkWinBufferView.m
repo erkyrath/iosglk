@@ -16,7 +16,7 @@
 @synthesize cssurl;
 @synthesize webview;
 
-- (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {    
+- (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		NSString *csspath = [[NSBundle mainBundle] pathForResource:@"general" ofType:@"css"];
@@ -70,7 +70,7 @@
 	[htmltext addObject:@"</html>\n"];
 	
 	NSString *htmlstr = [htmltext componentsJoinedByString:@""];
-	NSLog(@"The HTML string: %@", htmlstr);
+	//NSLog(@"The HTML string: %@", htmlstr);
 	[webview loadHTMLString:htmlstr baseURL:cssurl];
 }
 

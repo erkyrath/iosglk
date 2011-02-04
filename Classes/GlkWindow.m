@@ -68,12 +68,13 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		//terminate_line_input = 0;
 		style = style_Normal;
 		
-		self.stream = [GlkStream openForWindow:self];
+		self.stream = [[[GlkStreamWindow alloc] initWithWindow:self] autorelease];
 		self.echostream = nil;
 		
 		[library.windows addObject:self];
 		
-		//### gidispa add self
+		if (library.dispatch_register_obj)
+			disprock = (*library.dispatch_register_obj)(self, gidisp_Class_Window);
 	}
 	
 	return self;
@@ -101,9 +102,10 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 }
 
 - (void) windowCloseRecurse:(BOOL)recurse {
-	//### subclasses: gidispa unregister inbuf
-	
+	/* We don't want this object to evaporate in the middle of this method. */
 	[[self retain] autorelease];
+	
+	//### subclasses: gidispa unregister inbuf
 	
 	for (GlkWindowPair *wx=self.parent; wx; wx=wx.parent) {
 		if (wx.type == wintype_Pair) {
@@ -122,10 +124,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 			[pwx.child2 windowCloseRecurse:YES];
 	}
 
-	//### gidispa remove self
+	if (library.dispatch_unregister_obj)
+		(*library.dispatch_unregister_obj)(self, gidisp_Class_Window, disprock);
 		
 	if (stream) {
-		[stream delete];
+		[stream streamDelete];
 		self.stream = nil;
 	}
 	self.echostream = nil;
@@ -135,6 +138,14 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		[NSException raise:@"GlkException" format:@"GlkWindow was not in library windows list"];
 	[library.windows removeObject:self];
 	inlibrary = NO;
+}
+
++ (void) unEchoStream:(strid_t)str {
+	GlkLibrary *library = [GlkLibrary singleton];
+	for (GlkWindow *win in library.windows) {
+		if (win.echostream == str)
+			win.echostream = nil;
+	}
 }
 
 - (void) windowRearrange:(CGRect)box {

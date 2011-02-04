@@ -234,7 +234,10 @@ winid_t glk_window_iterate(winid_t win, glui32 *rock)
 	GlkLibrary *library = [GlkLibrary singleton];
 
 	if (!win) {
-		win = library.rootwin;
+		if (library.windows.count)
+			win = [library.windows objectAtIndex:0];
+		else
+			win = nil;
 	}
 	else {
 		NSUInteger pos = [library.windows indexOfObject:win];
@@ -270,7 +273,7 @@ glui32 glk_window_get_rock(winid_t win)
 		return 0;
 	}
 
-    return win.rock;
+	return win.rock;
 }
 
 winid_t glk_window_get_root()
@@ -351,11 +354,12 @@ void glk_window_set_echo_stream(winid_t win, strid_t str)
 
 void glk_set_window(winid_t win)
 {
+	GlkLibrary *library = [GlkLibrary singleton];
 	if (!win) {
-		[GlkStream setCurrentStream:nil];
+		library.currentstr = nil;
 	}
 	else {
-		[GlkStream setCurrentStream:win.stream];
+		library.currentstr = win.stream;
 	}
 }
 

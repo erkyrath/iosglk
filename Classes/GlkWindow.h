@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #include "glk.h"
+#include "gi_dispa.h"
 
 @class GlkLibrary;
 @class GlkStream;
@@ -18,6 +19,7 @@
 	BOOL inlibrary;
 	
 	NSNumber *tag;
+	gidispatch_rock_t disprock;
 	glui32 type;
 	glui32 rock;
 	
@@ -52,6 +54,7 @@
 - (void) windowCloseRecurse:(BOOL)recurse;
 - (void) windowRearrange:(CGRect)box;
 
++ (void) unEchoStream:(strid_t)str;
 - (void) putCString:(char *)str;
 
 @end

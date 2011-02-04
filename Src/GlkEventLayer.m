@@ -29,19 +29,3 @@ void glk_request_timer_events(glui32 millisecs) {
 	[appwrap performSelectorOnMainThread:@selector(setTimerInterval:) withObject:interval waitUntilDone:NO];
 }
 
-void glk_put_string(char *str) {
-	GlkWindow *win = nil;
-	for (GlkWindow *wx in [GlkLibrary singleton].windows) 
-		if (wx.type == wintype_TextBuffer)
-			win = wx;
-	[win putCString:str]; //###
-}
-
-void glk_set_style(glui32 styl) {
-	GlkWindow *win = nil;
-	for (GlkWindow *wx in [GlkLibrary singleton].windows) 
-		if (wx.type == wintype_TextBuffer)
-			win = wx;
-	win.style = styl; //###
-}
-

@@ -35,7 +35,7 @@
 
 - (void) dealloc {
 	self.win = nil;
-    [super dealloc];
+	[super dealloc];
 }
 
 - (void) updateFromWindowState {

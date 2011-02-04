@@ -20,7 +20,7 @@
 @synthesize iowaitcond;
 @synthesize timerinterval;
 
-static GlkAppWrapper *singleton = nil; /* retained forever */
+static GlkAppWrapper *singleton = nil;
 
 + (GlkAppWrapper *) singleton {
 	return singleton;
@@ -32,7 +32,7 @@ static GlkAppWrapper *singleton = nil; /* retained forever */
 	if (self) {
 		if (singleton)
 			[NSException raise:@"GlkException" format:@"cannot create two GlkAppWrapper objects"];
-		singleton = [self retain];
+		singleton = self;
 		
 		self.iowait = NO;
 		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
@@ -44,6 +44,8 @@ static GlkAppWrapper *singleton = nil; /* retained forever */
 }
 
 - (void) dealloc {
+	if (singleton == self)
+		singleton = nil;
 	self.timerinterval = nil;
 	[super dealloc];
 }

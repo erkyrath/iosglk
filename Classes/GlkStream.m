@@ -7,25 +7,107 @@
 //
 
 #import "GlkStream.h"
-
+#import "GlkWindow.h"
+#import "GlkLibrary.h"
 
 @implementation GlkStream
 
-+ (GlkStream *) openForWindow:(GlkWindow *)win {
-	return nil; //###
+@synthesize library;
+@synthesize tag;
+@synthesize type;
+@synthesize rock;
+@synthesize unicode;
+
+- (id) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock {
+	self = [super init];
+	
+	if (self) {
+		self.library = [GlkLibrary singleton];
+		inlibrary = YES;
+		
+		self.tag = [library newTag];
+		type = strtype;
+		rock = strrock;
+		readable = isreadable;
+		writable = iswritable;
+		
+		readcount = 0;
+		writecount = 0;
+		unicode = NO;
+				
+		[library.streams addObject:self];
+		
+		if (library.dispatch_register_obj)
+			disprock = (*library.dispatch_register_obj)(self, gidisp_Class_Stream);
+	}
+	
+	return self;
 }
 
-- (void) delete {
-	//###
+- (void) dealloc {
+	NSLog(@"GlkStream dealloc %x", self);
+	
+	if (inlibrary)
+		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc while in library"];
+	if (type == strtype_None)
+		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc with type unset"];
+	type = strtype_None;
+	if (!tag)
+		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc with tag unset"];
+	self.tag = nil;
+	
+	self.library = nil;
+
+	[super dealloc];
+}
+
+- (void) streamDelete {
+	/* We don't want this object to evaporate in the middle of this method. */
+	[[self retain] autorelease];
+	
+	if (library.currentstr == self)
+		library.currentstr = nil;
+		
+	[GlkWindow unEchoStream:self];
+	
+	//### subclasses: gidispa unregister memory, deref window
+
+	if (library.dispatch_unregister_obj)
+		(*library.dispatch_unregister_obj)(self, gidisp_Class_Stream, disprock);
+		
+	if (![library.streams containsObject:self])
+		[NSException raise:@"GlkException" format:@"GlkStream was not in library streams list"];
+	[library.streams removeObject:self];
+	inlibrary = NO;
 }
 
 - (void) fillResult:(stream_result_t *)result {
-	//###
+	if (result) {
+		result->readcount = readcount;
+		result->writecount = writecount;
+	}
 }
-
-+ (void) setCurrentStream:(GlkStream *)str {
-	//###
-}
-
 
 @end
+
+@implementation GlkStreamWindow
+
+@synthesize win;
+
+- (id) initWithWindow:(GlkWindow *)winref {
+	self = [super initWithType:strtype_Window readable:NO writable:YES rock:0];
+	
+	if (self) {
+		self.win = winref;
+	}
+	
+	return self;
+}
+
+- (void) dealloc {
+	self.win = nil;
+	[super dealloc];
+}
+
+@end
+
