@@ -42,6 +42,8 @@
 @property (nonatomic) glui32 type;
 @property (nonatomic) glui32 rock;
 @property (nonatomic, retain) GlkWindowPair *parent;
+@property (nonatomic) BOOL char_request;
+@property (nonatomic) BOOL line_request;
 @property (nonatomic) glui32 style;
 @property (nonatomic, retain) GlkStream *stream;
 @property (nonatomic, retain) GlkStream *echostream;
@@ -55,7 +57,7 @@
 - (void) windowRearrange:(CGRect)box;
 
 + (void) unEchoStream:(strid_t)str;
-- (void) putCString:(char *)str;
+- (void) putBuffer:(char *)buf len:(glui32)len;
 
 @end
 

@@ -18,6 +18,8 @@
 @synthesize type;
 @synthesize rock;
 @synthesize parent;
+@synthesize char_request;
+@synthesize line_request;
 @synthesize style;
 @synthesize stream;
 @synthesize echostream;
@@ -152,7 +154,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	[NSException raise:@"GlkException" format:@"windowRearrange: not implemented"];
 }
 
-- (void) putCString:(char *)cstr {
+/* For non-text windows, we do nothing. The text window classes will override this method.*/
+- (void) putBuffer:(char *)buf len:(glui32)len {
 }
 
 @end
@@ -181,11 +184,13 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	//### count on-screen lines, maybe
 }
 
-- (void) putCString:(char *)cstr {
-	NSString *str = [NSString stringWithCString:cstr encoding:NSISOLatin1StringEncoding];
-	if (!str.length)
+- (void) putBuffer:(char *)buf len:(glui32)len {
+	if (!len)
 		return;
-			
+	
+	/* Turn the buffer into an NSString. We'll release this at the end of the function */
+	NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
+	
 	NSArray *linearr = [str componentsSeparatedByCharactersInSet:newlineCharSet];
 	BOOL isfirst = YES;
 	for (NSString *ln in linearr) {
@@ -218,6 +223,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 			[lastsln.arr addObject:newstr];
 		}
 	}
+	
+	[str release];
 }
 
 

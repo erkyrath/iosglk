@@ -85,8 +85,70 @@ strid_t glk_stream_get_current()
 	return library.currentstr;
 }
 
-void glk_put_string(char *str) {
-	//[win putCString:str]; //###
+void glk_put_char(unsigned char ch)
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+	[library.currentstr putChar:ch];
+}
+
+void glk_put_char_stream(strid_t str, unsigned char ch)
+{
+	[str putChar:ch];
+}
+
+void glk_put_char_uni(glui32 ch)
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+	[library.currentstr putUChar:ch];
+}
+
+void glk_put_char_stream_uni(strid_t str, glui32 ch)
+{
+	[str putUChar:ch];
+}
+
+void glk_put_string(char *s)
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+	[library.currentstr putCString:s];
+}
+
+void glk_put_string_stream(strid_t str, char *s)
+{
+	[str putCString:s];
+}
+
+void glk_put_string_uni(glui32 *us)
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+	[library.currentstr putUString:us];
+}
+
+void glk_put_string_stream_uni(strid_t str, glui32 *us)
+{
+	[str putUString:us];
+}
+
+void glk_put_buffer(char *buf, glui32 len)
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+	[library.currentstr putBuffer:buf len:len];
+}
+
+void glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
+{
+	[str putBuffer:buf len:len];
+}
+
+void glk_put_buffer_uni(glui32 *ubuf, glui32 len)
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+	[library.currentstr putUBuffer:ubuf len:len];
+}
+
+void glk_put_buffer_stream_uni(strid_t str, glui32 *ubuf, glui32 len)
+{
+	[str putUBuffer:ubuf len:len];
 }
 
 void glk_set_style(glui32 styl) {

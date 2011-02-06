@@ -44,6 +44,9 @@ typedef enum GlkStreamType_enum {
 - (id) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock;
 - (void) streamDelete;
 - (void) fillResult:(stream_result_t *)result;
+- (void) putChar:(unsigned char)ch;
+- (void) putCString:(char *)s;
+- (void) putBuffer:(char *)buf len:(glui32)len;
 
 @end
 
