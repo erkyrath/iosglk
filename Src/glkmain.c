@@ -13,7 +13,7 @@
 
 void glk_main() {
 	event_t ev;
-	char buf[256];
+	//char buf[256];
 	
 	//glk_request_timer_events(4000);
 
@@ -22,14 +22,23 @@ void glk_main() {
 
 	glk_put_string("This is the output of glk_main.\n");
 	glk_put_string("This is a very long line, the contents of which will wrap, we hope. Wrap, contents, wrap. Is that enough? Hm.\n");
-	glk_put_string("More output 5 < 10.\n");
+	glk_put_string("More output:\n5 < 10.\n");
 	glk_put_string(" Indent.\n");
-	glk_put_string("  Indent.\n");
-	glk_put_string("   Indent.\n");
+	glk_put_string("  ");
+	glk_set_style(style_Emphasized);
+	glk_put_string("Indent.");
+	glk_set_style(style_Normal);
+	glk_put_string("\n");
+	glk_put_string("   ");
+	glk_set_style(style_Subheader);
+	glk_put_string("Indent.");
+	glk_set_style(style_Normal);
+	glk_put_string("\n");
 	glk_put_string("    Indent.\n");
 
 	winid_t statwin = glk_window_open(mainwin, winmethod_Above+winmethod_Fixed, 5, wintype_TextBuffer, 222);
 	glk_set_window(statwin);
+	glk_set_style(style_Preformatted);
 	glk_put_string("Status line!\n");
 	
 	/*

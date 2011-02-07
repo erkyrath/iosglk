@@ -102,6 +102,10 @@
 	[NSException raise:@"GlkException" format:@"putBuffer: stream type not implemented"];
 }
 
+/* For non-window streams, we do nothing. The GlkStreamWindow class will override this method.*/
+- (void) setStyle:(glui32)styl {
+}
+
 @end
 
 @implementation GlkStreamWindow
@@ -138,6 +142,17 @@
 	if (win.echostream)
 		[win.echostream putBuffer:buf len:len];
 }
+
+- (void) setStyle:(glui32)styl {
+	if (styl >= style_NUMSTYLES)
+		styl = 0;
+		
+	win.style = styl;
+	
+	if (win.echostream)
+		[win.echostream setStyle:styl];
+}
+
 
 @end
 

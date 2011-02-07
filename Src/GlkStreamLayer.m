@@ -151,7 +151,12 @@ void glk_put_buffer_stream_uni(strid_t str, glui32 *ubuf, glui32 len)
 	[str putUBuffer:ubuf len:len];
 }
 
-void glk_set_style(glui32 styl) {
-	//win.style = styl; //###
+void glk_set_style(glui32 val) {
+	GlkLibrary *library = [GlkLibrary singleton];
+	[library.currentstr setStyle:val];
+}
+
+void glk_set_style_stream(strid_t str, glui32 val) {
+	[str setStyle:val];
 }
 

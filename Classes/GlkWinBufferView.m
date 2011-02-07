@@ -16,6 +16,25 @@
 @synthesize cssurl;
 @synthesize webview;
 
+static NSArray *spanArray; // retained forever
+
++ (void) initialize {
+	spanArray = [NSArray arrayWithObjects: 
+		@"<span class=\"Style_normal\">", 
+		@"<span class=\"Style_emphasized\">", 
+		@"<span class=\"Style_preformatted\">", 
+		@"<span class=\"Style_header\">", 
+		@"<span class=\"Style_subheader\">", 
+		@"<span class=\"Style_alert\">", 
+		@"<span class=\"Style_note\">", 
+		@"<span class=\"Style_blockquote\">", 
+		@"<span class=\"Style_input\">", 
+		@"<span class=\"Style_user1\">", 
+		@"<span class=\"Style_user2\">", 
+		nil];
+	[spanArray retain];
+}
+
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
@@ -62,7 +81,9 @@
 			[str replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:range];
 			range.length = str.length;
 			[str replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:range];
+			[htmltext addObject:[spanArray objectAtIndex:stystr.style]];
 			[htmltext addObject:str];
+			[htmltext addObject:@"</span>"];
 		}
 	}
 	

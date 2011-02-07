@@ -3,3 +3,23 @@
 body {
 	white-space: pre-wrap;
 }
+
+.Style_emphasized {
+  font-style: italic;
+}
+
+.Style_preformatted {
+  font-family: monospace;
+}
+
+.Style_header {
+  font-weight: bold;
+}
+
+.Style_subheader {
+  font-weight: bold;
+}
+
+.Style_input {
+  color: #080;
+}

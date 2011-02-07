@@ -47,6 +47,7 @@ typedef enum GlkStreamType_enum {
 - (void) putChar:(unsigned char)ch;
 - (void) putCString:(char *)s;
 - (void) putBuffer:(char *)buf len:(glui32)len;
+- (void) setStyle:(glui32)styl;
 
 @end
 
