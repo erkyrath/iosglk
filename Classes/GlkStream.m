@@ -102,6 +102,22 @@
 	[NSException raise:@"GlkException" format:@"putBuffer: stream type not implemented"];
 }
 
+- (void) putUChar:(glui32)ch {
+	glui32 sch = ch;
+	[self putUBuffer:&sch len:1];
+}
+
+- (void) putUString:(glui32 *)us {
+	int len;
+	for (len=0; us[len]; len++) { };
+	[self putUBuffer:us len:len];
+}
+
+/* All the printing methods for 32-bit characters funnel into here. */
+- (void) putUBuffer:(glui32 *)buf len:(glui32)len {
+	[NSException raise:@"GlkException" format:@"putUBuffer: stream type not implemented"];
+}
+
 /* For non-window streams, we do nothing. The GlkStreamWindow class will override this method.*/
 - (void) setStyle:(glui32)styl {
 }
@@ -141,6 +157,22 @@
 	
 	if (win.echostream)
 		[win.echostream putBuffer:buf len:len];
+}
+
+- (void) putUBuffer:(glui32 *)buf len:(glui32)len {
+	if (!len)
+		return;
+	writecount += len;
+	
+	if (win.line_request) {
+		[GlkLibrary strictWarning:@"putUBuffer: window has pending line request"];
+		return;
+	}
+	
+	[win putUBuffer:buf len:len];
+	
+	if (win.echostream)
+		[win.echostream putUBuffer:buf len:len];
 }
 
 - (void) setStyle:(glui32)styl {

@@ -57,7 +57,9 @@
 - (void) windowRearrange:(CGRect)box;
 
 + (void) unEchoStream:(strid_t)str;
+- (void) putString:(NSString *)str;
 - (void) putBuffer:(char *)buf len:(glui32)len;
+- (void) putUBuffer:(glui32 *)buf len:(glui32)len;
 
 @end
 

@@ -11,6 +11,11 @@
 
 #define NULL (0)
 
+static glui32 ustring[] = {
+	0x48, 0x3B1, 0x141, 0x141, 0x2641, ' ',
+	0x30A2, 0x30A3, 0x30A5, '.', 0
+};
+
 void glk_main() {
 	event_t ev;
 	//char buf[256];
@@ -22,7 +27,13 @@ void glk_main() {
 
 	glk_put_string("This is the output of glk_main.\n");
 	glk_put_string("This is a very long line, the contents of which will wrap, we hope. Wrap, contents, wrap. Is that enough? Hm.\n");
-	glk_put_string("More output:\n5 < 10.\n");
+	glk_put_char('*');
+	glk_put_char_uni('*');
+	glk_put_char(0xe5);
+	glk_put_char_uni(0xe5);
+	glk_put_buffer_uni(ustring, 6);
+	glk_put_string_uni(ustring);
+	glk_put_char('\n');
 	glk_put_string(" Indent.\n");
 	glk_put_string("  ");
 	glk_set_style(style_Emphasized);
