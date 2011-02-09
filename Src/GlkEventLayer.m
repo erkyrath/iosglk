@@ -1,10 +1,8 @@
-//
-//  GlkEventLayer.m
-//  IosGlk
-//
-//  Created by Andrew Plotkin on 2/2/11.
-//  Copyright 2011 Andrew Plotkin. All rights reserved.
-//
+/* GlkEventLayer.m: Public API for events
+	for IosGlk, the iOS implementation of the Glk API.
+	Designed by Andrew Plotkin <erkyrath@eblong.com>
+	http://eblong.com/zarf/glk/
+*/
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"

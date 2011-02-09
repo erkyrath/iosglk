@@ -1,10 +1,8 @@
-//
-//  GlkWindowView.m
-//  IosGlk
-//
-//  Created by Andrew Plotkin on 1/28/11.
-//  Copyright 2011 Andrew Plotkin. All rights reserved.
-//
+/* GlkWindowView.m: Base class for a Glk window view
+	for IosGlk, the iOS implementation of the Glk API.
+	Designed by Andrew Plotkin <erkyrath@eblong.com>
+	http://eblong.com/zarf/glk/
+*/
 
 #import "GlkWindowView.h"
 #import "GlkWinBufferView.h"

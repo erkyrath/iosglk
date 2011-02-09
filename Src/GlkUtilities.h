@@ -1,10 +1,8 @@
-//
-//  GlkUtilities.h
-//  IosGlk
-//
-//  Created by Andrew Plotkin on 2/2/11.
-//  Copyright 2011 Andrew Plotkin. All rights reserved.
-//
+/* GlkUtilities.h: Miscellaneous C-callable functions
+	for IosGlk, the iOS implementation of the Glk API.
+	Designed by Andrew Plotkin <erkyrath@eblong.com>
+	http://eblong.com/zarf/glk/
+*/
 
 #import <Foundation/Foundation.h>
 

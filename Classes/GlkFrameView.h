@@ -1,10 +1,8 @@
-//
-//  GlkFrameView.h
-//  IosGlk
-//
-//  Created by Andrew Plotkin on 1/28/11.
-//  Copyright 2011 Andrew Plotkin. All rights reserved.
-//
+/* GlkFrameView.h: Main view class
+	for IosGlk, the iOS implementation of the Glk API.
+	Designed by Andrew Plotkin <erkyrath@eblong.com>
+	http://eblong.com/zarf/glk/
+*/
 
 #import <UIKit/UIKit.h>
 

@@ -1,10 +1,8 @@
-//
-//  GlkStream.m
-//  IosGlk
-//
-//  Created by Andrew Plotkin on 1/31/11.
-//  Copyright 2011 Andrew Plotkin. All rights reserved.
-//
+/* GlkStream.m: Stream objc class (and subclasses)
+	for IosGlk, the iOS implementation of the Glk API.
+	Designed by Andrew Plotkin <erkyrath@eblong.com>
+	http://eblong.com/zarf/glk/
+*/
 
 #import "GlkStream.h"
 #import "GlkWindow.h"
