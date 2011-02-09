@@ -10,3 +10,4 @@
 
 
 extern NSString *StringFromRect(CGRect rect);
+extern void nslogc(char *str);

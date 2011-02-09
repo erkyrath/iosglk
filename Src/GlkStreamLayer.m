@@ -10,6 +10,34 @@
 #import "GlkWindow.h"
 #import "GlkStream.h"
 
+strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
+	glui32 rock)
+{
+	if (fmode != filemode_Read
+		&& fmode != filemode_Write
+		&& fmode != filemode_ReadWrite) {
+		[GlkLibrary strictWarning:@"stream_open_memory: illegal filemode"];
+		return NULL;
+	}
+
+	strid_t str = [[GlkStreamMemory alloc] initWithMode:fmode rock:rock buf:buf len:buflen];
+	return [str autorelease];
+}
+
+strid_t glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode,
+	glui32 rock)
+{
+	if (fmode != filemode_Read
+		&& fmode != filemode_Write
+		&& fmode != filemode_ReadWrite) {
+		[GlkLibrary strictWarning:@"stream_open_memory_uni: illegal filemode"];
+		return NULL;
+	}
+
+	strid_t str = [[GlkStreamMemory alloc] initUniWithMode:fmode rock:rock buf:buf len:buflen];
+	return [str autorelease];
+}
+
 void glk_stream_close(strid_t str, stream_result_t *result)
 {
 	if (!str) {
@@ -83,6 +111,26 @@ strid_t glk_stream_get_current()
 {
 	GlkLibrary *library = [GlkLibrary singleton];
 	return library.currentstr;
+}
+
+void glk_stream_set_position(strid_t str, glsi32 pos, glui32 seekmode)
+{
+	if (!str) {
+		[GlkLibrary strictWarning:@"stream_set_position: invalid ref"];
+		return;
+	}
+	
+	[str setPosition:pos seekmode:seekmode];
+}
+
+glui32 glk_stream_get_position(strid_t str)
+{
+	if (!str) {
+		[GlkLibrary strictWarning:@"stream_get_position: invalid ref"];
+		return 0;
+	}
+	
+	return [str getPosition];
 }
 
 void glk_put_char(unsigned char ch)

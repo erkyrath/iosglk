@@ -44,6 +44,8 @@ typedef enum GlkStreamType_enum {
 - (id) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock;
 - (void) streamDelete;
 - (void) fillResult:(stream_result_t *)result;
+- (void) setPosition:(glsi32)pos seekmode:(glui32)seekmode;
+- (glui32) getPosition;
 - (void) putChar:(unsigned char)ch;
 - (void) putCString:(char *)s;
 - (void) putBuffer:(char *)buf len:(glui32)len;
@@ -62,6 +64,24 @@ typedef enum GlkStreamType_enum {
 @property (nonatomic, retain) GlkWindow *win;
 
 - (id) initWithWindow:(GlkWindow *)win;
+
+@end
+
+@interface GlkStreamMemory : GlkStream {
+	/* The pointers needed for stream operation. We keep separate sets for the one-byte and four-byte cases. */
+	unsigned char *buf;
+	unsigned char *bufptr;
+	unsigned char *bufend;
+	unsigned char *bufeof;
+	glui32 *ubuf;
+	glui32 *ubufptr;
+	glui32 *ubufend;
+	glui32 *ubufeof;
+	glui32 buflen;
+}
+
+- (id) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)buf len:(glui32)buflen;
+- (id) initUniWithMode:(glui32)fmode rock:(glui32)rockval buf:(glui32 *)ubufval len:(glui32)ubuflenval;
 
 @end
 

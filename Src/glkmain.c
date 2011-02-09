@@ -10,6 +10,7 @@
 #include "glk.h"
 
 #define NULL (0)
+extern void nslogc(char *str);
 
 static glui32 ustring[] = {
 	0x48, 0x3B1, 0x141, 0x141, 0x2641, ' ',
@@ -19,6 +20,7 @@ static glui32 ustring[] = {
 void glk_main() {
 	event_t ev;
 	//char buf[256];
+	//glui32 ubuf[256];
 	
 	//glk_request_timer_events(4000);
 
@@ -46,12 +48,52 @@ void glk_main() {
 	glk_set_style(style_Normal);
 	glk_put_string("\n");
 	glk_put_string("    Indent.\n");
+	
+	/*
+	strid_t bufstr = glk_stream_open_memory(buf, 256, filemode_Write, 321);
+	glk_stream_set_current(bufstr);
+	glk_put_string("I am a message on the buffer.");
+	stream_result_t streamres;
+	glui32 streampos = glk_stream_get_position(bufstr);
+	glk_stream_close(bufstr, &streamres);
+	
+	glk_set_window(mainwin);
+	glk_put_char('"'); glk_put_buffer(buf, streampos); glk_put_char('"'); glk_put_char('\n');
+	sprintf(buf, "### streampos %d, res.read %d, res.written %d\n", streampos, streamres.readcount, streamres.writecount);
+	glk_put_string(buf);
+	*/
 
+	/*
+	strid_t bufstr = glk_stream_open_memory_uni(ubuf, 256, filemode_Write, 321);
+	glk_stream_set_current(bufstr);
+	glk_put_string_uni(ustring);
+	stream_result_t streamres;
+	glui32 streampos = glk_stream_get_position(bufstr);
+	glk_stream_close(bufstr, &streamres);
+	
+	glk_set_window(mainwin);
+	glk_put_char('"'); glk_put_buffer_uni(ubuf, streampos); glk_put_char('"'); glk_put_char('\n');
+	sprintf(buf, "### streampos %d, res.read %d, res.written %d\n", streampos, streamres.readcount, streamres.writecount);
+	glk_put_string(buf);
+	*/
+	
 	winid_t statwin = glk_window_open(mainwin, winmethod_Above+winmethod_Fixed, 5, wintype_TextBuffer, 222);
 	glk_set_window(statwin);
 	glk_set_style(style_Preformatted);
 	glk_put_string("Status line!\n");
 	
+	/*
+	strid_t sx = NULL;
+	while (1) {
+		glui32 rock = 1;
+		sx = glk_stream_iterate(sx, &rock);
+		if (!sx)
+			break;
+		sprintf(buf, "Stream %x has rock %d, position %d\n", (glui32)sx, rock, glk_stream_get_position(sx));
+		glk_put_string(buf);
+	}
+	*/
+
 	/*
 	winid_t wx = NULL;
 	while (1) {

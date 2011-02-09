@@ -158,13 +158,27 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 - (void) putString:(NSString *)str {
 }
 
-/* For non-text windows, we do nothing. The text window classes will override this method.*/
 - (void) putBuffer:(char *)buf len:(glui32)len {
+	if (!len)
+		return;
+	
+	/* Turn the buffer into an NSString. We'll release this at the end of the function. */
+	NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
+	[self putString:str];	
+	[str release];
 }
 
-/* For non-text windows, we do nothing. The text window classes will override this method.*/
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len {
+	if (!len)
+		return;
+	
+	/* Turn the buffer into an NSString. We'll release this at the end of the function. 
+		This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
+	NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
+	[self putString:str];	
+	[str release];
 }
+
 
 @end
 
@@ -225,27 +239,6 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 			[lastsln.arr addObject:newstr];
 		}
 	}
-}
-
-- (void) putBuffer:(char *)buf len:(glui32)len {
-	if (!len)
-		return;
-	
-	/* Turn the buffer into an NSString. We'll release this at the end of the function. */
-	NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
-	[self putString:str];	
-	[str release];
-}
-
-- (void) putUBuffer:(glui32 *)buf len:(glui32)len {
-	if (!len)
-		return;
-	
-	/* Turn the buffer into an NSString. We'll release this at the end of the function. 
-		This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
-	NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
-	[self putString:str];	
-	[str release];
 }
 
 @end

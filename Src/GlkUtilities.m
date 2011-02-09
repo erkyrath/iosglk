@@ -14,3 +14,6 @@ NSString *StringFromRect(CGRect rect) {
 		rect.size.width, rect.size.height, rect.origin.x, rect.origin.y];
 }
 
+extern void nslogc(char *str) {
+	NSLog(@"%s", str);
+}
