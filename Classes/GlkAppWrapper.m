@@ -70,6 +70,9 @@ static GlkAppWrapper *singleton = nil;
 	NSLog(@"VM thread exiting");
 }
 
+/* Block and wait for an event to arrive.
+	This must be called on the VM thread. 
+*/
 - (void) selectEvent:(event_t *)event {
 	NSLog(@"VM thread glk_select");
 	

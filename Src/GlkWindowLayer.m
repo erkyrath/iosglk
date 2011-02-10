@@ -4,6 +4,11 @@
 	http://eblong.com/zarf/glk/
 */
 
+/*	This file contains the public Glk functions dealing with windows.
+	
+	(The "layer" files connect the C-linkable API to the ObjC implementation layer. This is therefore an ObjC file that defines C functions in terms of ObjC method calls. Like all the Glk functions, these must be called from the VM thread, not the main thread.)
+*/
+
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
 #import "GlkStream.h"

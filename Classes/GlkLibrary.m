@@ -4,6 +4,11 @@
 	http://eblong.com/zarf/glk/
 */
 
+/*	The GlkLibrary class contains all the state for the running Glk display. (The API doesn't currently allow multiple Glk contexts, but if it did, each context would be a GlkLibrary. As it is, this is a singleton class, and many Glk functions call [GlkLibrary singleton] to get the reference.)
+
+	Look here for the list of open windows, the list of open streams, the current root window, and so on.
+*/
+
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
 #include "GlkUtilities.h"
@@ -53,19 +58,27 @@ static GlkLibrary *singleton = nil;
 	self.windows = nil;
 	self.streams = nil;
 	self.rootwin = nil;
+	self.currentstr = nil;
 	[super dealloc];
 }
 
+/* Every Glk object (windows, streams, etc) needs a hashable tag. (The objects themselves don't make good hash keys.) The easiest solution is to pass out unique NSNumbers. 
+	Note that these are *not* the glui32 ids seen by the Glulx VM. Those are generated separately, in the gi_dispa layer.
+*/
 - (NSNumber *) newTag {
 	tagCounter++;
 	return [NSNumber numberWithInteger:tagCounter];
 }
 
+/* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation.
+*/
 - (void) setMetrics:(CGRect)box {
 	bounds = box;
 	NSLog(@"library metrics now %@", StringFromRect(bounds));
 }
 
+/* Display a warning. Really this should be a fatal error. Eventually it will be visible on the screen somehow, but at the moment it's just a console log message.
+*/
 + (void) strictWarning:(NSString *)msg {
 	NSLog(@"strict warning: %@", msg);
 }
