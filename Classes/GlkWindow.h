@@ -55,9 +55,9 @@
 - (void) windowRearrange:(CGRect)box;
 
 + (void) unEchoStream:(strid_t)str;
-- (void) putString:(NSString *)str;
 - (void) putBuffer:(char *)buf len:(glui32)len;
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len;
+- (void) clearWindow;
 
 @end
 
@@ -67,6 +67,23 @@
 }
 
 @property (nonatomic, retain) NSMutableArray *updatetext;
+
+- (void) putString:(NSString *)str;
+
+@end
+
+
+@interface GlkWindowGrid : GlkWindow {
+	int width, height;
+	NSMutableArray *lines; /* array of GlkGridLine */
+	
+	int curx, cury; /* the window cursor position */
+}
+
+@property (nonatomic, retain) NSMutableArray *lines;
+
+- (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos;
+- (void) putUChar:(glui32)ch;
 
 @end
 

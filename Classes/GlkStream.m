@@ -4,6 +4,11 @@
 	http://eblong.com/zarf/glk/
 */
 
+/*	GlkStream is the base class representing a Glk stream. The subclasses represent the stream types (window, memory, file.)
+	
+	The encapsulation isn't very good in this file, because I kept most of the structure of the C Glk implementations -- specifically GlkTerm. The top-level "glk_" functions remained the same, and can be found in GlkStreamLayer.c. The internal "gli_" functions have become methods on the ObjC GlkStream class. So both layers wind up futzing with GlkStream internals.
+*/
+
 #import "GlkStream.h"
 #import "GlkWindow.h"
 #import "GlkLibrary.h"

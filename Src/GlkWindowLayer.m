@@ -366,4 +366,30 @@ void glk_set_window(winid_t win)
 	}
 }
 
+void glk_window_clear(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_clear: invalid ref"];
+		return;
+	}
+	if (win.line_request) {
+		[GlkLibrary strictWarning:@"window_clear: window has pending line request"];
+		return;
+	}
+	[win clearWindow];
+}
+
+void glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_move_cursor: invalid ref"];
+		return;
+	}
+	if (![win isKindOfClass:[GlkWindowGrid class]]) {
+		[GlkLibrary strictWarning:@"window_move_cursor: not a textgrid"];
+		return;
+	}
+	GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
+	[gridwin moveCursorToX:xpos Y:ypos];
+}
 

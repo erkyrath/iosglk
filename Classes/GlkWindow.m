@@ -4,12 +4,31 @@
 	http://eblong.com/zarf/glk/
 */
 
+/*	GlkWindow is the base class representing a Glk window. The subclasses represent the window types (textgrid, textbuffer, etc.)
+
+	(The iOS View classes for these window types are GlkWinGridView, GlkWinBufferView, etc.)
+	
+	The encapsulation isn't very good in this file, because I kept most of the structure of the C Glk implementations -- specifically GlkTerm. The top-level "glk_" functions remained the same, and can be found in GlkWindowLayer.c. The internal "gli_" functions have become methods on the ObjC GlkWindow class. So both layers wind up futzing with GlkWindow internals.
+*/
+
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
 #import "GlkStream.h"
 #import "GlkUtilTypes.h"
 
+/* ### Temporary character metrics. I don't yet know how these will be set up. */
+struct temp_metrics_struct {
+	CGFloat buffercharwidth, buffercharheight;
+	CGFloat buffermarginx, buffermarginy;
+	CGFloat gridcharwidth, gridcharheight;
+	CGFloat gridmarginx, gridmarginy;
+} content_metrics = {
+	10, 14, 0, 0,
+	10, 14, 0, 0,
+};
+
 @implementation GlkWindow
+/* GlkWindow: the base class. */
 
 @synthesize library;
 @synthesize tag;
@@ -26,14 +45,20 @@
 static NSCharacterSet *newlineCharSet; /* retained forever */
 
 + (void) initialize {
+	/* We need this for breaking up printing strings, so we set it up at class init time. I think this shows up as a memory leak in Apple's tools -- sorry about that. */
 	newlineCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"\n"] retain];
 }
 
+/* Create a window with a given type. (But not Pair windows -- those use a different path.) This is invoked by glk_window_open().
+*/
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock {
 	GlkWindow *win;
 	switch (type) {
 		case wintype_TextBuffer:
 			win = [[[GlkWindowBuffer alloc] initWithType:type rock:rock] autorelease];
+			break;
+		case wintype_TextGrid:
+			win = [[[GlkWindowGrid alloc] initWithType:type rock:rock] autorelease];
 			break;
 		case wintype_Pair:
 			/* You can't create a pair window this way. */
@@ -48,6 +73,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	return win;
 }
 
+/* GlkWindow designated initializer. */
 - (id) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super init];
 	
@@ -101,6 +127,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	[super dealloc];
 }
 
+/* Close a window, and perhaps its subwindows too. 
+*/
 - (void) windowCloseRecurse:(BOOL)recurse {
 	/* We don't want this object to evaporate in the middle of this method. */
 	[[self retain] autorelease];
@@ -140,6 +168,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	inlibrary = NO;
 }
 
+/* When a stram is closed, we call this to detach it from any windows who have it as their echostream.
+*/
 + (void) unEchoStream:(strid_t)str {
 	GlkLibrary *library = [GlkLibrary singleton];
 	for (GlkWindow *win in library.windows) {
@@ -148,39 +178,33 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	}
 }
 
+/* When a window changes size for any reason -- device rotation, or new windows appearing -- this is invoked. (For pair windows, it's recursive.) The argument is the rectangle that the window is given.
+*/
 - (void) windowRearrange:(CGRect)box {
 	[NSException raise:@"GlkException" format:@"windowRearrange: not implemented"];
 }
 
-/* For non-text windows, we do nothing. The text window classes will override this method.*/
-- (void) putString:(NSString *)str {
-}
+/*	And now the printing methods. All of this are invoked from the printing methods of GlkStreamWindow.
+
+	Note that putChar, putCString, etc have already been collapsed into putBuffer and putUBuffer calls. The text window classes only have to customize those. (The non-text windows just ignore them.)
+*/
 
 - (void) putBuffer:(char *)buf len:(glui32)len {
-	if (!len)
-		return;
-	
-	/* Turn the buffer into an NSString. We'll release this at the end of the function. */
-	NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
-	[self putString:str];	
-	[str release];
 }
 
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len {
-	if (!len)
-		return;
-	
-	/* Turn the buffer into an NSString. We'll release this at the end of the function. 
-		This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
-	NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
-	[self putString:str];	
-	[str release];
+}
+
+/* For non-text windows, we do nothing. The text window classes will override this method.*/
+- (void) clearWindow {
 }
 
 
 @end
 
+
 @implementation GlkWindowBuffer
+/* GlkWindowBuffer: a textbuffer window. */
 
 @synthesize updatetext;
 
@@ -204,6 +228,29 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	//### count on-screen lines, maybe
 }
 
+- (void) putBuffer:(char *)buf len:(glui32)len {
+	if (!len)
+		return;
+	
+	/* Turn the buffer into an NSString. We'll release this at the end of the function. */
+	NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
+	[self putString:str];	
+	[str release];
+}
+
+- (void) putUBuffer:(glui32 *)buf len:(glui32)len {
+	if (!len)
+		return;
+	
+	/* Turn the buffer into an NSString. We'll release this at the end of the function. 
+		This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
+	NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
+	[self putString:str];	
+	[str release];
+}
+
+/* Break the string up into GlkStyledLines. When the GlkWinBufferView updates, it will pluck these out and make use of them.
+*/
 - (void) putString:(NSString *)str {
 	NSArray *linearr = [str componentsSeparatedByCharactersInSet:newlineCharSet];
 	BOOL isfirst = YES;
@@ -239,10 +286,124 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	}
 }
 
+- (void) clearWindow {
+	//###
+}
+
+@end
+
+
+@implementation GlkWindowGrid
+/* GlkWindowGrid: a textgrid window. */
+
+@synthesize lines;
+
+- (id) initWithType:(glui32)wintype rock:(glui32)winrock {
+	self = [super initWithType:wintype rock:winrock];
+	
+	if (self) {
+		width = 0;
+		height = 0;
+		curx = 0;
+		cury = 0;
+		
+		self.lines = [NSMutableArray arrayWithCapacity:8];
+	}
+	
+	return self;
+}
+
+- (void) dealloc {
+	self.lines = nil;
+	[super dealloc];
+}
+
+- (void) windowRearrange:(CGRect)box {
+	bbox = box;
+	
+	int newwidth = ((bbox.size.width-content_metrics.gridmarginx) / content_metrics.gridcharwidth);
+	int newheight = ((bbox.size.height-content_metrics.gridmarginy) / content_metrics.gridcharheight);
+	if (newwidth < 0)
+		newwidth = 0;
+	if (newheight < 0)
+		newheight = 0;
+		
+	width = newwidth;
+	height = newheight;
+	
+	NSLog(@"grid window now %dx%d", width, height);
+	
+	while (lines.count > height)
+		[lines removeLastObject];
+	while (lines.count < height)
+		[lines addObject:[[[GlkGridLine alloc] init] autorelease]];
+		
+	for (GlkGridLine *ln in lines)
+		[ln setWidth:width];
+}
+
+- (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos {
+	/* Don't worry about large numbers, or numbers that the caller might have thought were negative. The canonicalization will fix this. */
+	if (xpos > 0x7FFF)
+		xpos = 0x7FFF;
+	if (ypos > 0x7FFF)
+		ypos = 0x7FFF;
+		
+	curx = xpos;
+	cury = ypos;
+}
+
+- (void) clearWindow {
+	for (GlkGridLine *ln in lines) {
+		[ln clear];
+	}
+}
+
+- (void) putBuffer:(char *)buf len:(glui32)len {
+	for (int ix=0; ix<len; ix++)
+		[self putUChar:(unsigned char)(buf[ix])];
+}
+
+- (void) putUBuffer:(glui32 *)buf len:(glui32)len {
+	for (int ix=0; ix<len; ix++)
+		[self putUChar:buf[ix]];
+}
+
+- (void) putUChar:(glui32)ch {
+	/* Canonicalize the cursor position. That is, the cursor may have been left outside the window area, or may be too close to the edge to print the next character. Wrap it if necessary. */
+	if (curx < 0)
+		curx = 0;
+	else if (curx >= width) {
+		curx = 0;
+		cury++;
+	}
+	if (cury < 0)
+		cury = 0;
+	else if (cury >= height)
+		return; /* outside the window */
+
+	if (ch == '\n') {
+		/* a newline just moves the cursor. */
+		cury++;
+		curx = 0;
+		return;
+	}
+	
+	GlkGridLine *ln = [lines objectAtIndex:cury];
+	ln.chars[curx] = ch;
+	ln.styles[curx] = style;
+	ln.dirty = YES;
+	
+	curx++;
+	
+	/* We can leave the cursor outside the window, since it will be canonicalized next time a character is printed. */
+}
+
 @end
 
 
 @implementation GlkWindowPair
+/* GlkWindowPair: a pair window (the kind of window that has subwindows). */
 
 @synthesize dir;
 @synthesize division;
@@ -255,6 +416,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 @synthesize child1;
 @synthesize child2;
 
+/* GlkWindowPair gets a special initializer. (Only called from glk_window_open() when a window is split.)
+*/
 - (id) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)initsize {
 	self = [super initWithType:wintype_Pair rock:0];
 	
@@ -283,16 +446,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	[super dealloc];
 }
 
-struct temp_metrics_struct {
-	CGFloat buffercharwidth, buffercharheight;
-	CGFloat buffermarginx, buffermarginy;
-	CGFloat gridcharwidth, gridcharheight;
-	CGFloat gridmarginx, gridmarginy;
-} content_metrics = {
-	10, 14, 0, 0,
-	10, 14, 0, 0,
-};
-
+/* For a pair window, the task is to figure out how to divide the box between its children. Then recursively call windowRearrange on them.
+*/
 - (void) windowRearrange:(CGRect)box {
 	CGFloat min, max, diff;
 	

@@ -40,3 +40,21 @@ typedef enum GlkStyledLineStatus_enum {
 - (void) freeze;
 
 @end
+
+@interface GlkGridLine : NSObject {
+	BOOL dirty;
+	int width;
+	glui32 *chars;
+	glui32 *styles;
+	int maxwidth;
+}
+
+@property (nonatomic) BOOL dirty;
+@property (nonatomic) int width;
+@property (nonatomic) glui32 *chars;
+@property (nonatomic) glui32 *styles;
+
+- (void) clear;
+
+@end
+

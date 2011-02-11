@@ -6,6 +6,7 @@
 
 #import "GlkWindowView.h"
 #import "GlkWinBufferView.h"
+#import "GlkWinGridView.h"
 #import "GlkWindow.h"
 
 @implementation GlkWindowView
@@ -16,6 +17,8 @@
 	switch (win.type) {
 		case wintype_TextBuffer:
 			return [[[GlkWinBufferView alloc] initWithWindow:win frame:win.bbox] autorelease];
+		case wintype_TextGrid:
+			return [[[GlkWinGridView alloc] initWithWindow:win frame:win.bbox] autorelease];
 		default:
 			[NSException raise:@"GlkException" format:@"no windowview class for this window"];
 			return nil; // not really

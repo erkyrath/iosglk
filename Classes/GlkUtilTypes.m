@@ -4,7 +4,7 @@
 	http://eblong.com/zarf/glk/
 */
 
-/* Some utility classes that are small and boring and don't fit anywhere else.
+/*	Some utility classes that are small and boring and don't fit anywhere else.
 */
 
 #import "GlkUtilTypes.h"
@@ -81,3 +81,76 @@
 }
 
 @end
+
+@implementation GlkGridLine
+/* GlkGridLine: Represents one line of a text grid. This contains nasty C arrays, because they're easier. */
+
+@synthesize dirty;
+@synthesize chars;
+@synthesize styles;
+
+- (id) init {
+	self = [super init];
+	
+	if (self) {
+		dirty = YES;
+		width = 0;
+		maxwidth = 80;
+		chars = (glui32 *)malloc(maxwidth * sizeof(glui32));
+		styles = (glui32 *)malloc(maxwidth * sizeof(glui32));
+		if (!chars || !styles)
+			[NSException raise:@"GlkException" format:@"unable to allocate chars or styles for grid line"];
+	}
+	
+	return self;
+}
+
+- (void) dealloc {
+	if (chars) {
+		free(chars);
+		chars = NULL;
+	}
+	if (styles) {
+		free(styles);
+		styles = NULL;
+	}
+	[super dealloc];
+}
+
+
+- (int) width {
+	return width;
+}
+
+- (void) setWidth:(int)val {
+	if (width == val)
+		return;
+	if (val > maxwidth) {
+		maxwidth = val*2;
+		chars = (glui32 *)reallocf(chars, maxwidth * sizeof(glui32));
+		styles = (glui32 *)reallocf(chars, maxwidth * sizeof(glui32));
+		if (!chars || !styles)
+			[NSException raise:@"GlkException" format:@"unable to allocate chars or styles for grid line"];
+	}
+	
+	int ix;
+	for (ix=width; ix<val; ix++) {
+		chars[ix] = ' ';
+		styles[ix] = style_Normal;
+	}
+	
+	width = val;
+	dirty = YES;
+}
+
+- (void) clear {
+	int ix;
+	for (ix=0; ix<width; ix++) {
+		chars[ix] = ' ';
+		styles[ix] = style_Normal;
+	}
+	dirty = YES;
+}
+
+@end
+
