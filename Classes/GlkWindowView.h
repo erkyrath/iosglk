@@ -19,5 +19,6 @@
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box;
 - (void) updateFromWindowState;
+- (NSString *) htmlEscapeString:(NSString *)val;
 
 @end

@@ -297,6 +297,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 /* GlkWindowGrid: a textgrid window. */
 
 @synthesize lines;
+@synthesize width;
+@synthesize height;
 
 - (id) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super initWithType:wintype rock:winrock];

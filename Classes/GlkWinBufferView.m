@@ -64,23 +64,16 @@ static NSArray *spanArray; // retained forever
 	[htmltext addObject:@"<html>\n"];
 	[htmltext addObject:@"<link rel=\"stylesheet\" href=\"general.css\" type=\"text/css\">\n"];
 	
+	//### This should accumulate paragraphs
+	
 	NSMutableArray *updates = bufwin.updatetext;
 	
 	for (GlkStyledLine *sln in updates) {
 		if (sln.status)
 			[htmltext addObject:@"\n"];
 		for (GlkStyledString *stystr in sln.arr) {
-			NSMutableString *str = [NSMutableString stringWithString:stystr.str];
-			NSRange range;
-			range.location = 0;
-			range.length = str.length;
-			[str replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:range];
-			range.length = str.length;
-			[str replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:range];
-			range.length = str.length;
-			[str replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:range];
 			[htmltext addObject:[spanArray objectAtIndex:stystr.style]];
-			[htmltext addObject:str];
+			[htmltext addObject:[self htmlEscapeString:stystr.str]];
 			[htmltext addObject:@"</span>"];
 		}
 	}

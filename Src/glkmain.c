@@ -24,7 +24,11 @@ void glk_main() {
 	winid_t mainwin = glk_window_open(NULL, 0, 0, wintype_TextBuffer, 111);
 	glk_set_window(mainwin);
 
-	glk_put_string("This is the output of glk_main.\n");
+	glk_put_string("This is the output of ");
+	glk_set_style(style_Emphasized);
+	glk_put_string("glk_main");
+	glk_set_style(style_Normal);
+	glk_put_string(".\n");
 	glk_put_string("This is a very long line, the contents of which will wrap, we hope. Wrap, contents, wrap. Is that enough? Hm.\n");
 	glk_put_char('*');
 	glk_put_char_uni('*');

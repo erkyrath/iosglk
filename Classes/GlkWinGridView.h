@@ -11,9 +11,13 @@
 @interface GlkWinGridView : GlkWindowView {
 	NSURL *cssurl;
 	UIWebView *webview;
+	
+	NSMutableArray *lines; /* array of NSString containing lines of HTML */
 }
 
 @property (nonatomic, retain) NSURL *cssurl;
 @property (nonatomic, retain) UIWebView *webview;
+
+@property (nonatomic, retain) NSMutableArray *lines;
 
 @end
