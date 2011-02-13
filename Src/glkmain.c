@@ -82,7 +82,11 @@ void glk_main() {
 	glk_set_window(statwin);
 	//glk_set_style(style_Preformatted);
 	//glk_window_move_cursor(statwin, 1, 0);
-	glk_put_string("Status line!");
+	glk_put_string("Status\n line!");
+	glk_window_move_cursor(statwin, 1, 0);
+	glk_put_string_uni(ustring);
+	glk_window_move_cursor(statwin, 5, 0);
+	glk_put_char('-');
 	
 	/*
 	strid_t sx = NULL;

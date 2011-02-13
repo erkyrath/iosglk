@@ -81,7 +81,9 @@ static NSArray *spanArray; // retained forever
 			while (ix < ln.width && ln.styles[ix] == cursty)
 				ix++;
 			NSString *str = [[NSString alloc] initWithBytes:&ln.chars[pos] length:(ix-pos)*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
-			[arr addObject:str];
+			[arr addObject:[spanArray objectAtIndex:cursty]];
+			[arr addObject:[self htmlEscapeString:str]];
+			[arr addObject:@"</span>"];
 		}
 		[arr addObject:@"\n"];
 		NSString *htmlln = [arr componentsJoinedByString:@""];
