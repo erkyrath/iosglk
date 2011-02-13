@@ -4,6 +4,11 @@
 	http://eblong.com/zarf/glk/
 */
 
+/*	From the library's point of view, a Glk window (GlkWindow object) is a data object. It is represented on-screen by a view object, which is a subclass of GlkWindowView. These windowviews are children of the GlkFrameView.
+
+	(We don't try to follow the Cocoa model of data changes triggering view changes. GlkWindows are totally inert. The GlkFrameView will tip us off when it's time for the windowview to update.)
+*/
+
 #import "GlkWindowView.h"
 #import "GlkWinBufferView.h"
 #import "GlkWinGridView.h"
@@ -39,10 +44,12 @@
 	[super dealloc];
 }
 
+/* The windowview subclasses will override this. */
 - (void) updateFromWindowState {
 	[NSException raise:@"GlkException" format:@"updateFromWindowState not implemented"];
 }
 
+/* A utility method -- escape a string for insertion into an HTML document. */
 - (NSString *) htmlEscapeString:(NSString *)val {
 	NSMutableString *str = [NSMutableString stringWithString:val];
 	NSRange range;

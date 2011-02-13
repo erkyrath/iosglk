@@ -63,6 +63,7 @@ static NSArray *spanArray; // retained forever
 
 - (void) updateFromWindowState {
 	GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
+	BOOL anychanges = NO;
 	
 	int height = gridwin.height;
 	for (int jx=0; jx<gridwin.lines.count; jx++) {
@@ -88,16 +89,21 @@ static NSArray *spanArray; // retained forever
 		[arr addObject:@"\n"];
 		NSString *htmlln = [arr componentsJoinedByString:@""];
 		
-		NSLog(@"gridWindow: built line %d: %@", jx, htmlln);
+		//NSLog(@"gridWindow: built line %d: %@", jx, htmlln);
 		if (jx < lines.count)
 			[lines replaceObjectAtIndex:jx withObject:htmlln];
 		else
 			[lines addObject:htmlln];
+		anychanges = YES;
 	}
 	
 	while (lines.count > height) {
 		[lines removeLastObject];
+		anychanges = YES;
 	}
+	
+	if (!anychanges)
+		return;
 	
 	NSMutableArray *htmltext = [NSMutableArray arrayWithCapacity:16];
 	[htmltext addObject:@"<html>\n"];

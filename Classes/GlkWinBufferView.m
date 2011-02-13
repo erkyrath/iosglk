@@ -13,6 +13,8 @@
 
 @synthesize cssurl;
 @synthesize webview;
+@synthesize lines;
+@synthesize lastline;
 
 static NSArray *spanArray; // retained forever
 
@@ -36,6 +38,8 @@ static NSArray *spanArray; // retained forever
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
+		self.lines = [NSMutableArray arrayWithCapacity:8];
+		self.lastline = nil;
 		NSString *csspath = [[NSBundle mainBundle] pathForResource:@"general" ofType:@"css"];
 		self.cssurl = [NSURL fileURLWithPath: csspath];
 		self.webview = [[[UIWebView alloc] initWithFrame:self.bounds] autorelease];
@@ -46,6 +50,8 @@ static NSArray *spanArray; // retained forever
 }
 
 - (void) dealloc {
+	self.lines = nil;
+	self.lastline = nil;
 	self.cssurl = nil;
 	self.webview = nil;
 	[super dealloc];
@@ -60,25 +66,45 @@ static NSArray *spanArray; // retained forever
 - (void) updateFromWindowState {
 	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
 	
-	NSMutableArray *htmltext = [NSMutableArray arrayWithCapacity:16];
-	[htmltext addObject:@"<html>\n"];
-	[htmltext addObject:@"<link rel=\"stylesheet\" href=\"general.css\" type=\"text/css\">\n"];
-	
-	//### This should accumulate paragraphs
-	
 	NSMutableArray *updates = bufwin.updatetext;
+	if (updates.count == 0)
+		return;
+	
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:32];
+	if (lastline) {
+		[arr addObject:lastline];
+		self.lastline = nil;
+	}
 	
 	for (GlkStyledLine *sln in updates) {
-		if (sln.status)
-			[htmltext addObject:@"\n"];
+		if (sln.status) {
+			[arr addObject:@"\n"];
+			NSString *ln = [arr componentsJoinedByString:@""];
+			[lines addObject:ln];
+			[arr removeAllObjects];
+		}
 		for (GlkStyledString *stystr in sln.arr) {
-			[htmltext addObject:[spanArray objectAtIndex:stystr.style]];
-			[htmltext addObject:[self htmlEscapeString:stystr.str]];
-			[htmltext addObject:@"</span>"];
+			[arr addObject:[spanArray objectAtIndex:stystr.style]];
+			[arr addObject:[self htmlEscapeString:stystr.str]];
+			[arr addObject:@"</span>"];
 		}
 	}
 	
+	if (arr.count) {
+		NSString *ln = [arr componentsJoinedByString:@""];
+		self.lastline = ln;
+		[arr removeAllObjects];
+	}
+	
 	[bufwin.updatetext removeAllObjects];
+
+
+	NSMutableArray *htmltext = [NSMutableArray arrayWithCapacity:16];
+	[htmltext addObject:@"<html>\n"];
+	[htmltext addObject:@"<link rel=\"stylesheet\" href=\"general.css\" type=\"text/css\">\n"];
+	[htmltext addObjectsFromArray:lines];
+	if (lastline)
+		[htmltext addObject:lastline];
 	[htmltext addObject:@"</html>\n"];
 	
 	NSString *htmlstr = [htmltext componentsJoinedByString:@""];

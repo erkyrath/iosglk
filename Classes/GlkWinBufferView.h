@@ -11,9 +11,15 @@
 @interface GlkWinBufferView : GlkWindowView {
 	NSURL *cssurl;
 	UIWebView *webview;
+
+	NSMutableArray *lines; /* array of NSString containing lines (paragraphs, really) of HTML */
+	NSString *lastline; /* if the last line doesn't end with a newline, it sits here */
 }
 
 @property (nonatomic, retain) NSURL *cssurl;
 @property (nonatomic, retain) UIWebView *webview;
+
+@property (nonatomic, retain) NSMutableArray *lines;
+@property (nonatomic, retain) NSString *lastline;
 
 @end

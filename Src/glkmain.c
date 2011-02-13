@@ -19,7 +19,7 @@ void glk_main() {
 	//char buf[256];
 	//glui32 ubuf[256];
 	
-	//glk_request_timer_events(4000);
+	glk_request_timer_events(3000);
 
 	winid_t mainwin = glk_window_open(NULL, 0, 0, wintype_TextBuffer, 111);
 	glk_set_window(mainwin);
@@ -37,6 +37,7 @@ void glk_main() {
 	glk_put_buffer_uni(ustring, 6);
 	glk_put_string_uni(ustring);
 	glk_put_char('\n');
+	/*
 	glk_put_string(" Indent.\n");
 	glk_put_string("  ");
 	glk_set_style(style_Emphasized);
@@ -49,6 +50,7 @@ void glk_main() {
 	glk_set_style(style_Normal);
 	glk_put_string("\n");
 	glk_put_string("    Indent.\n");
+	*/
 	
 	/*
 	strid_t bufstr = glk_stream_open_memory(buf, 256, filemode_Write, 321);
@@ -111,7 +113,14 @@ void glk_main() {
 		glk_put_string(buf);
 	}
 	*/
+	glk_set_window(mainwin);
+	glk_put_char('>');
 		
-	glk_select(&ev);
+	while (1) {
+		glk_select(&ev);
+		glk_set_window(mainwin);
+		//glk_window_clear(statwin);
+		glk_put_string("Line.\n");
+	}
 }
 
