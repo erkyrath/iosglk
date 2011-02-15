@@ -43,10 +43,13 @@
 /* GlkStyledString: Represents a span of text in a given style.
 
 	This has extra methods to let you append more text to it (making it mutable if necessary), and then "freeze" it back to an immutable string. This fits the usage pattern of GlkWindowBuffer.
+	
+	The pos field is not directly used by this class (or the GlkStyledLine class). The user may stash position information there.
 */
 
 @synthesize str;
 @synthesize style;
+@synthesize pos;
 
 - (id) initWithText:(NSString *)initstr style:(glui32)initstyle {
 	self = [super init];
@@ -55,6 +58,7 @@
 		self.str = initstr;
 		style = initstyle;
 		ismutable = NO;
+		pos = 0;
 	}
 	
 	return self;

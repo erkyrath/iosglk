@@ -19,8 +19,6 @@ void glk_main() {
 	//char buf[256];
 	//glui32 ubuf[256];
 	
-	glk_request_timer_events(3000);
-
 	winid_t mainwin = glk_window_open(NULL, 0, 0, wintype_TextBuffer, 111);
 	glk_set_window(mainwin);
 
@@ -116,11 +114,20 @@ void glk_main() {
 	glk_set_window(mainwin);
 	glk_put_char('>');
 		
+	glk_request_timer_events(3000);
+
 	while (1) {
 		glk_select(&ev);
+		/*
 		glk_set_window(mainwin);
-		//glk_window_clear(statwin);
 		glk_put_string("Line.\n");
+		*/
+		
+		glk_set_window(statwin);
+		glk_window_move_cursor(statwin, 3, 1);
+		static char ch = 'A';
+		glk_set_style(style_Subheader);
+		glk_put_char(ch++);
 	}
 }
 

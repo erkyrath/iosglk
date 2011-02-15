@@ -98,6 +98,7 @@ static NSArray *spanArray; // retained forever
 	
 	[bufwin.updatetext removeAllObjects];
 
+	//### We'll have to trim the lines array eventually. Although not right here.
 
 	NSMutableArray *htmltext = [NSMutableArray arrayWithCapacity:16];
 	[htmltext addObject:@"<html>\n"];
@@ -105,6 +106,7 @@ static NSArray *spanArray; // retained forever
 	[htmltext addObjectsFromArray:lines];
 	if (lastline)
 		[htmltext addObject:lastline];
+	//[htmltext addObject:@"<input type=\"text\">\n"];
 	[htmltext addObject:@"</html>\n"];
 	
 	NSString *htmlstr = [htmltext componentsJoinedByString:@""];

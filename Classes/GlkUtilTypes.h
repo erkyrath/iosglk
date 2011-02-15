@@ -30,10 +30,12 @@ typedef enum GlkStyledLineStatus_enum {
 	NSString *str; /* may be NSMutableString */
 	BOOL ismutable;
 	glui32 style;
+	int pos;
 }
 
 @property (nonatomic, retain) NSString *str;
 @property (nonatomic) glui32 style;
+@property (nonatomic) int pos;
 
 - (id) initWithText:(NSString *)str style:(glui32)style;
 - (void) appendString:(NSString *)newstr;
