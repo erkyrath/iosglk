@@ -7,19 +7,14 @@
 #import <UIKit/UIKit.h>
 #import "GlkWindowView.h"
 
+@class StyledTextView;
 
 @interface GlkWinBufferView : GlkWindowView {
-	NSURL *cssurl;
-	UIWebView *webview;
-
-	NSMutableArray *lines; /* array of NSString containing lines (paragraphs, really) of HTML */
-	NSString *lastline; /* if the last line doesn't end with a newline, it sits here */
+	UIScrollView *scrollview;
+	StyledTextView *textview;
 }
 
-@property (nonatomic, retain) NSURL *cssurl;
-@property (nonatomic, retain) UIWebView *webview;
-
-@property (nonatomic, retain) NSMutableArray *lines;
-@property (nonatomic, retain) NSString *lastline;
+@property (nonatomic, retain) UIScrollView *scrollview;
+@property (nonatomic, retain) StyledTextView *textview;
 
 @end

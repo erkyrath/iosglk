@@ -43,6 +43,35 @@ typedef enum GlkStyledLineStatus_enum {
 
 @end
 
+
+@interface GlkVisualLine : NSObject {
+	int linenum; /* The raw line number that this laid-out lines belongs to */
+	CGFloat ypos; /* Rendered top location */
+	CGFloat height; /* Rendered height */
+	NSMutableArray *arr; /* array of GlkVisualString */
+}
+
+@property (nonatomic) int linenum;
+@property (nonatomic) CGFloat ypos;
+@property (nonatomic) CGFloat height;
+@property (nonatomic, retain) NSMutableArray *arr;
+
+@end
+
+
+@interface GlkVisualString : NSObject {
+	NSString *str;
+	glui32 style;
+}
+
+@property (nonatomic, retain) NSString *str;
+@property (nonatomic) glui32 style;
+
+- (id) initWithText:(NSString *)str style:(glui32)style;
+
+@end
+
+
 @interface GlkGridLine : NSObject {
 	BOOL dirty;
 	int width;

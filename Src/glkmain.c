@@ -27,7 +27,7 @@ void glk_main() {
 	glk_put_string("glk_main");
 	glk_set_style(style_Normal);
 	glk_put_string(".\n");
-	glk_put_string("This is a very long line, the contents of which will wrap, we hope. Wrap, contents, wrap. Is that enough? Hm.\n");
+	glk_put_string("  This (*) is a very long line--the contents of which will wrap, we hope. Wrap, contents, wrap. Is that enough? Hm.\n");
 	glk_put_char('*');
 	glk_put_char_uni('*');
 	glk_put_char(0xe5);
@@ -35,6 +35,7 @@ void glk_main() {
 	glk_put_buffer_uni(ustring, 6);
 	glk_put_string_uni(ustring);
 	glk_put_char('\n');
+	glk_put_string("\nMore long line stuff.\n");
 	/*
 	glk_put_string(" Indent.\n");
 	glk_put_string("  ");
@@ -114,7 +115,7 @@ void glk_main() {
 	glk_set_window(mainwin);
 	glk_put_char('>');
 		
-	glk_request_timer_events(3000);
+	//glk_request_timer_events(3000);
 
 	while (1) {
 		glk_select(&ev);

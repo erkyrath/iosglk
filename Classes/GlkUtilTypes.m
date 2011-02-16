@@ -39,6 +39,7 @@
 @end
 
 
+
 @implementation GlkStyledString
 /* GlkStyledString: Represents a span of text in a given style.
 
@@ -82,6 +83,51 @@
 		self.str = [NSString stringWithString:str];
 		ismutable = NO;
 	}
+}
+
+@end
+
+
+@implementation GlkVisualLine
+
+@synthesize arr;
+@synthesize ypos;
+@synthesize height;
+@synthesize linenum;
+
+- (id) init {
+	self = [super init];
+	
+	if (self) {
+		linenum = 0;
+		self.arr = [NSMutableArray arrayWithCapacity:4];
+	}
+	
+	return self;
+}
+
+- (void) dealloc {
+	self.arr = nil;
+	[super dealloc];
+}
+
+
+@end
+
+@implementation GlkVisualString
+
+@synthesize str;
+@synthesize style;
+
+- (id) initWithText:(NSString *)initstr style:(glui32)initstyle {
+	self = [super init];
+	
+	if (self) {
+		self.str = initstr;
+		style = initstyle;
+	}
+	
+	return self;
 }
 
 @end

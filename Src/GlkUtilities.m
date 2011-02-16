@@ -15,6 +15,16 @@ NSString *StringFromRect(CGRect rect) {
 		rect.size.width, rect.size.height, rect.origin.x, rect.origin.y];
 }
 
+/* Return a string showing a size. (For debugging.) */
+extern NSString *StringFromSize(CGSize size) {
+	return [NSString stringWithFormat:@"%.1fx%.1f", size.width, size.height];
+}
+
+/* Return a string showing a point. (For debugging.) */
+NSString *StringFromPoint(CGPoint pt) {
+	return [NSString stringWithFormat:@"%.1f,%.1f", pt.x, pt.y];
+}
+
 /* Log a C string to console. */
 extern void nslogc(char *str) {
 	NSLog(@"%s", str);
