@@ -136,86 +136,110 @@ static CGFloat normalpointsize;
 	
 	for (int snum = fromline; snum < lines.count; snum++) {
 		GlkStyledLine *sln = [lines objectAtIndex:snum];
-		GlkVisualLine *vln = [[[GlkVisualLine alloc] init] autorelease];
-		[vlines addObject:vln];
-		vln.ypos = ypos;
-		vln.linenum = snum;
 		
-		CGFloat hpos = 0.0;
-		CGFloat maxheight = normalpointsize;
-		CGFloat maxascender = 0.0;
-		CGFloat maxdescender = 0.0;
-		for (GlkStyledString *sstr in sln.arr) {
-			NSString *str = sstr.str;
-			UIFont *font = [fontArray objectAtIndex:sstr.style];
-			int strlen = str.length;
-			int wdpos = 0;
-			while (wdpos < strlen) {
-				/* A "word" in this wrapping algorithm is whitespace followed by blackspace. */
-				int wdend = wdpos;
-				while (wdend < strlen) {
-					if ([str characterAtIndex:wdend] != ' ')
-						break;
-					wdend++;
-				}
-				while (wdend < strlen) {
-					if ([str characterAtIndex:wdend] == ' ')
-						break;
-					wdend++;
-				}
-				
-				NSRange range;
-				range.location = wdpos;
-				range.length = wdend - wdpos;
-				NSString *wdtext = [str substringWithRange:range];
-				CGSize wordsize = [wdtext sizeWithFont:font];
-				
-				/* We have to wrap if this word will overflow the line. But if this is the first word on the line (which must be a very long word), we don't wrap here -- that would just waste a line. */
-				if (vln.arr.count > 0 && hpos+wordsize.width > wrapwidth) {
-					vln.height = maxheight;
-					ypos += maxheight;
-					
-					vln = [[[GlkVisualLine alloc] init] autorelease];
-					[vlines addObject:vln];
-					vln.ypos = ypos;
-					vln.linenum = snum;
+		int spannum = -1;
+		GlkStyledString *sstr = nil;
+		NSString *str;
+		UIFont *sfont;
+		int wdpos;
+		int strlen;
 
-					hpos = 0.0;
-					maxheight = normalpointsize;
-					maxascender = 0.0;
-					maxdescender = 0.0;
-				}
-				
-				/* If the word still overflows, we (inefficiently) look for a place to break it up. */
-				if (hpos+wordsize.width > wrapwidth) {
-					while (range.length > 1) {
-						range.length--;
-						wdtext = [str substringWithRange:range];
-						wordsize = [wdtext sizeWithFont:font];
-						if (hpos+wordsize.width <= wrapwidth)
-							break;
-					}
-					wdend = wdpos + range.length;
-				}
-				
-				GlkVisualString *vwd = [[GlkVisualString alloc] initWithText:wdtext style:sstr.style];
-				[vln.arr addObject:vwd];
-				[vwd release];
-				
-				hpos += wordsize.width;
-				if (maxheight < wordsize.height)
-					maxheight = wordsize.height;
-				if (maxascender < font.ascender)
-					maxascender = font.ascender;
-				if (maxdescender > font.descender)
-					maxdescender = font.descender;
-					
-				wdpos = wdend;
-			}
-		}
+		BOOL paragraphdone = NO;
 		
-		vln.height = maxheight;
-		ypos += maxheight;
+		while (!paragraphdone) {
+			GlkVisualLine *vln = [[[GlkVisualLine alloc] init] autorelease];
+			[vlines addObject:vln];
+			vln.ypos = ypos;
+			vln.linenum = snum;
+			
+			CGFloat hpos = 0.0;
+			CGFloat maxheight = normalpointsize;
+			CGFloat maxascender = 0.0;
+			CGFloat maxdescender = 0.0;
+			BOOL linedone = NO;
+			
+			while (!linedone) {
+				if (!sstr) {
+					spannum++;
+					if (spannum >= sln.arr.count) {
+						linedone = YES;
+						paragraphdone = YES;
+						break;
+					}
+					sstr = [sln.arr objectAtIndex:spannum];
+					str = sstr.str;
+					sfont = [fontArray objectAtIndex:sstr.style];
+					strlen = str.length;
+					wdpos = 0;
+				}
+
+				while (wdpos < strlen) {
+					/* A "word" in this wrapping algorithm is whitespace followed by blackspace. */
+					int wdend = wdpos;
+					while (wdend < strlen) {
+						if ([str characterAtIndex:wdend] != ' ')
+							break;
+						wdend++;
+					}
+					while (wdend < strlen) {
+						if ([str characterAtIndex:wdend] == ' ')
+							break;
+						wdend++;
+					}
+					
+					NSRange range;
+					range.location = wdpos;
+					range.length = wdend - wdpos;
+					NSString *wdtext = [str substringWithRange:range];
+					CGSize wordsize = [wdtext sizeWithFont:sfont];
+					
+					/* We want to wrap if this word will overflow the line. But if this is the first word on the line (which must be a very long word), we don't wrap here -- that would cause an infinite loop. */
+					if (vln.arr.count > 0 && hpos+wordsize.width > wrapwidth) {
+						/* We don't advance wdpos to wdend, because we'll be re-measuring this word on the next line. However, we do want to squash out whitespace across the break -- the next line shouldn't start with a space. */
+						while (wdpos < strlen) {
+							if ([str characterAtIndex:wdpos] != ' ')
+								break;
+							wdpos++;
+						}
+						linedone = YES;
+						break;
+					}
+					
+					/* If the word still overflows, we (inefficiently) look for a place to break it up. */
+					if (hpos+wordsize.width > wrapwidth) {
+						while (range.length > 1) {
+							range.length--;
+							wdtext = [str substringWithRange:range];
+							wordsize = [wdtext sizeWithFont:sfont];
+							if (hpos+wordsize.width <= wrapwidth)
+								break;
+						}
+						wdend = wdpos + range.length;
+					}
+					
+					GlkVisualString *vwd = [[GlkVisualString alloc] initWithText:wdtext style:sstr.style];
+					[vln.arr addObject:vwd];
+					[vwd release];
+					
+					hpos += wordsize.width;
+					if (maxheight < wordsize.height)
+						maxheight = wordsize.height;
+					if (maxascender < sfont.ascender)
+						maxascender = sfont.ascender;
+					if (maxdescender > sfont.descender)
+						maxdescender = sfont.descender;
+						
+					wdpos = wdend;
+				}
+				
+				if (wdpos >= strlen) {
+					sstr = nil;
+				}
+			}
+			
+			vln.height = maxheight;
+			ypos += maxheight;
+		}
 	}
 	
 	CGFloat finalypos = [self totalHeight];

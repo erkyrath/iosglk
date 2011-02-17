@@ -35,9 +35,9 @@ void glk_main() {
 	glk_put_buffer_uni(ustring, 6);
 	glk_put_string_uni(ustring);
 	glk_put_char('\n');
-	glk_put_string("\nMore-long-line-stuff-and-even-more");
+	glk_put_string("\nFoo: More-long-line-stuff-and-even-more");
 	//glk_set_style(style_Emphasized);
-	//glk_put_string("-foo");
+	glk_put_string("-foo");
 	//glk_set_style(style_Normal);
 	glk_put_string("-and-even-more-1-and-even-more-and-even-more-2-and-even-more-and-even-more-3-and-even-more-and-even-more-4.\n");
 	/*
@@ -54,35 +54,7 @@ void glk_main() {
 	glk_put_string("\n");
 	glk_put_string("    Indent.\n");
 	*/
-	
-	/*
-	strid_t bufstr = glk_stream_open_memory(buf, 256, filemode_Write, 321);
-	glk_stream_set_current(bufstr);
-	glk_put_string("I am a message on the buffer.");
-	stream_result_t streamres;
-	glui32 streampos = glk_stream_get_position(bufstr);
-	glk_stream_close(bufstr, &streamres);
-	
-	glk_set_window(mainwin);
-	glk_put_char('"'); glk_put_buffer(buf, streampos); glk_put_char('"'); glk_put_char('\n');
-	sprintf(buf, "### streampos %d, res.read %d, res.written %d\n", streampos, streamres.readcount, streamres.writecount);
-	glk_put_string(buf);
-	*/
-
-	/*
-	strid_t bufstr = glk_stream_open_memory_uni(ubuf, 256, filemode_Write, 321);
-	glk_stream_set_current(bufstr);
-	glk_put_string_uni(ustring);
-	stream_result_t streamres;
-	glui32 streampos = glk_stream_get_position(bufstr);
-	glk_stream_close(bufstr, &streamres);
-	
-	glk_set_window(mainwin);
-	glk_put_char('"'); glk_put_buffer_uni(ubuf, streampos); glk_put_char('"'); glk_put_char('\n');
-	sprintf(buf, "### streampos %d, res.read %d, res.written %d\n", streampos, streamres.readcount, streamres.writecount);
-	glk_put_string(buf);
-	*/
-	
+		
 	winid_t statwin = glk_window_open(mainwin, winmethod_Above+winmethod_Fixed, 5, wintype_TextGrid, 222);
 	glk_set_window(statwin);
 	//glk_set_style(style_Preformatted);
