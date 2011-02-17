@@ -4,9 +4,9 @@
 	http://eblong.com/zarf/glk/
 */
 
+#include <stdio.h>
 #include "glk.h"
 
-#define NULL (0)
 extern void nslogc(char *str);
 
 static glui32 ustring[] = {
@@ -16,7 +16,7 @@ static glui32 ustring[] = {
 
 void glk_main() {
 	event_t ev;
-	//char buf[256];
+	char buf[256];
 	//glui32 ubuf[256];
 	
 	winid_t mainwin = glk_window_open(NULL, 0, 0, wintype_TextBuffer, 111);
@@ -35,7 +35,11 @@ void glk_main() {
 	glk_put_buffer_uni(ustring, 6);
 	glk_put_string_uni(ustring);
 	glk_put_char('\n');
-	glk_put_string("\nMore long line stuff.\n");
+	glk_put_string("\nMore-long-line-stuff-and-even-more");
+	//glk_set_style(style_Emphasized);
+	//glk_put_string("-foo");
+	//glk_set_style(style_Normal);
+	glk_put_string("-and-even-more-1-and-even-more-and-even-more-2-and-even-more-and-even-more-3-and-even-more-and-even-more-4.\n");
 	/*
 	glk_put_string(" Indent.\n");
 	glk_put_string("  ");
@@ -119,16 +123,27 @@ void glk_main() {
 
 	while (1) {
 		glk_select(&ev);
+		if (ev.type == 99) {
+			//sleep_curthread(5.0);
+			continue;
+		}
+		
 		/*
 		glk_set_window(mainwin);
 		glk_put_string("Line.\n");
 		*/
 		
-		glk_set_window(statwin);
-		glk_window_move_cursor(statwin, 3, 1);
-		static char ch = 'A';
-		glk_set_style(style_Subheader);
-		glk_put_char(ch++);
+		if (ev.type == evtype_Arrange) {
+			glk_set_window(statwin);
+			glk_window_move_cursor(statwin, 3, 1);
+			static int counter = 0;
+			glui32 xval, yval;
+			glk_window_get_size(statwin, &xval, &yval);
+			sprintf(buf, "%d: %dx%d", counter++, xval, yval);
+			glk_set_style(style_Subheader);
+			glk_put_string(buf);
+			continue;
+		}
 	}
 }
 

@@ -53,6 +53,7 @@
 - (id) initWithType:(glui32)type rock:(glui32)rock;
 - (void) windowCloseRecurse:(BOOL)recurse;
 - (void) windowRearrange:(CGRect)box;
+- (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref;
 
 + (void) unEchoStream:(strid_t)str;
 - (void) putBuffer:(char *)buf len:(glui32)len;

@@ -70,11 +70,18 @@ static GlkLibrary *singleton = nil;
 	return [NSNumber numberWithInteger:tagCounter];
 }
 
-/* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation.
+/* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation.) Returns YES if the bounds changed.
+	Do not call this when the VM thread is live. (Wait until it blocks.)
 */
-- (void) setMetrics:(CGRect)box {
+- (BOOL) setMetrics:(CGRect)box {
+	if (CGRectEqualToRect(box, bounds))
+		return NO;
+	
 	bounds = box;
 	NSLog(@"library metrics now %@", StringFromRect(bounds));
+	if (rootwin)
+		[rootwin windowRearrange:bounds];
+	return YES;
 }
 
 /* Display a warning. Really this should be a fatal error. Eventually it will be visible on the screen somehow, but at the moment it's just a console log message.

@@ -35,13 +35,15 @@
 	[super dealloc];
 }
 
+/*
 - (void) layoutSubviews {
 	//###?
 	if (scrollview) {
-		//scrollview.frame = self.bounds;
-		//[scrollview layoutSubviews];
+		scrollview.frame = self.bounds;
+		[scrollview layoutSubviews];
 	}
 }
+*/
 
 - (void) updateFromWindowState {
 	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;

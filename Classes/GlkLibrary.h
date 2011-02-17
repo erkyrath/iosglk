@@ -36,6 +36,6 @@
 + (void) strictWarning:(NSString *)msg;
 
 - (NSNumber *) newTag;
-- (void) setMetrics:(CGRect)box;
+- (BOOL) setMetrics:(CGRect)box;
 
 @end

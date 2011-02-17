@@ -16,5 +16,6 @@
 @property (nonatomic, retain) NSMutableDictionary *windowviews;
 
 - (void) updateFromLibraryState:(GlkLibrary *)library;
+- (void) updateFromLibrarySize:(GlkLibrary *)library;
 
 @end

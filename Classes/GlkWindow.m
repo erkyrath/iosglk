@@ -168,6 +168,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	inlibrary = NO;
 }
 
+- (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref {
+	*widthref = 0;
+	*heightref = 0;
+}
+
 /* When a stram is closed, we call this to detach it from any windows who have it as their echostream.
 */
 + (void) unEchoStream:(strid_t)str {
@@ -225,6 +230,12 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 
 - (void) windowRearrange:(CGRect)box {
 	bbox = box;
+	//### count on-screen lines, maybe
+}
+
+- (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref {
+	*widthref = 0;
+	*heightref = 0;
 	//### count on-screen lines, maybe
 }
 
@@ -342,6 +353,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		
 	for (GlkGridLine *ln in lines)
 		[ln setWidth:width];
+}
+
+- (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref {
+	*widthref = width;
+	*heightref = height;
 }
 
 - (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos {

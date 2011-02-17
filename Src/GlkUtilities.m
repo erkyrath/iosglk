@@ -16,7 +16,7 @@ NSString *StringFromRect(CGRect rect) {
 }
 
 /* Return a string showing a size. (For debugging.) */
-extern NSString *StringFromSize(CGSize size) {
+NSString *StringFromSize(CGSize size) {
 	return [NSString stringWithFormat:@"%.1fx%.1f", size.width, size.height];
 }
 
@@ -26,6 +26,10 @@ NSString *StringFromPoint(CGPoint pt) {
 }
 
 /* Log a C string to console. */
-extern void nslogc(char *str) {
+void nslogc(char *str) {
 	NSLog(@"%s", str);
+}
+
+extern void sleep_curthread(NSTimeInterval val) {
+	[NSThread sleepForTimeInterval:val];
 }

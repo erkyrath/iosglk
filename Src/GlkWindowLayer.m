@@ -325,6 +325,17 @@ glui32 glk_window_get_type(winid_t win)
 	return win.type;
 }
 
+void glk_window_get_size(winid_t win, glui32 *width, glui32 *height)
+{
+	glui32 widthval, heightval;
+	
+	[win getWidth:&widthval height:&heightval];
+	if (width)
+		*width = widthval;
+	if (height)
+		*height = heightval;
+}
+
 strid_t glk_window_get_stream(winid_t win)
 {
 	if (!win) {

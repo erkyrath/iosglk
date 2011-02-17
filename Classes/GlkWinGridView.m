@@ -6,6 +6,7 @@
 
 #import "GlkWinGridView.h"
 #import "GlkWindow.h"
+#import "GlkAppWrapper.h"
 #import "GlkUtilTypes.h"
 
 
@@ -38,6 +39,8 @@ static NSArray *fontArray; // retained forever
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:8];
+		/* Without this contentMode setting, any window resize would cause weird font scaling. */
+		self.contentMode = UIViewContentModeRedraw;
 	}
 	return self;
 }
@@ -45,6 +48,10 @@ static NSArray *fontArray; // retained forever
 - (void) dealloc {
 	self.lines = nil;
 	[super dealloc];
+}
+
+- (void) layoutSubviews {
+	NSLog(@"GridView: layoutSubviews");
 }
 
 - (void) drawRect:(CGRect)rect {
@@ -115,6 +122,13 @@ static NSArray *fontArray; // retained forever
 		return;
 	
 	[self setNeedsDisplay];
+}
+
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	//### totally bogus, testing only
+	UITouch *touch = [[event touchesForView:self] anyObject];
+	CGPoint loc = [touch locationInView:self];
+	[[GlkAppWrapper singleton] acceptEventType:99 window:win val1:loc.x val2:loc.y];	
 }
 
 @end

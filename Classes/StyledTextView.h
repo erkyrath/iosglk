@@ -20,6 +20,6 @@
 
 - (CGFloat) totalHeight;
 - (void) updateWithLines:(NSArray *)addlines;
-- (void) relayoutFromLine:(int)fromline;
+- (void) layoutFromLine:(int)fromline;
 
 @end

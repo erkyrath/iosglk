@@ -11,6 +11,7 @@
 
 #import "GlkFrameView.h"
 #import "GlkWindowView.h"
+#import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
 #include "GlkUtilities.h"
@@ -33,6 +34,8 @@
 
 - (void) layoutSubviews {
 	NSLog(@"frameview layoutSubviews");
+	
+	[[GlkAppWrapper singleton] setFrameSize:self.bounds];
 }
 
 /* This tells all the window views to get up to date with the new output in their data (GlkWindow) objects. If window views have to be created or destroyed (because GlkWindows have opened or closed), this does that too.
@@ -82,5 +85,18 @@
 		[winv updateFromWindowState];
 	}
 }
+
+/* This tells all the window views to get up to date with the sizes of their GlkWindows. The library's setMetrics must already have been called, to get the GlkWindow sizes set right.
+*/
+- (void) updateFromLibrarySize:(GlkLibrary *)library {
+	NSLog(@"updateFromLibrarySize");
+	
+	for (NSNumber *tag in windowviews) {
+		GlkWindowView *winv = [windowviews objectForKey:tag];
+		[winv updateFromWindowSize];
+	}
+	[[GlkAppWrapper singleton] acceptEventType:evtype_Arrange window:nil val1:0 val2:0];
+}
+
 
 @end

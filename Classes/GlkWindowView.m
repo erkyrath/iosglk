@@ -49,6 +49,10 @@
 	[NSException raise:@"GlkException" format:@"updateFromWindowState not implemented"];
 }
 
+- (void) updateFromWindowSize {
+	self.frame = self.win.bbox;
+}
+
 /* A utility method -- escape a string for insertion into an HTML document. */
 - (NSString *) htmlEscapeString:(NSString *)val {
 	NSMutableString *str = [NSMutableString stringWithString:val];

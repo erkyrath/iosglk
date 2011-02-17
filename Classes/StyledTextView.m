@@ -87,10 +87,17 @@ static CGFloat normalpointsize;
 	}
 	
 	/* Now do a layout operation, starting with the first line that changed. */
-	[self relayoutFromLine:lineslaidout];
+	[self layoutFromLine:lineslaidout];
 }
 
-- (void) relayoutFromLine:(int)fromline {
+- (void) layoutFromLine:(int)fromline {
+	if (wrapwidth <= 5.0) {
+		/* This isn't going to work out. */
+		NSLog(@"STV: too narrow; refusing layout.");
+		[vlines removeAllObjects];
+		return;
+	}
+	
 	if (fromline == 0) {
 		NSLog(@"STV: discarding all vlines...");
 		[vlines removeAllObjects];
@@ -148,7 +155,7 @@ static CGFloat normalpointsize;
 				NSString *wdtext = [str substringWithRange:range];
 				CGSize wordsize = [wdtext sizeWithFont:font];
 				
-				/* We have to wrap if this word will overflow the line. But if this is the first word on the line, just let it overflow -- it must be a very long word. (Smarter would be to break up the long word, but I haven't done that yet.) */
+				/* We have to wrap if this word will overflow the line. But if this is the first word on the line (which must be a very long word), we don't wrap here -- that would just waste a line. */
 				if (vln.arr.count > 0 && hpos+wordsize.width > wrapwidth) {
 					vln.height = maxheight;
 					ypos += maxheight;
@@ -161,6 +168,18 @@ static CGFloat normalpointsize;
 					maxheight = normalpointsize;
 					maxascender = 0.0;
 					maxdescender = 0.0;
+				}
+				
+				/* If the word still overflows, we (inefficiently) look for a place to break it up. */
+				if (hpos+wordsize.width > wrapwidth) {
+					while (range.length > 1) {
+						range.length--;
+						wdtext = [str substringWithRange:range];
+						wordsize = [wdtext sizeWithFont:font];
+						if (hpos+wordsize.width <= wrapwidth)
+							break;
+					}
+					wdend = wdpos + range.length;
 				}
 				
 				GlkVisualString *vwd = [[GlkVisualString alloc] initWithText:wdtext style:sstr.style];
