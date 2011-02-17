@@ -7,38 +7,22 @@
 #import "GlkWinGridView.h"
 #import "GlkWindow.h"
 #import "GlkAppWrapper.h"
+#import "StyleSet.h"
 #import "GlkUtilTypes.h"
 
 
 @implementation GlkWinGridView
 
 @synthesize lines;
-
-static NSArray *fontArray; // retained forever
-
-+ (void) initialize {
-	CGFloat fontsize = 14.0;
-	//### get this from somewhere
-	fontArray = [NSArray arrayWithObjects: 
-		[UIFont fontWithName:@"Courier" size:fontsize],
-		[UIFont fontWithName:@"Courier-Oblique" size:fontsize],
-		[UIFont fontWithName:@"Courier" size:fontsize],
-		[UIFont fontWithName:@"Courier-Bold" size:fontsize],
-		[UIFont fontWithName:@"Courier-Bold" size:fontsize],
-		[UIFont fontWithName:@"Courier" size:fontsize],
-		[UIFont fontWithName:@"Courier" size:fontsize],
-		[UIFont fontWithName:@"Courier" size:fontsize],
-		[UIFont fontWithName:@"Courier" size:fontsize],
-		[UIFont fontWithName:@"Courier" size:fontsize],
-		[UIFont fontWithName:@"Courier" size:fontsize],
-		nil];
-	[fontArray retain];
-}
+@synthesize styleset;
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:8];
+		self.styleset = [[[StyleSet alloc] init] autorelease];
+		[styleset setFontFamily:@"Courier" size:14.0];
+		
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
 		self.contentMode = UIViewContentModeRedraw;
 	}
@@ -47,6 +31,7 @@ static NSArray *fontArray; // retained forever
 
 - (void) dealloc {
 	self.lines = nil;
+	self.styleset = nil;
 	[super dealloc];
 }
 
@@ -64,16 +49,16 @@ static NSArray *fontArray; // retained forever
 	
 	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
 	
+	UIFont **fonts = styleset.fonts;
 	//### do some real font size calculation here.
 	
 	int jx = 0;
 	for (GlkStyledLine *sln in lines) {
 		CGPoint pt;
-		pt.y = jx * 14.0;
+		pt.y = jx * 14.0; //###
 		for (GlkStyledString *str in sln.arr) {
-			pt.x = str.pos * 8.0;
-			UIFont *font = [fontArray objectAtIndex:str.style];
-			[str.str drawAtPoint:pt withFont:font];
+			pt.x = str.pos * 8.0; //###
+			[str.str drawAtPoint:pt withFont:fonts[str.style]];
 		}
 		jx++;
 	}

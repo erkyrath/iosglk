@@ -7,11 +7,14 @@
 #import <UIKit/UIKit.h>
 #import "GlkWindowView.h"
 
+@class StyleSet;
 
 @interface GlkWinGridView : GlkWindowView {
 	NSMutableArray *lines; /* array of GlkStyledLine */
+	StyleSet *styleset;
 }
 
 @property (nonatomic, retain) NSMutableArray *lines;
+@property (nonatomic, retain) StyleSet *styleset;
 
 @end

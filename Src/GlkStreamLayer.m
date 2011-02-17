@@ -203,11 +203,19 @@ void glk_put_buffer_stream_uni(strid_t str, glui32 *ubuf, glui32 len)
 }
 
 void glk_set_style(glui32 val) {
+	/* Very important to keep the style number between 0 and NUMSTYLES. The library code relies on this. */
+	if (val >= style_NUMSTYLES)
+		val = 0;
+		
 	GlkLibrary *library = [GlkLibrary singleton];
 	[library.currentstr setStyle:val];
 }
 
 void glk_set_style_stream(strid_t str, glui32 val) {
+	/* Very important to keep the style number between 0 and NUMSTYLES. The library code relies on this. */
+	if (val >= style_NUMSTYLES)
+		val = 0;
+		
 	[str setStyle:val];
 }
 

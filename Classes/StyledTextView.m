@@ -6,6 +6,7 @@
 
 #import "StyledTextView.h"
 #import "GlkUtilTypes.h"
+#import "StyleSet.h"
 
 #include "GlkUtilities.h"
 
@@ -13,31 +14,7 @@
 
 @synthesize lines;
 @synthesize vlines;
-
-static NSArray *fontArray; // retained forever
-static CGFloat normalpointsize;
-
-+ (void) initialize {
-	CGFloat fontsize = 14.0;
-	//### get this from somewhere
-	fontArray = [NSArray arrayWithObjects: 
-		[UIFont fontWithName:@"HelveticaNeue" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue-Italic" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue-Bold" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue-Bold" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue" size:fontsize],
-		[UIFont fontWithName:@"HelveticaNeue" size:fontsize],
-		nil];
-	[fontArray retain];
-	
-	UIFont *normalfont = [fontArray objectAtIndex:style_Normal];
-	normalpointsize = normalfont.pointSize;
-}
+@synthesize styleset;
 
 - (id) initWithFrame:(CGRect)frame {
 	self = [super initWithFrame:frame];
@@ -45,6 +22,9 @@ static CGFloat normalpointsize;
 		wrapwidth = self.bounds.size.width;
 		self.lines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
+		self.styleset = [[[StyleSet alloc] init] autorelease];
+		[styleset setFontFamily:@"Helvetica Neue" size:14.0];
+		
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
 		self.contentMode = UIViewContentModeRedraw;
 	}
@@ -52,8 +32,9 @@ static CGFloat normalpointsize;
 }
 
 - (void) dealloc {
-	self.lines = 0;
-	self.vlines = 0;
+	self.lines = nil;
+	self.vlines = nil;
+	self.styleset = nil;
 	[super dealloc];
 }
 
@@ -131,6 +112,9 @@ static CGFloat normalpointsize;
 		}
 	}
 	
+	UIFont **fonts = styleset.fonts;
+	CGFloat normalpointsize = 14.0; //### take from styleset!
+	
 	CGFloat initialypos = [self totalHeight];
 	CGFloat ypos = initialypos;
 	
@@ -168,7 +152,7 @@ static CGFloat normalpointsize;
 					}
 					sstr = [sln.arr objectAtIndex:spannum];
 					str = sstr.str;
-					sfont = [fontArray objectAtIndex:sstr.style];
+					sfont = fonts[sstr.style];
 					strlen = str.length;
 					wdpos = 0;
 				}
@@ -263,6 +247,8 @@ static CGFloat normalpointsize;
 	CGFloat rectminy = rect.origin.y;
 	CGFloat rectmaxy = rect.origin.y+rect.size.height;
 	
+	UIFont **fonts = styleset.fonts;
+	
 	for (GlkVisualLine *vln in vlines) {
 		if (vln.ypos+vln.height < rectminy || vln.ypos > rectmaxy)
 			continue;
@@ -270,7 +256,7 @@ static CGFloat normalpointsize;
 		pt.y = vln.ypos;
 		pt.x = 0.0;
 		for (GlkVisualString *vwd in vln.arr) {
-			UIFont *font = [fontArray objectAtIndex:vwd.style];
+			UIFont *font = fonts[vwd.style];
 			CGSize wordsize = [vwd.str drawAtPoint:pt withFont:font];
 			pt.x += wordsize.width;
 		}

@@ -201,9 +201,6 @@
 }
 
 - (void) setStyle:(glui32)styl {
-	if (styl >= style_NUMSTYLES)
-		styl = 0;
-		
 	win.style = styl;
 	
 	if (win.echostream)
