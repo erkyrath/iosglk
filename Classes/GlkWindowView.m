@@ -53,18 +53,4 @@
 	self.frame = self.win.bbox;
 }
 
-/* A utility method -- escape a string for insertion into an HTML document. */
-- (NSString *) htmlEscapeString:(NSString *)val {
-	NSMutableString *str = [NSMutableString stringWithString:val];
-	NSRange range;
-	range.location = 0;
-	range.length = str.length;
-	[str replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:range];
-	range.length = str.length;
-	[str replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:range];
-	range.length = str.length;
-	[str replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:range];
-	return str;
-}
-
 @end

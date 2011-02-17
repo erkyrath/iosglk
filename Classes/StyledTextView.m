@@ -45,6 +45,8 @@ static CGFloat normalpointsize;
 		wrapwidth = self.bounds.size.width;
 		self.lines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
+		/* Without this contentMode setting, any window resize would cause weird font scaling. */
+		self.contentMode = UIViewContentModeRedraw;
 	}
 	return self;
 }
@@ -60,6 +62,14 @@ static CGFloat normalpointsize;
 		return 0.0;
 	GlkVisualLine *vln = [vlines lastObject];
 	return vln.ypos + vln.height;
+}
+
+- (void) setWrapWidth:(CGFloat)val {
+	if (wrapwidth == val)
+		return;
+		
+	wrapwidth = val;
+	[self layoutFromLine:0];
 }
 
 /* Add the given lines to the contents. */
@@ -98,8 +108,11 @@ static CGFloat normalpointsize;
 		return;
 	}
 	
-	if (fromline == 0) {
-		NSLog(@"STV: discarding all vlines...");
+	if (vlines.count == 0) {
+		/* nothing to discard. */
+	}
+	else if (fromline == 0) {
+		NSLog(@"STV: discarding all %d vlines...", vlines.count);
 		[vlines removeAllObjects];
 	}
 	else {
@@ -118,13 +131,15 @@ static CGFloat normalpointsize;
 		}
 	}
 	
-	CGFloat ypos = [self totalHeight];
+	CGFloat initialypos = [self totalHeight];
+	CGFloat ypos = initialypos;
 	
 	for (int snum = fromline; snum < lines.count; snum++) {
 		GlkStyledLine *sln = [lines objectAtIndex:snum];
 		GlkVisualLine *vln = [[[GlkVisualLine alloc] init] autorelease];
 		[vlines addObject:vln];
 		vln.ypos = ypos;
+		vln.linenum = snum;
 		
 		CGFloat hpos = 0.0;
 		CGFloat maxheight = normalpointsize;
@@ -163,6 +178,7 @@ static CGFloat normalpointsize;
 					vln = [[[GlkVisualLine alloc] init] autorelease];
 					[vlines addObject:vln];
 					vln.ypos = ypos;
+					vln.linenum = snum;
 
 					hpos = 0.0;
 					maxheight = normalpointsize;
@@ -202,19 +218,30 @@ static CGFloat normalpointsize;
 		ypos += maxheight;
 	}
 	
+	CGFloat finalypos = [self totalHeight];
+	CGRect box = self.bounds;
+	box.origin.y = initialypos;
+	box.size.height = finalypos - initialypos;
+	if (box.size.height > 0)
+		[self setNeedsDisplayInRect:box];
+	
 	NSLog(@"STV: laid out %d vislines, wrapwidth %.1f, totalheight %.1f", vlines.count, wrapwidth, [self totalHeight]);
 }
 
 - (void) drawRect:(CGRect)rect {
-	NSLog(@"StyledTextView: drawRect");
+	NSLog(@"StyledTextView: drawRect %@", StringFromRect(rect));
 	CGContextRef gc = UIGraphicsGetCurrentContext();
 	CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
 	CGContextFillRect(gc, rect);
 
 	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
 	
+	CGFloat rectminy = rect.origin.y;
+	CGFloat rectmaxy = rect.origin.y+rect.size.height;
+	
 	for (GlkVisualLine *vln in vlines) {
-		//### skip if not in bbox!
+		if (vln.ypos+vln.height < rectminy || vln.ypos > rectmaxy)
+			continue;
 		CGPoint pt;
 		pt.y = vln.ypos;
 		pt.x = 0.0;

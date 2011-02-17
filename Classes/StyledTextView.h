@@ -19,6 +19,7 @@
 @property (nonatomic, retain) NSMutableArray *vlines;
 
 - (CGFloat) totalHeight;
+- (void) setWrapWidth:(CGFloat) wrapwidth;
 - (void) updateWithLines:(NSArray *)addlines;
 - (void) layoutFromLine:(int)fromline;
 

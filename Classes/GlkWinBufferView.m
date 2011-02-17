@@ -21,8 +21,10 @@
 	if (self) {
 		self.scrollview = [[[UIScrollView alloc] initWithFrame:self.bounds] autorelease];
 		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds] autorelease];
+		scrollview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		scrollview.alwaysBounceVertical = YES;
 		scrollview.contentSize = self.bounds.size;
+		textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		[scrollview addSubview:textview];
 		[self addSubview:scrollview];
 	}
@@ -35,15 +37,20 @@
 	[super dealloc];
 }
 
-/*
 - (void) layoutSubviews {
-	//###?
-	if (scrollview) {
-		scrollview.frame = self.bounds;
-		[scrollview layoutSubviews];
-	}
+	[super layoutSubviews];
+	
+	[textview setWrapWidth:scrollview.bounds.size.width];
+
+	CGRect box;
+	box.origin = CGPointZero;
+	box.size = self.bounds.size;
+	CGFloat totalheight = [textview totalHeight];
+	if (box.size.height < totalheight)
+		box.size.height = totalheight;
+	textview.frame = box;
+	scrollview.contentSize = box.size;
 }
-*/
 
 - (void) updateFromWindowState {
 	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
@@ -52,6 +59,7 @@
 	if (updates.count == 0)
 		return;
 	
+	/* The updateWithLines call performs the setNeedsDisplay. */
 	[textview updateWithLines:updates];
 	[bufwin.updatetext removeAllObjects];
 	
@@ -63,9 +71,6 @@
 		box.size.height = totalheight;
 	textview.frame = box;
 	scrollview.contentSize = box.size;
-	
-	//[textview setNeedsDisplay];
-
 }
 
 

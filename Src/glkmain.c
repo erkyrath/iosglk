@@ -124,7 +124,9 @@ void glk_main() {
 	while (1) {
 		glk_select(&ev);
 		if (ev.type == 99) {
-			//sleep_curthread(5.0);
+			glk_set_window(mainwin);
+			glk_put_string("INPUT\nResponse.\n");
+			glk_put_char('>');
 			continue;
 		}
 		
@@ -139,7 +141,7 @@ void glk_main() {
 			static int counter = 0;
 			glui32 xval, yval;
 			glk_window_get_size(statwin, &xval, &yval);
-			sprintf(buf, "%d: %dx%d", counter++, xval, yval);
+			sprintf(buf, "%d: %dx%d", ++counter, xval, yval);
 			glk_set_style(style_Subheader);
 			glk_put_string(buf);
 			continue;

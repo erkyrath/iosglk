@@ -50,12 +50,14 @@ static NSArray *fontArray; // retained forever
 	[super dealloc];
 }
 
+/*
 - (void) layoutSubviews {
 	NSLog(@"GridView: layoutSubviews");
 }
+*/
 
 - (void) drawRect:(CGRect)rect {
-	NSLog(@"GridView: drawRect");
+	//NSLog(@"GridView: drawRect");
 	CGContextRef gc = UIGraphicsGetCurrentContext();
 	CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
 	CGContextFillRect(gc, rect);
