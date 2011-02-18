@@ -23,6 +23,8 @@
 	glui32 rock;
 	
 	GlkWindowPair *parent;
+	int line_request_id;
+	void *line_buffer;
 	BOOL char_request;
 	BOOL line_request;
 	BOOL char_request_uni;
@@ -39,16 +41,16 @@
 
 @property (nonatomic, retain) GlkLibrary *library;
 @property (nonatomic, retain) NSNumber *tag;
-@property (nonatomic) glui32 type;
-@property (nonatomic) glui32 rock;
+@property (nonatomic, readonly) glui32 type;
+@property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, retain) GlkWindowPair *parent;
-@property (nonatomic) BOOL char_request;
-@property (nonatomic) BOOL line_request;
+@property (nonatomic, readonly) BOOL char_request;
+@property (nonatomic, readonly) BOOL line_request;
 @property (nonatomic) glui32 style;
 @property (nonatomic, retain) GlkStream *stream;
 @property (nonatomic, retain) GlkStream *echostream;
 @property (nonatomic, retain) StyleSet *styleset;
-@property (nonatomic) CGRect bbox;
+@property (nonatomic, readonly) CGRect bbox;
 
 + (void) initialize;
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
@@ -57,11 +59,14 @@
 - (void) windowCloseRecurse:(BOOL)recurse;
 - (void) windowRearrange:(CGRect)box;
 - (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref;
+- (BOOL) supportsInput;
 
 + (void) unEchoStream:(strid_t)str;
 - (void) putBuffer:(char *)buf len:(glui32)len;
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len;
 - (void) clearWindow;
+
+- (void) beginLineInput:(char *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen;
 
 @end
 
@@ -85,8 +90,8 @@
 }
 
 @property (nonatomic, retain) NSMutableArray *lines;
-@property (nonatomic) int width;
-@property (nonatomic) int height;
+@property (nonatomic, readonly) int width;
+@property (nonatomic, readonly) int height;
 
 - (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos;
 - (void) putUChar:(glui32)ch;
@@ -111,14 +116,14 @@
 	CGFloat splitwid;
 }
 
-@property (nonatomic) glui32 dir;
-@property (nonatomic) glui32 division;
-@property (nonatomic) BOOL hasborder;
+@property (nonatomic, readonly) glui32 dir;
+@property (nonatomic, readonly) glui32 division;
+@property (nonatomic, readonly) BOOL hasborder;
 @property (nonatomic, retain) GlkWindow *key;
-@property (nonatomic) glui32 size;
+@property (nonatomic, readonly) glui32 size;
 @property (nonatomic) BOOL keydamage;
-@property (nonatomic) BOOL vertical;
-@property (nonatomic) BOOL backward;
+@property (nonatomic, readonly) BOOL vertical;
+@property (nonatomic, readonly) BOOL backward;
 @property (nonatomic, retain) GlkWindow *child1;
 @property (nonatomic, retain) GlkWindow *child2;
 

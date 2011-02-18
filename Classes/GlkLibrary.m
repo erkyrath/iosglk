@@ -87,7 +87,7 @@ static GlkLibrary *singleton = nil;
 /* Display a warning. Really this should be a fatal error. Eventually it will be visible on the screen somehow, but at the moment it's just a console log message.
 */
 + (void) strictWarning:(NSString *)msg {
-	NSLog(@"strict warning: %@", msg);
+	NSLog(@"STRICT WARNING: %@", msg);
 }
 
 @end

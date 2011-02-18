@@ -25,7 +25,7 @@
 		styleset = nil;
 		
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
-		/* ### Better to use a mode that doesn't redraw the whole buffer every time we add lines. Hrm. */
+		/* ### Would be better to use a mode that doesn't redraw the whole buffer every time we add lines. Hrm. */
 		self.contentMode = UIViewContentModeRedraw;
 	}
 	return self;

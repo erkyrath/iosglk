@@ -81,6 +81,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		rock = winrock;
 		
 		parent = nil;
+		line_request_id = 0;
+		line_buffer = nil;
 		char_request = NO;
 		line_request = NO;
 		char_request_uni = NO;
@@ -170,6 +172,10 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	*heightref = 0;
 }
 
+- (BOOL) supportsInput {
+	return NO;
+}
+
 /* When a stram is closed, we call this to detach it from any windows who have it as their echostream.
 */
 + (void) unEchoStream:(strid_t)str {
@@ -201,6 +207,22 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 - (void) clearWindow {
 }
 
+- (void) beginLineInput:(char *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen {
+	if (![self supportsInput]) {
+		[GlkLibrary strictWarning:@"beginLineInput: window does not support keyboard input"];
+		return;
+	}
+	if (char_request || line_request) {
+		[GlkLibrary strictWarning:@"beginLineInput: window already has keyboard request"];
+		return;
+	}
+	
+	line_request = YES;
+	line_request_uni = NO;
+	line_buffer = buf;
+	line_request_id++;
+	//### gidispa register array
+}
 
 @end
 
@@ -294,8 +316,12 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	}
 }
 
+- (BOOL) supportsInput {
+	return YES;
+}
+
 - (void) clearWindow {
-	//###
+	//####
 }
 
 @end
@@ -355,6 +381,10 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 - (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref {
 	*widthref = width;
 	*heightref = height;
+}
+
+- (BOOL) supportsInput {
+	return YES;
 }
 
 - (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos {

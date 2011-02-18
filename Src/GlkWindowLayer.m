@@ -404,3 +404,12 @@ void glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	[gridwin moveCursorToX:xpos Y:ypos];
 }
 
+void glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"request_line_event: invalid ref"];
+		return;
+	}
+	[win beginLineInput:buf unicode:NO maxlen:maxlen initlen:initlen];
+}
+

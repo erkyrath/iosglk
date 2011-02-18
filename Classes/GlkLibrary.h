@@ -28,7 +28,7 @@
 @property (nonatomic, retain) NSMutableArray *streams;
 @property (nonatomic, retain) GlkWindow *rootwin;
 @property (nonatomic, retain) GlkStream *currentstr;
-@property (nonatomic) CGRect bounds;
+@property (nonatomic, readonly) CGRect bounds;
 @property (nonatomic) gidispatch_rock_t (*dispatch_register_obj)(void *obj, glui32 objclass);
 @property (nonatomic) void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
 
