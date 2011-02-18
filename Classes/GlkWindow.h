@@ -44,6 +44,7 @@
 @property (nonatomic, readonly) glui32 type;
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, retain) GlkWindowPair *parent;
+@property (nonatomic, readonly) int line_request_id;
 @property (nonatomic, readonly) BOOL char_request;
 @property (nonatomic, readonly) BOOL line_request;
 @property (nonatomic) glui32 style;

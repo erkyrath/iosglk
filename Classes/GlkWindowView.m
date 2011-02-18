@@ -13,10 +13,12 @@
 #import "GlkWinBufferView.h"
 #import "GlkWinGridView.h"
 #import "GlkWindow.h"
+#include "GlkUtilities.h"
 
 @implementation GlkWindowView
 
 @synthesize win;
+@synthesize textfield;
 
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win {
 	switch (win.type) {
@@ -35,11 +37,13 @@
 	self = [super initWithFrame:box];
 	if (self) {
 		self.win = winref;
+		self.textfield = nil;
 	}
 	return self;
 }
 
 - (void) dealloc {
+	self.textfield = nil;
 	self.win = nil;
 	[super dealloc];
 }
@@ -51,6 +55,34 @@
 
 - (void) updateFromWindowSize {
 	self.frame = self.win.bbox;
+}
+
+- (void) updateFromWindowInputs {
+	if (textfield) {
+		if (!win.line_request || win.line_request_id != line_request_id) {
+			/* This input field is obsolete, or it's changed. Get rid of it. */
+			[textfield removeFromSuperview];
+			self.textfield = nil;
+		}
+	}
+	
+	if (!textfield) {
+		if (win.line_request) {
+			line_request_id = win.line_request_id;
+			CGRect box;
+			box.origin.x = 0;
+			box.origin.y = 16;
+			box.size.width = self.bounds.size.width;
+			box.size.height = 24;
+			self.textfield = [[[UITextField alloc] initWithFrame:box] autorelease];
+			textfield.backgroundColor = [UIColor whiteColor];
+			textfield.borderStyle = UITextBorderStyleBezel;
+			textfield.autocapitalizationType = UITextAutocapitalizationTypeNone;
+			textfield.keyboardType = UIKeyboardTypeASCIICapable;
+			textfield.returnKeyType = UIReturnKeyGo;
+			[self addSubview:textfield]; //### wrong
+		}
+	}
 }
 
 @end

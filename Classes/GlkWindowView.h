@@ -11,14 +11,19 @@
 
 @interface GlkWindowView : UIView {
 	GlkWindow *win;
+	
+	UITextField *textfield; /* if input is happening (but not necessarily a subview of this view) */
+	int line_request_id; /* matches the value in the GlkWindow if this input field is current */
 }
 
 @property (nonatomic, retain) GlkWindow *win;
+@property (nonatomic, retain) UITextField *textfield;
 
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win;
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box;
 - (void) updateFromWindowState;
+- (void) updateFromWindowInputs;
 - (void) updateFromWindowSize;
 
 @end

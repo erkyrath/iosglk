@@ -56,6 +56,8 @@
 	for (NSNumber *tag in closed) {
 		GlkWindowView *winv = [closed objectForKey:tag];
 		[winv removeFromSuperview];
+		winv.textfield = nil; /* detach this now */
+		//### probably should detach all subviews
 		[windowviews removeObjectForKey:tag];
 	}
 	
@@ -83,6 +85,7 @@
 	for (NSNumber *tag in windowviews) {
 		GlkWindowView *winv = [windowviews objectForKey:tag];
 		[winv updateFromWindowState];
+		[winv updateFromWindowInputs];
 	}
 }
 

@@ -25,6 +25,7 @@
 @synthesize type;
 @synthesize rock;
 @synthesize parent;
+@synthesize line_request_id;
 @synthesize char_request;
 @synthesize line_request;
 @synthesize style;
