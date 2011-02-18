@@ -11,6 +11,7 @@
 @class GlkLibrary;
 @class GlkStream;
 @class GlkWindowPair;
+@class StyleSet;
 
 @interface GlkWindow : NSObject {
 	GlkLibrary *library;
@@ -32,6 +33,7 @@
 	GlkStream *stream;
 	GlkStream *echostream;
 	
+	StyleSet *styleset;
 	CGRect bbox;
 }
 
@@ -45,6 +47,7 @@
 @property (nonatomic) glui32 style;
 @property (nonatomic, retain) GlkStream *stream;
 @property (nonatomic, retain) GlkStream *echostream;
+@property (nonatomic, retain) StyleSet *styleset;
 @property (nonatomic) CGRect bbox;
 
 + (void) initialize;

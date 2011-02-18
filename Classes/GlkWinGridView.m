@@ -20,8 +20,7 @@
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:8];
-		self.styleset = [[[StyleSet alloc] init] autorelease];
-		[styleset setFontFamily:@"Courier" size:14.0];
+		self.styleset = win.styleset;
 		
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
 		self.contentMode = UIViewContentModeRedraw;
@@ -50,14 +49,15 @@
 	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
 	
 	UIFont **fonts = styleset.fonts;
-	//### do some real font size calculation here.
+	CGSize charbox = styleset.charbox;
+	CGPoint marginoffset = styleset.marginframe.origin;
 	
 	int jx = 0;
 	for (GlkStyledLine *sln in lines) {
 		CGPoint pt;
-		pt.y = jx * 14.0; //###
+		pt.y = marginoffset.y + jx * charbox.height;
 		for (GlkStyledString *str in sln.arr) {
-			pt.x = str.pos * 8.0; //###
+			pt.x = marginoffset.x + str.pos * charbox.width;
 			[str.str drawAtPoint:pt withFont:fonts[str.style]];
 		}
 		jx++;

@@ -25,6 +25,7 @@
 		scrollview.alwaysBounceVertical = YES;
 		scrollview.contentSize = self.bounds.size;
 		textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+		textview.styleset = win.styleset;
 		[scrollview addSubview:textview];
 		[self addSubview:scrollview];
 	}
@@ -40,7 +41,7 @@
 - (void) layoutSubviews {
 	[super layoutSubviews];
 	
-	[textview setWrapWidth:scrollview.bounds.size.width];
+	[textview setTotalWidth:scrollview.bounds.size.width];
 
 	CGRect box;
 	box.origin = CGPointZero;

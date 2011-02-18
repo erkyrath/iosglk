@@ -22,10 +22,10 @@
 		wrapwidth = self.bounds.size.width;
 		self.lines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
-		self.styleset = [[[StyleSet alloc] init] autorelease];
-		[styleset setFontFamily:@"Helvetica Neue" size:14.0];
+		styleset = nil;
 		
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
+		/* ### Better to use a mode that doesn't redraw the whole buffer every time we add lines. Hrm. */
 		self.contentMode = UIViewContentModeRedraw;
 	}
 	return self;
@@ -38,22 +38,32 @@
 	[super dealloc];
 }
 
-- (CGFloat) totalHeight {
+- (void) setTotalWidth:(CGFloat)val {
+	if (totalwidth == val)
+		return;
+		
+	totalwidth = val;
+	wrapwidth = val - styleset.marginframe.size.width;
+	[self layoutFromLine:0];
+}
+
+/* The total height of rendered text in the window (excluding margins). 
+*/
+- (CGFloat) textHeight {
 	if (!vlines || !vlines.count)
 		return 0.0;
 	GlkVisualLine *vln = [vlines lastObject];
 	return vln.ypos + vln.height;
 }
 
-- (void) setWrapWidth:(CGFloat)val {
-	if (wrapwidth == val)
-		return;
-		
-	wrapwidth = val;
-	[self layoutFromLine:0];
+/* The total height of the window, including rendered text and margins. 
+*/
+- (CGFloat) totalHeight {
+	return [self textHeight] + styleset.marginframe.size.height;
 }
 
-/* Add the given lines to the contents. */
+/* Add the given lines (as taken from the GlkWindowBuffer) to the contents of the view. 
+*/
 - (void) updateWithLines:(NSArray *)addlines {
 	NSLog(@"STV: updating, adding %d lines", addlines.count);
 	int lineslaidout = lines.count;
@@ -81,8 +91,10 @@
 	[self layoutFromLine:lineslaidout];
 }
 
+/* Do the work of laying out the text. Start with line number fromline (in the lines array). All vlines from that point on are discarded and re-laid-out.
+*/
 - (void) layoutFromLine:(int)fromline {
-	if (wrapwidth <= 5.0) {
+	if (wrapwidth <= styleset.charbox.width) {
 		/* This isn't going to work out. */
 		NSLog(@"STV: too narrow; refusing layout.");
 		[vlines removeAllObjects];
@@ -113,9 +125,9 @@
 	}
 	
 	UIFont **fonts = styleset.fonts;
-	CGFloat normalpointsize = 14.0; //### take from styleset!
+	CGFloat normalpointsize = styleset.charbox.height;
 	
-	CGFloat initialypos = [self totalHeight];
+	CGFloat initialypos = styleset.marginframe.origin.y + [self textHeight];
 	CGFloat ypos = initialypos;
 	
 	for (int snum = fromline; snum < lines.count; snum++) {
@@ -233,7 +245,7 @@
 	if (box.size.height > 0)
 		[self setNeedsDisplayInRect:box];
 	
-	NSLog(@"STV: laid out %d vislines, wrapwidth %.1f, totalheight %.1f", vlines.count, wrapwidth, [self totalHeight]);
+	NSLog(@"STV: laid out %d vislines, wrapwidth %.1f, textheight %.1f", vlines.count, wrapwidth, [self textHeight]);
 }
 
 - (void) drawRect:(CGRect)rect {
@@ -254,7 +266,7 @@
 			continue;
 		CGPoint pt;
 		pt.y = vln.ypos;
-		pt.x = 0.0;
+		pt.x = styleset.marginframe.origin.x;
 		for (GlkVisualString *vwd in vln.arr) {
 			UIFont *font = fonts[vwd.style];
 			CGSize wordsize = [vwd.str drawAtPoint:pt withFont:font];

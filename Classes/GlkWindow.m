@@ -14,18 +14,8 @@
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
 #import "GlkStream.h"
+#import "StyleSet.h"
 #import "GlkUtilTypes.h"
-
-/* ### Temporary character metrics. I don't yet know how these will be set up. */
-struct temp_metrics_struct {
-	CGFloat buffercharwidth, buffercharheight;
-	CGFloat buffermarginx, buffermarginy;
-	CGFloat gridcharwidth, gridcharheight;
-	CGFloat gridmarginx, gridmarginy;
-} content_metrics = {
-	10, 14, 0, 0,
-	10, 14, 0, 0,
-};
 
 @implementation GlkWindow
 /* GlkWindow: the base class. */
@@ -40,6 +30,7 @@ struct temp_metrics_struct {
 @synthesize style;
 @synthesize stream;
 @synthesize echostream;
+@synthesize styleset;
 @synthesize bbox;
 
 static NSCharacterSet *newlineCharSet; /* retained forever */
@@ -56,9 +47,13 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	switch (type) {
 		case wintype_TextBuffer:
 			win = [[[GlkWindowBuffer alloc] initWithType:type rock:rock] autorelease];
+			win.styleset = [[[StyleSet alloc] init] autorelease];
+			[win.styleset setFontFamily:@"Helvetica Neue" size:14.0];
 			break;
 		case wintype_TextGrid:
 			win = [[[GlkWindowGrid alloc] initWithType:type rock:rock] autorelease];
+			win.styleset = [[[StyleSet alloc] init] autorelease];
+			[win.styleset setFontFamily:@"Courier" size:14.0];
 			break;
 		case wintype_Pair:
 			/* You can't create a pair window this way. */
@@ -97,6 +92,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		self.stream = [[[GlkStreamWindow alloc] initWithWindow:self] autorelease];
 		self.echostream = nil;
 		
+		styleset = nil;
 		[library.windows addObject:self];
 		
 		if (library.dispatch_register_obj)
@@ -122,6 +118,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	self.echostream = nil;
 	self.parent = nil;
 	
+	self.styleset = nil;
 	self.library = nil;
 
 	[super dealloc];
@@ -334,8 +331,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 - (void) windowRearrange:(CGRect)box {
 	bbox = box;
 	
-	int newwidth = ((bbox.size.width-content_metrics.gridmarginx) / content_metrics.gridcharwidth);
-	int newheight = ((bbox.size.height-content_metrics.gridmarginy) / content_metrics.gridcharheight);
+	int newwidth = ((bbox.size.width-styleset.marginframe.size.width) / styleset.charbox.width);
+	int newheight = ((bbox.size.height-styleset.marginframe.size.height) / styleset.charbox.height);
 	if (newwidth < 0)
 		newwidth = 0;
 	if (newheight < 0)
@@ -492,15 +489,15 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		split = 0;
 		if (key && key.type == wintype_TextBuffer) {
 			if (!vertical)
-				split = (size * content_metrics.buffercharheight + content_metrics.buffermarginy);
+				split = (size * key.styleset.charbox.height + key.styleset.marginframe.size.height);
 			else
-				split = (size * content_metrics.buffercharwidth + content_metrics.buffermarginx);
+				split = (size * key.styleset.charbox.width + key.styleset.marginframe.size.width);
 		}
 		if (key && key.type == wintype_TextGrid) {
 			if (!vertical)
-				split = (size * content_metrics.gridcharheight + content_metrics.gridmarginy);
+				split = (size * key.styleset.charbox.height + key.styleset.marginframe.size.height);
 			else
-				split = (size * content_metrics.gridcharwidth + content_metrics.gridmarginx);
+				split = (size * key.styleset.charbox.width + key.styleset.marginframe.size.width);
 		}
 		split = ceilf(split);
 	}

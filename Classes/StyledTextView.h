@@ -10,7 +10,8 @@
 @class StyleSet;
 
 @interface StyledTextView : UIView {
-	CGFloat wrapwidth;
+	CGFloat totalwidth; /* horizontal space available */
+	CGFloat wrapwidth; /* totalwidth minus margins */
 
 	StyleSet *styleset;
 	
@@ -22,8 +23,9 @@
 @property (nonatomic, retain) NSMutableArray *vlines;
 @property (nonatomic, retain) StyleSet *styleset;
 
+- (CGFloat) textHeight;
 - (CGFloat) totalHeight;
-- (void) setWrapWidth:(CGFloat) wrapwidth;
+- (void) setTotalWidth:(CGFloat)totalwidth;
 - (void) updateWithLines:(NSArray *)addlines;
 - (void) layoutFromLine:(int)fromline;
 

@@ -6,14 +6,21 @@
 
 
 #import "StyleSet.h"
-
+#include "GlkUtilities.h"
 
 @implementation StyleSet
+
+@synthesize fonts;
+@synthesize charbox;
+@synthesize marginframe;
 
 - (id) init {
 	self = [super init];
 	
 	if (self) {
+		charbox = CGSizeZero;
+		marginframe = CGRectZero;
+		/* We have to malloc this buffer. I tried embedding it as an array of pointers in the StyleSet object, but ObjC threw a hissy-cow. */
 		fonts = malloc(sizeof(UIFont*) * style_NUMSTYLES);
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
 			fonts[ix] = nil;
@@ -80,10 +87,19 @@
 	fonts[style_Input] = [normalfont retain];
 	fonts[style_User1] = [normalfont retain];
 	fonts[style_User2] = [normalfont retain];
-}
-
-- (UIFont **)fonts {
-	return fonts;
+	
+	CGSize size;
+	size = [@"W" sizeWithFont:fonts[style_Normal]];
+	charbox = size;
+	size = [@"qld" sizeWithFont:fonts[style_Normal]];
+	if (charbox.height < size.height)
+		charbox.height < size.height;
+	NSLog(@"Measured family %@ (%.1f pt) to have charbox %@", family, fontsize, StringFromSize(charbox));
+	
+	marginframe.origin.x = 6.0;
+	marginframe.origin.y = 4.0;
+	marginframe.size.width = 12.0;
+	marginframe.size.height = 8.0;
 }
 
 

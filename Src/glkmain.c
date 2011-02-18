@@ -55,7 +55,7 @@ void glk_main() {
 	glk_put_string("    Indent.\n");
 	*/
 		
-	winid_t statwin = glk_window_open(mainwin, winmethod_Above+winmethod_Fixed, 5, wintype_TextGrid, 222);
+	winid_t statwin = glk_window_open(mainwin, winmethod_Above+winmethod_Fixed, 2, wintype_TextGrid, 222);
 	glk_set_window(statwin);
 	//glk_set_style(style_Preformatted);
 	//glk_window_move_cursor(statwin, 1, 0);
