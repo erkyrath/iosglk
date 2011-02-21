@@ -240,6 +240,38 @@
 	NSLog(@"STV: laid out %d vislines, wrapwidth %.1f, textheight %.1f", vlines.count, wrapwidth, [self textHeight]);
 }
 
+- (CGRect) placeForInputField {
+	CGRect box;
+	UIFont **fonts = styleset.fonts;
+	
+	if (!vlines || !vlines.count) {
+		box.origin.x = 0;
+		box.size.width = totalwidth;
+		box.origin.y = 0;
+		box.size.height = 24;
+	}
+	else {
+		GlkVisualLine *vln = [vlines lastObject];
+		CGFloat ptx = styleset.marginframe.origin.x;
+		for (GlkVisualString *vwd in vln.arr) {
+			UIFont *font = fonts[vwd.style];
+			CGSize wordsize = [vwd.str sizeWithFont:font];
+			ptx += wordsize.width;
+		}
+		
+		if (ptx >= totalwidth * 0.75)
+			ptx = totalwidth * 0.75;
+		
+		box.origin.x = ptx;
+		box.size.width = totalwidth - ptx;
+		box.origin.y = vln.ypos;
+		box.size.height = 24;
+	}
+	
+	//NSLog(@"placeForInputField: %@", StringFromRect(box));
+	return box;
+}
+
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"StyledTextView: drawRect %@ (bounds are %@)", StringFromRect(rect), StringFromRect(self.bounds));
 	CGContextRef gc = UIGraphicsGetCurrentContext();

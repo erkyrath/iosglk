@@ -93,6 +93,8 @@
 @property (nonatomic, retain) NSMutableArray *lines;
 @property (nonatomic, readonly) int width;
 @property (nonatomic, readonly) int height;
+@property (nonatomic, readonly) int curx;
+@property (nonatomic, readonly) int cury;
 
 - (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos;
 - (void) putUChar:(glui32)ch;

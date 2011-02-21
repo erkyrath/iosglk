@@ -111,6 +111,26 @@
 	[self setNeedsDisplay];
 }
 
+- (void) placeInputField:(UITextField *)field {
+	GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
+	
+	CGSize charbox = styleset.charbox;
+	CGPoint marginoffset = styleset.marginframe.origin;
+	CGRect box;
+	
+	box.origin.x = marginoffset.x + gridwin.curx * charbox.width;
+	if (box.origin.x >= self.bounds.size.width * 0.75)
+		box.origin.x = self.bounds.size.width * 0.75;
+	box.size.width = self.bounds.size.width - box.origin.x;
+	box.origin.y = marginoffset.y + gridwin.cury * charbox.height;
+	box.size.height = 24;
+	if (box.origin.y + box.size.height > self.bounds.size.height)
+		box.origin.y = self.bounds.size.height - box.size.height;
+		
+	field.frame = box;
+	[self addSubview:field];
+}
+
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	//### totally bogus, testing only
 	UITouch *touch = [[event touchesForView:self] anyObject];

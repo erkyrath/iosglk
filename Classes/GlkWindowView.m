@@ -69,20 +69,35 @@
 	if (!textfield) {
 		if (win.line_request) {
 			line_request_id = win.line_request_id;
-			CGRect box;
-			box.origin.x = 0;
-			box.origin.y = 16;
-			box.size.width = self.bounds.size.width;
-			box.size.height = 24;
-			self.textfield = [[[UITextField alloc] initWithFrame:box] autorelease];
+
+			self.textfield = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
 			textfield.backgroundColor = [UIColor whiteColor];
 			textfield.borderStyle = UITextBorderStyleBezel;
 			textfield.autocapitalizationType = UITextAutocapitalizationTypeNone;
 			textfield.keyboardType = UIKeyboardTypeASCIICapable;
 			textfield.returnKeyType = UIReturnKeyGo;
-			[self addSubview:textfield]; //### wrong
+			textfield.delegate = self;
+			[self placeInputField:textfield];
 		}
 	}
+	
+	//### clear textfield OK flag.
+}
+
+- (void) placeInputField:(UITextField *)field {
+	[NSException raise:@"GlkException" format:@"placeInputField not implemented"];
+}
+
+- (BOOL) textFieldShouldReturn:(UITextField *)textField {
+	/* Don't look at the text yet; it hasn't been spellchecked. */
+	//### set a flag saying that this field has hit OK
+	[textField resignFirstResponder];
+	return YES;
+}
+
+- (void) textFieldDidEndEditing:(UITextField *)textField {
+	NSLog(@"End editing: '%@'", textField.text);
+	//### if OK flag, fire event
 }
 
 @end

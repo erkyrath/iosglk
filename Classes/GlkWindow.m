@@ -334,6 +334,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 @synthesize lines;
 @synthesize width;
 @synthesize height;
+@synthesize curx;
+@synthesize cury;
 
 - (id) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super initWithType:wintype rock:winrock];

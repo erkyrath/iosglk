@@ -37,6 +37,21 @@
 	[super dealloc];
 }
 
+- (void) scrollToBottom {
+	CGFloat totalheight = [textview totalHeight];
+	
+	if (totalheight < self.bounds.size.height)
+		return;
+		
+	CGRect box;
+	box.origin = CGPointZero;
+	box.size = self.bounds.size;
+	box.origin.y = totalheight-1;
+	box.size.height = 1;
+	[scrollview scrollRectToVisible:box animated:YES];
+}
+
+//### I really shouldn't be doing this here at all. Maybe?
 - (void) layoutSubviews {
 	[super layoutSubviews];
 	//NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
@@ -51,6 +66,12 @@
 		box.size.height = totalheight;
 	textview.frame = box;
 	[textview setNeedsDisplay];
+	
+	if (textfield) {
+		CGRect tfbox = [textview placeForInputField];
+		textfield.frame = tfbox;
+	}
+	
 	scrollview.contentSize = box.size;
 }
 
@@ -74,7 +95,24 @@
 	textview.frame = box;
 	[textview setNeedsDisplay];
 	scrollview.contentSize = box.size;
+	
+	[self scrollToBottom];
 }
 
+- (void) placeInputField:(UITextField *)field {
+	CGRect box = [textview placeForInputField];
+	field.frame = box;
+	[textview addSubview:field];
+
+	CGFloat totalheight = [textview totalHeight];
+	
+	box.origin = CGPointZero;
+	box.size = self.bounds.size;
+	if (box.size.height < totalheight)
+		box.size.height = totalheight;
+	scrollview.contentSize = box.size;
+	
+	[self scrollToBottom];
+}
 
 @end

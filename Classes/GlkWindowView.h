@@ -9,7 +9,7 @@
 
 @class GlkWindow;
 
-@interface GlkWindowView : UIView {
+@interface GlkWindowView : UIView <UITextFieldDelegate> {
 	GlkWindow *win;
 	
 	UITextField *textfield; /* if input is happening (but not necessarily a subview of this view) */
@@ -25,5 +25,7 @@
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;
 - (void) updateFromWindowSize;
+
+- (void) placeInputField:(UITextField *)field;
 
 @end

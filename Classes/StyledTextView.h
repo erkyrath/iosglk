@@ -28,5 +28,6 @@
 - (void) setTotalWidth:(CGFloat)totalwidth;
 - (void) updateWithLines:(NSArray *)addlines;
 - (void) layoutFromLine:(int)fromline;
+- (CGRect) placeForInputField;
 
 @end
