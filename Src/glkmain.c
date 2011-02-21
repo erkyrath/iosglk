@@ -93,13 +93,13 @@ void glk_main() {
 	glk_put_char('>');
 		
 	//glk_request_timer_events(3000);
-
-	glk_request_line_event(mainwin, inbuf, 32, 0);
+	//glk_request_line_event(mainwin, inbuf, 32, 0);
+	
 	while (1) {
 		glk_select(&ev);
 		if (ev.type == 99) {
 			glk_set_window(mainwin);
-			glk_put_string("INPUT\nResponse.\n");
+			glk_put_string("INPUT\nResponse.\nDaemon.\n");
 			glk_put_char('>');
 			continue;
 		}

@@ -24,9 +24,8 @@
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
 		styleset = nil;
 		
-		/* Without this contentMode setting, any window resize would cause weird font scaling. */
-		/* ### Would be better to use a mode that doesn't redraw the whole buffer every time we add lines. Hrm. */
-		self.contentMode = UIViewContentModeRedraw;
+		/* We don't try set the contentMode, because this thing isn't really capable of smart resizing-with-partial-redrawing. Instead, both of the paths that resize the view (updateFromWindowState and layoutSubviews) cause a complete redraw. */
+		//self.contentMode = UIViewContentModeRedraw;
 	}
 	return self;
 }
@@ -42,6 +41,7 @@
 	if (totalwidth == val)
 		return;
 		
+	NSLog(@"STV: setTotalWidth %.01f", val);
 	totalwidth = val;
 	wrapwidth = val - styleset.marginframe.size.width;
 	[self layoutFromLine:0];
@@ -127,8 +127,7 @@
 	UIFont **fonts = styleset.fonts;
 	CGFloat normalpointsize = styleset.charbox.height;
 	
-	CGFloat initialypos = styleset.marginframe.origin.y + [self textHeight];
-	CGFloat ypos = initialypos;
+	CGFloat ypos = styleset.marginframe.origin.y + [self textHeight];
 	
 	for (int snum = fromline; snum < lines.count; snum++) {
 		GlkStyledLine *sln = [lines objectAtIndex:snum];
@@ -237,19 +236,12 @@
 			ypos += maxheight;
 		}
 	}
-	
-	CGFloat finalypos = [self totalHeight];
-	CGRect box = self.bounds;
-	box.origin.y = initialypos;
-	box.size.height = finalypos - initialypos;
-	if (box.size.height > 0)
-		[self setNeedsDisplayInRect:box];
-	
+		
 	NSLog(@"STV: laid out %d vislines, wrapwidth %.1f, textheight %.1f", vlines.count, wrapwidth, [self textHeight]);
 }
 
 - (void) drawRect:(CGRect)rect {
-	NSLog(@"StyledTextView: drawRect %@", StringFromRect(rect));
+	//NSLog(@"StyledTextView: drawRect %@ (bounds are %@)", StringFromRect(rect), StringFromRect(self.bounds));
 	CGContextRef gc = UIGraphicsGetCurrentContext();
 	CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
 	CGContextFillRect(gc, rect);

@@ -24,7 +24,6 @@
 		scrollview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		scrollview.alwaysBounceVertical = YES;
 		scrollview.contentSize = self.bounds.size;
-		textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		textview.styleset = win.styleset;
 		[scrollview addSubview:textview];
 		[self addSubview:scrollview];
@@ -40,6 +39,7 @@
 
 - (void) layoutSubviews {
 	[super layoutSubviews];
+	//NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
 	
 	[textview setTotalWidth:scrollview.bounds.size.width];
 
@@ -50,6 +50,7 @@
 	if (box.size.height < totalheight)
 		box.size.height = totalheight;
 	textview.frame = box;
+	[textview setNeedsDisplay];
 	scrollview.contentSize = box.size;
 }
 
@@ -60,17 +61,18 @@
 	if (updates.count == 0)
 		return;
 	
-	/* The updateWithLines call performs the setNeedsDisplay. */
 	[textview updateWithLines:updates];
 	[bufwin.updatetext removeAllObjects];
+	
+	CGFloat totalheight = [textview totalHeight];
 	
 	CGRect box;
 	box.origin = CGPointZero;
 	box.size = self.bounds.size;
-	CGFloat totalheight = [textview totalHeight];
 	if (box.size.height < totalheight)
 		box.size.height = totalheight;
 	textview.frame = box;
+	[textview setNeedsDisplay];
 	scrollview.contentSize = box.size;
 }
 
