@@ -9,11 +9,15 @@
 @class GlkLibrary;
 
 @interface GlkFrameView : UIView {
+	/* How much of the view bounds to reserve for the keyboard. */
+	CGFloat keyboardHeight;
+	
 	/* Maps tags (NSNumbers) to GlkWindowViews. (But pair windows are excluded.) */
 	NSMutableDictionary *windowviews;
 }
 
 @property (nonatomic, retain) NSMutableDictionary *windowviews;
+@property (nonatomic) CGFloat keyboardHeight;
 
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) updateFromLibrarySize:(GlkLibrary *)library;

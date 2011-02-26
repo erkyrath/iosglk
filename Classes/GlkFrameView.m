@@ -24,6 +24,7 @@
 	[super awakeFromNib];
 	NSLog(@"GlkFrameView awakened, bounds %@", StringFromRect(self.bounds));
 	
+	keyboardHeight = 0.0;
 	self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 }
 
@@ -32,10 +33,23 @@
 	[super dealloc];
 }
 
+- (CGFloat) keyboardHeight {
+	return keyboardHeight;
+}
+
+- (void) setKeyboardHeight:(CGFloat)val {
+	keyboardHeight = val;
+	[self setNeedsLayout];
+}
+
 - (void) layoutSubviews {
 	NSLog(@"frameview layoutSubviews");
 	
-	[[GlkAppWrapper singleton] setFrameSize:self.bounds];
+	CGRect box = self.bounds;
+	box.size.height -= keyboardHeight;
+	if (box.size.height < 0)
+		box.size.height = 0;
+	[[GlkAppWrapper singleton] setFrameSize:box];
 }
 
 /* This tells all the window views to get up to date with the new output in their data (GlkWindow) objects. If window views have to be created or destroyed (because GlkWindows have opened or closed), this does that too.

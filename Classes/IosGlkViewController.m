@@ -5,6 +5,8 @@
 */
 
 #import "IosGlkViewController.h"
+#import "GlkFrameView.h"
+#include "GlkUtilities.h"
 
 @implementation IosGlkViewController
 
@@ -27,10 +29,18 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	//NSLog(@"IosGlkViewController viewDidLoad");
+	NSLog(@"IosGlkViewController viewDidLoad");
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(keyboardWasShown:)
+		name:UIKeyboardDidShowNotification object:nil];
+
+	[[NSNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(keyboardWillBeHidden:)
+		name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)dealloc {
+- (void) dealloc {
 	NSLog(@"IosGlkViewController dealloc %x", self);
 	[super dealloc];
 }
@@ -39,6 +49,21 @@
 	return (GlkFrameView *)self.view;
 }
 
+- (void) keyboardWasShown:(NSNotification*)notification {
+	NSDictionary *info = [notification userInfo];
+	//### UIKeyboardFrameBeginUserInfoKey is only available in 3.2 or later. Do something else for 3.1.x.
+	CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+	rect = [self.view convertRect:rect fromView:nil];
+	CGSize size = rect.size;
+	NSLog(@"Keyboard open, size %@", StringFromSize(size));
+	
+	//### we could do that clever scroll-inset trick from "Managing the Keyboard"
+	[[self viewAsFrameView] setKeyboardHeight:size.height];
+}
+
+- (void) keyboardWillBeHidden:(NSNotification*)notification {
+	[[self viewAsFrameView] setKeyboardHeight:0];
+}
 
 // Allow all orientations
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
