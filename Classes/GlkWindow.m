@@ -221,8 +221,43 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	line_request = YES;
 	line_request_uni = NO;
 	line_buffer = buf;
+	line_buffer_length = maxlen;
+	//### if initlen, stash the initial string somewhere
 	line_request_id++;
 	//### gidispa register array
+}
+
+- (int) acceptLineInput:(NSString *)str {
+	int ix;
+	
+	if (!line_buffer)
+		return 0;
+	
+	for (ix=0; ix<str.length; ix++) {
+		if (ix >= line_buffer_length)
+			break;
+		glui32 ch = [str characterAtIndex:ix];
+		//### we should crunch utf16 characters into utf32 if needed
+		if (!line_request_uni) {
+			if (ch > 0xFF)
+				ch = '?';
+			((char *)line_buffer)[ix] = ch;
+		}
+		else {
+			((glui32 *)line_buffer)[ix] = ch;
+		}
+	}
+	
+	line_request = NO;
+	line_request_uni = NO;
+	line_buffer = nil;
+	line_buffer_length = 0;
+	
+	//### echo the string and newline, to self and echo stream
+	
+	//### gidispa unregister array
+	
+	return ix;
 }
 
 @end

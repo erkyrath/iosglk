@@ -65,7 +65,7 @@
 /* Add the given lines (as taken from the GlkWindowBuffer) to the contents of the view. 
 */
 - (void) updateWithLines:(NSArray *)addlines {
-	NSLog(@"STV: updating, adding %d lines", addlines.count);
+	//NSLog(@"STV: updating, adding %d lines", addlines.count);
 	int lineslaidout = lines.count;
 	
 	/* First, add the data to the raw (unformatted) lines array. This may include clear operations, although hopefully only one per invocation. */
@@ -96,7 +96,7 @@
 - (void) layoutFromLine:(int)fromline {
 	if (wrapwidth <= styleset.charbox.width) {
 		/* This isn't going to work out. */
-		NSLog(@"STV: too narrow; refusing layout.");
+		//NSLog(@"STV: too narrow; refusing layout.");
 		[vlines removeAllObjects];
 		return;
 	}
@@ -105,7 +105,7 @@
 		/* nothing to discard. */
 	}
 	else if (fromline == 0) {
-		NSLog(@"STV: discarding all %d vlines...", vlines.count);
+		//NSLog(@"STV: discarding all %d vlines...", vlines.count);
 		[vlines removeAllObjects];
 	}
 	else {
@@ -119,7 +119,7 @@
 			NSRange range;
 			range.location = vcount;
 			range.length = vlines.count - vcount;
-			NSLog(@"STV: discarding %d vlines (starting at %d)...", range.length, range.location);
+			//NSLog(@"STV: discarding %d vlines (starting at %d)...", range.length, range.location);
 			[vlines removeObjectsInRange:range];
 		}
 	}
@@ -237,7 +237,7 @@
 		}
 	}
 		
-	NSLog(@"STV: laid out %d vislines, wrapwidth %.1f, textheight %.1f", vlines.count, wrapwidth, [self textHeight]);
+	//NSLog(@"STV: laid out %d vislines, wrapwidth %.1f, textheight %.1f", vlines.count, wrapwidth, [self textHeight]);
 }
 
 - (CGRect) placeForInputField {

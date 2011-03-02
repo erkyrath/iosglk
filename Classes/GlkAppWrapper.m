@@ -9,6 +9,7 @@
 #import "IosGlkAppDelegate.h"
 #import "IosGlkViewController.h"
 #import "GlkFrameView.h"
+#include "GlkUtilities.h"
 #include "glk.h"
 
 
@@ -97,9 +98,10 @@ static GlkAppWrapper *singleton = nil;
 	
 	if (pendingsizechange) {
 		pendingsizechange = NO;
+		NSLog(@"setFrameSize: un-pending %@ to setMetrics", StringFromRect(pendingsize));
 		BOOL sizechanged = [library setMetrics:pendingsize];
 		if (sizechanged) {
-			/* This main-thread call will invoke acceptEventType. */
+			/* This main-thread call will invoke acceptEventType, which turns off iowait. */
 			[frameview performSelectorOnMainThread:@selector(updateFromLibrarySize:)
 				withObject:library waitUntilDone:NO];
 		}
@@ -116,16 +118,19 @@ static GlkAppWrapper *singleton = nil;
 - (void) setFrameSize:(CGRect)box {
 	if (!self.iowait) {
 		/* The VM thread is running. We'll stuff the new size into a field, and get back to it at the next glk_select call. */
+		NSLog(@"setFrameSize: putting %@ on pending", StringFromRect(box));
 		@synchronized(self) {
 			pendingsizechange = YES;
 			pendingsize = box;
 		}
+		if (self.iowait) NSLog(@"### iowait has become YES!");
 		return;
 	}
 	
 	GlkLibrary *library = [GlkLibrary singleton];
 	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
 	
+	NSLog(@"setFrameSize: directing %@ to setMetrics", StringFromRect(box));
 	BOOL sizechanged = [library setMetrics:box];
 	if (sizechanged) {
 		/* Remember, we're still in the main thread. This call will invoke acceptEventType. */

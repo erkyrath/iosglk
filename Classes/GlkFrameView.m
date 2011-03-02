@@ -55,7 +55,7 @@
 /* This tells all the window views to get up to date with the new output in their data (GlkWindow) objects. If window views have to be created or destroyed (because GlkWindows have opened or closed), this does that too.
 */
 - (void) updateFromLibraryState:(GlkLibrary *)library {
-	NSLog(@"updateFromLibraryState");
+	NSLog(@"updateFromLibraryState: %@", StringFromRect(library.bounds));
 	
 	if (!library)
 		[NSException raise:@"GlkException" format:@"updateFromLibraryState: no library"];

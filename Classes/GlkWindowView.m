@@ -13,6 +13,7 @@
 #import "GlkWinBufferView.h"
 #import "GlkWinGridView.h"
 #import "GlkWindow.h"
+#import "GlkAppWrapper.h"
 #include "GlkUtilities.h"
 
 @implementation GlkWindowView
@@ -81,7 +82,7 @@
 		}
 	}
 	
-	//### clear textfield OK flag.
+	textfield_hitok = NO;
 }
 
 - (void) placeInputField:(UITextField *)field {
@@ -90,14 +91,19 @@
 
 - (BOOL) textFieldShouldReturn:(UITextField *)textField {
 	/* Don't look at the text yet; it hasn't been spellchecked. */
-	//### set a flag saying that this field has hit OK
+	textfield_hitok = YES;
 	[textField resignFirstResponder];
 	return YES;
 }
 
 - (void) textFieldDidEndEditing:(UITextField *)textField {
-	NSLog(@"End editing: '%@'", textField.text);
-	//### if OK flag, fire event
+	if (textfield_hitok) {
+		NSLog(@"End editing: '%@'", textField.text);
+		//### add to command history?
+		int buflen = [win acceptLineInput:textField.text];
+		/* buflen might be shorter than the text string, either because the buffer is short or utf16 crunching. */
+		[[GlkAppWrapper singleton] acceptEventType:evtype_LineInput window:win val1:buflen val2:0];
+	}
 }
 
 @end

@@ -25,6 +25,7 @@
 	GlkWindowPair *parent;
 	int line_request_id;
 	void *line_buffer;
+	int line_buffer_length;
 	BOOL char_request;
 	BOOL line_request;
 	BOOL char_request_uni;
@@ -68,6 +69,7 @@
 - (void) clearWindow;
 
 - (void) beginLineInput:(char *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen;
+- (int) acceptLineInput:(NSString *)str;
 
 @end
 
