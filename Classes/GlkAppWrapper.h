@@ -8,20 +8,21 @@
 #include "glk.h"
 
 @interface GlkAppWrapper : NSObject {
+	NSCondition *iowaitcond; /* must hold this lock to touch any of the fields below, unless otherwise noted. */
+	
 	BOOL iowait; /* true when waiting for an event; becomes false when one arrives */
 	event_t *iowait_evptr; /* the place to stuff the event data when it arrives */
-	NSCondition *iowaitcond;
-	NSThread *thread;
-	NSAutoreleasePool *looppool;
+	NSThread *thread; /* not locked; does not change through the run cycle. */
+	NSAutoreleasePool *looppool; /* not locked; only touched by the VM thread. */
 	
 	BOOL pendingsizechange;
 	CGRect pendingsize;
-	NSNumber *timerinterval;
+	NSNumber *timerinterval; /* not locked; only touched by the main thread. */
 }
 
 @property (nonatomic, retain) NSCondition *iowaitcond;
-@property BOOL iowait; /* atomic */
-@property event_t *iowait_evptr; /* atomic */
+@property (nonatomic) BOOL iowait;
+@property (nonatomic) event_t *iowait_evptr;
 @property (nonatomic, retain) NSNumber *timerinterval;
 
 + (GlkAppWrapper *) singleton;

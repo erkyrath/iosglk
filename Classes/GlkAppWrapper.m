@@ -4,6 +4,17 @@
 	http://eblong.com/zarf/glk/
 */
 
+/*	This class contains the VM thread, and the methods that synchronize it with the main (UI) thread.
+
+	The portable Glk program runs in its own thread (which I'll refer to as "the VM thread", even if the program isn't a virtual machine per se). It has a simple lifecycle: it runs along for a while, and then it calls glk_select(). That blocks and waits for the UI thread to send some kind of input event. (Presumably a response to the input requests that the Glk program has made.) When an event arrives, the VM thread wakes up and processes it.
+	
+	The iowait flag indicates whether the VM thread is awake or asleep. It is set when the VM enters glk_select(); it is cleared when an input event arrives.
+	
+	Coordinating threads is always a headache, of course. We do all our synchronization using iowaitcond, an NSCondition variable. (NSConditions are also thread locks.) Any cross-thread variable -- principly iowait, but there are a handful of others -- may only be accessed while holding iowaitcond.
+	
+	Note, however, that the VM thread does not hold iowaitcond the whole time it is running. It leaves that free in normal operation. (The main thread sometimes grabs it to pass in information, such as window size changes that happen while the VM thread is awake.) The VM thread only takes iowaitcond when it is setting up a glk_select().
+*/
+
 #import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
 #import "IosGlkAppDelegate.h"
@@ -35,6 +46,7 @@ static GlkAppWrapper *singleton = nil;
 		singleton = self;
 		
 		self.iowait = NO;
+		iowait_evptr = NULL;
 		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
 		
 		pendingsizechange = NO;
@@ -67,8 +79,9 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond lock];
 	self.iowait = NO;
 	pendingsizechange = NO;
-	glk_main();
 	[iowaitcond unlock];
+	
+	glk_main();
 
 	[looppool drain]; // releases it
 	looppool = nil;
@@ -79,14 +92,15 @@ static GlkAppWrapper *singleton = nil;
 	This must be called on the VM thread. 
 */
 - (void) selectEvent:(event_t *)event {
-	NSLog(@"VM thread glk_select");
-	
 	/* This is a good time to drain and recreate the thread's autorelease pool. We'll also do this in glk_tick(). */
 	[looppool drain]; // releases it
 	looppool = [[NSAutoreleasePool alloc] init];
 	
 	GlkLibrary *library = [GlkLibrary singleton];
 	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
+	
+	[iowaitcond lock];
+	//NSLog(@"VM thread glk_select");
 	
 	bzero(event, sizeof(event_t));
 	self.iowait_evptr = event;
@@ -98,10 +112,9 @@ static GlkAppWrapper *singleton = nil;
 	
 	if (pendingsizechange) {
 		pendingsizechange = NO;
-		NSLog(@"setFrameSize: un-pending %@ to setMetrics", StringFromRect(pendingsize));
 		BOOL sizechanged = [library setMetrics:pendingsize];
 		if (sizechanged) {
-			/* This main-thread call will invoke acceptEventType, which turns off iowait. */
+			/* This main-thread call will invoke acceptEventType, which turns off iowait. But that can't happen until we've settled into our iowait loop, because we've got the lock. */
 			[frameview performSelectorOnMainThread:@selector(updateFromLibrarySize:)
 				withObject:library waitUntilDone:NO];
 		}
@@ -111,26 +124,29 @@ static GlkAppWrapper *singleton = nil;
 		[iowaitcond wait];
 	}
 	
+	[iowaitcond unlock];
 	NSLog(@"VM thread glk_select returned (evtype %d)", event->type);
 }
 
 /* This is called from the main thread. It synchronizes with the VM thread. */
 - (void) setFrameSize:(CGRect)box {
+	[iowaitcond lock];
+	
 	if (!self.iowait) {
-		/* The VM thread is running. We'll stuff the new size into a field, and get back to it at the next glk_select call. */
-		NSLog(@"setFrameSize: putting %@ on pending", StringFromRect(box));
-		@synchronized(self) {
-			pendingsizechange = YES;
-			pendingsize = box;
-		}
-		if (self.iowait) NSLog(@"### iowait has become YES!");
+		/* The VM thread is working. We'll stuff the new size into a field, and get back to it at the next glk_select call. */
+		pendingsizechange = YES;
+		pendingsize = box;
+		[iowaitcond unlock];
 		return;
 	}
+	
+	[iowaitcond unlock];
+	
+	/* The VM thread is blocked. */
 	
 	GlkLibrary *library = [GlkLibrary singleton];
 	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
 	
-	NSLog(@"setFrameSize: directing %@ to setMetrics", StringFromRect(box));
 	BOOL sizechanged = [library setMetrics:box];
 	if (sizechanged) {
 		/* Remember, we're still in the main thread. This call will invoke acceptEventType. */
@@ -141,10 +157,14 @@ static GlkAppWrapper *singleton = nil;
 /* The UI calls this to report an input event. 
 	This is called from the main thread. It synchronizes with the VM thread. */
 - (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2 {
-	if (!self.iowait)
-		return;
-		
 	[iowaitcond lock];
+	
+	if (!self.iowait) {
+		/* The VM thread is working; events not accepted right now. */
+		[iowaitcond unlock];
+		return;
+	}
+	
 	event_t *event = self.iowait_evptr;
 	self.iowait_evptr = NULL;
 	if (event) {

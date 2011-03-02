@@ -79,7 +79,7 @@ static GlkLibrary *singleton = nil;
 		return NO;
 	
 	bounds = box;
-	NSLog(@"library metrics now %@", StringFromRect(bounds));
+	//NSLog(@"library metrics now %@", StringFromRect(bounds));
 	if (rootwin)
 		[rootwin windowRearrange:bounds];
 	return YES;
