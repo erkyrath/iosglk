@@ -124,8 +124,8 @@ static GlkAppWrapper *singleton = nil;
 		[iowaitcond wait];
 	}
 	
-	[iowaitcond unlock];
 	NSLog(@"VM thread glk_select returned (evtype %d)", event->type);
+	[iowaitcond unlock];
 }
 
 /* This is called from the main thread. It synchronizes with the VM thread. */

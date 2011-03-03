@@ -53,7 +53,6 @@
 
 //### I really shouldn't be doing this here at all. Maybe?
 - (void) layoutSubviews {
-	[super layoutSubviews];
 	//NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
 	
 	[textview setTotalWidth:scrollview.bounds.size.width];

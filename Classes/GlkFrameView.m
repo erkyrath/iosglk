@@ -106,11 +106,12 @@
 /* This tells all the window views to get up to date with the sizes of their GlkWindows. The library's setMetrics must already have been called, to get the GlkWindow sizes set right.
 */
 - (void) updateFromLibrarySize:(GlkLibrary *)library {
-	NSLog(@"updateFromLibrarySize");
+	NSLog(@"updateFromLibrarySize: %@", StringFromRect(library.bounds));
 	
 	for (NSNumber *tag in windowviews) {
 		GlkWindowView *winv = [windowviews objectForKey:tag];
 		[winv updateFromWindowSize];
+		[winv setNeedsLayout]; // This is part of the terrible layout system.
 	}
 	[[GlkAppWrapper singleton] acceptEventType:evtype_Arrange window:nil val1:0 val2:0];
 }

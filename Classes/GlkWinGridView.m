@@ -34,11 +34,10 @@
 	[super dealloc];
 }
 
-/*
 - (void) layoutSubviews {
-	NSLog(@"GridView: layoutSubviews");
+	//NSLog(@"GridView: layoutSubviews");
+	//### need to move or resize the text view here
 }
-*/
 
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"GridView: drawRect");
