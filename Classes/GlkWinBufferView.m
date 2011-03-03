@@ -15,6 +15,7 @@
 
 @synthesize scrollview;
 @synthesize textview;
+@synthesize scrollDownNextLayout;
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
@@ -78,8 +79,12 @@
 	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
 	
 	NSMutableArray *updates = bufwin.updatetext;
-	if (updates.count == 0)
+	if (updates.count == 0) {
+		if (scrollDownNextLayout)
+			[self scrollToBottom];
+		scrollDownNextLayout = NO;
 		return;
+	}
 	
 	[textview updateWithLines:updates];
 	[bufwin.updatetext removeAllObjects];
@@ -96,6 +101,7 @@
 	scrollview.contentSize = box.size;
 	
 	[self scrollToBottom];
+	scrollDownNextLayout = NO;
 }
 
 - (void) placeInputField:(UITextField *)field {
@@ -112,6 +118,7 @@
 	scrollview.contentSize = box.size;
 	
 	[self scrollToBottom];
+	scrollDownNextLayout = NO;
 }
 
 @end

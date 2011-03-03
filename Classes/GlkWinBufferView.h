@@ -12,9 +12,12 @@
 @interface GlkWinBufferView : GlkWindowView {
 	UIScrollView *scrollview;
 	StyledTextView *textview;
+	
+	BOOL scrollDownNextLayout;
 }
 
 @property (nonatomic, retain) UIScrollView *scrollview;
 @property (nonatomic, retain) StyledTextView *textview;
+@property (nonatomic) BOOL scrollDownNextLayout;
 
 @end

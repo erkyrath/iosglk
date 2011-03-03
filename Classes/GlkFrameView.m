@@ -11,6 +11,7 @@
 
 #import "GlkFrameView.h"
 #import "GlkWindowView.h"
+#import "GlkWinBufferView.h"
 #import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
@@ -111,7 +112,10 @@
 	for (NSNumber *tag in windowviews) {
 		GlkWindowView *winv = [windowviews objectForKey:tag];
 		[winv updateFromWindowSize];
-		[winv setNeedsLayout]; // This is part of the terrible layout system.
+		// This is part of the terrible layout system.
+		if ([winv isKindOfClass:[GlkWinBufferView class]])
+			((GlkWinBufferView *)winv).scrollDownNextLayout = YES;
+		[winv setNeedsLayout]; // This is too.
 	}
 	[[GlkAppWrapper singleton] acceptEventType:evtype_Arrange window:nil val1:0 val2:0];
 }
