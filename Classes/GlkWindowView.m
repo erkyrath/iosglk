@@ -67,7 +67,10 @@
 		/* The text field should be active, and we have one from last cycle, but it's a new line request. */
 		//### pick up the pre-loaded text.
 		line_request_id = win.line_request_id;
-		textfield.text = @"";
+		if (win.line_request_initial)
+			textfield.text = win.line_request_initial;
+		else
+			textfield.text = @"";
 		movefield = YES;
 	}
 
@@ -88,6 +91,10 @@
 		textfield.delegate = self;
 		
 		line_request_id = win.line_request_id;
+		if (win.line_request_initial)
+			textfield.text = win.line_request_initial;
+		else
+			textfield.text = @"";
 		movefield = YES;
 	}
 	

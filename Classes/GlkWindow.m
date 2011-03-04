@@ -25,6 +25,7 @@
 @synthesize type;
 @synthesize rock;
 @synthesize parent;
+@synthesize line_request_initial;
 @synthesize line_request_id;
 @synthesize char_request;
 @synthesize line_request;
@@ -83,6 +84,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		
 		parent = nil;
 		line_request_id = 0;
+		line_request_initial = nil;
 		line_buffer = nil;
 		char_request = NO;
 		line_request = NO;
@@ -116,6 +118,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	if (!tag)
 		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc with tag unset"];
 	self.tag = nil;
+	
+	self.line_request_initial = nil;
 	
 	self.stream = nil;
 	self.echostream = nil;
@@ -173,6 +177,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	*heightref = 0;
 }
 
+/* The text-window classes will override this with YES. 
+*/
 - (BOOL) supportsInput {
 	return NO;
 }
@@ -219,11 +225,21 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	}
 	
 	line_request = YES;
-	line_request_uni = NO;
+	line_request_uni = unicode;
 	line_buffer = buf;
 	line_buffer_length = maxlen;
-	//### if initlen, stash the initial string somewhere
 	line_request_id++;
+	
+	self.line_request_initial = nil;
+	if (initlen) {
+		NSString *str;
+		if (!unicode)
+			str = [[NSString alloc] initWithBytes:buf length:initlen encoding:NSISOLatin1StringEncoding];
+		else
+			str = [[NSString alloc] initWithBytes:buf length:initlen*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
+		line_request_initial = str; // retained
+	}
+	
 	//### gidispa register array
 }
 
@@ -262,6 +278,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	line_request_uni = NO;
 	line_buffer = nil;
 	line_buffer_length = 0;
+	self.line_request_initial = nil;
 	
 	/* Echo the input. ### stash echo_line_input in a per-input flag */
 	if (TRUE) {

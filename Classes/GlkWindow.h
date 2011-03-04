@@ -30,6 +30,8 @@
 	BOOL line_request;
 	BOOL char_request_uni;
 	BOOL line_request_uni;
+	NSString *line_request_initial;
+	
 	BOOL echo_line_input;
 	glui32 style;
 	
@@ -45,6 +47,7 @@
 @property (nonatomic, readonly) glui32 type;
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, retain) GlkWindowPair *parent;
+@property (nonatomic, retain) NSString *line_request_initial;
 @property (nonatomic, readonly) int line_request_id;
 @property (nonatomic, readonly) BOOL char_request;
 @property (nonatomic, readonly) BOOL line_request;
