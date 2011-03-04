@@ -154,6 +154,15 @@ static GlkAppWrapper *singleton = nil;
 	}
 }
 
+/* This is called from the main thread. It synchronizes with the VM thread. */
+- (BOOL) acceptingEvent {
+	BOOL res;
+	[iowaitcond lock];
+	res = self.iowait && self.iowait_evptr;
+	[iowaitcond unlock];
+	return res;
+}
+
 /* The UI calls this to report an input event. 
 	This is called from the main thread. It synchronizes with the VM thread. */
 - (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2 {

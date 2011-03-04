@@ -39,11 +39,13 @@
 	if (self) {
 		self.win = winref;
 		self.textfield = nil;
+		line_request_id = 0;
 	}
 	return self;
 }
 
 - (void) dealloc {
+	line_request_id = 0;
 	self.textfield = nil;
 	self.win = nil;
 	[super dealloc];
@@ -59,30 +61,39 @@
 }
 
 - (void) updateFromWindowInputs {
-	if (textfield) {
-		if (!win.line_request || win.line_request_id != line_request_id) {
-			/* This input field is obsolete, or it's changed. Get rid of it. */
-			[textfield removeFromSuperview];
-			self.textfield = nil;
-		}
-	}
+	BOOL movefield = NO;
 	
-	if (!textfield) {
-		if (win.line_request) {
-			line_request_id = win.line_request_id;
+	if (textfield && win.line_request && win.line_request_id != line_request_id) {
+		/* The text field should be active, and we have one from last cycle, but it's a new line request. */
+		//### pick up the pre-loaded text.
+		line_request_id = win.line_request_id;
+		textfield.text = @"";
+		movefield = YES;
+	}
 
-			self.textfield = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
-			textfield.backgroundColor = [UIColor whiteColor];
-			textfield.borderStyle = UITextBorderStyleBezel;
-			textfield.autocapitalizationType = UITextAutocapitalizationTypeNone;
-			textfield.keyboardType = UIKeyboardTypeASCIICapable;
-			textfield.returnKeyType = UIReturnKeyGo;
-			textfield.delegate = self;
-			[self placeInputField:textfield];
-		}
+	if (textfield && !win.line_request) {
+		/* This input field is obsolete, or it's changed. Get rid of it. */
+		[textfield removeFromSuperview];
+		self.textfield = nil;
+		line_request_id = 0;
 	}
 	
-	textfield_hitok = NO;
+	if (!textfield && win.line_request) {
+		self.textfield = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
+		textfield.backgroundColor = [UIColor whiteColor];
+		textfield.borderStyle = UITextBorderStyleBezel;
+		textfield.autocapitalizationType = UITextAutocapitalizationTypeNone;
+		textfield.keyboardType = UIKeyboardTypeASCIICapable;
+		textfield.returnKeyType = UIReturnKeyGo;
+		textfield.delegate = self;
+		
+		line_request_id = win.line_request_id;
+		movefield = YES;
+	}
+	
+	/* This places the field correctly, and adds it as a subview if it isn't already. */
+	if (textfield && movefield)
+		[self placeInputField:textfield];
 }
 
 - (void) placeInputField:(UITextField *)field {
@@ -90,20 +101,28 @@
 }
 
 - (BOOL) textFieldShouldReturn:(UITextField *)textField {
-	/* Don't look at the text yet; it hasn't been spellchecked. */
-	textfield_hitok = YES;
-	[textField resignFirstResponder];
+	/* Don't look at the text yet; the last word hasn't been spellchecked. However, we don't want to close the keyboard either. The only good answer seems to be to fire a function call with a tiny delay, and return YES to ensure that the spellcheck is accepted. */
+	[self performSelector:@selector(textFieldContinueReturn:) withObject:textField afterDelay:0.0];
 	return YES;
 }
 
-- (void) textFieldDidEndEditing:(UITextField *)textField {
-	if (textfield_hitok) {
-		NSLog(@"End editing: '%@'", textField.text);
-		//### add to command history?
-		int buflen = [win acceptLineInput:textField.text];
-		/* buflen might be shorter than the text string, either because the buffer is short or utf16 crunching. */
-		[[GlkAppWrapper singleton] acceptEventType:evtype_LineInput window:win val1:buflen val2:0];
+- (void) textFieldContinueReturn:(UITextField *)textField {
+	NSLog(@"End editing: '%@'", textField.text);
+	if (![[GlkAppWrapper singleton] acceptingEvent]) {
+		/* The event must have been filled while we were delaying. Oh well. */
+		return;
 	}
+	
+	//### add to command history?
+	
+	/* buflen might be shorter than the text string, either because the buffer is short or utf16 crunching. */
+	int buflen = [win acceptLineInput:textField.text];
+	if (buflen < 0) {
+		/* This window isn't accepting input. Oh well. */
+		return; 
+	}
+	
+	[[GlkAppWrapper singleton] acceptEventType:evtype_LineInput window:win val1:buflen val2:0];
 }
 
 @end

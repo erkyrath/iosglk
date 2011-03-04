@@ -232,8 +232,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	char *buf = NULL;
 	glui32 *ubuf = NULL;
 	
-	if (!line_buffer)
-		return 0;
+	if (!line_buffer || !line_request)
+		return -1;
 	
 	/* Stash this in a local, because we're about to clear the line_buffer field. */
 	if (!line_request_uni)

@@ -14,7 +14,6 @@
 	
 	UITextField *textfield; /* if input is happening (but not necessarily a subview of this view) */
 	int line_request_id; /* matches the value in the GlkWindow if this input field is current */
-	BOOL textfield_hitok;
 }
 
 @property (nonatomic, retain) GlkWindow *win;
@@ -28,5 +27,6 @@
 - (void) updateFromWindowSize;
 
 - (void) placeInputField:(UITextField *)field;
+- (void) textFieldContinueReturn:(UITextField *)textField;
 
 @end

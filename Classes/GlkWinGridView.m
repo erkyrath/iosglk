@@ -127,7 +127,8 @@
 		box.origin.y = self.bounds.size.height - box.size.height;
 		
 	field.frame = box;
-	[self addSubview:field];
+	if (!field.superview)
+		[self addSubview:field];
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

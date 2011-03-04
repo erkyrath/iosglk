@@ -107,7 +107,8 @@
 - (void) placeInputField:(UITextField *)field {
 	CGRect box = [textview placeForInputField];
 	field.frame = box;
-	[textview addSubview:field];
+	if (!field.superview)
+		[textview addSubview:field];
 
 	CGFloat totalheight = [textview totalHeight];
 	
