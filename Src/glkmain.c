@@ -95,6 +95,7 @@ void glk_main() {
 	glk_put_char('>');
 		
 	//glk_request_timer_events(3000);
+	glk_request_line_event(mainwin, inbuf, 32, 0);
 	
 	while (1) {
 		glk_select(&ev);
@@ -105,9 +106,9 @@ void glk_main() {
 				glk_put_char('>');
 			}
 			else {
-				nslogc("Requesting line input...");
-				glk_request_line_event(mainwin, inbuf, 32, 0);
-				glk_request_line_event(statwin, inbuf, 32, 0);
+				//nslogc("Requesting line input...");
+				//glk_request_line_event(mainwin, inbuf, 32, 0);
+				//glk_request_line_event(statwin, inbuf, 32, 0);
 			}
 			continue;
 		}
@@ -116,6 +117,16 @@ void glk_main() {
 		glk_set_window(mainwin);
 		glk_put_string("Line.\n");
 		*/
+
+		if (ev.type == evtype_LineInput) {
+			glk_set_window(mainwin);
+			glk_put_string("You typed \"");
+			glk_put_buffer(inbuf, ev.val1);
+			glk_put_string("\".\n");
+			glk_put_char('>');
+			glk_request_line_event(mainwin, inbuf, 32, 0);
+			continue;
+		}
 		
 		if (ev.type == evtype_Arrange) {
 			glk_set_window(statwin);

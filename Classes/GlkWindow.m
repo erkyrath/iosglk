@@ -228,10 +228,18 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 }
 
 - (int) acceptLineInput:(NSString *)str {
-	int ix;
+	int ix, buflen;
+	char *buf = NULL;
+	glui32 *ubuf = NULL;
 	
 	if (!line_buffer)
 		return 0;
+	
+	/* Stash this in a local, because we're about to clear the line_buffer field. */
+	if (!line_request_uni)
+		buf = (char *)line_buffer;
+	else
+		ubuf = (glui32 *)line_buffer;
 	
 	for (ix=0; ix<str.length; ix++) {
 		if (ix >= line_buffer_length)
@@ -241,23 +249,44 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		if (!line_request_uni) {
 			if (ch > 0xFF)
 				ch = '?';
-			((char *)line_buffer)[ix] = ch;
+			buf[ix] = ch;
 		}
 		else {
-			((glui32 *)line_buffer)[ix] = ch;
+			ubuf[ix] = ch;
 		}
 	}
+	
+	buflen = ix;
 	
 	line_request = NO;
 	line_request_uni = NO;
 	line_buffer = nil;
 	line_buffer_length = 0;
 	
-	//### echo the string and newline, to self and echo stream
+	/* Echo the input. ### stash echo_line_input in a per-input flag */
+	if (TRUE) {
+		glui32 origstyle = style;
+		
+		if (!line_request_uni) {
+			[self putBuffer:buf len:buflen];
+			if (echostream)
+				[echostream putBuffer:buf len:buflen];
+		}
+		else {
+			[self putUBuffer:ubuf len:buflen];
+			if (echostream)
+				[echostream putUBuffer:ubuf len:buflen];
+		}
+		[self putBuffer:"\n" len:1];
+		if (echostream)
+			[echostream putBuffer:"\n" len:1];
+			
+		style = origstyle;
+	}
 	
 	//### gidispa unregister array
 	
-	return ix;
+	return buflen;
 }
 
 @end
