@@ -23,7 +23,7 @@
 	glui32 rock;
 	
 	GlkWindowPair *parent;
-	int line_request_id;
+	int input_request_id;
 	void *line_buffer;
 	int line_buffer_length;
 	BOOL char_request;
@@ -48,7 +48,7 @@
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, retain) GlkWindowPair *parent;
 @property (nonatomic, retain) NSString *line_request_initial;
-@property (nonatomic, readonly) int line_request_id;
+@property (nonatomic, readonly) int input_request_id;
 @property (nonatomic, readonly) BOOL char_request;
 @property (nonatomic, readonly) BOOL line_request;
 @property (nonatomic) glui32 style;
@@ -71,7 +71,9 @@
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len;
 - (void) clearWindow;
 
-- (void) beginLineInput:(char *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen;
+- (void) beginCharInput:(BOOL)unicode;
+- (BOOL) acceptCharInput:(glui32 *)chref;
+- (void) beginLineInput:(void *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen;
 - (int) acceptLineInput:(NSString *)str;
 
 @end

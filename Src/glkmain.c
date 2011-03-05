@@ -18,7 +18,7 @@ void glk_main() {
 	event_t ev;
 	char buf[256];
 	char inbuf[256];
-	//glui32 ubuf[256];
+	glui32 uinbuf[256];
 	
 	winid_t mainwin = glk_window_open(NULL, 0, 0, wintype_TextBuffer, 111);
 	glk_set_window(mainwin);
@@ -96,6 +96,7 @@ void glk_main() {
 		
 	//glk_request_timer_events(3000);
 	glk_request_line_event(mainwin, inbuf, 32, 0);
+	//glk_request_char_event_uni(mainwin);
 	
 	while (1) {
 		glk_select(&ev);
@@ -122,9 +123,22 @@ void glk_main() {
 			glk_set_window(mainwin);
 			glk_put_string("You typed \"");
 			glk_put_buffer(inbuf, ev.val1);
+			//glk_put_buffer_uni(uinbuf, ev.val1);
 			glk_put_string("\".\n");
 			glk_put_char('>');
 			glk_request_line_event(mainwin, inbuf, 32, 0);
+			//glk_request_line_event_uni(mainwin, uinbuf, 32, 0);
+			continue;
+		}
+		
+		if (ev.type == evtype_CharInput) {
+			glk_set_window(mainwin);
+			glk_put_string("You typed '");
+			glk_put_char_uni(ev.val1);
+			glk_put_string("'.\n");
+			glk_put_char('>');
+			glk_request_char_event_uni(mainwin);
+			//glk_request_line_event_uni(mainwin, uinbuf, 32, 0);
 			continue;
 		}
 		

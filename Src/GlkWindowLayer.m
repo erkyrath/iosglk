@@ -404,6 +404,15 @@ void glk_window_move_cursor(winid_t win, glui32 xpos, glui32 ypos)
 	[gridwin moveCursorToX:xpos Y:ypos];
 }
 
+void glk_request_char_event(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"request_char_event: invalid ref"];
+		return;
+	}
+	[win beginCharInput:NO];
+}
+
 void glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initlen)
 {
 	if (!win) {
@@ -413,3 +422,20 @@ void glk_request_line_event(winid_t win, char *buf, glui32 maxlen, glui32 initle
 	[win beginLineInput:buf unicode:NO maxlen:maxlen initlen:initlen];
 }
 
+void glk_request_char_event_uni(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"request_char_event_uni: invalid ref"];
+		return;
+	}
+	[win beginCharInput:YES];
+}
+
+void glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 initlen)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"request_line_event_uni: invalid ref"];
+		return;
+	}
+	[win beginLineInput:buf unicode:YES maxlen:maxlen initlen:initlen];
+}

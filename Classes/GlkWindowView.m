@@ -39,13 +39,13 @@
 	if (self) {
 		self.win = winref;
 		self.textfield = nil;
-		line_request_id = 0;
+		input_request_id = 0;
 	}
 	return self;
 }
 
 - (void) dealloc {
-	line_request_id = 0;
+	input_request_id = 0;
 	self.textfield = nil;
 	self.win = nil;
 	[super dealloc];
@@ -61,53 +61,81 @@
 }
 
 - (void) updateFromWindowInputs {
-	BOOL movefield = NO;
+	BOOL wants_input = (win.char_request || win.line_request);
 	
-	if (textfield && win.line_request && win.line_request_id != line_request_id) {
-		/* The text field should be active, and we have one from last cycle, but it's a new line request. */
-		//### pick up the pre-loaded text.
-		line_request_id = win.line_request_id;
-		if (win.line_request_initial)
-			textfield.text = win.line_request_initial;
-		else
-			textfield.text = @"";
-		movefield = YES;
-	}
-
-	if (textfield && !win.line_request) {
-		/* This input field is obsolete, or it's changed. Get rid of it. */
-		[textfield removeFromSuperview];
-		self.textfield = nil;
-		line_request_id = 0;
+	/* The logic here will make more sense if you remember that any *change* in input request -- including a change from char to line input -- will be accompanied by a change in input_request_id. */
+	
+	if (!wants_input) {
+		if (textfield) {
+			/* The window doesn't want any input at all. Get rid of the textfield. */
+			[textfield removeFromSuperview];
+			self.textfield = nil;
+			input_request_id = 0;
+		}
 	}
 	
-	if (!textfield && win.line_request) {
-		self.textfield = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
-		textfield.backgroundColor = [UIColor whiteColor];
-		textfield.borderStyle = UITextBorderStyleBezel;
-		textfield.autocapitalizationType = UITextAutocapitalizationTypeNone;
-		textfield.keyboardType = UIKeyboardTypeASCIICapable;
-		textfield.returnKeyType = UIReturnKeyGo;
-		textfield.delegate = self;
+	if (wants_input) {
+		if (!textfield) {
+			self.textfield = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
+			textfield.backgroundColor = [UIColor whiteColor];
+			textfield.borderStyle = UITextBorderStyleBezel;
+			textfield.autocapitalizationType = UITextAutocapitalizationTypeNone;
+			textfield.keyboardType = UIKeyboardTypeASCIICapable;
+			textfield.delegate = self;
+			input_request_id = 0;
+		}
 		
-		line_request_id = win.line_request_id;
-		if (win.line_request_initial)
-			textfield.text = win.line_request_initial;
-		else
-			textfield.text = @"";
-		movefield = YES;
+		if (input_request_id != win.input_request_id) {
+			/* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. */
+			input_request_id = win.input_request_id;
+			input_single_char = win.char_request;
+			
+			if (win.line_request && win.line_request_initial)
+				textfield.text = win.line_request_initial;
+			else
+				textfield.text = @"";
+
+			/* Bug: changing the returnKeyType in an existing field doesn't change the open keyboard. I don't care right now. */
+			if (input_single_char) {
+				textfield.returnKeyType = UIReturnKeyDefault;
+				textfield.autocorrectionType = UITextAutocorrectionTypeNo;
+			}
+			else {
+				textfield.returnKeyType = UIReturnKeyGo;
+				textfield.autocorrectionType = UITextAutocorrectionTypeDefault;
+			}
+			
+			/* This places the field correctly, and adds it as a subview if it isn't already. */
+			[self placeInputField:textfield];
+		}
 	}
-	
-	/* This places the field correctly, and adds it as a subview if it isn't already. */
-	if (textfield && movefield)
-		[self placeInputField:textfield];
 }
 
 - (void) placeInputField:(UITextField *)field {
 	[NSException raise:@"GlkException" format:@"placeInputField not implemented"];
 }
 
+- (BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)str {
+	if (input_single_char) {
+		if (str.length) {
+			/* We should crunch utf16 characters here. */
+			glui32 ch = [str characterAtIndex:(str.length-1)];
+			if ([win acceptCharInput:&ch])
+				[[GlkAppWrapper singleton] acceptEventType:evtype_CharInput window:win val1:ch val2:0];
+		}
+		return NO;
+	}
+	return YES;
+}
+
 - (BOOL) textFieldShouldReturn:(UITextField *)textField {
+	if (input_single_char) {
+		glui32 ch = '\n';
+		if ([win acceptCharInput:&ch])
+			[[GlkAppWrapper singleton] acceptEventType:evtype_CharInput window:win val1:ch val2:0];
+		return NO;
+	}
+	
 	/* Don't look at the text yet; the last word hasn't been spellchecked. However, we don't want to close the keyboard either. The only good answer seems to be to fire a function call with a tiny delay, and return YES to ensure that the spellcheck is accepted. */
 	[self performSelector:@selector(textFieldContinueReturn:) withObject:textField afterDelay:0.0];
 	return YES;

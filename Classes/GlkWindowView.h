@@ -13,7 +13,8 @@
 	GlkWindow *win;
 	
 	UITextField *textfield; /* if input is happening (but not necessarily a subview of this view) */
-	int line_request_id; /* matches the value in the GlkWindow if this input field is current */
+	int input_request_id; /* matches the value in the GlkWindow if this input field is current */
+	BOOL input_single_char; /* if we're grabbing character (rather than line) input */
 }
 
 @property (nonatomic, retain) GlkWindow *win;

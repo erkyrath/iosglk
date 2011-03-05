@@ -26,7 +26,7 @@
 @synthesize rock;
 @synthesize parent;
 @synthesize line_request_initial;
-@synthesize line_request_id;
+@synthesize input_request_id;
 @synthesize char_request;
 @synthesize line_request;
 @synthesize style;
@@ -83,7 +83,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		rock = winrock;
 		
 		parent = nil;
-		line_request_id = 0;
+		input_request_id = 0;
 		line_request_initial = nil;
 		line_buffer = nil;
 		char_request = NO;
@@ -214,7 +214,42 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 - (void) clearWindow {
 }
 
-- (void) beginLineInput:(char *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen {
+/* Set up the window for character input. (The next updateFromWindowInputs call will make use of this information.)
+*/
+- (void) beginCharInput:(BOOL)unicode {
+	if (![self supportsInput]) {
+		[GlkLibrary strictWarning:@"beginCharInput: window does not support keyboard input"];
+		return;
+	}
+	if (char_request || line_request) {
+		[GlkLibrary strictWarning:@"beginCharInput: window already has keyboard request"];
+		return;
+	}
+	
+	char_request = YES;
+	char_request_uni = unicode;
+	input_request_id++;
+}
+
+/* Complete character input. Returns YES if the window is accepting char input right now. This also changes the character, if necessary, if non-unicode input was requested originally.
+*/
+- (BOOL) acceptCharInput:(glui32 *)chref {
+	if (!char_request)
+		return NO;
+		
+	glui32 ch = *chref;
+	if (!char_request_uni && (ch > 0xFF))
+		ch = '?';
+	*chref = ch;
+		
+	char_request = NO;
+	char_request_uni = NO;
+	return YES;
+}
+
+/* Set up the window for line input. (The next updateFromWindowInputs call will make use of this information.)
+*/
+- (void) beginLineInput:(void *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen {
 	if (![self supportsInput]) {
 		[GlkLibrary strictWarning:@"beginLineInput: window does not support keyboard input"];
 		return;
@@ -228,7 +263,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	line_request_uni = unicode;
 	line_buffer = buf;
 	line_buffer_length = maxlen;
-	line_request_id++;
+	input_request_id++;
 	
 	self.line_request_initial = nil;
 	if (initlen) {
@@ -243,6 +278,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	//### gidispa register array
 }
 
+/* Complete line input. Returns the number of characters that were accepted, or -1 if the window is not accepting line input right now.
+*/
 - (int) acceptLineInput:(NSString *)str {
 	int ix, buflen;
 	char *buf = NULL;
@@ -252,7 +289,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		return -1;
 	
 	/* Stash this in a local, because we're about to clear the line_buffer field. */
-	if (!line_request_uni)
+	BOOL unicode = line_request_uni;
+	if (!unicode)
 		buf = (char *)line_buffer;
 	else
 		ubuf = (glui32 *)line_buffer;
@@ -262,7 +300,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 			break;
 		glui32 ch = [str characterAtIndex:ix];
 		//### we should crunch utf16 characters into utf32 if needed
-		if (!line_request_uni) {
+		if (!unicode) {
 			if (ch > 0xFF)
 				ch = '?';
 			buf[ix] = ch;
@@ -284,7 +322,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	if (TRUE) {
 		glui32 origstyle = style;
 		
-		if (!line_request_uni) {
+		if (!unicode) {
 			[self putBuffer:buf len:buflen];
 			if (echostream)
 				[echostream putBuffer:buf len:buflen];
