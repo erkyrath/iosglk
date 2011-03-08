@@ -20,6 +20,7 @@
 #import "IosGlkAppDelegate.h"
 #import "IosGlkViewController.h"
 #import "GlkFrameView.h"
+#import "GlkUtilTypes.h"
 #include "GlkUtilities.h"
 #include "glk.h"
 
@@ -161,6 +162,23 @@ static GlkAppWrapper *singleton = nil;
 	res = self.iowait && self.iowait_evptr;
 	[iowaitcond unlock];
 	return res;
+}
+
+/* This is called from the VM thread, while the VM is running. It throws a call into the main thread, where the user is (presumably) busy editing an input field. */
+- (NSString *) editingTextForWindow:(NSNumber *)tag {
+	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
+	if (!frameview)
+		return nil;
+	
+	GlkTagString *tagstring = [[GlkTagString alloc] initWithTag:tag text:nil]; // retain
+	
+	[frameview performSelectorOnMainThread:@selector(editingTextForWindow:)
+		withObject:tagstring waitUntilDone:YES];
+		
+	NSString *result = tagstring.str; // we take over the retention
+	[tagstring release];
+	[result autorelease];
+	return result;
 }
 
 /* The UI calls this to report an input event. 

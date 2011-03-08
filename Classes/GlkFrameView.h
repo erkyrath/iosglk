@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 @class GlkLibrary;
+@class GlkTagString;
 
 @interface GlkFrameView : UIView {
 	/* How much of the view bounds to reserve for the keyboard. */
@@ -21,5 +22,6 @@
 
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) updateFromLibrarySize:(GlkLibrary *)library;
+- (void) editingTextForWindow:(GlkTagString *)tagstring;
 
 @end

@@ -73,8 +73,10 @@
 
 - (void) beginCharInput:(BOOL)unicode;
 - (BOOL) acceptCharInput:(glui32 *)chref;
+- (void) cancelCharInput;
 - (void) beginLineInput:(void *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen;
 - (int) acceptLineInput:(NSString *)str;
+- (void) cancelLineInput:(event_t *)event;
 
 @end
 

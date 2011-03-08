@@ -439,3 +439,28 @@ void glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen, glui32 
 	}
 	[win beginLineInput:buf unicode:YES maxlen:maxlen initlen:initlen];
 }
+
+void glk_cancel_char_event(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"cancel_char_event: invalid ref"];
+		return;
+	}
+	[win cancelCharInput];
+}
+
+void glk_cancel_line_event(winid_t win, event_t *event) 
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"cancel_line_event: invalid ref"];
+		return;
+	}
+	
+	event_t dummyev;
+	if (!event) {
+		event = &dummyev;
+	}
+
+	[win cancelLineInput:event];
+}
+

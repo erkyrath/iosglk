@@ -13,6 +13,7 @@
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#import "GlkAppWrapper.h"
 #import "GlkStream.h"
 #import "StyleSet.h"
 #import "GlkUtilTypes.h"
@@ -247,6 +248,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	return YES;
 }
 
+- (void) cancelCharInput {
+	char_request = NO;
+	char_request_uni = NO;
+}
+
 /* Set up the window for line input. (The next updateFromWindowInputs call will make use of this information.)
 */
 - (void) beginLineInput:(void *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen {
@@ -342,6 +348,26 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	//### gidispa unregister array
 	
 	return buflen;
+}
+
+- (void) cancelLineInput:(event_t *)event {
+	bzero(event, sizeof(event_t));
+	
+	/* We have to get the current editing state of the text field. That really should be touched only by the main thread, but we'll sneak it out. */
+
+	NSString *str = [[GlkAppWrapper singleton] editingTextForWindow:self.tag];
+	if (!str)
+		str = @"";
+		
+	int buflen = [self acceptLineInput:str];
+	if (buflen < 0) {
+		/* The window wasn't accepting input, turns out. */
+		return;
+	}
+	
+	event->type = evtype_LineInput;
+	event->win = self;
+	event->val1 = buflen;
 }
 
 @end

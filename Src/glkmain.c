@@ -107,6 +107,11 @@ void glk_main() {
 				glk_put_char('>');
 			}
 			else {
+				glk_cancel_line_event(mainwin, &ev);
+				glk_set_window(mainwin);
+				glk_put_string("You were typing \"");
+				glk_put_buffer(inbuf, ev.val1);
+				glk_put_string("\".\n");
 				//nslogc("Requesting line input...");
 				//glk_request_line_event(mainwin, inbuf, 32, 0);
 				//glk_request_line_event(statwin, inbuf, 32, 0);

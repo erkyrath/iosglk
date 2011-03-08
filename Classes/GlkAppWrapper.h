@@ -33,6 +33,7 @@
 - (void) selectEvent:(event_t *)event;
 - (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2;
 - (BOOL) acceptingEvent;
+- (NSString *) editingTextForWindow:(NSNumber *)tag;
 - (void) setTimerInterval:(NSNumber *)interval;
 - (void) fireTimer:(id)dummy;
 

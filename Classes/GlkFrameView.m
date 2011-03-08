@@ -15,6 +15,7 @@
 #import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#import "GlkUtilTypes.h"
 #include "GlkUtilities.h"
 
 @implementation GlkFrameView
@@ -120,5 +121,23 @@
 	[[GlkAppWrapper singleton] acceptEventType:evtype_Arrange window:nil val1:0 val2:0];
 }
 
+/* This is invoked in the main thread, by the VM thread, which is waiting on the result. We're safe from deadlock because the VM thread can't be in glk_select(); it can't be holding the iowait lock, and it can't get into the code path that rearranging the view structure.
+*/
+- (void) editingTextForWindow:(GlkTagString *)tagstring {
+	GlkWindowView *winv = [windowviews objectForKey:tagstring.tag];
+	if (!winv)
+		return;
+	
+	UITextField *textfield = winv.textfield;
+	if (!textfield)
+		return;
+		
+	NSString *text = textfield.text;
+	if (!text)
+		return;
+	
+	/* The VM thread, when it picks this up, will take over the retention. */
+	tagstring.str = [[NSString stringWithString:text] retain];
+}
 
 @end

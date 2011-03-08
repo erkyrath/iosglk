@@ -89,3 +89,16 @@ typedef enum GlkStyledLineStatus_enum {
 
 @end
 
+
+@interface GlkTagString : NSObject {
+	NSNumber *tag;
+	NSString *str;
+}
+
+- (id) initWithTag:(NSNumber *)tag text:(NSString *)str;
+
+@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, retain) NSString *str;
+
+@end
+

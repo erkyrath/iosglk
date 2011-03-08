@@ -204,3 +204,27 @@
 
 @end
 
+@implementation GlkTagString
+
+@synthesize tag;
+@synthesize str;
+
+- (id) initWithTag:(NSNumber *)tagval text:(NSString *)strval {
+	self = [super init];
+	
+	if (self) {
+		self.tag = tagval;
+		self.str = strval;
+	}
+	
+	return self;
+}
+
+- (void) dealloc {
+	self.tag = nil;
+	self.str = nil;
+	[super dealloc];
+}
+
+@end
+
