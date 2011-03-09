@@ -15,6 +15,7 @@
 	NSThread *thread; /* not locked; does not change through the run cycle. */
 	NSAutoreleasePool *looppool; /* not locked; only touched by the VM thread. */
 	
+	BOOL pendingtimerevent;
 	BOOL pendingsizechange;
 	CGRect pendingsize;
 	NSNumber *timerinterval; /* not locked; only touched by the main thread. */
@@ -31,6 +32,7 @@
 - (void) appThreadMain:(id)rock;
 - (void) setFrameSize:(CGRect)box;
 - (void) selectEvent:(event_t *)event;
+- (void) selectPollEvent:(event_t *)event;
 - (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2;
 - (BOOL) acceptingEvent;
 - (NSString *) editingTextForWindow:(NSNumber *)tag;

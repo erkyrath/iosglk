@@ -22,6 +22,13 @@ void glk_select(event_t *event) {
 	[appwrap selectEvent:event]; 
 }
 
+void glk_select_poll(event_t *event) {
+	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
+	if (!appwrap)
+		[NSException raise:@"GlkException" format:@"glk_select_poll: no AppWrapper"];
+	[appwrap selectPollEvent:event]; 
+}
+
 void glk_request_timer_events(glui32 millisecs) {
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
 	NSNumber *interval = nil;

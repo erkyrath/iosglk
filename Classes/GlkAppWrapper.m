@@ -46,8 +46,9 @@ static GlkAppWrapper *singleton = nil;
 			[NSException raise:@"GlkException" format:@"cannot create two GlkAppWrapper objects"];
 		singleton = self;
 		
-		self.iowait = NO;
+		iowait = NO;
 		iowait_evptr = NULL;
+		pendingtimerevent = NO;
 		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
 		
 		pendingsizechange = NO;
@@ -78,8 +79,9 @@ static GlkAppWrapper *singleton = nil;
 	NSLog(@"VM thread starting");
 
 	[iowaitcond lock];
-	self.iowait = NO;
+	iowait = NO;
 	pendingsizechange = NO;
+	pendingtimerevent = NO;
 	[iowaitcond unlock];
 	
 	glk_main();
@@ -104,8 +106,9 @@ static GlkAppWrapper *singleton = nil;
 	//NSLog(@"VM thread glk_select");
 	
 	bzero(event, sizeof(event_t));
-	self.iowait_evptr = event;
-	self.iowait = YES;
+	iowait_evptr = event;
+	pendingtimerevent = NO;
+	iowait = YES;
 	
 	/* These main-thread calls may not get in gear until we've settled into our iowait loop. */
 	[frameview performSelectorOnMainThread:@selector(updateFromLibraryState:)
@@ -126,6 +129,20 @@ static GlkAppWrapper *singleton = nil;
 	}
 	
 	NSLog(@"VM thread glk_select returned (evtype %d)", event->type);
+	[iowaitcond unlock];
+}
+
+/* Check if one of the internal event types has arrived. (That includes timer and resize events, not input events.)
+	This must be called on the VM thread. 
+*/
+- (void) selectPollEvent:(event_t *)event {
+	bzero(event, sizeof(event_t));
+	
+	[iowaitcond lock];
+	if (pendingtimerevent) {
+		pendingtimerevent = NO;
+		event->type = evtype_Timer;
+	}
 	[iowaitcond unlock];
 }
 
@@ -155,7 +172,8 @@ static GlkAppWrapper *singleton = nil;
 	}
 }
 
-/* This is called from the main thread. It synchronizes with the VM thread. */
+/* Check whether the VM is blocked and waiting for events.
+	This is called from the main thread. It synchronizes with the VM thread. */
 - (BOOL) acceptingEvent {
 	BOOL res;
 	[iowaitcond lock];
@@ -187,20 +205,23 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond lock];
 	
 	if (!self.iowait) {
-		/* The VM thread is working; events not accepted right now. */
+		/* The VM thread is working; events not accepted right now. However, we'll set a flag in case someone comes along and polls for it. */
+		if (type == evtype_Timer)
+			pendingtimerevent = YES;
+		//### size change event too?
 		[iowaitcond unlock];
 		return;
 	}
 	
-	event_t *event = self.iowait_evptr;
-	self.iowait_evptr = NULL;
+	event_t *event = iowait_evptr;
+	iowait_evptr = NULL;
 	if (event) {
 		event->type = type;
 		event->win = win;
 		event->val1 = val1;
 		event->val2 = val2;
 	}
-	self.iowait = NO;
+	iowait = NO;
 	[iowaitcond signal];
 	[iowaitcond unlock];
 }

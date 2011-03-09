@@ -94,7 +94,7 @@ void glk_main() {
 	glk_set_window(mainwin);
 	glk_put_char('>');
 		
-	//glk_request_timer_events(3000);
+	glk_request_timer_events(2000);
 	glk_request_line_event(mainwin, inbuf, 32, 0);
 	//glk_request_char_event_uni(mainwin);
 	
@@ -107,11 +107,19 @@ void glk_main() {
 				glk_put_char('>');
 			}
 			else {
+				/*
 				glk_cancel_line_event(mainwin, &ev);
 				glk_set_window(mainwin);
 				glk_put_string("You were typing \"");
 				glk_put_buffer(inbuf, ev.val1);
 				glk_put_string("\".\n");
+				*/
+				//sleep(3);
+				glk_select_poll(&ev);
+				glk_set_window(statwin);
+				glk_window_move_cursor(statwin, 0, 0);
+				glk_put_string("Polled event type ");
+				glk_put_char(ev.type + '0');
 				//nslogc("Requesting line input...");
 				//glk_request_line_event(mainwin, inbuf, 32, 0);
 				//glk_request_line_event(statwin, inbuf, 32, 0);
@@ -144,6 +152,16 @@ void glk_main() {
 			glk_put_char('>');
 			glk_request_char_event_uni(mainwin);
 			//glk_request_line_event_uni(mainwin, uinbuf, 32, 0);
+			continue;
+		}
+		
+		if (ev.type == evtype_Timer) {
+			glk_cancel_line_event(mainwin, &ev);
+			glk_set_window(mainwin);
+			glk_put_string("Timer interrupt!\n");
+			glk_put_char('>');
+			inbuf[0] = 'x'; inbuf[1] = 'y'; inbuf[2] = 'z';
+			glk_request_line_event(mainwin, inbuf, 32, 3);
 			continue;
 		}
 		
