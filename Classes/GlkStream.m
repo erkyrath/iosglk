@@ -134,6 +134,21 @@
 - (void) setStyle:(glui32)styl {
 }
 
+/* Again, stream classes will override these get methods. */
+
+- (glsi32) getChar:(BOOL)unicode {
+	return -1;
+}
+
+- (glui32) getBuffer:(void *)buf buflen:(glui32)buflen unicode:(BOOL)unicode {
+	return 0;
+}
+
+- (glui32) getLine:(void *)buf buflen:(glui32)buflen unicode:(BOOL)unicode {
+	return 0;
+}
+
+
 @end
 
 @implementation GlkStreamWindow
@@ -417,6 +432,201 @@
 				ubufeof = ubufptr;
 		}
 	}
+}
+
+- (glsi32) getChar:(BOOL)wantunicode {
+	if (!readable)
+		return -1;
+
+	if (!unicode) {
+		if (bufptr < bufend) {
+			unsigned char ch = *(bufptr);
+			bufptr++;
+			readcount++;
+			return ch;
+		}
+		else {
+			return -1;
+		}
+	}
+	else {
+		if (ubufptr < ubufend) {
+			glui32 ch = *(ubufptr);
+			ubufptr++;
+			readcount++;
+			if (!wantunicode && ch >= 0x100)
+				return '?';
+			return ch;
+		}
+		else {
+			return -1;
+		}
+	}
+}
+
+- (glui32) getBuffer:(void *)getbuf buflen:(glui32)getlen unicode:(BOOL)wantunicode {
+	if (!readable)
+		return 0;
+		
+	/* This is messy, because we have to deal with the stream being unicode or not *and* with getbuf being unicode or not. */
+
+	if (!unicode) {
+		if (bufptr >= bufend) {
+			getlen = 0;
+		}
+		else {
+			if (bufptr + getlen > bufend) {
+				glui32 lx;
+				lx = (bufptr + getlen) - bufend;
+				if (lx < getlen)
+					getlen -= lx;
+				else
+					getlen = 0;
+			}
+		}
+		if (getlen) {
+			if (!wantunicode) {
+				memcpy(getbuf, bufptr, getlen);
+			}
+			else {
+				glui32 lx;
+				glui32 *ugetbuf = getbuf;
+				for (lx=0; lx<getlen; lx++) {
+					ugetbuf[lx] = (unsigned char)bufptr[lx];
+				}
+			}
+			bufptr += getlen;
+			if (bufptr > bufeof)
+				bufeof = bufptr;
+		}
+	}
+	else {
+		if (ubufptr >= ubufend) {
+			getlen = 0;
+		}
+		else {
+			if (ubufptr + getlen > ubufend) {
+				glui32 lx;
+				lx = (ubufptr + getlen) - ubufend;
+				if (lx < getlen)
+					getlen -= lx;
+				else
+					getlen = 0;
+			}
+		}
+		if (getlen) {
+			glui32 lx, ch;
+			if (!wantunicode) {
+				unsigned char *cgetbuf = getbuf;
+				for (lx=0; lx<getlen; lx++) {
+					ch = ubufptr[lx];
+					if (ch >= 0x100)
+						ch = '?';
+					cgetbuf[lx] = ch;
+				}
+			}
+			else {
+				glui32 *ugetbuf = getbuf;
+				for (lx=0; lx<getlen; lx++) {
+					ugetbuf[lx] = ubufptr[lx];
+				}
+			}
+			ubufptr += getlen;
+			if (ubufptr > ubufeof)
+				ubufeof = ubufptr;
+		}
+	}
+	readcount += getlen;
+	return getlen;
+}
+
+- (glui32) getLine:(void *)getbuf buflen:(glui32)getlen unicode:(BOOL)wantunicode {
+	if (!readable)
+		return 0;
+		
+	/* This is messy, because we have to deal with the stream being unicode or not *and* with getbuf being unicode or not. */
+	
+	if (getlen == 0)
+		return 0;
+
+	getlen -= 1; /* for the terminal null */
+	
+	glui32 lx;
+	int gotnewline = FALSE;
+	
+	if (!unicode) {
+		if (bufptr >= bufend) {
+			getlen = 0;
+		}
+		else {
+			if (bufptr + getlen > bufend) {
+				lx = (bufptr + getlen) - bufend;
+				if (lx < getlen)
+					getlen -= lx;
+				else
+					getlen = 0;
+			}
+		}
+		gotnewline = FALSE;
+		if (!wantunicode) {
+			unsigned char *cgetbuf = getbuf;
+			for (lx=0; lx<getlen && !gotnewline; lx++) {
+				cgetbuf[lx] = bufptr[lx];
+				gotnewline = (cgetbuf[lx] == '\n');
+			}
+			cgetbuf[lx] = '\0';
+		}
+		else {
+			glui32 *ugetbuf = getbuf;
+			for (lx=0; lx<getlen && !gotnewline; lx++) {
+				ugetbuf[lx] = (unsigned char)(bufptr[lx]);
+				gotnewline = (ugetbuf[lx] == '\n');
+			}
+			ugetbuf[lx] = '\0';
+		}
+		bufptr += lx;
+	}
+	else {
+		if (ubufptr >= ubufend) {
+			getlen = 0;
+		}
+		else {
+			if (ubufptr + getlen > ubufend) {
+				lx = (ubufptr + getlen) - ubufend;
+				if (lx < getlen)
+					getlen -= lx;
+				else
+					getlen = 0;
+			}
+		}
+		gotnewline = FALSE;
+		if (!wantunicode) {
+			unsigned char *cgetbuf = getbuf;
+			for (lx=0; lx<getlen && !gotnewline; lx++) {
+				glui32 ch;
+				ch = ubufptr[lx];
+				if (ch >= 0x100)
+					ch = '?';
+				cgetbuf[lx] = ch;
+				gotnewline = (ch == '\n');
+			}
+			cgetbuf[lx] = '\0';
+		}
+		else {
+			glui32 *ugetbuf = getbuf;
+			for (lx=0; lx<getlen && !gotnewline; lx++) {
+				glui32 ch;
+				ch = ubufptr[lx];
+				ugetbuf[lx] = ch;
+				gotnewline = (ch == '\n');
+			}
+			ugetbuf[lx] = '\0';
+		}
+		ubufptr += lx;
+	}
+	
+	readcount += lx;
+	return lx;
 }
 
 @end

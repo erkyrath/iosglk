@@ -33,7 +33,7 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 	}
 }
 
-/* None of these stylehint methods were ever good for much. We now have better options. */
+/* None of these stylehint methods were ever good for much. We now have better options in mind. */
 
 void glk_stylehint_set(glui32 wintype, glui32 styl, glui32 hint, glsi32 val)
 {

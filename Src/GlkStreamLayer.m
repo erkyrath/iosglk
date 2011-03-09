@@ -202,7 +202,8 @@ void glk_put_buffer_stream_uni(strid_t str, glui32 *ubuf, glui32 len)
 	[str putUBuffer:ubuf len:len];
 }
 
-void glk_set_style(glui32 val) {
+void glk_set_style(glui32 val)
+{
 	/* Very important to keep the style number between 0 and NUMSTYLES. The library code relies on this. */
 	if (val >= style_NUMSTYLES)
 		val = 0;
@@ -211,11 +212,73 @@ void glk_set_style(glui32 val) {
 	[library.currentstr setStyle:val];
 }
 
-void glk_set_style_stream(strid_t str, glui32 val) {
+void glk_set_style_stream(strid_t str, glui32 val)
+{
 	/* Very important to keep the style number between 0 and NUMSTYLES. The library code relies on this. */
 	if (val >= style_NUMSTYLES)
 		val = 0;
 		
 	[str setStyle:val];
 }
+
+glsi32 glk_get_char_stream(strid_t str)
+{
+	if (!str) {
+		[GlkLibrary strictWarning:@"get_char_stream: invalid ref"];
+		return 0;
+	}
+	
+	return [str getChar:NO];
+}
+
+glui32 glk_get_line_stream(strid_t str, char *buf, glui32 len)
+{
+	if (!str) {
+		[GlkLibrary strictWarning:@"get_line_stream: invalid ref"];
+		return 0;
+	}
+	
+	return [str getLine:buf buflen:len unicode:NO];
+}
+
+glui32 glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
+{
+	if (!str) {
+		[GlkLibrary strictWarning:@"get_buffer_stream: invalid ref"];
+		return 0;
+	}
+
+	return [str getBuffer:buf buflen:len unicode:NO];
+}
+
+glsi32 glk_get_char_stream_uni(strid_t str)
+{
+	if (!str) {
+		[GlkLibrary strictWarning:@"get_char_stream: invalid ref"];
+		return 0;
+	}
+	
+	return [str getChar:YES];
+}
+
+glui32 glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
+{
+	if (!str) {
+		[GlkLibrary strictWarning:@"get_line_stream: invalid ref"];
+		return 0;
+	}
+	
+	return [str getLine:buf buflen:len unicode:YES];
+}
+
+glui32 glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
+{
+	if (!str) {
+		[GlkLibrary strictWarning:@"get_buffer_stream: invalid ref"];
+		return 0;
+	}
+
+	return [str getBuffer:buf buflen:len unicode:YES];
+}
+
 
