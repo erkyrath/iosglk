@@ -18,6 +18,7 @@
 
 @synthesize windows;
 @synthesize streams;
+@synthesize filerefs;
 @synthesize rootwin;
 @synthesize currentstr;
 @synthesize bounds;
@@ -44,6 +45,7 @@ static GlkLibrary *singleton = nil;
 		
 		self.windows = [NSMutableArray arrayWithCapacity:8];
 		self.streams = [NSMutableArray arrayWithCapacity:8];
+		self.filerefs = [NSMutableArray arrayWithCapacity:8];
 		self.rootwin = nil;
 		self.currentstr = nil;
 	}
@@ -57,6 +59,7 @@ static GlkLibrary *singleton = nil;
 		singleton = nil;
 	self.windows = nil;
 	self.streams = nil;
+	self.filerefs = nil;
 	self.rootwin = nil;
 	self.currentstr = nil;
 	[super dealloc];

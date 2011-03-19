@@ -14,6 +14,7 @@
 @interface GlkLibrary : NSObject {
 	NSMutableArray *windows; /* GlkWindow objects */
 	NSMutableArray *streams; /* GlkStream objects */
+	NSMutableArray *filerefs; /* GlkFileRef objects */
 	
 	GlkWindow *rootwin;
 	GlkStream *currentstr;
@@ -26,6 +27,7 @@
 
 @property (nonatomic, retain) NSMutableArray *windows;
 @property (nonatomic, retain) NSMutableArray *streams;
+@property (nonatomic, retain) NSMutableArray *filerefs;
 @property (nonatomic, retain) GlkWindow *rootwin;
 @property (nonatomic, retain) GlkStream *currentstr;
 @property (nonatomic, readonly) CGRect bounds;
