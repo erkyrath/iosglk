@@ -18,7 +18,7 @@ void glk_main() {
 	event_t ev;
 	char buf[256];
 	char inbuf[256];
-	glui32 uinbuf[256];
+	//glui32 uinbuf[256];
 	
 	winid_t mainwin = glk_window_open(NULL, 0, 0, wintype_TextBuffer, 111);
 	glk_set_window(mainwin);

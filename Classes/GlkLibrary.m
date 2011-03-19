@@ -22,6 +22,7 @@
 @synthesize rootwin;
 @synthesize currentstr;
 @synthesize bounds;
+@synthesize filemanager;
 @synthesize dispatch_register_obj;
 @synthesize dispatch_unregister_obj;
 
@@ -48,6 +49,8 @@ static GlkLibrary *singleton = nil;
 		self.filerefs = [NSMutableArray arrayWithCapacity:8];
 		self.rootwin = nil;
 		self.currentstr = nil;
+		
+		self.filemanager = [[[NSFileManager alloc] init] autorelease];
 	}
 	
 	return self;
@@ -62,6 +65,7 @@ static GlkLibrary *singleton = nil;
 	self.filerefs = nil;
 	self.rootwin = nil;
 	self.currentstr = nil;
+	self.filemanager = nil;
 	[super dealloc];
 }
 
