@@ -33,6 +33,7 @@
 		self.tag = [library newTag];
 		rock = frefrock;
 		
+		NSLog(@"created fileref with pathname %@", pathnameval);
 		self.pathname = pathnameval;
 		textmode = ((usage & fileusage_TextMode) != 0);
 		filetype = (usage & fileusage_TypeMask);

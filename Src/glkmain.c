@@ -68,6 +68,7 @@ void glk_main() {
 	glk_window_move_cursor(statwin, 5, 0);
 	glk_put_char('-');
 	
+	glk_set_window(mainwin);
 	/*
 	strid_t sx = NULL;
 	while (1) {
@@ -91,10 +92,23 @@ void glk_main() {
 		glk_put_string(buf);
 	}
 	*/
+	
+	/*
+	frefid_t fx = NULL;
+	while (1) {
+		glui32 rock = 1;
+		fx = glk_fileref_iterate(fx, &rock);
+		if (!fx)
+			break;
+		sprintf(buf, "Fileref %x has rock %d\n", (glui32)fx, rock);
+		glk_put_string(buf);
+	}
+	*/
+
 	glk_set_window(mainwin);
 	glk_put_char('>');
 		
-	glk_request_timer_events(2000);
+	//glk_request_timer_events(2000);
 	glk_request_line_event(mainwin, inbuf, 32, 0);
 	//glk_request_char_event_uni(mainwin);
 	

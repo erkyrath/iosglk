@@ -7,6 +7,8 @@
 /*	This file contains the public Glk functions dealing with file references.
 	
 	(The "layer" files connect the C-linkable API to the ObjC implementation layer. This is therefore an ObjC file that defines C functions in terms of ObjC method calls. Like all the Glk functions, these must be called from the VM thread, not the main thread.)
+	
+	### Currently all temporary files go in NSTemporaryDirectory, and everything else goes in ~/Documents. This needs rethinking. I suspect that, if the library is used for multiple games, then save files should go in ~/Documents/Games/$GAME, and all other files should go in ~/Documents/Glk. (Transcripts and data files exist in a common pool between games.) (But maybe transcripts, command records, and data files should be segregated in three different directories?)
 */
 
 #import "GlkLibrary.h"
@@ -23,8 +25,11 @@ void glk_fileref_destroy(frefid_t fref)
 
 frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 {
+	/* We are going to generate the filename based off the current date and a counter. The counter is just in case this function is called twice in the same clock tick, which I think is impossible, but whatever -- it's cheap. */
+	static glui32 temp_file_counter = 0;
+
 	NSDate *date = [NSDate date];
-	NSString *tempname = [NSString stringWithFormat:@"_temp_file_%f", [date timeIntervalSince1970]];
+	NSString *tempname = [NSString stringWithFormat:@"_glk_temp_%f-%d", [date timeIntervalSince1970], temp_file_counter++];
 	tempname = [tempname stringByReplacingOccurrencesOfString:@"." withString:@"-"];
 	NSString *tempdir = NSTemporaryDirectory();
 	NSString *pathname = [tempdir stringByAppendingPathComponent:tempname];
