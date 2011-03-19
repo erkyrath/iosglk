@@ -20,17 +20,19 @@
 
 	glui32 rock;
 	
+	NSString *pathname;
 	glui32 filetype;
 	BOOL textmode;
 }
 
 @property (nonatomic, retain) GlkLibrary *library;
 @property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, retain) NSString *pathname;
 @property (nonatomic, readonly) glui32 filetype;
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, readonly) BOOL textmode;
 
-- (id) initWithType:(glui32)usage rock:(glui32)frefrock;
+- (id) initWithPath:(NSString *)pathnameval type:(glui32)usage rock:(glui32)frefrock;
 - (void) filerefDelete;
 
 @end

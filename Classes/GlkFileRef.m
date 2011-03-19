@@ -18,11 +18,12 @@
 
 @synthesize library;
 @synthesize tag;
+@synthesize pathname;
 @synthesize filetype;
 @synthesize rock;
 @synthesize textmode;
 
-- (id) initWithType:(glui32)usage rock:(glui32)frefrock {
+- (id) initWithPath:(NSString *)pathnameval type:(glui32)usage rock:(glui32)frefrock {
 	self = [super init];
 	
 	if (self) {
@@ -32,6 +33,7 @@
 		self.tag = [library newTag];
 		rock = frefrock;
 		
+		self.pathname = pathnameval;
 		textmode = ((usage & fileusage_TextMode) != 0);
 		filetype = (usage & fileusage_TypeMask);
 				
@@ -49,6 +51,9 @@
 	
 	if (inlibrary)
 		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc while in library"];
+	if (!pathname)
+		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc with pathname unset"];
+	self.pathname = nil;
 	if (!tag)
 		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc with tag unset"];
 	self.tag = nil;
