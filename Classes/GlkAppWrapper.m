@@ -114,6 +114,7 @@ static GlkAppWrapper *singleton = nil;
 	[frameview performSelectorOnMainThread:@selector(updateFromLibraryState:)
 		withObject:library waitUntilDone:NO];
 	
+	#if 0 //###
 	if (pendingsizechange) {
 		pendingsizechange = NO;
 		BOOL sizechanged = [library setMetrics:pendingsize];
@@ -123,6 +124,7 @@ static GlkAppWrapper *singleton = nil;
 				withObject:library waitUntilDone:NO];
 		}
 	}
+	#endif //###
 		
 	while (self.iowait) {
 		[iowaitcond wait];
@@ -146,6 +148,7 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond unlock];
 }
 
+#if 0 //###
 /* This is called from the main thread. It synchronizes with the VM thread. */
 - (void) setFrameSize:(CGRect)box {
 	[iowaitcond lock];
@@ -171,6 +174,7 @@ static GlkAppWrapper *singleton = nil;
 		[frameview updateFromLibrarySize:library];
 	}
 }
+#endif 0 //###
 
 /* Check whether the VM is blocked and waiting for events.
 	This is called from the main thread. It synchronizes with the VM thread. */

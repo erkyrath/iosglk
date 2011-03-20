@@ -16,6 +16,7 @@
 #import "GlkAppWrapper.h"
 #import "GlkStream.h"
 #import "StyleSet.h"
+#import "Geometry.h"
 #import "GlkUtilTypes.h"
 
 @implementation GlkWindow
@@ -142,8 +143,9 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	
 	for (GlkWindowPair *wx=self.parent; wx; wx=wx.parent) {
 		if (wx.type == wintype_Pair) {
-			if (wx.key == self) {
-				wx.key = nil;
+			if ([wx.geometry.keytag isEqualToNumber:self.tag]) {
+				wx.geometry.keytag = nil;
+				wx.geometry.keystyleset = nil;
 				wx.keydamage = YES;
 			}
 		}
@@ -598,16 +600,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 @implementation GlkWindowPair
 /* GlkWindowPair: a pair window (the kind of window that has subwindows). */
 
-@synthesize dir;
-@synthesize division;
-@synthesize key;
+@synthesize geometry;
 @synthesize keydamage;
-@synthesize size;
-@synthesize hasborder;
-@synthesize vertical;
-@synthesize backward;
-@synthesize child1;
-@synthesize child2;
 
 /* GlkWindowPair gets a special initializer. (Only called from glk_window_open() when a window is split.)
 */
@@ -615,15 +609,14 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	self = [super initWithType:wintype_Pair rock:0];
 	
 	if (self) {
-		dir = method & winmethod_DirMask;
-		division = method & winmethod_DivisionMask;
-		hasborder = ((method & winmethod_BorderMask) == winmethod_Border);
-		self.key = keywin;
+		geometry = [[Geometry alloc] init]; // retained
+		geometry.dir = method & winmethod_DirMask;
+		geometry.division = method & winmethod_DivisionMask;
+		geometry.hasborder = ((method & winmethod_BorderMask) == winmethod_Border);
+		geometry.keytag = keywin.tag;
+		geometry.keystyleset = keywin.styleset;
 		keydamage = FALSE;
-		size = initsize;
-
-		vertical = (dir == winmethod_Left || dir == winmethod_Right);
-		backward = (dir == winmethod_Left || dir == winmethod_Above);
+		geometry.size = initsize;
 
 		self.child1 = nil;
 		self.child2 = nil;
@@ -633,91 +626,56 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 }
 
 - (void) dealloc {
-	self.key = nil;
+	self.geometry = nil;
 	self.child1 = nil;
 	self.child2 = nil;
 	[super dealloc];
 }
 
+- (GlkWindow *) child1 {
+	return child1;
+}
+
+- (GlkWindow *) child2 {
+	return child2;
+}
+
+- (void) setChild1:(GlkWindow *)newwin {
+	if (newwin) {
+		[newwin retain];
+		geometry.child1tag = newwin.tag;
+	}
+	else {
+		geometry.child1tag = nil;
+	}
+	[child1 release];
+	child1 = newwin;
+}
+
+- (void) setChild2:(GlkWindow *)newwin {
+	if (newwin) {
+		[newwin retain];
+		geometry.child2tag = newwin.tag;
+	}
+	else {
+		geometry.child2tag = nil;
+	}
+	[child2 release];
+	child2 = newwin;
+}
+
 /* For a pair window, the task is to figure out how to divide the box between its children. Then recursively call windowRearrange on them.
 */
 - (void) windowRearrange:(CGRect)box {
-	CGFloat min, max, diff;
-	
 	bbox = box;
 
-	if (vertical) {
-		min = bbox.origin.x;
-		max = min + bbox.size.width;
-		splitwid = 4; //content_metrics.inspacingx;
-	}
-	else {
-		min = bbox.origin.y;
-		max = min + bbox.size.height;
-		splitwid = 4; //content_metrics.inspacingy;
-	}
-	if (!hasborder)
-		splitwid = 0;
-	diff = max - min;
-
-	if (division == winmethod_Proportional) {
-		split = floorf((diff * size) / 100.0);
-	}
-	else if (division == winmethod_Fixed) {
-		split = 0;
-		if (key && key.type == wintype_TextBuffer) {
-			if (!vertical)
-				split = (size * key.styleset.charbox.height + key.styleset.marginframe.size.height);
-			else
-				split = (size * key.styleset.charbox.width + key.styleset.marginframe.size.width);
-		}
-		if (key && key.type == wintype_TextGrid) {
-			if (!vertical)
-				split = (size * key.styleset.charbox.height + key.styleset.marginframe.size.height);
-			else
-				split = (size * key.styleset.charbox.width + key.styleset.marginframe.size.width);
-		}
-		split = ceilf(split);
-	}
-	else {
-		/* default behavior for unknown division method */
-		split = floorf(diff / 2);
-	}
-
-	/* Split is now a number between 0 and diff. Convert that to a number
-	   between min and max; also apply upside-down-ness. */
-	if (!backward) {
-		split = max-split-splitwid;
-	}
-	else {
-		split = min+split;
-	}
-
-	/* Make sure it's really between min and max. */
-	if (min >= max) {
-		split = min;
-	}
-	else {
-		split = fminf(fmaxf(split, min), max-splitwid);
-	}
-	
-	CGRect box1 = bbox;
-	CGRect box2 = bbox;
-
-	if (vertical) {
-		box1.size.width = split - bbox.origin.x;
-		box2.origin.x = split + splitwid;
-		box2.size.width = (bbox.origin.x+bbox.size.width) - box2.origin.x;
-	}
-	else {
-		box1.size.height = split - bbox.origin.y;
-		box2.origin.y = split + splitwid;
-		box2.size.height = (bbox.origin.y+bbox.size.height) - box2.origin.y;
-	}
-	
+	CGRect box1;
+	CGRect box2;
 	GlkWindow *ch1, *ch2;
+	
+	[geometry computeDivision:bbox for1:&box1 for2:&box2];
 
-	if (!backward) {
+	if (!geometry.backward) {
 		ch1 = child1;
 		ch2 = child2;
 	}

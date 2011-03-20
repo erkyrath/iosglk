@@ -58,6 +58,8 @@ void glk_main() {
 	glk_put_string("    Indent.\n");
 	*/
 		
+	//glk_select(&ev);
+	
 	winid_t statwin = glk_window_open(mainwin, winmethod_Above+winmethod_Fixed, 2, wintype_TextGrid, 222);
 	glk_set_window(statwin);
 	//glk_set_style(style_Preformatted);
@@ -109,7 +111,7 @@ void glk_main() {
 	glk_put_char('>');
 		
 	//glk_request_timer_events(2000);
-	glk_request_line_event(mainwin, inbuf, 32, 0);
+	//glk_request_line_event(mainwin, inbuf, 32, 0);
 	//glk_request_char_event_uni(mainwin);
 	
 	while (1) {

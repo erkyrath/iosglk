@@ -22,6 +22,7 @@
 @synthesize rootwin;
 @synthesize currentstr;
 @synthesize bounds;
+@synthesize geometrychanged;
 @synthesize filemanager;
 @synthesize dispatch_register_obj;
 @synthesize dispatch_unregister_obj;
@@ -49,6 +50,7 @@ static GlkLibrary *singleton = nil;
 		self.filerefs = [NSMutableArray arrayWithCapacity:8];
 		self.rootwin = nil;
 		self.currentstr = nil;
+		geometrychanged = YES;
 		
 		self.filemanager = [[[NSFileManager alloc] init] autorelease];
 	}
@@ -90,6 +92,20 @@ static GlkLibrary *singleton = nil;
 	if (rootwin)
 		[rootwin windowRearrange:bounds];
 	return YES;
+}
+
+/* Locate the window matching a given tag. (Or nil, if no window matches or the tag is nil.) This isn't efficient, but it's not heavily used.
+*/
+- (GlkWindow *) windowForTag:(NSNumber *)tag {
+	if (!tag)
+		return nil;
+	
+	for (GlkWindow *win in windows) {
+		if ([win.tag isEqualToNumber:tag])
+			return win;
+	}
+	
+	return nil;
 }
 
 /* Display a warning. Really this should be a fatal error. Eventually it will be visible on the screen somehow, but at the moment it's just a console log message.

@@ -56,9 +56,11 @@
 	[NSException raise:@"GlkException" format:@"updateFromWindowState not implemented"];
 }
 
+/* ###
 - (void) updateFromWindowSize {
 	self.frame = self.win.bbox;
 }
+*/
 
 - (void) updateFromWindowInputs {
 	BOOL wants_input = (win.char_request || win.line_request);

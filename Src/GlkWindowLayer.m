@@ -12,6 +12,7 @@
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
 #import "GlkStream.h"
+#import "Geometry.h"
 
 winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 wintype, glui32 rock) 
 {
@@ -60,6 +61,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 win
 	}
 
 	newwin = [GlkWindow windowWithType:wintype rock:rock];
+	library.geometrychanged = YES;
 	
 	if (!splitwin) {
 		library.rootwin = newwin;
@@ -106,6 +108,7 @@ void glk_window_close(winid_t win, stream_result_t *result)
 	}
 	
 	GlkLibrary *library = win.library;
+	library.geometrychanged = YES;
 
 	if (win == library.rootwin || win.parent == nil) {
 		/* close the root window, which means all windows. */
@@ -196,7 +199,6 @@ void glk_window_close(winid_t win, stream_result_t *result)
 
 void glk_window_get_arrangement(winid_t win, glui32 *method, glui32 *size, winid_t *keywin)
 {
-	GlkWindowPair *dwin;
 	glui32 val;
 
 	if (!win) {
@@ -209,17 +211,18 @@ void glk_window_get_arrangement(winid_t win, glui32 *method, glui32 *size, winid
 		return;
 	}
 
-	dwin = (GlkWindowPair *)dwin;
-
-	val = dwin.dir | dwin.division;
-	if (!dwin.hasborder)
+	GlkWindowPair *dwin = (GlkWindowPair *)win;
+	Geometry *geometry = dwin.geometry;
+	
+	val = geometry.dir | geometry.division;
+	if (!geometry.hasborder)
 		val |= winmethod_NoBorder;
 
 	if (size)
-		*size = dwin.size;
+		*size = geometry.size;
 	if (keywin) {
-		if (dwin.key)
-			*keywin = dwin.key;
+		if (geometry.keytag)
+			*keywin = [win.library windowForTag:geometry.keytag];
 		else
 			*keywin = nil;
 	}
@@ -227,9 +230,75 @@ void glk_window_get_arrangement(winid_t win, glui32 *method, glui32 *size, winid
 		*method = val;
 }
 
-void glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t keywin) 
+void glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t key) 
 {
-	//###
+	if (!win) {
+		[GlkLibrary strictWarning:@"window_set_arrangement: invalid ref"];
+		return;
+	}
+
+	if (win.type != wintype_Pair) {
+		[GlkLibrary strictWarning:@"window_set_arrangement: not a Pair window"];
+		return;
+	}
+
+	if (key) {
+		GlkWindow *wx;
+		if (key.type == wintype_Pair) {
+			[GlkLibrary strictWarning:@"window_set_arrangement: keywin cannot be a Pair"];
+			return;
+		}
+		for (wx=key; wx; wx=wx.parent) {
+			if (wx == win)
+				break;
+		}
+		if (wx == NULL) {
+			[GlkLibrary strictWarning:@"window_set_arrangement: keywin must be a descendant"];
+			return;
+		}
+	}
+
+	GlkWindowPair *dwin = (GlkWindowPair *)win;
+	Geometry *geometry = dwin.geometry;
+	CGRect box = dwin.bbox;
+	
+	glui32 newdir = method & winmethod_DirMask;
+	BOOL newvertical = (newdir == winmethod_Left || newdir == winmethod_Right);
+	BOOL newbackward = (newdir == winmethod_Left || newdir == winmethod_Above);
+	if (!key)
+		key = [win.library windowForTag:geometry.keytag];
+
+	if ((newvertical && !geometry.vertical) || (!newvertical && geometry.vertical)) {
+		if (!geometry.vertical)
+			[GlkLibrary strictWarning:@"window_set_arrangement: split must stay horizontal"];
+		else
+			[GlkLibrary strictWarning:@"window_set_arrangement: split must stay vertical"];
+		return;
+	}
+
+	if (key && key.type == wintype_Blank
+		&& (method & winmethod_DivisionMask) == winmethod_Fixed) {
+		[GlkLibrary strictWarning:@"window_set_arrangement: a Blank window cannot have a fixed size"];
+		return;
+	}
+
+	if ((newbackward && !geometry.backward) || (!newbackward && geometry.backward)) {
+		/* switch the children */
+		GlkWindow *tmpwin = [[dwin.child1 retain] autorelease];
+		dwin.child1 = dwin.child2;
+		dwin.child2 = tmpwin;
+	}
+
+	/* set up everything else */
+	geometry.dir = newdir; /* this sets vertical and backward */
+	geometry.division = method & winmethod_DivisionMask;
+	geometry.keytag = key.tag;
+	geometry.keystyleset = key.styleset;
+	geometry.size = size;
+	geometry.hasborder = ((method & winmethod_BorderMask) == winmethod_Border);
+
+	win.library.geometrychanged = YES;
+	[win windowRearrange:box];
 }
 
 winid_t glk_window_iterate(winid_t win, glui32 *rock) 

@@ -15,13 +15,19 @@
 	
 	/* Maps tags (NSNumbers) to GlkWindowViews. (But pair windows are excluded.) */
 	NSMutableDictionary *windowviews;
+	/* Maps tags (NSNumbers) to Geometry objects. (Only for pair windows.) */
+	NSMutableDictionary *wingeometries;
+	NSNumber *rootwintag;
 }
 
 @property (nonatomic, retain) NSMutableDictionary *windowviews;
+@property (nonatomic, retain) NSMutableDictionary *wingeometries;
 @property (nonatomic) CGFloat keyboardHeight;
+@property (nonatomic, retain) NSNumber *rootwintag;
 
 - (void) updateFromLibraryState:(GlkLibrary *)library;
-- (void) updateFromLibrarySize:(GlkLibrary *)library;
+- (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
+//###- (void) updateFromLibrarySize:(GlkLibrary *)library;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 
 @end

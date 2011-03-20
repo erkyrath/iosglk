@@ -12,6 +12,7 @@
 @class GlkStream;
 @class GlkWindowPair;
 @class StyleSet;
+@class Geometry;
 
 @interface GlkWindow : NSObject {
 	GlkLibrary *library;
@@ -112,30 +113,15 @@
 
 
 @interface GlkWindowPair : GlkWindow {
-	glui32 dir;
-	glui32 division;
-	BOOL hasborder;
-	GlkWindow *key;
-	glui32 size;
-	BOOL keydamage;
-	BOOL vertical;
-	BOOL backward;
+	Geometry *geometry;
+	BOOL keydamage; // only used within glk_window_close().
 	
 	GlkWindow *child1;
 	GlkWindow *child2;
-	
-	CGFloat split;
-	CGFloat splitwid;
 }
 
-@property (nonatomic, readonly) glui32 dir;
-@property (nonatomic, readonly) glui32 division;
-@property (nonatomic, readonly) BOOL hasborder;
-@property (nonatomic, retain) GlkWindow *key;
-@property (nonatomic, readonly) glui32 size;
+@property (nonatomic, retain) Geometry *geometry;
 @property (nonatomic) BOOL keydamage;
-@property (nonatomic, readonly) BOOL vertical;
-@property (nonatomic, readonly) BOOL backward;
 @property (nonatomic, retain) GlkWindow *child1;
 @property (nonatomic, retain) GlkWindow *child2;
 

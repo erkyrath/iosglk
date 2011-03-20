@@ -15,12 +15,15 @@
 #import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#import "Geometry.h"
 #import "GlkUtilTypes.h"
 #include "GlkUtilities.h"
 
 @implementation GlkFrameView
 
 @synthesize windowviews;
+@synthesize wingeometries;
+@synthesize rootwintag;
 
 - (void) awakeFromNib {
 	[super awakeFromNib];
@@ -28,10 +31,14 @@
 	
 	keyboardHeight = 0.0;
 	self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
+	self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
+	rootwintag = nil;
 }
 
 - (void) dealloc {
 	self.windowviews = nil;
+	self.wingeometries = nil;
+	self.rootwintag = nil;
 	[super dealloc];
 }
 
@@ -45,13 +52,50 @@
 }
 
 - (void) layoutSubviews {
-	NSLog(@"frameview layoutSubviews");
+	NSLog(@"frameview layoutSubviews to %@ (minus %.1f)", StringFromRect(self.bounds), keyboardHeight);
 	
 	CGRect box = self.bounds;
 	box.size.height -= keyboardHeight;
 	if (box.size.height < 0)
 		box.size.height = 0;
-	[[GlkAppWrapper singleton] setFrameSize:box];
+
+	if (rootwintag) {
+		[self windowViewRearrange:rootwintag rect:box];
+	}
+}
+
+- (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box {
+	GlkWindowView *winv = [windowviews objectForKey:tag];
+	Geometry *geometry = [wingeometries objectForKey:tag];
+	
+	/* Exactly one of winv and geom should be set here. (geom for pair windows, winv for all others.) */
+	if (winv && geometry)
+		[NSException raise:@"GlkException" format:@"view and geometry for same window"];
+	if (!winv && !geometry)
+		[NSException raise:@"GlkException" format:@"neither view and geometry for same window"];
+	
+	if (winv) {
+		winv.frame = box;
+	}
+	else {
+		CGRect box1;
+		CGRect box2;
+		NSNumber *ch1, *ch2;
+		
+		[geometry computeDivision:box for1:&box1 for2:&box2];
+
+		if (!geometry.backward) {
+			ch1 = geometry.child1tag;
+			ch2 = geometry.child2tag;
+		}
+		else {
+			ch1 = geometry.child2tag;
+			ch2 = geometry.child1tag;
+		}
+
+		[self windowViewRearrange:ch1 rect:box1];
+		[self windowViewRearrange:ch2 rect:box2];
+	}
 }
 
 /* This tells all the window views to get up to date with the new output in their data (GlkWindow) objects. If window views have to be created or destroyed (because GlkWindows have opened or closed), this does that too.
@@ -88,6 +132,23 @@
 		}
 	}
 	
+	/* If the window geometry has changed (windows created, deleted, or arrangement-set) then rebuild the geometry cache. */
+	if (library.geometrychanged) {
+		NSLog(@"Recaching window geometries");
+		library.geometrychanged = NO;
+		if (library.rootwin)
+			self.rootwintag = library.rootwin.tag;
+		else
+			self.rootwintag = nil;
+		[wingeometries removeAllObjects];
+		for (GlkWindowPair *win in library.windows) {
+			if (win.type == wintype_Pair) {
+				Geometry *geom = [win.geometry copy];
+				[wingeometries setObject:geom forKey:win.tag];
+			}
+		}
+	}
+	
 	/*
 	NSLog(@"frameview has %d windows:", windowviews.count);
 	for (NSNumber *tag in windowviews) {
@@ -107,6 +168,7 @@
 
 /* This tells all the window views to get up to date with the sizes of their GlkWindows. The library's setMetrics must already have been called, to get the GlkWindow sizes set right.
 */
+#if 0 //###
 - (void) updateFromLibrarySize:(GlkLibrary *)library {
 	NSLog(@"updateFromLibrarySize: %@", StringFromRect(library.bounds));
 	
@@ -120,6 +182,7 @@
 	}
 	[[GlkAppWrapper singleton] acceptEventType:evtype_Arrange window:nil val1:0 val2:0];
 }
+#endif //###
 
 /* This is invoked in the main thread, by the VM thread, which is waiting on the result. We're safe from deadlock because the VM thread can't be in glk_select(); it can't be holding the iowait lock, and it can't get into the code path that rearranging the view structure.
 */

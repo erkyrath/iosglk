@@ -19,6 +19,7 @@
 	GlkWindow *rootwin;
 	GlkStream *currentstr;
 	CGRect bounds;
+	BOOL geometrychanged;
 	
 	NSFileManager *filemanager; // for use in the VM thread
 	
@@ -33,6 +34,7 @@
 @property (nonatomic, retain) GlkWindow *rootwin;
 @property (nonatomic, retain) GlkStream *currentstr;
 @property (nonatomic, readonly) CGRect bounds;
+@property (nonatomic) BOOL geometrychanged;
 @property (nonatomic, retain) NSFileManager *filemanager;
 @property (nonatomic) gidispatch_rock_t (*dispatch_register_obj)(void *obj, glui32 objclass);
 @property (nonatomic) void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
@@ -42,5 +44,6 @@
 
 - (NSNumber *) newTag;
 - (BOOL) setMetrics:(CGRect)box;
+- (GlkWindow *) windowForTag:(NSNumber *)tag;
 
 @end
