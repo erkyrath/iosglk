@@ -4,6 +4,14 @@
 	http://eblong.com/zarf/glk/
 */
 
+/*	This is the result of an annoying threading issue. I designed the original Glk API on single-threaded systems; I didn't think about what happens when the UI (in one thread) resizes itself while the VM (in another thread) is creating and destroying windows. The result isn't tidy.
+
+	Therefore, the UI and VM have to keep *independent* descriptions of the Glk window geometry. For the VM, these describe the GlkWindow objects; for the UI, they describe the GlkWindowView objects. They sync up at glk_select() time -- see the updateFromLibraryState() method in GlkFrameView; that clones the GlkWindow information over to the GlkWindowViews.
+
+	The Geometry object encapsulates everything a Glk pair window knows about its division model.
+	
+	(Note that this currently includes a shared pointer to the child windows' StyleSet objects. Since those objects are immutable, it's okay that two threads are reading from them simultaneously. If they ever start mutating, I'll have to clone them too.)
+*/
 
 #import "Geometry.h"
 #import "GlkLibrary.h"

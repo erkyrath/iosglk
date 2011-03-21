@@ -15,7 +15,7 @@
 
 @synthesize scrollview;
 @synthesize textview;
-@synthesize scrollDownNextLayout;
+@synthesize scrollDownNextLayout; //###
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
@@ -38,6 +38,8 @@
 	[super dealloc];
 }
 
+/* Called when there is new output or a new input field. 
+*/
 - (void) scrollToBottom {
 	CGFloat totalheight = [textview totalHeight];
 	
@@ -80,9 +82,9 @@
 	
 	NSMutableArray *updates = bufwin.updatetext;
 	if (updates.count == 0) {
-		if (scrollDownNextLayout)
-			[self scrollToBottom];
-		scrollDownNextLayout = NO;
+		//if (scrollDownNextLayout)
+		//	[self scrollToBottom];
+		//scrollDownNextLayout = NO;
 		return;
 	}
 	
@@ -101,9 +103,11 @@
 	scrollview.contentSize = box.size;
 	
 	[self scrollToBottom];
-	scrollDownNextLayout = NO;
+	//scrollDownNextLayout = NO;
 }
 
+/* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place. Also we'll want to scroll down.
+*/
 - (void) placeInputField:(UITextField *)field {
 	CGRect box = [textview placeForInputField];
 	field.frame = box;
@@ -119,7 +123,7 @@
 	scrollview.contentSize = box.size;
 	
 	[self scrollToBottom];
-	scrollDownNextLayout = NO;
+	//scrollDownNextLayout = NO;
 }
 
 @end
