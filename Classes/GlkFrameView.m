@@ -28,7 +28,7 @@
 - (void) awakeFromNib {
 	[super awakeFromNib];
 	NSLog(@"GlkFrameView awakened, bounds %@", StringFromRect(self.bounds));
-	
+
 	keyboardHeight = 0.0;
 	self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 	self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
@@ -48,6 +48,7 @@
 
 - (void) setKeyboardHeight:(CGFloat)val {
 	keyboardHeight = val;
+	NSLog(@"### setKeyboardHeight calling setNeedsLayout");
 	[self setNeedsLayout];
 }
 
@@ -76,6 +77,7 @@
 	
 	if (winv) {
 		winv.frame = box;
+		NSLog(@"### setting frame for winview %@", winv);
 	}
 	else {
 		CGRect box1;

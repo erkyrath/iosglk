@@ -22,6 +22,8 @@ void glk_main() {
 	
 	winid_t mainwin = glk_window_open(NULL, 0, 0, wintype_TextBuffer, 111);
 	glk_set_window(mainwin);
+	
+	glk_put_string("Top.\n\n\n\nFoo.\n\n\n\n\n\nBar.\n\n\n\nBaz.\n\n\n\n");
 
 	glk_put_string("This is the output of ");
 	glk_set_style(style_Emphasized);
@@ -109,9 +111,10 @@ void glk_main() {
 
 	glk_set_window(mainwin);
 	glk_put_char('>');
-		
+	
 	//glk_request_timer_events(2000);
-	//glk_request_line_event(mainwin, inbuf, 32, 0);
+	glk_request_line_event(mainwin, inbuf, 32, 0);
+	int pending = 1;
 	//glk_request_char_event_uni(mainwin);
 	
 	while (1) {
@@ -123,19 +126,29 @@ void glk_main() {
 				glk_put_char('>');
 			}
 			else {
-				/*
-				glk_cancel_line_event(mainwin, &ev);
-				glk_set_window(mainwin);
-				glk_put_string("You were typing \"");
-				glk_put_buffer(inbuf, ev.val1);
-				glk_put_string("\".\n");
-				*/
+				if (pending) {
+					glk_cancel_line_event(mainwin, &ev);
+					pending = 0;
+					glk_set_window(mainwin);
+					glk_put_string("You were typing \"");
+					glk_put_buffer(inbuf, ev.val1);
+					glk_put_string("\".\n");
+				}
+				else {
+					glk_set_window(mainwin);
+					glk_put_char('>');
+					glk_request_line_event(mainwin, inbuf, 32, 0);
+					pending = 1;
+				}
+				
 				//sleep(3);
+				/*
 				glk_select_poll(&ev);
 				glk_set_window(statwin);
 				glk_window_move_cursor(statwin, 0, 0);
 				glk_put_string("Polled event type ");
 				glk_put_char(ev.type + '0');
+				*/
 				//nslogc("Requesting line input...");
 				//glk_request_line_event(mainwin, inbuf, 32, 0);
 				//glk_request_line_event(statwin, inbuf, 32, 0);

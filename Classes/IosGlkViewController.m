@@ -55,13 +55,14 @@
 	CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
 	rect = [self.view convertRect:rect fromView:nil];
 	CGSize size = rect.size;
-	NSLog(@"Keyboard open, size %@", StringFromSize(size));
+	NSLog(@"Keyboard was shown, size %@", StringFromSize(size));
 	
 	//### we could do that clever scroll-inset trick from "Managing the Keyboard"
 	[[self viewAsFrameView] setKeyboardHeight:size.height];
 }
 
 - (void) keyboardWillBeHidden:(NSNotification*)notification {
+	NSLog(@"Keyboard will be hidden");
 	[[self viewAsFrameView] setKeyboardHeight:0];
 }
 

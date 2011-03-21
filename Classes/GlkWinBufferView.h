@@ -9,15 +9,15 @@
 
 @class StyledTextView;
 
-@interface GlkWinBufferView : GlkWindowView {
+@interface GlkWinBufferView : GlkWindowView <UIScrollViewDelegate> {
 	UIScrollView *scrollview;
 	StyledTextView *textview;
 	
-	BOOL scrollDownNextLayout;
+	CGRect lastLayoutBounds;
+	BOOL willClampScrollAnim;
 }
 
 @property (nonatomic, retain) UIScrollView *scrollview;
 @property (nonatomic, retain) StyledTextView *textview;
-@property (nonatomic) BOOL scrollDownNextLayout;
 
 @end
