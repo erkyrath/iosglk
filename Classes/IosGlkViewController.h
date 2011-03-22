@@ -13,6 +13,7 @@
 }
 
 - (GlkFrameView *) viewAsFrameView;
+- (void) hideKeyboard;
 
 @end
 

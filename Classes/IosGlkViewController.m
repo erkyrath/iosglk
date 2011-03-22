@@ -6,6 +6,7 @@
 
 #import "IosGlkViewController.h"
 #import "GlkFrameView.h"
+#import "GlkWindowView.h"
 #include "GlkUtilities.h"
 
 @implementation IosGlkViewController
@@ -64,6 +65,17 @@
 - (void) keyboardWillBeHidden:(NSNotification*)notification {
 	NSLog(@"Keyboard will be hidden");
 	[[self viewAsFrameView] setKeyboardHeight:0];
+}
+
+- (void) hideKeyboard {
+	GlkFrameView *frameview = [self viewAsFrameView];
+	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
+		if (winv.textfield && [winv.textfield isFirstResponder]) {
+			NSLog(@"Hiding keyboard for %@", winv);
+			[winv.textfield resignFirstResponder];
+			break;
+		}
+	}
 }
 
 // Allow all orientations
