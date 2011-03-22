@@ -20,13 +20,11 @@
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		lastLayoutBounds = CGRectZero;
-		willClampScrollAnim = YES;
 		self.scrollview = [[[UIScrollView alloc] initWithFrame:self.bounds] autorelease];
 		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds] autorelease];
 		scrollview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		scrollview.alwaysBounceVertical = YES;
 		scrollview.contentSize = self.bounds.size;
-		scrollview.delegate = self;
 		textview.styleset = win.styleset;
 		[scrollview addSubview:textview];
 		[self addSubview:scrollview];
@@ -40,10 +38,12 @@
 	[super dealloc];
 }
 
+/*
 - (void) scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-	//NSLog(@"scrollview: WillBeginDragging");
+	NSLog(@"scrollview: WillBeginDragging");
 	willClampScrollAnim = NO;
 }
+*/
 
 /* Called when there is new output or a new input field.
 
@@ -57,12 +57,24 @@
 	if (totalheight < curheight)
 		return;
 	
-	willClampScrollAnim = YES;
-
 	CGPoint pt;
 	pt.x = 0;
 	pt.y = totalheight - curheight;
-	[scrollview setContentOffset:pt animated:animated];
+	
+	/* I'm not using setContentOffset:animated: here, because that produces nasty weird animations. Specifically, if the scrollview changes size in the near future -- which can easily happen, if an output update is followed by the keyboard closing -- then the setContentOffset animation will continue to the original scroll position. Even if that's outside the bounds of the new scrollview size. There's no way to interrupt it. 
+	
+		So we run our own animation. (Fortunately, contentOffset is an animatable property.) */
+	
+	if (!animated) {
+		scrollview.contentOffset = pt;
+	}
+	else {
+		[UIView beginAnimations:@"autoscroll" context:nil];
+		[UIView setAnimationDuration:0.3];
+		[UIView setAnimationCurve:UIViewAnimationCurveLinear];
+		scrollview.contentOffset = pt;
+		[UIView commitAnimations];
+	}
 }
 
 /* This is called when the GlkFrameView changes size, and also when the child scrollview scrolls. This is a mysterious mix of cases, but we can safely ignore the latter by only acting when the bounds actually change. 
@@ -71,14 +83,6 @@
 - (void) layoutSubviews {
 	if (CGRectEqualToRect(lastLayoutBounds, self.bounds)) {
 		//NSLog(@"### boring layoutSubviews; scroll pos is %.1f of %.1f", scrollview.contentOffset.y, scrollview.contentSize.height - scrollview.bounds.size.height);
-		if (willClampScrollAnim) {
-			CGFloat scrollmax = scrollview.contentSize.height - scrollview.bounds.size.height;
-			if (scrollview.contentOffset.y > scrollmax) {
-				NSLog(@"...abort scroll!");
-				CGPoint pt = CGPointMake(0, scrollmax);
-				[scrollview setContentOffset:pt animated:NO];
-			}
-		}
 		return;
 	}
 	lastLayoutBounds = self.bounds;
@@ -109,9 +113,6 @@
 	
 	NSMutableArray *updates = bufwin.updatetext;
 	if (updates.count == 0) {
-		//if (scrollDownNextLayout)
-		//	[self scrollToBottom];
-		//scrollDownNextLayout = NO;
 		return;
 	}
 	
@@ -130,7 +131,6 @@
 	scrollview.contentSize = box.size;
 	
 	[self scrollToBottom:YES];
-	//scrollDownNextLayout = NO;
 }
 
 /* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place. Also we'll want to scroll down.
@@ -150,7 +150,6 @@
 	scrollview.contentSize = box.size;
 	
 	[self scrollToBottom:YES];
-	//scrollDownNextLayout = NO;
 }
 
 @end

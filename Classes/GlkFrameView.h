@@ -25,6 +25,7 @@
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic, retain) NSNumber *rootwintag;
 
+- (void) setNeedsLayoutPlusSubviews;
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 //###- (void) updateFromLibrarySize:(GlkLibrary *)library;

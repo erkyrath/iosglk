@@ -33,8 +33,8 @@
 	NSLog(@"IosGlkViewController viewDidLoad");
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
-		selector:@selector(keyboardWasShown:)
-		name:UIKeyboardDidShowNotification object:nil];
+		selector:@selector(keyboardWillBeShown:)
+		name:UIKeyboardWillShowNotification object:nil];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 		selector:@selector(keyboardWillBeHidden:)
@@ -50,13 +50,13 @@
 	return (GlkFrameView *)self.view;
 }
 
-- (void) keyboardWasShown:(NSNotification*)notification {
+- (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
 	//### UIKeyboardFrameBeginUserInfoKey is only available in 3.2 or later. Do something else for 3.1.x.
 	CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
 	rect = [self.view convertRect:rect fromView:nil];
 	CGSize size = rect.size;
-	NSLog(@"Keyboard was shown, size %@", StringFromSize(size));
+	NSLog(@"Keyboard will be shown, size %@", StringFromSize(size));
 	
 	//### we could do that clever scroll-inset trick from "Managing the Keyboard"
 	[[self viewAsFrameView] setKeyboardHeight:size.height];

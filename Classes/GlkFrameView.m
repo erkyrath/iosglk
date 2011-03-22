@@ -48,8 +48,15 @@
 
 - (void) setKeyboardHeight:(CGFloat)val {
 	keyboardHeight = val;
-	NSLog(@"### setKeyboardHeight calling setNeedsLayout");
+	//NSLog(@"### setKeyboardHeight calling setNeedsLayout");
+	[self setNeedsLayoutPlusSubviews];
+}
+
+- (void) setNeedsLayoutPlusSubviews {
 	[self setNeedsLayout];
+	for (UIView *view in self.subviews) {
+		[view setNeedsLayout];
+	}
 }
 
 - (void) layoutSubviews {
@@ -61,7 +68,11 @@
 		box.size.height = 0;
 
 	if (rootwintag) {
+		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
+		[UIView beginAnimations:@"windowViewRearrange" context:nil];
+		[UIView setAnimationDuration:0.0];
 		[self windowViewRearrange:rootwintag rect:box];
+		[UIView commitAnimations];
 	}
 }
 
@@ -77,7 +88,7 @@
 	
 	if (winv) {
 		winv.frame = box;
-		NSLog(@"### setting frame for winview %@", winv);
+		//NSLog(@"### setting frame for winview %@", winv);
 	}
 	else {
 		CGRect box1;

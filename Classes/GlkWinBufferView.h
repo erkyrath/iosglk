@@ -14,7 +14,6 @@
 	StyledTextView *textview;
 	
 	CGRect lastLayoutBounds;
-	BOOL willClampScrollAnim;
 }
 
 @property (nonatomic, retain) UIScrollView *scrollview;
