@@ -41,6 +41,32 @@ strid_t glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode,
 	return [str autorelease];
 }
 
+strid_t glk_stream_open_file(frefid_t fref, glui32 fmode, glui32 rock)
+{
+	if (!fref) {
+		[GlkLibrary strictWarning:@"stream_open_file: invalid ref"];
+		return NULL;
+	}
+	
+	strid_t str = [[GlkStreamFile alloc] initWithMode:fmode rock:rock unicode:NO fileref:fref];
+	if (!str)
+		return NULL;
+	return [str autorelease];
+}
+
+strid_t glk_stream_open_file_uni(frefid_t fref, glui32 fmode, glui32 rock)
+{
+	if (!fref) {
+		[GlkLibrary strictWarning:@"stream_open_file_uni: invalid ref"];
+		return NULL;
+	}
+	
+	strid_t str = [[GlkStreamFile alloc] initWithMode:fmode rock:rock unicode:YES fileref:fref];
+	if (!str)
+		return NULL;
+	return [str autorelease];
+}
+
 void glk_stream_close(strid_t str, stream_result_t *result)
 {
 	if (!str) {

@@ -86,3 +86,13 @@ typedef enum GlkStreamType_enum {
 
 @end
 
+@interface GlkStreamFile : GlkStream {
+	NSFileHandle *handle;
+}
+
+@property (nonatomic, retain) NSFileHandle *handle;
+
+- (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)unicode fileref:(GlkFileRef *)fref;
+
+@end
+

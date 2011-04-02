@@ -73,8 +73,6 @@
 		
 	[GlkWindow unEchoStream:self];
 	
-	//### subclasses: for file, close and deref the file
-
 	if (library.dispatch_unregister_obj)
 		(*library.dispatch_unregister_obj)(self, gidisp_Class_Stream, disprock);
 		
@@ -628,6 +626,84 @@
 	readcount += lx;
 	return lx;
 }
+
+@end
+
+
+@implementation GlkStreamFile
+
+@synthesize handle;
+
+- (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode fileref:(GlkFileRef *)fref {
+	BOOL isreadable = (fmode != filemode_Write);
+	BOOL iswritable = (fmode != filemode_Read);
+
+	NSFileHandle *newhandle = nil;
+	//### create, open, seek
+	
+	if (!newhandle) {
+		[self release];
+		return nil;
+	}
+	
+	self = [super initWithType:strtype_File readable:isreadable writable:iswritable rock:rockval];
+	
+	if (self) {
+		unicode = isunicode;
+		self.handle = newhandle;
+	}
+	
+	return self;
+}
+
+- (void) dealloc {
+	self.handle = nil;
+	[super dealloc];
+}
+
+- (void) streamDelete {
+	[handle closeFile];
+	self.handle = nil;
+	[super streamDelete];
+}
+
+- (void) putBuffer:(char *)buf len:(glui32)len {
+	if (!len)
+		return;
+	writecount += len;
+
+	//###
+}
+
+- (void) putUBuffer:(glui32 *)buf len:(glui32)len {
+	if (!len)
+		return;
+	writecount += len;
+
+	//###
+}
+
+- (void) setPosition:(glsi32)pos seekmode:(glui32)seekmode {
+	switch (seekmode) {
+		case seekmode_Start:
+			[handle seekToFileOffset:pos];
+			break;
+		case seekmode_Current:
+			pos += [handle offsetInFile];
+			[handle seekToFileOffset:pos];
+			break;
+		case seekmode_End:
+			[handle seekToEndOfFile];
+			pos += [handle offsetInFile];
+			[handle seekToFileOffset:pos];
+			break;
+	}
+}
+
+- (glui32) getPosition {
+	return [handle offsetInFile];
+}
+
 
 @end
 
