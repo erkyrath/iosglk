@@ -88,6 +88,7 @@ typedef enum GlkStreamType_enum {
 
 @interface GlkStreamFile : GlkStream {
 	NSFileHandle *handle;
+	BOOL textmode;
 }
 
 @property (nonatomic, retain) NSFileHandle *handle;

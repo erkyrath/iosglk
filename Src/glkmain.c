@@ -97,7 +97,22 @@ void glk_main() {
 	}
 	*/
 	
-	/*
+	frefid_t fileref = glk_fileref_create_by_name(fileusage_SavedGame, "foobar", 123);
+	strid_t str = glk_stream_open_file(fileref, filemode_Read, 457);
+	sprintf(buf, "Stream %x\n", (glui32)str);
+	//glk_stream_close(str, NULL);
+	glk_put_string(buf);
+	
+	strid_t sx = NULL;
+	while (1) {
+		glui32 rock = 1;
+		sx = glk_stream_iterate(sx, &rock);
+		if (!sx)
+			break;
+		sprintf(buf, "Stream %x has rock %d\n", (glui32)sx, rock);
+		glk_put_string(buf);
+	}
+	
 	frefid_t fx = NULL;
 	while (1) {
 		glui32 rock = 1;
@@ -107,7 +122,6 @@ void glk_main() {
 		sprintf(buf, "Fileref %x has rock %d\n", (glui32)fx, rock);
 		glk_put_string(buf);
 	}
-	*/
 
 	glk_set_window(mainwin);
 	glk_put_char('>');

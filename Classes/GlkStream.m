@@ -11,6 +11,7 @@
 
 #import "GlkStream.h"
 #import "GlkWindow.h"
+#import "GlkFileRef.h"
 #import "GlkLibrary.h"
 
 @implementation GlkStream
@@ -82,6 +83,8 @@
 	inlibrary = NO;
 }
 
+/* Return the number of characters read from and written to the stream. (The result pointer may be NULL, in which case this does nothing.)
+*/
 - (void) fillResult:(stream_result_t *)result {
 	if (result) {
 		result->readcount = readcount;
@@ -638,18 +641,47 @@
 	BOOL isreadable = (fmode != filemode_Write);
 	BOOL iswritable = (fmode != filemode_Read);
 
-	NSFileHandle *newhandle = nil;
-	//### create, open, seek
-	
-	if (!newhandle) {
-		[self release];
-		return nil;
-	}
-	
 	self = [super initWithType:strtype_File readable:isreadable writable:iswritable rock:rockval];
 	
 	if (self) {
+		/* Set the easy fields. */
 		unicode = isunicode;
+		textmode = fref.textmode;
+		
+		if (fmode != filemode_Read) {
+			/* Create the file first, if it doesn't already exist. */
+			NSFileManager *filemanager = [GlkLibrary singleton].filemanager;
+			if (![filemanager fileExistsAtPath:fref.pathname])
+				[filemanager createFileAtPath:fref.pathname contents:nil attributes:nil];
+		}
+
+		/* Open the file handle. */
+		NSFileHandle *newhandle = nil;
+		switch (fmode) {
+			case filemode_Read:
+				newhandle = [NSFileHandle fileHandleForReadingAtPath:fref.pathname];
+				break;
+			case filemode_Write:
+				newhandle = [NSFileHandle fileHandleForWritingAtPath:fref.pathname];
+				break;
+			case filemode_ReadWrite:
+			case filemode_WriteAppend:
+				newhandle = [NSFileHandle fileHandleForUpdatingAtPath:fref.pathname];
+				break;
+		}
+		
+		if (!newhandle) {
+			/* Failed, probably because the file doesn't exist. */
+			[self streamDelete];
+			[self release];
+			return nil;
+		}
+		
+		if (fmode == filemode_Write)
+			[newhandle truncateFileAtOffset:0];
+		if (fmode == filemode_WriteAppend)
+			[newhandle seekToEndOfFile];
+	
 		self.handle = newhandle;
 	}
 	
