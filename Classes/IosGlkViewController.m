@@ -52,7 +52,7 @@
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
-	//### UIKeyboardFrameBeginUserInfoKey is only available in 3.2 or later. Do something else for 3.1.x.
+	//BACKC: UIKeyboardFrameBeginUserInfoKey is only available in 3.2 or later. Do something else for 3.1.3.
 	CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
 	rect = [self.view convertRect:rect fromView:nil];
 	CGSize size = rect.size;
