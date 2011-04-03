@@ -635,10 +635,19 @@
 
 @implementation GlkStreamFile
 
+/*	We handle disk files differently depending on whether they're Unicode or not, and whether they're text-mode or not. (Remember that the Unicode flag depends on whether the call comes from glk_stream_open_file_uni(); the text-mode flag comes from the fileref.)
+
+	A non-Unicode, binary-mode file is a stream of bytes. Characters over 0xFF sent to it are converted to "?".
+	
+	A Unicode, binary-mode file is a stream of big-endian 32-bit integers. (The get/set_position calls are counted in characters, so they count 32-bit chunks.)
+	
+	A text-mode file is UTF-8 encoded. The Unicode flag is ignored for text-mode files; they're all just UTF-8. The get/set_position calls count in bytes, and are therefore hard to use. Seeking to beginning/end of file is safe, but jumping around inside the file may land you in the middle of a UTF-8 character.
+*/
+
 @synthesize handle;
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode fileref:(GlkFileRef *)fref {
-	BOOL isreadable = (fmode != filemode_Write);
+	BOOL isreadable = (fmode == filemode_Read || fmode == filemode_ReadWrite);
 	BOOL iswritable = (fmode != filemode_Read);
 
 	self = [super initWithType:strtype_File readable:isreadable writable:iswritable rock:rockval];
@@ -704,7 +713,30 @@
 		return;
 	writecount += len;
 
-	//###
+	if (!textmode) {
+		NSData *data;
+		if (!unicode) {
+			/* byte stream */
+			data = [NSData dataWithBytesNoCopy:buf length:len freeWhenDone:NO];
+		}
+		else {
+			/* cheap big-endian stream */
+			char *ubuf = malloc(4*len);
+			bzero(ubuf, 4*len);
+			for (int ix=0; ix<len; ix++)
+				ubuf[4*ix+3] = buf[ix];
+			data = [NSData dataWithBytesNoCopy:ubuf length:4*len freeWhenDone:YES];
+		}
+		[handle writeData:data];
+	}
+	else {
+		/* UTF8 stream (whether the unicode flag is set or not) */
+		/* Turn the buffer into an NSString. We'll release this at the end of the function. */
+		NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
+		NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+		[handle writeData:data];
+		[str release];
+	}
 }
 
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len {
@@ -712,10 +744,48 @@
 		return;
 	writecount += len;
 
-	//###
+	if (!textmode) {
+		NSData *data;
+		if (!unicode) {
+			/* byte stream */
+			char *ubuf = malloc(len);
+			for (int ix=0; ix<len; ix++) {
+				glui32 ch = buf[ix];
+				ubuf[ix] = (ch < 0x100) ? ch : '?';
+			}
+			data = [NSData dataWithBytesNoCopy:ubuf length:len freeWhenDone:YES];
+		}
+		else {
+			/* cheap big-endian stream */
+			char *ubuf = malloc(4*len);
+			for (int ix=0; ix<len; ix++) {
+				glui32 ch = buf[ix];
+				ubuf[4*ix+0] = (ch >> 24) & 0xFF;
+				ubuf[4*ix+1] = (ch >> 16) & 0xFF;
+				ubuf[4*ix+2] = (ch >> 8) & 0xFF;
+				ubuf[4*ix+3] = ch & 0xFF;
+			}
+			data = [NSData dataWithBytesNoCopy:ubuf length:4*len freeWhenDone:YES];
+		}
+		[handle writeData:data];
+	}
+	else {
+		/* UTF8 stream (whether the unicode flag is set or not) */
+		/* Turn the buffer into an NSString. We'll release this at the end of the function. 
+			This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
+		NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
+		NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+		[handle writeData:data];
+		[str release];
+	}
 }
 
 - (void) setPosition:(glsi32)pos seekmode:(glui32)seekmode {
+	if (!textmode && unicode) {
+		/* This file is in four-byte chunks. */
+		pos *= 4;
+	}
+	
 	switch (seekmode) {
 		case seekmode_Start:
 			[handle seekToFileOffset:pos];
@@ -733,7 +803,12 @@
 }
 
 - (glui32) getPosition {
-	return [handle offsetInFile];
+	glui32 pos = [handle offsetInFile];
+	if (!textmode && unicode) {
+		/* This file is in four-byte chunks. */
+		pos /= 4;
+	}
+	return pos;
 }
 
 
