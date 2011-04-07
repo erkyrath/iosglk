@@ -780,6 +780,150 @@
 	}
 }
 
+- (glsi32) getChar:(BOOL)wantunicode {
+	if (!readable)
+		return -1;
+
+	if (!textmode) {
+		NSData *data;
+		if (!unicode) {
+			/* byte stream */
+			data = [handle readDataOfLength:1];
+			if (data.length < 1)
+				return -1;
+			readcount++;
+			char *buf = (char *)data.bytes;
+			return (buf[0] & 0xFF);
+		}
+		else {
+			/* cheap big-endian stream */
+			data = [handle readDataOfLength:4];
+			if (data.length < 4)
+				return -1;
+			readcount++;
+			char *buf = (char *)data.bytes;
+			glui32 ch = ((buf[0] & 0xFF) << 24) | ((buf[1] & 0xFF) << 16) | ((buf[2] & 0xFF) << 8) | ((buf[3] & 0xFF));
+			if (!wantunicode && ch >= 0x100)
+				return '?';
+			return ch;
+		}		
+	}
+	else {
+		/* UTF8 stream (whether the unicode flag is set or not) */
+		//###
+		return -1;
+	}
+}
+
+- (glui32) getLine:(void *)getbuf buflen:(glui32)getlen unicode:(BOOL)wantunicode {
+	if (!readable)
+		return 0;
+		
+	BOOL gotnewline = NO;
+		
+	if (!textmode) {
+		NSData *data;
+		if (!unicode) {
+			/* byte stream */
+			int ix;
+			for (ix=0; !gotnewline && ix<getlen; ix++) {
+				data = [handle readDataOfLength:1];
+				if (data.length < 1)
+					break;
+				readcount++;
+				char *buf = (char *)data.bytes;
+				char ch = (buf[0] & 0xFF);
+				if (!wantunicode)
+					((char *)getbuf)[ix] = ch;
+				else
+					((glui32 *)getbuf)[ix] = ch;
+				if (ch == '\n')
+					gotnewline = YES;
+			}
+			return ix;
+		}
+		else {
+			/* cheap big-endian stream */
+			int ix;
+			for (ix=0; !gotnewline && ix<getlen; ix++) {
+				data = [handle readDataOfLength:4];
+				if (data.length < 4)
+					break;
+				readcount++;
+				char *buf = (char *)data.bytes;
+				glui32 ch = ((buf[0] & 0xFF) << 24) | ((buf[1] & 0xFF) << 16) | ((buf[2] & 0xFF) << 8) | ((buf[3] & 0xFF));
+				if (!wantunicode)
+					((char *)getbuf)[ix] = (ch >= 0x100) ? '?' : ch;
+				else
+					((glui32 *)getbuf)[ix] = ch;
+				if (ch == '\n')
+					gotnewline = YES;
+			}
+			return ix;
+		}		
+	}
+	else {
+		/* UTF8 stream (whether the unicode flag is set or not) */
+		//###
+		return 0;
+	}
+}
+
+- (glui32) getBuffer:(void *)getbuf buflen:(glui32)getlen unicode:(BOOL)wantunicode {
+	if (!readable)
+		return 0;
+		
+	if (!textmode) {
+		NSData *data;
+		if (!unicode) {
+			/* byte stream */
+			data = [handle readDataOfLength:getlen];
+			glui32 gotlen = data.length;
+			readcount += gotlen;
+			char *buf = (char *)data.bytes;
+			if (wantunicode) {
+				glui32 *ugetbuf = getbuf;
+				for (int ix=0; ix<gotlen; ix++) {
+					ugetbuf[ix] = (buf[ix] & 0xFF);
+				}
+			}
+			else {
+				memcpy(getbuf, buf, gotlen);
+			}
+			return gotlen;
+		}
+		else {
+			/* cheap big-endian stream */
+			data = [handle readDataOfLength:4*getlen];
+			glui32 gotlen = data.length / 4;
+			readcount += gotlen;
+			char *buf = (char *)data.bytes;
+			if (wantunicode) {
+				glui32 *ugetbuf = getbuf;
+				for (int ix=0; ix<gotlen; ix++) {
+					ugetbuf[ix] = ((buf[4*ix+0] & 0xFF) << 24) | ((buf[4*ix+1] & 0xFF) << 16) | ((buf[4*ix+2] & 0xFF) << 8) | ((buf[4*ix+3] & 0xFF));
+				}
+			}
+			else {
+				char *cgetbuf = getbuf;
+				for (int ix=0; ix<gotlen; ix++) {
+					glui32 ch = ((buf[4*ix+0] & 0xFF) << 24) | ((buf[4*ix+1] & 0xFF) << 16) | ((buf[4*ix+2] & 0xFF) << 8) | ((buf[4*ix+3] & 0xFF));
+					if (ch >= 0x100)
+						cgetbuf[ix] = '?';
+					else
+						cgetbuf[ix] = ch;
+				}
+			}
+			return gotlen;
+		}		
+	}
+	else {
+		/* UTF8 stream (whether the unicode flag is set or not) */
+		//###
+		return 0;
+	}
+}
+
 - (void) setPosition:(glsi32)pos seekmode:(glui32)seekmode {
 	if (!textmode && unicode) {
 		/* This file is in four-byte chunks. */

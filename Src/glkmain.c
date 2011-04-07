@@ -97,12 +97,25 @@ void glk_main() {
 	}
 	*/
 	
-	frefid_t fileref = glk_fileref_create_by_name(fileusage_SavedGame|fileusage_TextMode, "foobar", 123);
-	strid_t str = glk_stream_open_file_uni(fileref, filemode_Write, 456);
-	glk_put_string_stream_uni(str, ustring);
+	frefid_t fileref = glk_fileref_create_by_name(fileusage_SavedGame|fileusage_BinaryMode, "foobar", 123);
+	strid_t str = glk_stream_open_file(fileref, filemode_Write, 456);
+	glk_put_string_stream(str, "First line.\nSecond line.");
 	glui32 pos = glk_stream_get_position(str);
 	sprintf(buf, "Stream %x at pos %d\n", (glui32)str, pos);
-	//glk_stream_close(str, NULL);
+	glk_put_string(buf);
+	stream_result_t result;
+	glk_stream_close(str, &result);
+	sprintf(buf, "Result: %d read, %d written\n", result.readcount, result.writecount);
+	glk_put_string(buf);
+	
+	//glui32 ubuf[256];
+	str = glk_stream_open_file(fileref, filemode_Read, 456);
+	glui32 count = glk_get_line_stream(str, buf, 256);
+	glk_put_buffer(buf, count);
+	sprintf(buf, "(EOL at %d)\n", count);
+	glk_put_string(buf);
+	glk_stream_close(str, &result);
+	sprintf(buf, "Result: %d read, %d written\n", result.readcount, result.writecount);
 	glk_put_string(buf);
 	
 	/*

@@ -91,6 +91,8 @@ static GlkAppWrapper *singleton = nil;
 	NSLog(@"VM thread exiting");
 }
 
+/* ### Have a glk_tick() which drains the looppool? Timing would be tricky... Maybe measure the pool size once per thousand opcodes */
+
 /* Block and wait for an event to arrive.
 	This must be called on the VM thread. 
 */
