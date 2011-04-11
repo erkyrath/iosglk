@@ -28,7 +28,6 @@
 @implementation GlkAppWrapper
 
 @synthesize iowait;
-@synthesize iowait_evptr;
 @synthesize iowaitcond;
 @synthesize timerinterval;
 
@@ -48,6 +47,7 @@ static GlkAppWrapper *singleton = nil;
 		
 		iowait = NO;
 		iowait_evptr = NULL;
+		iowait_specialptr = NULL;
 		pendingtimerevent = NO;
 		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
 		
@@ -93,10 +93,11 @@ static GlkAppWrapper *singleton = nil;
 
 /* ### Have a glk_tick() which drains the looppool? Timing would be tricky... Maybe measure the pool size once per thousand opcodes */
 
-/* Block and wait for an event to arrive.
+/* Block and wait for an event to arrive. This is called to wait for a regular Glk event (in which case event must be non-null), or for a special request (e.g., file selection) (in which case special must be non-null). If both arguments are null, this will block forever and ignore all UI input.
+
 	This must be called on the VM thread. 
 */
-- (void) selectEvent:(event_t *)event {
+- (void) selectEvent:(event_t *)event special:(id *)special {
 	/* This is a good time to drain and recreate the thread's autorelease pool. We'll also do this in glk_tick(). */
 	[looppool drain]; // releases it
 	looppool = [[NSAutoreleasePool alloc] init];
@@ -104,11 +105,26 @@ static GlkAppWrapper *singleton = nil;
 	GlkLibrary *library = [GlkLibrary singleton];
 	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
 	
+	if (event && special) 
+		[NSException raise:@"GlkException" format:@"selectEvent called with both event and special arguments"];
+	
 	[iowaitcond lock];
 	//NSLog(@"VM thread glk_select");
 	
-	bzero(event, sizeof(event_t));
-	iowait_evptr = event;
+	if (event) {
+		bzero(event, sizeof(event_t));
+		iowait_evptr = event;
+		iowait_specialptr = nil;
+	}
+	else if (special) {
+		*special = nil;
+		iowait_specialptr = special;
+		iowait_evptr = nil;
+	}
+	else {
+		iowait_specialptr = nil;
+		iowait_evptr = nil;
+	}
 	pendingtimerevent = NO;
 	iowait = YES;
 	
@@ -117,20 +133,17 @@ static GlkAppWrapper *singleton = nil;
 		withObject:library waitUntilDone:NO];
 	
 	while (self.iowait) {
-		if (pendingsizechange) {
-			/* This could be set while we're waiting, or it could have been set already when we entered selectEvent. */
+		if (event && pendingsizechange) {
+			/* This could be set while we're waiting, or it could have been set already when we entered selectEvent. Note that we won't get in here if this is a special event request (because event will be null). */
 			pendingsizechange = NO;
 			BOOL sizechanged = [library setMetrics:pendingsize];
 			if (sizechanged) {
 				/* We duplicate all the event-setting machinery here, because we're already in the VM thread and inside the lock. */
-				event_t *event = iowait_evptr;
 				iowait_evptr = NULL;
-				if (event) {
-					event->type = evtype_Arrange;
-					event->win = nil;
-					event->val1 = 0;
-					event->val2 = 0;
-				}
+				event->type = evtype_Arrange;
+				event->win = nil;
+				event->val1 = 0;
+				event->val2 = 0;
 				iowait = NO;
 				break;
 			}
@@ -169,12 +182,12 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond unlock];
 }
 
-/* Check whether the VM is blocked and waiting for events.
+/* Check whether the VM is blocked and waiting for events. (Special filename-prompt blocking doesn't count!)
 	This is called from the main thread. It synchronizes with the VM thread. */
 - (BOOL) acceptingEvent {
 	BOOL res;
 	[iowaitcond lock];
-	res = self.iowait && self.iowait_evptr;
+	res = self.iowait && iowait_evptr;
 	[iowaitcond unlock];
 	return res;
 }
@@ -197,12 +210,13 @@ static GlkAppWrapper *singleton = nil;
 }
 
 /* The UI calls this to report an input event. 
-	This is called from the main thread. It synchronizes with the VM thread. */
+	This is called from the main thread. It synchronizes with the VM thread. 
+*/
 - (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2 {
 	[iowaitcond lock];
 	
-	if (!self.iowait) {
-		/* The VM thread is working; events not accepted right now. However, we'll set a flag in case someone comes along and polls for it. */
+	if (!self.iowait || !iowait_evptr) {
+		/* The VM thread is working, or else it's waiting for a file selection. Either way, events not accepted right now. However, we'll set a flag in case someone comes along and polls for it. */
 		if (type == evtype_Timer)
 			pendingtimerevent = YES;
 		//### size change event too?
@@ -212,12 +226,30 @@ static GlkAppWrapper *singleton = nil;
 	
 	event_t *event = iowait_evptr;
 	iowait_evptr = NULL;
-	if (event) {
-		event->type = type;
-		event->win = win;
-		event->val1 = val1;
-		event->val2 = val2;
+	event->type = type;
+	event->win = win;
+	event->val1 = val1;
+	event->val2 = val2;
+	iowait = NO;
+	[iowaitcond signal];
+	[iowaitcond unlock];
+}
+
+/* The UI calls this to report that file selection is complete. 
+	This is called from the main thread. It synchronizes with the VM thread. 
+*/
+- (void) acceptEventSpecial:(NSString *)pathname {
+	[iowaitcond lock];
+	
+	if (!self.iowait || !iowait_specialptr) {
+		/* The VM thread is working, or else it's waiting for a normal event. Either way, our response is not accepted right now. */
+		[iowaitcond unlock];
+		return;
 	}
+	
+	id *special = iowait_specialptr;
+	iowait_specialptr = NULL;
+	*special = pathname;
 	iowait = NO;
 	[iowaitcond signal];
 	[iowaitcond unlock];
