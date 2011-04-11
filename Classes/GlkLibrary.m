@@ -23,6 +23,7 @@
 @synthesize currentstr;
 @synthesize bounds;
 @synthesize geometrychanged;
+@synthesize specialrequest;
 @synthesize filemanager;
 @synthesize dispatch_register_obj;
 @synthesize dispatch_unregister_obj;
@@ -52,6 +53,7 @@ static GlkLibrary *singleton = nil;
 		self.currentstr = nil;
 		geometrychanged = YES;
 		
+		self.specialrequest = nil;
 		self.filemanager = [[[NSFileManager alloc] init] autorelease];
 	}
 	
@@ -67,6 +69,7 @@ static GlkLibrary *singleton = nil;
 	self.filerefs = nil;
 	self.rootwin = nil;
 	self.currentstr = nil;
+	self.specialrequest = nil;
 	self.filemanager = nil;
 	[super dealloc];
 }

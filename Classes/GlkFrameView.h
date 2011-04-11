@@ -28,7 +28,6 @@
 - (void) setNeedsLayoutPlusSubviews;
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
-//###- (void) updateFromLibrarySize:(GlkLibrary *)library;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 
 @end

@@ -7,6 +7,8 @@
 #import "IosGlkViewController.h"
 #import "GlkFrameView.h"
 #import "GlkWindowView.h"
+#import "GlkUtilTypes.h"
+#import "GlkFileSelectViewController.h"
 #include "GlkUtilities.h"
 
 @implementation IosGlkViewController
@@ -88,6 +90,15 @@
 	NSLog(@"Rotated!");
 }
 */
+
+- (void) displayModalRequest:(id)special {
+	if (![special isKindOfClass:[GlkFileRefPrompt class]])
+		[NSException raise:@"GlkException" format:@"tried to raise unknown modal request"];
+	GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
+	
+	GlkFileSelectViewController *viewc = [[[GlkFileSelectViewController alloc] initWithNibName:@"GlkFileSelectLoad" bundle:nil] autorelease];
+	[self presentModalViewController:viewc animated:YES];
+}
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.

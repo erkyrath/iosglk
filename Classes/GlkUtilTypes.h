@@ -102,3 +102,19 @@ typedef enum GlkStyledLineStatus_enum {
 
 @end
 
+
+@interface GlkFileRefPrompt : NSObject {
+	glui32 usage;
+	glui32 fmode;
+	NSString *pathname;
+}
+
+- (id) initWithUsage:(glui32)usage fmode:(glui32)fmode;
+
+@property (nonatomic) glui32 usage;
+@property (nonatomic) glui32 fmode;
+@property (nonatomic, retain) NSString *pathname;
+
+@end
+
+

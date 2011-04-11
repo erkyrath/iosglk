@@ -10,6 +10,8 @@
 */
 
 #import "GlkFrameView.h"
+#import "IosGlkAppDelegate.h"
+#import "IosGlkViewController.h"
 #import "GlkWindowView.h"
 #import "GlkWinBufferView.h"
 #import "GlkAppWrapper.h"
@@ -186,6 +188,10 @@
 		[winv updateFromWindowState];
 		[winv updateFromWindowInputs];
 	}
+	
+	/* And now, if there's a special prompt going on, fill the screen with it. */
+	if (library.specialrequest)
+		[[IosGlkAppDelegate singleton].viewController displayModalRequest:library.specialrequest];
 }
 
 /* Query the main thread about what's in a particular window's input line. The VM thread calls this when it cancels line input and needs to know what in the input buffer.

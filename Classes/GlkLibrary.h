@@ -21,6 +21,8 @@
 	CGRect bounds;
 	BOOL geometrychanged;
 	
+	id specialrequest;
+	
 	NSFileManager *filemanager; // for use in the VM thread
 	
 	NSInteger tagCounter;
@@ -36,6 +38,7 @@
 @property (nonatomic, readonly) CGRect bounds;
 @property (nonatomic) BOOL geometrychanged;
 @property (nonatomic, retain) NSFileManager *filemanager;
+@property (nonatomic, retain) id specialrequest;
 @property (nonatomic) gidispatch_rock_t (*dispatch_register_obj)(void *obj, glui32 objclass);
 @property (nonatomic) void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
 

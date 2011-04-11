@@ -14,6 +14,7 @@
 
 - (GlkFrameView *) viewAsFrameView;
 - (void) hideKeyboard;
+- (void) displayModalRequest:(id)special;
 
 @end
 

@@ -46,8 +46,8 @@ static GlkAppWrapper *singleton = nil;
 		singleton = self;
 		
 		iowait = NO;
-		iowait_evptr = NULL;
-		iowait_specialptr = NULL;
+		iowait_evptr = nil;
+		iowait_special = nil;
 		pendingtimerevent = NO;
 		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
 		
@@ -97,32 +97,33 @@ static GlkAppWrapper *singleton = nil;
 
 	This must be called on the VM thread. 
 */
-- (void) selectEvent:(event_t *)event special:(id *)special {
+- (void) selectEvent:(event_t *)event special:(id)special {
 	/* This is a good time to drain and recreate the thread's autorelease pool. We'll also do this in glk_tick(). */
 	[looppool drain]; // releases it
 	looppool = [[NSAutoreleasePool alloc] init];
-	
+		
 	GlkLibrary *library = [GlkLibrary singleton];
 	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
 	
 	if (event && special) 
 		[NSException raise:@"GlkException" format:@"selectEvent called with both event and special arguments"];
+	if (special != library.specialrequest)
+		[NSException raise:@"GlkException" format:@"selectEvent called with wrong special value"];
 	
 	[iowaitcond lock];
-	//NSLog(@"VM thread glk_select");
+	NSLog(@"VM thread glk_select (event %x, special %x)", event, special);
 	
 	if (event) {
 		bzero(event, sizeof(event_t));
 		iowait_evptr = event;
-		iowait_specialptr = nil;
+		iowait_special = nil;
 	}
 	else if (special) {
-		*special = nil;
-		iowait_specialptr = special;
+		iowait_special = special;
 		iowait_evptr = nil;
 	}
 	else {
-		iowait_specialptr = nil;
+		iowait_special = nil;
 		iowait_evptr = nil;
 	}
 	pendingtimerevent = NO;
@@ -235,21 +236,20 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond unlock];
 }
 
-/* The UI calls this to report that file selection is complete. 
+/* The UI calls this to report that file selection is complete. The chosen pathname (or nil, if cancelled) is in the prompt object that was originally passed out.
+
 	This is called from the main thread. It synchronizes with the VM thread. 
 */
-- (void) acceptEventSpecial:(NSString *)pathname {
+- (void) acceptEventSpecial {
 	[iowaitcond lock];
 	
-	if (!self.iowait || !iowait_specialptr) {
+	if (!self.iowait || !iowait_special) {
 		/* The VM thread is working, or else it's waiting for a normal event. Either way, our response is not accepted right now. */
 		[iowaitcond unlock];
 		return;
 	}
 	
-	id *special = iowait_specialptr;
-	iowait_specialptr = NULL;
-	*special = pathname;
+	iowait_special = nil;
 	iowait = NO;
 	[iowaitcond signal];
 	[iowaitcond unlock];

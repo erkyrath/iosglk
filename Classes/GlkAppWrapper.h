@@ -10,9 +10,9 @@
 @interface GlkAppWrapper : NSObject {
 	NSCondition *iowaitcond; /* must hold this lock to touch any of the fields below, unless otherwise noted. */
 	
-	BOOL iowait; /* true when waiting for an event; becomes false when one arrives */
-	event_t *iowait_evptr; /* the place to stuff the event data when it arrives */
-	id *iowait_specialptr; /* ditto, for special event requests */
+	BOOL iowait; /* true when waiting for an event; becomes false when one arrives. */
+	event_t *iowait_evptr; /* the place to stuff the event data when it arrives. */
+	id iowait_special; /* ditto, for special event requests. (A container type, currently GlkFileRefPrompt.) */
 	NSThread *thread; /* not locked; does not change through the run cycle. */
 	NSAutoreleasePool *looppool; /* not locked; only touched by the VM thread. */
 	
@@ -31,10 +31,10 @@
 - (void) launchAppThread;
 - (void) appThreadMain:(id)rock;
 - (void) setFrameSize:(CGRect)box;
-- (void) selectEvent:(event_t *)event special:(id *)special;
+- (void) selectEvent:(event_t *)event special:(id)special;
 - (void) selectPollEvent:(event_t *)event;
 - (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2;
-- (void) acceptEventSpecial:(NSString *)pathname;
+- (void) acceptEventSpecial;
 - (BOOL) acceptingEvent;
 - (NSString *) editingTextForWindow:(NSNumber *)tag;
 - (void) setTimerInterval:(NSNumber *)interval;

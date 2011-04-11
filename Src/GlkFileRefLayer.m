@@ -13,6 +13,8 @@
 
 #import "GlkLibrary.h"
 #import "GlkFileRef.h"
+#import "GlkAppWrapper.h"
+#import "GlkUtilTypes.h"
 
 void glk_fileref_destroy(frefid_t fref)
 {
@@ -90,8 +92,30 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 
 frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 {
-	//###
-	return nil;
+	GlkLibrary *library = [GlkLibrary singleton];
+	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
+	GlkFileRefPrompt *prompt = [[GlkFileRefPrompt alloc] initWithUsage:usage fmode:fmode]; // retained
+	
+	/* We call selectEvent, which will block and put up the file-selection UI. */
+	library.specialrequest = prompt;
+	[appwrap selectEvent:nil special:prompt];
+	NSString *pathname = [[prompt.pathname retain] autorelease];
+	
+	library.specialrequest = nil;
+	[prompt release];
+	
+	if (!pathname) {
+		/* The file selection was cancelled. */
+		return NULL;
+	}
+	
+	GlkFileRef *fref = [[GlkFileRef alloc] initWithPath:pathname type:usage rock:rock];
+	if (!fref) {
+		[GlkLibrary strictWarning:@"fileref_create_by_prompt: unable to create file ref."];
+		return NULL;
+	}
+
+	return [fref autorelease];
 }
 
 frefid_t glk_fileref_iterate(frefid_t fref, glui32 *rock) 

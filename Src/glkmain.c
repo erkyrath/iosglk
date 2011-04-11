@@ -5,6 +5,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 #include "glk.h"
 
 extern void nslogc(char *str);
@@ -96,6 +97,7 @@ void glk_main() {
 		glk_put_string(buf);
 	}
 	*/
+	
 	/*
 	frefid_t fileref = glk_fileref_create_by_name(fileusage_SavedGame|fileusage_BinaryMode, "foobar", 123);
 	strid_t str = glk_stream_open_file(fileref, filemode_Write, 456);
@@ -198,6 +200,12 @@ void glk_main() {
 			glk_put_buffer(inbuf, ev.val1);
 			//glk_put_buffer_uni(uinbuf, ev.val1);
 			glk_put_string("\".\n");
+			if (!strncmp(inbuf, "load", ev.val1)) {
+				glk_put_string("Save at file...\n");
+				frefid_t fileref = glk_fileref_create_by_prompt(fileusage_SavedGame|fileusage_BinaryMode, filemode_Read, 123);
+				sprintf(buf, "Created fileref %x!\n", (glui32)fileref);
+				glk_put_string(buf);
+			}
 			glk_put_char('>');
 			glk_request_line_event(mainwin, inbuf, 32, 0);
 			//glk_request_line_event_uni(mainwin, uinbuf, 32, 0);
