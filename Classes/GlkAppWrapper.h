@@ -30,7 +30,7 @@
 
 - (void) launchAppThread;
 - (void) appThreadMain:(id)rock;
-//###- (void) setFrameSize:(CGRect)box;
+- (void) setFrameSize:(CGRect)box;
 - (void) selectEvent:(event_t *)event;
 - (void) selectPollEvent:(event_t *)event;
 - (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2;

@@ -96,7 +96,7 @@ void glk_main() {
 		glk_put_string(buf);
 	}
 	*/
-	
+	/*
 	frefid_t fileref = glk_fileref_create_by_name(fileusage_SavedGame|fileusage_BinaryMode, "foobar", 123);
 	strid_t str = glk_stream_open_file(fileref, filemode_Write, 456);
 	glk_put_string_stream(str, "First line.\nSecond line.");
@@ -117,7 +117,7 @@ void glk_main() {
 	glk_stream_close(str, &result);
 	sprintf(buf, "Result: %d read, %d written\n", result.readcount, result.writecount);
 	glk_put_string(buf);
-	
+	*/
 	/*
 	strid_t sx = NULL;
 	while (1) {

@@ -116,19 +116,26 @@ static GlkAppWrapper *singleton = nil;
 	[frameview performSelectorOnMainThread:@selector(updateFromLibraryState:)
 		withObject:library waitUntilDone:NO];
 	
-	#if 0 //###
-	if (pendingsizechange) {
-		pendingsizechange = NO;
-		BOOL sizechanged = [library setMetrics:pendingsize];
-		if (sizechanged) {
-			/* This main-thread call will invoke acceptEventType, which turns off iowait. But that can't happen until we've settled into our iowait loop, because we've got the lock. */
-			[frameview performSelectorOnMainThread:@selector(updateFromLibrarySize:)
-				withObject:library waitUntilDone:NO];
-		}
-	}
-	#endif //###
-		
 	while (self.iowait) {
+		if (pendingsizechange) {
+			/* This could be set while we're waiting, or it could have been set already when we entered selectEvent. */
+			pendingsizechange = NO;
+			BOOL sizechanged = [library setMetrics:pendingsize];
+			if (sizechanged) {
+				/* We duplicate all the event-setting machinery here, because we're already in the VM thread and inside the lock. */
+				event_t *event = iowait_evptr;
+				iowait_evptr = NULL;
+				if (event) {
+					event->type = evtype_Arrange;
+					event->win = nil;
+					event->val1 = 0;
+					event->val2 = 0;
+				}
+				iowait = NO;
+				break;
+			}
+		}
+		
 		[iowaitcond wait];
 	}
 	
@@ -150,33 +157,17 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond unlock];
 }
 
-#if 0 //###
-/* This is called from the main thread. It synchronizes with the VM thread. */
+/* The UI's frame size has changed. All the UI windowviews are already resized; now we have to update the VM's windows equivalently. (The VM's windows may no longer match the UI, but that's okay -- the UI will catch up.)
+
+	This is called from the main thread. It synchronizes with the VM thread. If the VM thread is blocked, it will wake up briefly to handle the size change (and maybe begin a evtype_Arrange event). If the VM thread is running, it will get back to the size change at the next glk_select() time. */
 - (void) setFrameSize:(CGRect)box {
+	//NSLog(@"setFrameSize: %@", StringFromRect(box));
 	[iowaitcond lock];
-	
-	if (!self.iowait) {
-		/* The VM thread is working. We'll stuff the new size into a field, and get back to it at the next glk_select call. */
-		pendingsizechange = YES;
-		pendingsize = box;
-		[iowaitcond unlock];
-		return;
-	}
-	
+	pendingsizechange = YES;
+	pendingsize = box;
+	[iowaitcond signal];
 	[iowaitcond unlock];
-	
-	/* The VM thread is blocked. */
-	
-	GlkLibrary *library = [GlkLibrary singleton];
-	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
-	
-	BOOL sizechanged = [library setMetrics:box];
-	if (sizechanged) {
-		/* Remember, we're still in the main thread. This call will invoke acceptEventType. */
-		[frameview updateFromLibrarySize:library];
-	}
 }
-#endif 0 //###
 
 /* Check whether the VM is blocked and waiting for events.
 	This is called from the main thread. It synchronizes with the VM thread. */

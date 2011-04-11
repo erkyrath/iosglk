@@ -74,8 +74,15 @@
 		[self windowViewRearrange:rootwintag rect:box];
 		[UIView commitAnimations];
 	}
+	
+	/* Now tell the VM thread. */
+	[[GlkAppWrapper singleton] setFrameSize:box];
 }
 
+/* Set all the window view sizes, based on their cached geometry information. Note that this does not touch the GlkLibrary structures at all -- that could be under modification by the VM thread.
+
+	(Small exception: this code looks at the Geometry objects, which are shared with GlkLibrary. That's okay because Geometry objects are immutable.)
+*/
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box {
 	GlkWindowView *winv = [windowviews objectForKey:tag];
 	Geometry *geometry = [wingeometries objectForKey:tag];
@@ -112,6 +119,8 @@
 }
 
 /* This tells all the window views to get up to date with the new output in their data (GlkWindow) objects. If window views have to be created or destroyed (because GlkWindows have opened or closed), this does that too.
+
+	Called from selectEvent in the app wrapper class.
 */
 - (void) updateFromLibraryState:(GlkLibrary *)library {
 	NSLog(@"updateFromLibraryState: %@", StringFromRect(library.bounds));
@@ -179,25 +188,9 @@
 	}
 }
 
-/* This tells all the window views to get up to date with the sizes of their GlkWindows. The library's setMetrics must already have been called, to get the GlkWindow sizes set right.
-*/
-#if 0 //###
-- (void) updateFromLibrarySize:(GlkLibrary *)library {
-	NSLog(@"updateFromLibrarySize: %@", StringFromRect(library.bounds));
-	
-	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = [windowviews objectForKey:tag];
-		[winv updateFromWindowSize];
-		// This is part of the terrible layout system.
-		if ([winv isKindOfClass:[GlkWinBufferView class]])
-			((GlkWinBufferView *)winv).scrollDownNextLayout = YES;
-		[winv setNeedsLayout]; // This is too.
-	}
-	[[GlkAppWrapper singleton] acceptEventType:evtype_Arrange window:nil val1:0 val2:0];
-}
-#endif //###
+/* Query the main thread about what's in a particular window's input line. The VM thread calls this when it cancels line input and needs to know what in the input buffer.
 
-/* This is invoked in the main thread, by the VM thread, which is waiting on the result. We're safe from deadlock because the VM thread can't be in glk_select(); it can't be holding the iowait lock, and it can't get into the code path that rearranging the view structure.
+	This is invoked in the main thread, by the VM thread, which is waiting on the result. We're safe from deadlock because the VM thread can't be in glk_select(); it can't be holding the iowait lock, and it can't get into the code path that rearranges the view structure.
 */
 - (void) editingTextForWindow:(GlkTagString *)tagstring {
 	GlkWindowView *winv = [windowviews objectForKey:tagstring.tag];

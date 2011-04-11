@@ -81,7 +81,7 @@ static GlkLibrary *singleton = nil;
 
 /* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation. Or the keyboard opening or closing. Or a phone call, probably. Okay, lots of reasons.) 
 	Returns YES if the bounds changed.
-	Do not call this when the VM thread is live. (Wait until it blocks.)
+	This is called only at startup time and from the selectEvent loop.
 */
 - (BOOL) setMetrics:(CGRect)box {
 	if (CGRectEqualToRect(box, bounds))
