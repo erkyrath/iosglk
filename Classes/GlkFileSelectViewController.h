@@ -10,7 +10,8 @@
 
 
 @interface GlkFileSelectViewController : UIViewController {
-
 }
+
+- (IBAction) buttonCancel:(id)sender;
 
 @end

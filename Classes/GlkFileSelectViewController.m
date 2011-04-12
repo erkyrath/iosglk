@@ -11,28 +11,36 @@
 
 @implementation GlkFileSelectViewController
 
+
 - (void) viewDidLoad {
 	[super viewDidLoad];
+	
+	self.navigationItem.title = @"Load"; //### localize and customize
+	
+	UIBarButtonItem *cancelbutton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(buttonCancel:)] autorelease];
+	
+	self.navigationItem.leftBarButtonItem = cancelbutton;
+	self.navigationItem.rightBarButtonItem = [self editButtonItem];
 }
 
 - (void) viewDidUnload {
 	[super viewDidUnload];
 }
 
-
 - (void) dealloc {
 	[super dealloc];
 }
 
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations.
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+- (IBAction) buttonCancel:(id)sender {
+	NSLog(@"buttonCancel");
 }
-*/
 
-- (void)didReceiveMemoryWarning {
+- (void) setEditing:(BOOL)editing animated:(BOOL)animated {
+	[super setEditing:editing animated:animated];
+	NSLog(@"setEditing now %d", editing);
+}
+
+- (void) didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
 	[super didReceiveMemoryWarning];
 

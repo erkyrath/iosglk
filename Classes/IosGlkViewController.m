@@ -97,7 +97,8 @@
 	GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
 	
 	GlkFileSelectViewController *viewc = [[[GlkFileSelectViewController alloc] initWithNibName:@"GlkFileSelectLoad" bundle:nil] autorelease];
-	[self presentModalViewController:viewc animated:YES];
+	UINavigationController *navc = [[[UINavigationController alloc] initWithRootViewController:viewc] autorelease];
+	[self presentModalViewController:navc animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {
