@@ -153,7 +153,7 @@ static GlkAppWrapper *singleton = nil;
 		[iowaitcond wait];
 	}
 	
-	NSLog(@"VM thread glk_select returned (evtype %d)", event->type);
+	NSLog(@"VM thread glk_select returned (evtype %d)", (event ? event->type : -1));
 	[iowaitcond unlock];
 }
 
