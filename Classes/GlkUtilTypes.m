@@ -229,36 +229,4 @@
 @end
 
 
-@implementation GlkFileRefPrompt
-
-@synthesize usage;
-@synthesize fmode;
-@synthesize pathname;
-
-- (id) initWithUsage:(glui32)usageval fmode:(glui32)fmodeval {
-	self = [super init];
-	
-	if (self) {
-		usage = usageval;
-		fmode = fmodeval;
-		pathname = nil;
-	}
-	
-	return self;
-}
-
-- (void) dealloc {
-	self.pathname = nil;
-	[super dealloc];
-}
-
-@end
-
-@implementation GlkFileThumb
-
-@synthesize label;
-@synthesize pathname;
-
-@end
-
 

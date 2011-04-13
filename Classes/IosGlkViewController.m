@@ -8,6 +8,7 @@
 #import "GlkFrameView.h"
 #import "GlkWindowView.h"
 #import "GlkUtilTypes.h"
+#import "GlkFileTypes.h"
 #import "GlkFileSelectViewController.h"
 #import "GlkUtilities.h"
 

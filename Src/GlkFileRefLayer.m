@@ -14,7 +14,7 @@
 #import "GlkLibrary.h"
 #import "GlkFileRef.h"
 #import "GlkAppWrapper.h"
-#import "GlkUtilTypes.h"
+#import "GlkFileTypes.h"
 
 void glk_fileref_destroy(frefid_t fref)
 {
