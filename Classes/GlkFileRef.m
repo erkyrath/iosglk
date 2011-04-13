@@ -34,17 +34,17 @@
 	
 	switch (usage & fileusage_TypeMask) {
 		case fileusage_SavedGame:
-			subdir = [NSString stringWithFormat:@"SavedGame_%@", gameid];
+			subdir = [NSString stringWithFormat:@"GlkSavedGame_%@", gameid];
 			break;
 		case fileusage_InputRecord:
-			subdir = @"InputRecord";
+			subdir = @"GlkInputRecord";
 			break;
 		case fileusage_Transcript:
-			subdir = @"Transcript";
+			subdir = @"GlkTranscript";
 			break;
 		case fileusage_Data:
 		default:
-			subdir = @"Data";
+			subdir = @"GlkData";
 			break;
 	}
 	

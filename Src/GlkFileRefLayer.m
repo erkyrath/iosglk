@@ -10,7 +10,7 @@
 	
 	The storage of files is a subtle matter. We do not use file suffixes (although Darwin/iOS is vaguely in favor of them). Instead, the type of a file is distinguished by where it lives. (This wouldn't make sense on a desktop OS, but for iOS, it's fine -- the user will never see this structure.)
 	
-	All files live in ~/Documents, except for temporary files, which go in NSTemporaryDirectory. That's the "base directory". Whichever the base directory is, the file lives in a subdirectory of it: "Data", "InputRecord", "Transcript", or "SavedGame_...".
+	All files live in ~/Documents, except for temporary files, which go in NSTemporaryDirectory. That's the "base directory". Whichever the base directory is, the file lives in a subdirectory of it: "GlkData", "GlkInputRecord", "GlkTranscript", or "GlkSavedGame_...".
 	
 	The last case is special because saved games are namespaced by the game identity -- you can't save in one game and then restore that file into a different game. The game identity is stored as the gameid property on the GlkLibrary. (This distinction is meaningless if your Glk application handles only a single game, of course. But if you're writing an interpreter packaged with many games, you'll want to set gameid to a unique string before starting one of them.)
 */
