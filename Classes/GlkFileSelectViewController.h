@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface GlkFileSelectViewController : UIViewController {
+@interface GlkFileSelectViewController : UITableViewController {
 }
 
 - (IBAction) buttonCancel:(id)sender;
