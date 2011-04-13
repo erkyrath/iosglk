@@ -118,3 +118,13 @@ typedef enum GlkStyledLineStatus_enum {
 @end
 
 
+@interface GlkFileThumb : NSObject {
+	NSString *label;
+	NSString *pathname;
+}
+
+@property (nonatomic, retain) NSString *label;
+@property (nonatomic, retain) NSString *pathname;
+
+@end
+

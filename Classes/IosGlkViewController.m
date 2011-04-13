@@ -96,7 +96,7 @@
 		[NSException raise:@"GlkException" format:@"tried to raise unknown modal request"];
 	GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
 	
-	GlkFileSelectViewController *viewc = [[[GlkFileSelectViewController alloc] initWithNibName:@"GlkFileSelectLoad" bundle:nil] autorelease];
+	GlkFileSelectViewController *viewc = [[[GlkFileSelectViewController alloc] initWithNibName:@"GlkFileSelectLoad" prompt:prompt bundle:nil] autorelease];
 	UINavigationController *navc = [[[UINavigationController alloc] initWithRootViewController:viewc] autorelease];
 	[self presentModalViewController:navc animated:YES];
 }

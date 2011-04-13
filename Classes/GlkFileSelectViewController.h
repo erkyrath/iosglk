@@ -8,10 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+@class GlkFileRefPrompt;
+@class GlkFileThumb;
 
 @interface GlkFileSelectViewController : UITableViewController {
+	GlkFileRefPrompt *prompt;
+	NSMutableArray *filelist;
 }
 
+@property (nonatomic, retain) GlkFileRefPrompt *prompt;
+@property (nonatomic, retain) NSMutableArray *filelist;
+
+- (id) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)prompt bundle:(NSBundle *)nibBundle;
 - (IBAction) buttonCancel:(id)sender;
 
 @end

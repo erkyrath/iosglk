@@ -254,4 +254,11 @@
 
 @end
 
+@implementation GlkFileThumb
+
+@synthesize label;
+@synthesize pathname;
+
+@end
+
 
