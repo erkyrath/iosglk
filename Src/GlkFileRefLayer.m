@@ -8,7 +8,11 @@
 	
 	(The "layer" files connect the C-linkable API to the ObjC implementation layer. This is therefore an ObjC file that defines C functions in terms of ObjC method calls. Like all the Glk functions, these must be called from the VM thread, not the main thread.)
 	
-	### Currently all temporary files go in NSTemporaryDirectory, and everything else goes in ~/Documents. This needs rethinking. I suspect that, if the library is used for multiple games, then save files should go in ~/Documents/Games/$GAME, and all other files should go in ~/Documents/Glk. (Transcripts and data files exist in a common pool between games.) (But maybe transcripts, command records, and data files should be segregated in three different directories?)
+	The storage of files is a subtle matter. We do not use file suffixes (although Darwin/iOS is vaguely in favor of them). Instead, the type of a file is distinguished by where it lives. (This wouldn't make sense on a desktop OS, but for iOS, it's fine -- the user will never see this structure.)
+	
+	All files live in ~/Documents, except for temporary files, which go in NSTemporaryDirectory. That's the "base directory". Whichever the base directory is, the file lives in a subdirectory of it: "Data", "InputRecord", "Transcript", or "SavedGame_...".
+	
+	The last case is special because saved games are namespaced by the game identity -- you can't save in one game and then restore that file into a different game. The game identity is stored as the gameid property on the GlkLibrary. (This distinction is meaningless if your Glk application handles only a single game, of course. But if you're writing an interpreter packaged with many games, you'll want to set gameid to a unique string before starting one of them.)
 */
 
 #import "GlkLibrary.h"
@@ -34,9 +38,8 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 	NSString *tempname = [NSString stringWithFormat:@"_glk_temp_%f-%d", [date timeIntervalSince1970], temp_file_counter++];
 	tempname = [tempname stringByReplacingOccurrencesOfString:@"." withString:@"-"];
 	NSString *tempdir = NSTemporaryDirectory();
-	NSString *pathname = [tempdir stringByAppendingPathComponent:tempname];
 
-	GlkFileRef *fref = [[GlkFileRef alloc] initWithPath:pathname type:usage rock:rock];
+	GlkFileRef *fref = [[GlkFileRef alloc] initWithBase:tempdir filename:tempname type:usage rock:rock];
 	if (!fref) {
 		[GlkLibrary strictWarning:@"fileref_create_temp: unable to create file ref."];
 		return NULL;
@@ -52,7 +55,7 @@ frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref, glui32 
 		return NULL;
 	}
 
-	GlkFileRef *fref = [[GlkFileRef alloc] initWithPath:oldfref.pathname type:usage rock:rock];
+	GlkFileRef *fref = [[GlkFileRef alloc] initWithBase:oldfref.basedir filename:oldfref.filename type:usage rock:rock];
 	if (!fref) {
 		[GlkLibrary strictWarning:@"fileref_create_from_fileref: unable to create file ref."];
 		return NULL;
@@ -79,9 +82,8 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 		return nil;
 	}
 	NSString *dir = [dirlist objectAtIndex:0];
-	NSString *pathname = [dir stringByAppendingPathComponent:filename];
 
-	GlkFileRef *fref = [[GlkFileRef alloc] initWithPath:pathname type:usage rock:rock];
+	GlkFileRef *fref = [[GlkFileRef alloc] initWithBase:dir filename:filename type:usage rock:rock];
 	if (!fref) {
 		[GlkLibrary strictWarning:@"fileref_create_by_name: unable to create file ref."];
 		return NULL;
@@ -93,23 +95,34 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 {
 	GlkLibrary *library = [GlkLibrary singleton];
+
+	/* We use an old-fashioned way of locating the Documents directory. (The NSManager method for this is iOS 4.0 and later.) */
+	
+	NSArray *dirlist = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	if (!dirlist || [dirlist count] == 0) {
+		[GlkLibrary strictWarning:@"fileref_create_by name: unable to locate Documents directory."];
+		return nil;
+	}
+	NSString *basedir = [dirlist objectAtIndex:0];
+	NSString *dirname = [GlkFileRef subDirOfBase:basedir forUsage:usage gameid:library.gameid];
+
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
-	GlkFileRefPrompt *prompt = [[GlkFileRefPrompt alloc] initWithUsage:usage fmode:fmode]; // retained
+	GlkFileRefPrompt *prompt = [[GlkFileRefPrompt alloc] initWithUsage:usage fmode:fmode dirname:dirname]; // retained
 	
 	/* We call selectEvent, which will block and put up the file-selection UI. */
 	library.specialrequest = prompt;
 	[appwrap selectEvent:nil special:prompt];
-	NSString *pathname = [[prompt.pathname retain] autorelease];
+	NSString *filename = [[prompt.filename retain] autorelease];
 	
 	library.specialrequest = nil;
 	[prompt release];
 	
-	if (!pathname) {
+	if (!filename) {
 		/* The file selection was cancelled. */
 		return NULL;
 	}
 	
-	GlkFileRef *fref = [[GlkFileRef alloc] initWithPath:pathname type:usage rock:rock];
+	GlkFileRef *fref = [[GlkFileRef alloc] initWithBase:basedir filename:filename type:usage rock:rock];
 	if (!fref) {
 		[GlkLibrary strictWarning:@"fileref_create_by_prompt: unable to create file ref."];
 		return NULL;

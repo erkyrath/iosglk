@@ -20,6 +20,9 @@
 
 	glui32 rock;
 	
+	NSString *filename;
+	NSString *basedir;
+	NSString *dirname;
 	NSString *pathname;
 	glui32 filetype;
 	BOOL textmode;
@@ -27,12 +30,17 @@
 
 @property (nonatomic, retain) GlkLibrary *library;
 @property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, retain) NSString *filename;
+@property (nonatomic, retain) NSString *basedir;
+@property (nonatomic, retain) NSString *dirname;
 @property (nonatomic, retain) NSString *pathname;
 @property (nonatomic, readonly) glui32 filetype;
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, readonly) BOOL textmode;
 
-- (id) initWithPath:(NSString *)pathnameval type:(glui32)usage rock:(glui32)frefrock;
++ (NSString *) subDirOfBase:(NSString *)basedir forUsage:(glui32)usage gameid:(NSString *)gameid;
+
+- (id) initWithBase:(NSString *)basedir filename:(NSString *)filename type:(glui32)usage rock:(glui32)frefrock;
 - (void) filerefDelete;
 
 @end

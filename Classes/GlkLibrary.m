@@ -16,6 +16,7 @@
 
 @implementation GlkLibrary
 
+@synthesize gameid;
 @synthesize windows;
 @synthesize streams;
 @synthesize filerefs;
@@ -46,6 +47,8 @@ static GlkLibrary *singleton = nil;
 		dispatch_register_obj = nil;
 		dispatch_unregister_obj = nil;
 		
+		self.gameid = @"GameID"; //###
+		
 		self.windows = [NSMutableArray arrayWithCapacity:8];
 		self.streams = [NSMutableArray arrayWithCapacity:8];
 		self.filerefs = [NSMutableArray arrayWithCapacity:8];
@@ -64,6 +67,7 @@ static GlkLibrary *singleton = nil;
 	NSLog(@"GlkLibrary dealloc %x", self);
 	if (singleton == self)
 		singleton = nil;
+	self.gameid = nil;
 	self.windows = nil;
 	self.streams = nil;
 	self.filerefs = nil;

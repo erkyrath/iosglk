@@ -11,22 +11,25 @@
 
 @synthesize usage;
 @synthesize fmode;
-@synthesize pathname;
+@synthesize dirname;
+@synthesize filename;
 
-- (id) initWithUsage:(glui32)usageval fmode:(glui32)fmodeval {
+- (id) initWithUsage:(glui32)usageval fmode:(glui32)fmodeval dirname:(NSString *)dirnameval {
 	self = [super init];
 	
 	if (self) {
 		usage = usageval;
 		fmode = fmodeval;
-		pathname = nil;
+		self.dirname = dirnameval;
+		self.filename = nil;
 	}
 	
 	return self;
 }
 
 - (void) dealloc {
-	self.pathname = nil;
+	self.dirname = nil;
+	self.filename = nil;
 	[super dealloc];
 }
 

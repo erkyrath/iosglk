@@ -10,14 +10,16 @@
 @interface GlkFileRefPrompt : NSObject {
 	glui32 usage;
 	glui32 fmode;
-	NSString *pathname;
+	NSString *dirname;
+	NSString *filename;
 }
 
-- (id) initWithUsage:(glui32)usage fmode:(glui32)fmode;
+- (id) initWithUsage:(glui32)usage fmode:(glui32)fmode dirname:(NSString *)dirname;
 
 @property (nonatomic) glui32 usage;
 @property (nonatomic) glui32 fmode;
-@property (nonatomic, retain) NSString *pathname;
+@property (nonatomic, retain) NSString *dirname;
+@property (nonatomic, retain) NSString *filename;
 
 @end
 

@@ -98,7 +98,7 @@ void glk_main() {
 	}
 	*/
 	
-	/*
+	/*	
 	frefid_t fileref = glk_fileref_create_by_name(fileusage_SavedGame|fileusage_BinaryMode, "foobar", 123);
 	strid_t str = glk_stream_open_file(fileref, filemode_Write, 456);
 	glk_put_string_stream(str, "First line.\nSecond line.");

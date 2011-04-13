@@ -19,11 +19,42 @@
 @synthesize library;
 @synthesize tag;
 @synthesize pathname;
+@synthesize basedir;
+@synthesize filename;
+@synthesize dirname;
 @synthesize filetype;
 @synthesize rock;
 @synthesize textmode;
 
-- (id) initWithPath:(NSString *)pathnameval type:(glui32)usage rock:(glui32)frefrock {
+/* Work out the directory for a given type of file, based on the base directory, the usage, and the game identity.
+	See the comments on GlkFileRefLayer.m for an explanation.
+*/
++ (NSString *) subDirOfBase:(NSString *)basedir forUsage:(glui32)usage gameid:(NSString *)gameid {
+	NSString *subdir;
+	
+	switch (usage & fileusage_TypeMask) {
+		case fileusage_SavedGame:
+			subdir = [NSString stringWithFormat:@"SavedGame_%@", gameid];
+			break;
+		case fileusage_InputRecord:
+			subdir = @"InputRecord";
+			break;
+		case fileusage_Transcript:
+			subdir = @"Transcript";
+			break;
+		case fileusage_Data:
+		default:
+			subdir = @"Data";
+			break;
+	}
+	
+	NSString *dirname = [basedir stringByAppendingPathComponent:subdir];
+	return dirname;
+}
+
+
+
+- (id) initWithBase:(NSString *)basedirval filename:(NSString *)filenameval type:(glui32)usage rock:(glui32)frefrock {
 	self = [super init];
 	
 	if (self) {
@@ -33,11 +64,15 @@
 		self.tag = [library newTag];
 		rock = frefrock;
 		
-		NSLog(@"created fileref with pathname %@", pathnameval);
-		self.pathname = pathnameval;
 		textmode = ((usage & fileusage_TextMode) != 0);
 		filetype = (usage & fileusage_TypeMask);
-				
+		self.filename = filenameval;
+		self.basedir = basedirval;
+		
+		self.dirname = [GlkFileRef subDirOfBase:basedir forUsage:usage gameid:library.gameid];
+		self.pathname = [dirname stringByAppendingPathComponent:filename];
+		NSLog(@"created fileref with pathname %@", pathname);
+		
 		[library.filerefs addObject:self];
 		
 		if (library.dispatch_register_obj)
@@ -55,6 +90,9 @@
 	if (!pathname)
 		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc with pathname unset"];
 	self.pathname = nil;
+	self.basedir = nil;
+	self.dirname = nil;
+	self.filename = nil;
 	if (!tag)
 		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc with tag unset"];
 	self.tag = nil;

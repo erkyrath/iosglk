@@ -658,8 +658,13 @@
 		textmode = fref.textmode;
 		
 		if (fmode != filemode_Read) {
-			/* Create the file first, if it doesn't already exist. */
 			NSFileManager *filemanager = [GlkLibrary singleton].filemanager;
+			
+			/* Create the directory first, if it doesn't already exist. (If it already exists as a regular file, we won't try the create, the subsequent file-create will fail, and then the filehandle won't open.) */
+			if (![filemanager fileExistsAtPath:fref.dirname isDirectory:nil])
+				[filemanager createDirectoryAtPath:fref.dirname withIntermediateDirectories:YES attributes:nil error:nil];
+			
+			/* Create the file first, if it doesn't already exist. */
 			if (![filemanager fileExistsAtPath:fref.pathname])
 				[filemanager createFileAtPath:fref.pathname contents:nil attributes:nil];
 		}

@@ -12,6 +12,8 @@
 @class GlkStream;
 
 @interface GlkLibrary : NSObject {
+	NSString *gameid;
+	
 	NSMutableArray *windows; /* GlkWindow objects */
 	NSMutableArray *streams; /* GlkStream objects */
 	NSMutableArray *filerefs; /* GlkFileRef objects */
@@ -30,6 +32,7 @@
 	void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
 }
 
+@property (nonatomic, retain) NSString *gameid;
 @property (nonatomic, retain) NSMutableArray *windows;
 @property (nonatomic, retain) NSMutableArray *streams;
 @property (nonatomic, retain) NSMutableArray *filerefs;
