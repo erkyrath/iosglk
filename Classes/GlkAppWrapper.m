@@ -21,7 +21,7 @@
 #import "IosGlkViewController.h"
 #import "GlkFrameView.h"
 #import "GlkUtilTypes.h"
-#include "GlkUtilities.h"
+#import "GlkUtilities.h"
 #include "glk.h"
 
 

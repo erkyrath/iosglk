@@ -11,7 +11,7 @@
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
-#include "GlkUtilities.h"
+#import "GlkUtilities.h"
 #include "glk.h"
 
 @implementation GlkLibrary

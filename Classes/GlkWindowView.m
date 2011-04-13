@@ -14,7 +14,7 @@
 #import "GlkWinGridView.h"
 #import "GlkWindow.h"
 #import "GlkAppWrapper.h"
-#include "GlkUtilities.h"
+#import "GlkUtilities.h"
 
 @implementation GlkWindowView
 

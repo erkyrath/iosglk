@@ -7,8 +7,7 @@
 #import "StyledTextView.h"
 #import "GlkUtilTypes.h"
 #import "StyleSet.h"
-
-#include "GlkUtilities.h"
+#import "GlkUtilities.h"
 
 @implementation StyledTextView
 

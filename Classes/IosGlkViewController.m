@@ -9,7 +9,7 @@
 #import "GlkWindowView.h"
 #import "GlkUtilTypes.h"
 #import "GlkFileSelectViewController.h"
-#include "GlkUtilities.h"
+#import "GlkUtilities.h"
 
 @implementation IosGlkViewController
 

@@ -6,7 +6,7 @@
 
 
 #import "StyleSet.h"
-#include "GlkUtilities.h"
+#import "GlkUtilities.h"
 
 @implementation StyleSet
 

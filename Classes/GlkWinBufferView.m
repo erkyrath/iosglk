@@ -9,7 +9,7 @@
 #import "GlkUtilTypes.h"
 
 #import "StyledTextView.h"
-#include "GlkUtilities.h"
+#import "GlkUtilities.h"
 
 @implementation GlkWinBufferView
 

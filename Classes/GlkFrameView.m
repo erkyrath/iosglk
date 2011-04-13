@@ -19,7 +19,7 @@
 #import "GlkWindow.h"
 #import "Geometry.h"
 #import "GlkUtilTypes.h"
-#include "GlkUtilities.h"
+#import "GlkUtilities.h"
 
 @implementation GlkFrameView
 
