@@ -25,7 +25,6 @@
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box;
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;
-//###- (void) updateFromWindowSize;
 
 - (void) placeInputField:(UITextField *)field;
 - (void) textFieldContinueReturn:(UITextField *)textField;

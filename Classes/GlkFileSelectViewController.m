@@ -1,10 +1,8 @@
-//
-//  GlkFileSelectViewController.m
-//  IosGlk
-//
-//  Created by Andrew Plotkin on 4/12/11.
-//  Copyright 2011 Andrew Plotkin. All rights reserved.
-//
+/* GlkFileSelectViewController./: View controller class for the load/save dialog
+	for IosGlk, the iOS implementation of the Glk API.
+	Designed by Andrew Plotkin <erkyrath@eblong.com>
+	http://eblong.com/zarf/glk/
+*/
 
 #import "GlkFileSelectViewController.h"
 #import "GlkUtilTypes.h"
