@@ -11,7 +11,7 @@
 
 @interface GlkFileSelectViewController : UITableViewController {
 	GlkFileRefPrompt *prompt;
-	NSMutableArray *filelist;
+	NSMutableArray *filelist; // array of GlkFileThumb
 }
 
 @property (nonatomic, retain) GlkFileRefPrompt *prompt;

@@ -39,6 +39,14 @@
 
 @synthesize label;
 @synthesize pathname;
+@synthesize modtime;
+
+- (void) dealloc {
+	self.label = nil;
+	self.pathname = nil;
+	self.modtime = nil;
+	[super dealloc];
+}
 
 @end
 

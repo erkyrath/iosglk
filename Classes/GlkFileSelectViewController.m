@@ -5,8 +5,9 @@
 */
 
 #import "GlkFileSelectViewController.h"
-#import "GlkUtilTypes.h"
+#import "GlkFileTypes.h"
 #import "GlkAppWrapper.h"
+#import "GlkUtilities.h"
 
 
 @implementation GlkFileSelectViewController
@@ -32,6 +33,32 @@
 	
 	self.navigationItem.leftBarButtonItem = cancelbutton;
 	self.navigationItem.rightBarButtonItem = [self editButtonItem];
+	
+	[filelist removeAllObjects];
+	NSArray *ls = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:prompt.dirname error:nil];
+	if (ls) {
+		for (NSString *filename in ls) {
+			NSString *pathname = [prompt.dirname stringByAppendingPathComponent:filename];
+			NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:pathname error:nil];
+			if (!attrs)
+				continue;
+			if (![NSFileTypeRegular isEqualToString:[attrs fileType]])
+				continue;
+				
+			NSString *label = StringFromDumbEncoding(filename);
+			if (!label)
+				continue;
+			
+			GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
+			thumb.pathname = pathname;
+			thumb.modtime = [attrs fileModificationDate];
+			thumb.label = label;
+			
+			[filelist addObject:thumb];
+		}
+	}
+	
+	//### sort by modtime
 }
 
 - (void) viewDidUnload {
@@ -62,7 +89,6 @@
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
 	static NSString *CellIdentifier = @"Cell";
 
 	// This is boilerplate and I haven't touched it.
@@ -70,8 +96,21 @@
 	if (cell == nil) {
 		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
 	}
-
-	// Configure the cell...
+	
+	GlkFileThumb *thumb = nil;
+	
+	int row = indexPath.row;
+	if (row >= 0 && row < filelist.count)
+		thumb = [filelist objectAtIndex:row];
+		
+	/* Make the cell look right... */
+	if (!thumb) {
+		// shouldn't happen
+		cell.textLabel.text = @"(null)";
+	}
+	else {
+		cell.textLabel.text = thumb.label;
+	}
 
 	return cell;
 }

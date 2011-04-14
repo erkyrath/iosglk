@@ -10,5 +10,7 @@
 extern NSString *StringFromRect(CGRect rect);
 extern NSString *StringFromSize(CGSize size);
 extern NSString *StringFromPoint(CGPoint pt);
+extern NSString *StringFromDumbEncoding(NSString *str);
+extern NSString *StringToDumbEncoding(NSString *str);
 extern void nslogc(char *str);
 extern void sleep_curthread(NSTimeInterval val);

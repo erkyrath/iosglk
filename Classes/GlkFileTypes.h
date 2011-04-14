@@ -27,10 +27,12 @@
 @interface GlkFileThumb : NSObject {
 	NSString *label;
 	NSString *pathname;
+	NSDate *modtime;
 }
 
 @property (nonatomic, retain) NSString *label;
 @property (nonatomic, retain) NSString *pathname;
+@property (nonatomic, retain) NSDate *modtime;
 
 @end
 
