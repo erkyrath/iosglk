@@ -13,6 +13,7 @@
 @synthesize fmode;
 @synthesize dirname;
 @synthesize filename;
+@synthesize pathname;
 
 - (id) initWithUsage:(glui32)usageval fmode:(glui32)fmodeval dirname:(NSString *)dirnameval {
 	self = [super init];
@@ -22,6 +23,7 @@
 		fmode = fmodeval;
 		self.dirname = dirnameval;
 		self.filename = nil;
+		self.pathname = nil;
 	}
 	
 	return self;
@@ -30,6 +32,7 @@
 - (void) dealloc {
 	self.dirname = nil;
 	self.filename = nil;
+	self.pathname = nil;
 	[super dealloc];
 }
 
@@ -38,11 +41,13 @@
 @implementation GlkFileThumb
 
 @synthesize label;
+@synthesize filename;
 @synthesize pathname;
 @synthesize modtime;
 
 - (void) dealloc {
 	self.label = nil;
+	self.filename = nil;
 	self.pathname = nil;
 	self.modtime = nil;
 	[super dealloc];

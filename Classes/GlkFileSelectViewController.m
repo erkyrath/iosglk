@@ -51,6 +51,7 @@
 				label = filename;
 			
 			GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
+			thumb.filename = filename;
 			thumb.pathname = pathname;
 			thumb.modtime = [attrs fileModificationDate];
 			thumb.label = label;
@@ -83,7 +84,7 @@
 }
 
 
-// Table view data source methods
+// Table view data source methods (see UITableViewDataSource)
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return filelist.count;
@@ -116,11 +117,37 @@
 	return cell;
 }
 
+- (void) tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (editingStyle == UITableViewCellEditingStyleDelete) {
+		int row = indexPath.row;
+		if (row >= 0 && row < filelist.count) {
+			GlkFileThumb *thumb = [filelist objectAtIndex:row];
+			NSLog(@"selector: deleting file \"%@\" (%@)", thumb.label, thumb.pathname);
+			BOOL res = [[NSFileManager defaultManager] removeItemAtPath:thumb.pathname error:nil];
+			if (res) {
+				[filelist removeObjectAtIndex:row];
+				[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+			}
+		}
+	}
+}
 
 // Table view delegate
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	//### return that puppy and close everything
+	GlkFileThumb *thumb = nil;
+	
+	int row = indexPath.row;
+	if (row >= 0 && row < filelist.count)
+		thumb = [filelist objectAtIndex:row];
+	if (!thumb)
+		return;
+		
+	NSLog(@"selector: selected \"%@\"", thumb.label);
+	prompt.filename = thumb.filename;
+	prompt.pathname = thumb.pathname;
+	[self dismissModalViewControllerAnimated:YES];
+	[[GlkAppWrapper singleton] acceptEventSpecial];
 }
 
 

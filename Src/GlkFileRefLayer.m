@@ -107,19 +107,23 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 		[GlkLibrary strictWarning:@"fileref_create_by name: unable to locate Documents directory."];
 		return nil;
 	}
-	NSString *basedir = [dirlist objectAtIndex:0];
-	NSString *dirname = [GlkFileRef subDirOfBase:basedir forUsage:usage gameid:library.gameid];
+	NSString *basedir = [[dirlist objectAtIndex:0] retain];
+	NSString *dirname = [[GlkFileRef subDirOfBase:basedir forUsage:usage gameid:library.gameid] retain];
 
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
 	GlkFileRefPrompt *prompt = [[GlkFileRefPrompt alloc] initWithUsage:usage fmode:fmode dirname:dirname]; // retained
+	dirname = nil;
 	
-	/* We call selectEvent, which will block and put up the file-selection UI. */
+	/* We call selectEvent, which will block and put up the file-selection UI. Note that the autorelease pool gets wiped, which is why we've retained everything above! */
 	library.specialrequest = prompt;
 	[appwrap selectEvent:nil special:prompt];
 	NSString *filename = [[prompt.filename retain] autorelease];
+	NSString *pathnamecheck = [[prompt.pathname retain] autorelease];
 	
 	library.specialrequest = nil;
-	[prompt release];
+	[prompt autorelease];
+	[basedir autorelease];
+	[dirname autorelease];
 	
 	if (!filename) {
 		/* The file selection was cancelled. */
@@ -131,6 +135,9 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 		[GlkLibrary strictWarning:@"fileref_create_by_prompt: unable to create file ref."];
 		return NULL;
 	}
+	
+	if (![pathnamecheck isEqualToString:fref.pathname])
+		NSLog(@"Selected pathname %@ did not match %@!", pathnamecheck, fref.pathname);
 
 	return [fref autorelease];
 }
