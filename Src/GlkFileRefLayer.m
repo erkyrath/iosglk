@@ -13,6 +13,10 @@
 	All files live in ~/Documents, except for temporary files, which go in NSTemporaryDirectory. That's the "base directory". Whichever the base directory is, the file lives in a subdirectory of it: "GlkData", "GlkInputRecord", "GlkTranscript", or "GlkSavedGame_...".
 	
 	The last case is special because saved games are namespaced by the game identity -- you can't save in one game and then restore that file into a different game. The game identity is stored as the gameid property on the GlkLibrary. (This distinction is meaningless if your Glk application handles only a single game, of course. But if you're writing an interpreter packaged with many games, you'll want to set gameid to a unique string before starting one of them.)
+	
+	To make things worse, any filename typed in by the user (at a prompt) gets encoded using the StringToDumbEncoding algorithm. This allows the user to use any character at all, including slashes. The file-selection UI presents both these encoded filenames and "normal" filenames, if it encounters them.
+	
+	(The encoded form starts with two underscores, which means that a game could generate such a string by hand if it wanted, but really, do we care? Maybe. Not today.)
 */
 
 #import "GlkLibrary.h"

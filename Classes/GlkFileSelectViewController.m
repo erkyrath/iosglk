@@ -44,10 +44,11 @@
 				continue;
 			if (![NSFileTypeRegular isEqualToString:[attrs fileType]])
 				continue;
-				
+			
+			/* We accept both dumbass-encoded strings (which were typed by the user) and "normal" strings (which were created by fileref_by_name). */
 			NSString *label = StringFromDumbEncoding(filename);
 			if (!label)
-				continue;
+				label = filename;
 			
 			GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
 			thumb.pathname = pathname;
