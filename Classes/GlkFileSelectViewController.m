@@ -14,12 +14,17 @@
 
 @synthesize prompt;
 @synthesize filelist;
+@synthesize dateformatter;
 
 - (id) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)promptref bundle:(NSBundle *)nibBundle {
 	self = [super initWithNibName:nibName bundle:nibBundle];
 	if (self) {
 		self.prompt = promptref;
 		self.filelist = [NSMutableArray arrayWithCapacity:16];
+		dateformatter = [[NSDateFormatter alloc] init]; // retained
+		[dateformatter setDateStyle:NSDateFormatterMediumStyle];
+		[dateformatter setTimeStyle:NSDateFormatterMediumStyle];
+		dateformatter.doesRelativeDateFormatting = YES;
 	}
 	return self;
 }
@@ -60,7 +65,7 @@
 		}
 	}
 	
-	//### sort by modtime
+	[filelist sortUsingSelector:@selector(compareModTime:)];
 }
 
 - (void) viewDidUnload {
@@ -70,6 +75,7 @@
 - (void) dealloc {
 	self.prompt = nil;
 	self.filelist = nil;
+	self.dateformatter = nil;
 	[super dealloc];
 }
 
@@ -96,7 +102,7 @@
 	// This is boilerplate and I haven't touched it.
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 	if (cell == nil) {
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
 	}
 	
 	GlkFileThumb *thumb = nil;
@@ -106,12 +112,15 @@
 		thumb = [filelist objectAtIndex:row];
 		
 	/* Make the cell look right... */
+	
 	if (!thumb) {
 		// shouldn't happen
 		cell.textLabel.text = @"(null)";
+		cell.detailTextLabel.text = @"?";
 	}
 	else {
 		cell.textLabel.text = thumb.label;
+		cell.detailTextLabel.text = [dateformatter stringFromDate:thumb.modtime];
 	}
 
 	return cell;

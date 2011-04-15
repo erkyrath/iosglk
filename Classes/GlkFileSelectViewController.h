@@ -12,10 +12,12 @@
 @interface GlkFileSelectViewController : UITableViewController {
 	GlkFileRefPrompt *prompt;
 	NSMutableArray *filelist; // array of GlkFileThumb
+	NSDateFormatter *dateformatter;
 }
 
 @property (nonatomic, retain) GlkFileRefPrompt *prompt;
 @property (nonatomic, retain) NSMutableArray *filelist;
+@property (nonatomic, retain) NSDateFormatter *dateformatter;
 
 - (id) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)prompt bundle:(NSBundle *)nibBundle;
 - (IBAction) buttonCancel:(id)sender;

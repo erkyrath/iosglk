@@ -38,5 +38,7 @@
 @property (nonatomic, retain) NSString *pathname;
 @property (nonatomic, retain) NSDate *modtime;
 
+- (NSComparisonResult) compareModTime:(GlkFileThumb *)other;
+
 @end
 

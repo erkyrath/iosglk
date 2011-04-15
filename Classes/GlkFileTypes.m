@@ -53,5 +53,9 @@
 	[super dealloc];
 }
 
+- (NSComparisonResult) compareModTime:(GlkFileThumb *)other {
+	return [other.modtime compare:modtime];
+}
+
 @end
 
