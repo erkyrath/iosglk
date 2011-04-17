@@ -7,6 +7,7 @@
 #import "GlkFileSelectViewController.h"
 #import "GlkFileTypes.h"
 #import "GlkAppWrapper.h"
+#import "RelDateFormatter.h"
 #import "GlkUtilities.h"
 
 
@@ -21,10 +22,9 @@
 	if (self) {
 		self.prompt = promptref;
 		self.filelist = [NSMutableArray arrayWithCapacity:16];
-		dateformatter = [[NSDateFormatter alloc] init]; // retained
+		dateformatter = [[RelDateFormatter alloc] init]; // retained
 		[dateformatter setDateStyle:NSDateFormatterMediumStyle];
-		[dateformatter setTimeStyle:NSDateFormatterMediumStyle];
-		dateformatter.doesRelativeDateFormatting = YES;
+		[dateformatter setTimeStyle:NSDateFormatterShortStyle];
 	}
 	return self;
 }
