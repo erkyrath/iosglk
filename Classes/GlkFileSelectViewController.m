@@ -48,6 +48,7 @@
 	else {
 		if (!textfield)
 			[NSException raise:@"GlkException" format:@"no textfield in write-mode file selection"];
+		//### open keyboard for textfield
 		self.navigationItem.title = @"Save";
 	}
 	
@@ -224,11 +225,24 @@
 	prompt.filename = StringToDumbEncoding(label);
 	prompt.pathname = [prompt.dirname stringByAppendingPathComponent:prompt.filename];
 	
-	//### if it exists, confirm
+	if ([[NSFileManager defaultManager] fileExistsAtPath:prompt.pathname]) {
+		NSString *str = [NSString stringWithFormat:@"Replace the saved game \"%@\"?", label];
+		UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Replace" otherButtonTitles:nil];
+		[sheet showInView:textfield];
+		return;
+	}
 	
 	NSLog(@"textfield: selected \"%@\"", label);
 	[self dismissModalViewControllerAnimated:YES];
 	[[GlkAppWrapper singleton] acceptEventSpecial];	
+}
+
+- (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 0) {
+		NSLog(@"textfield: confirmed selection");
+		[self dismissModalViewControllerAnimated:YES];
+		[[GlkAppWrapper singleton] acceptEventSpecial];	
+	}
 }
 
 - (void) didReceiveMemoryWarning {

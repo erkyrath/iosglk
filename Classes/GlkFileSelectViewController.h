@@ -9,7 +9,7 @@
 @class GlkFileRefPrompt;
 @class GlkFileThumb;
 
-@interface GlkFileSelectViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate> {
+@interface GlkFileSelectViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIActionSheetDelegate> {
 	UITableView *tableView;
 	UITextField *textfield; /* if this is a save dialog */
 	
