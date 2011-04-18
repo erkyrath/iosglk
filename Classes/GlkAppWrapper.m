@@ -193,6 +193,16 @@ static GlkAppWrapper *singleton = nil;
 	return res;
 }
 
+/* Check whether the VM is blocked and waiting for a special prompt event.
+	This is called from the main thread. It synchronizes with the VM thread. */
+- (BOOL) acceptingEventSpecial {
+	BOOL res;
+	[iowaitcond lock];
+	res = self.iowait && iowait_special;
+	[iowaitcond unlock];
+	return res;
+}
+
 /* This is called from the VM thread, while the VM is running. It throws a call into the main thread, where the user is (presumably) busy editing an input field. */
 - (NSString *) editingTextForWindow:(NSNumber *)tag {
 	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;

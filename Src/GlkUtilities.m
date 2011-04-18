@@ -41,7 +41,7 @@ NSString *StringToDumbEncoding(NSString *str) {
 */
 NSString *StringFromDumbEncoding(NSString *str) {
 	NSData *indata = [str dataUsingEncoding:NSASCIIStringEncoding];
-	if (!indata || indata.length < 2)
+	if (!indata || indata.length < 4)
 		return nil;
 	unsigned char *inbytes = (unsigned char *)indata.bytes;
 	if (!inbytes || inbytes[0] != '_' || inbytes[1] != '_')

@@ -4,6 +4,9 @@
 	http://eblong.com/zarf/glk/
 */
 
+/* This is a UIViewController, not a UITableViewController. That's because the UITableViewController class adds very little, and gets confused if you try to tell it that the UITableView is not the top-level view in its nib file.
+*/
+
 #import "GlkFileSelectViewController.h"
 #import "GlkFileTypes.h"
 #import "GlkAppWrapper.h"
@@ -13,6 +16,8 @@
 
 @implementation GlkFileSelectViewController
 
+@synthesize tableView;
+@synthesize textfield;
 @synthesize prompt;
 @synthesize filelist;
 @synthesize dateformatter;
@@ -32,7 +37,19 @@
 - (void) viewDidLoad {
 	[super viewDidLoad];
 	
-	self.navigationItem.title = @"Load"; //### localize and customize
+	isload = (prompt.fmode == filemode_Read);
+	
+	//### localize and customize
+	if (isload) {
+		if (textfield)
+			[NSException raise:@"GlkException" format:@"textfield in read-mode file selection"];
+		self.navigationItem.title = @"Load";
+	}
+	else {
+		if (!textfield)
+			[NSException raise:@"GlkException" format:@"no textfield in write-mode file selection"];
+		self.navigationItem.title = @"Save";
+	}
 	
 	UIBarButtonItem *cancelbutton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(buttonCancel:)] autorelease];
 	
@@ -68,10 +85,6 @@
 	[filelist sortUsingSelector:@selector(compareModTime:)];
 }
 
-- (void) viewDidUnload {
-	[super viewDidUnload];
-}
-
 - (void) dealloc {
 	self.prompt = nil;
 	self.filelist = nil;
@@ -89,6 +102,10 @@
 	return YES;
 }
 
+- (void) setEditing:(BOOL)editing animated:(BOOL)animated {
+	[super setEditing:editing animated:animated];
+	[tableView setEditing:editing animated:animated];
+}
 
 // Table view data source methods (see UITableViewDataSource)
 
@@ -96,7 +113,7 @@
 	return filelist.count;
 }
 
-- (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *) tableView:(UITableView *)tableview cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *CellIdentifier = @"Cell";
 
 	// This is boilerplate and I haven't touched it.
@@ -126,7 +143,7 @@
 	return cell;
 }
 
-- (void) tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void) tableView:(UITableView *)tableview commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		int row = indexPath.row;
 		if (row >= 0 && row < filelist.count) {
@@ -141,9 +158,9 @@
 	}
 }
 
-// Table view delegate
+// Table view delegate (see UITableViewDelegate)
 
-- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void) tableView:(UITableView *)tableview didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	GlkFileThumb *thumb = nil;
 	
 	int row = indexPath.row;
@@ -153,12 +170,66 @@
 		return;
 		
 	NSLog(@"selector: selected \"%@\"", thumb.label);
-	prompt.filename = thumb.filename;
-	prompt.pathname = thumb.pathname;
-	[self dismissModalViewControllerAnimated:YES];
-	[[GlkAppWrapper singleton] acceptEventSpecial];
+	
+	if (!isload) {
+		/* The user has picked a filename; copy it into the field. */
+		textfield.text = thumb.label;
+	}
+	else {
+		/* The user has selected a file. */
+		prompt.filename = thumb.filename;
+		prompt.pathname = thumb.pathname;
+		[self dismissModalViewControllerAnimated:YES];
+		[[GlkAppWrapper singleton] acceptEventSpecial];
+	}
 }
 
+// Text field delegate (see UITextFieldDelegate)
+
+- (BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	if (tableView.indexPathForSelectedRow)
+		[tableView selectRowAtIndexPath:nil animated:NO scrollPosition:UITableViewScrollPositionNone];
+	return YES;
+}
+
+- (BOOL) textFieldShouldReturn:(UITextField *)textField {
+	/* Don't look at the text yet; the last word hasn't been spellchecked. However, we don't want to close the keyboard either. The only good answer seems to be to fire a function call with a tiny delay, and return YES to ensure that the spellcheck is accepted. */
+	[self performSelector:@selector(textFieldContinueReturn:) withObject:textField afterDelay:0.0];
+	return YES;
+}
+
+- (void) textFieldContinueReturn:(UITextField *)textField {
+	if (![[GlkAppWrapper singleton] acceptingEventSpecial]) {
+		/* A filename must already have been accepted. */
+		return;
+	}
+	
+	NSString *label = [textfield.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	
+	if (label.length == 0) {
+		/* Textfield is empty. Pick a "Saved game" filename which is not already in use. */
+		//### localize this string
+		for (int ix=0; YES; ix++) {
+			if (!ix)
+				label = @"Saved game";
+			else
+				label = [NSString stringWithFormat:@"Saved game %d", ix];
+			NSString *filename = StringToDumbEncoding(label);
+			NSString *pathname = [prompt.dirname stringByAppendingPathComponent:filename];
+			if (![[NSFileManager defaultManager] fileExistsAtPath:pathname])
+				break;
+		}
+	}
+	
+	prompt.filename = StringToDumbEncoding(label);
+	prompt.pathname = [prompt.dirname stringByAppendingPathComponent:prompt.filename];
+	
+	//### if it exists, confirm
+	
+	NSLog(@"textfield: selected \"%@\"", label);
+	[self dismissModalViewControllerAnimated:YES];
+	[[GlkAppWrapper singleton] acceptEventSpecial];	
+}
 
 - (void) didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
