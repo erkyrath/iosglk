@@ -5,7 +5,7 @@
 	http://eblong.com/zarf/glk/
 */
 
-/* This is a simple subclass of NSDateFormatter which has one tweak: if the NSDate is less than twelve hours old, the time printed is of the form "ten seconds ago" or "two hours, ten minutes ago". (These strings are not currently localized.) Dates in the future are formatted normally.
+/* This is a simple subclass of NSDateFormatter which has one tweak: if the NSDate is less than twelve hours old, the time printed is of the form "10 seconds ago" or "2 hours, 10 minutes ago". (These strings are not currently localized.) Dates in the future are formatted normally.
 
 	The class also defaults to doesRelativeDateFormatting, so dates more than twelve hours old can appear as "today" or "yesterday".	
 */
