@@ -34,6 +34,8 @@
 	return self;
 }
 
+//### adapt load and save UI for the no-files case
+
 - (void) viewDidLoad {
 	[super viewDidLoad];
 	
@@ -49,6 +51,12 @@
 		if (!textfield)
 			[NSException raise:@"GlkException" format:@"no textfield in write-mode file selection"];
 		self.navigationItem.title = @"Save";
+		CGRect rect = CGRectMake(0, 0, tableView.frame.size.width, 32);
+		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		label.text = @"Previously saved games:";
+		label.textAlignment = UITextAlignmentCenter;
+		label.textColor = [UIColor lightGrayColor];
+		tableView.tableHeaderView = label;
 	}
 	
 	UIBarButtonItem *cancelbutton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(buttonCancel:)] autorelease];
