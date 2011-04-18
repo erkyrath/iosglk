@@ -48,7 +48,6 @@
 	else {
 		if (!textfield)
 			[NSException raise:@"GlkException" format:@"no textfield in write-mode file selection"];
-		//### open keyboard for textfield
 		self.navigationItem.title = @"Save";
 	}
 	
@@ -86,6 +85,12 @@
 	[filelist sortUsingSelector:@selector(compareModTime:)];
 }
 
+- (void) viewDidAppear:(BOOL)animated {
+	if (textfield) {
+		[textfield becomeFirstResponder];
+	}
+}
+
 - (void) dealloc {
 	self.prompt = nil;
 	self.filelist = nil;
@@ -102,6 +107,8 @@
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
+
+//### adjust the tableview scrolling for keyboard open/close
 
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated {
 	[super setEditing:editing animated:animated];
