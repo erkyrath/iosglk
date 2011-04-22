@@ -26,6 +26,7 @@
 @property (nonatomic, retain) NSDateFormatter *dateformatter;
 
 - (id) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)prompt bundle:(NSBundle *)nibBundle;
+- (void) addBlankThumb;
 - (IBAction) buttonCancel:(id)sender;
 - (void) textFieldContinueReturn:(UITextField *)textField;
 

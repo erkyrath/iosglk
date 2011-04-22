@@ -31,12 +31,14 @@
 	NSString *filename;
 	NSString *pathname;
 	NSDate *modtime;
+	BOOL isfake;
 }
 
 @property (nonatomic, retain) NSString *label;
 @property (nonatomic, retain) NSString *filename;
 @property (nonatomic, retain) NSString *pathname;
 @property (nonatomic, retain) NSDate *modtime;
+@property (nonatomic) BOOL isfake;
 
 - (NSComparisonResult) compareModTime:(GlkFileThumb *)other;
 

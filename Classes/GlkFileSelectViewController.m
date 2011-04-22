@@ -99,6 +99,9 @@
 	}
 	
 	[filelist sortUsingSelector:@selector(compareModTime:)];
+	
+	if (filelist.count == 0)
+		[self addBlankThumb];
 }
 
 - (void) viewDidAppear:(BOOL)animated {
@@ -112,6 +115,14 @@
 	self.filelist = nil;
 	self.dateformatter = nil;
 	[super dealloc];
+}
+
+- (void) addBlankThumb {
+	GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
+	thumb.isfake = YES;
+	thumb.modtime = [NSDate date];
+	thumb.label = @"No saved games"; //### localize and customize
+	[filelist insertObject:thumb atIndex:0];
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
@@ -146,8 +157,6 @@
 	return YES;
 }
 
-//### adjust the tableview scrolling for keyboard open/close
-
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated {
 	[super setEditing:editing animated:animated];
 	[tableView setEditing:editing animated:animated];
@@ -159,8 +168,18 @@
 	return filelist.count;
 }
 
+- (BOOL) tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+	GlkFileThumb *thumb = nil;
+	
+	int row = indexPath.row;
+	if (row >= 0 && row < filelist.count)
+		thumb = [filelist objectAtIndex:row];
+		
+	return (thumb && !thumb.isfake);
+}
+
 - (UITableViewCell *) tableView:(UITableView *)tableview cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *CellIdentifier = @"Cell";
+	static NSString *CellIdentifier = @"File";
 
 	// This is boilerplate and I haven't touched it.
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -178,11 +197,21 @@
 	
 	if (!thumb) {
 		// shouldn't happen
+		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		cell.textLabel.text = @"(null)";
+		cell.textLabel.textColor = [UIColor blackColor];
 		cell.detailTextLabel.text = @"?";
 	}
-	else {
+	else if (thumb.isfake) {
+		cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		cell.textLabel.text = thumb.label;
+		cell.textLabel.textColor = [UIColor lightGrayColor];
+		cell.detailTextLabel.text = @"";
+	}
+	else {
+		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+		cell.textLabel.text = thumb.label;
+		cell.textLabel.textColor = [UIColor blackColor];
 		cell.detailTextLabel.text = [dateformatter stringFromDate:thumb.modtime];
 	}
 
@@ -191,14 +220,21 @@
 
 - (void) tableView:(UITableView *)tableview commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
+		GlkFileThumb *thumb = nil;
 		int row = indexPath.row;
-		if (row >= 0 && row < filelist.count) {
+		if (row >= 0 && row < filelist.count)
+			thumb = [filelist objectAtIndex:row];
+		if (thumb && !thumb.isfake) {
 			GlkFileThumb *thumb = [filelist objectAtIndex:row];
 			NSLog(@"selector: deleting file \"%@\" (%@)", thumb.label, thumb.pathname);
 			BOOL res = [[NSFileManager defaultManager] removeItemAtPath:thumb.pathname error:nil];
 			if (res) {
 				[filelist removeObjectAtIndex:row];
 				[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+				if (filelist.count == 0) {
+					[self addBlankThumb];
+					[tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+				}
 			}
 		}
 	}
@@ -208,11 +244,12 @@
 
 - (void) tableView:(UITableView *)tableview didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	GlkFileThumb *thumb = nil;
-	
 	int row = indexPath.row;
 	if (row >= 0 && row < filelist.count)
 		thumb = [filelist objectAtIndex:row];
 	if (!thumb)
+		return;
+	if (thumb.isfake)
 		return;
 		
 	NSLog(@"selector: selected \"%@\"", thumb.label);

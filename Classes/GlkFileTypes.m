@@ -44,6 +44,7 @@
 @synthesize filename;
 @synthesize pathname;
 @synthesize modtime;
+@synthesize isfake;
 
 - (void) dealloc {
 	self.label = nil;
