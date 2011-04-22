@@ -105,6 +105,7 @@
 		
 	GlkFileSelectViewController *viewc = [[[GlkFileSelectViewController alloc] initWithNibName:nibname prompt:prompt bundle:nil] autorelease];
 	UINavigationController *navc = [[[UINavigationController alloc] initWithRootViewController:viewc] autorelease];
+	navc.modalPresentationStyle = UIModalPresentationFormSheet; //BACKC: requires iOS 3.2 (but it has no effect on iPhone, so just skip it in 3.1.3)
 	[self presentModalViewController:navc animated:YES];
 }
 

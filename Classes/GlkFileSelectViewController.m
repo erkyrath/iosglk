@@ -118,12 +118,17 @@
 	NSDictionary *info = [notification userInfo];
 	//BACKC: UIKeyboardFrameBeginUserInfoKey is only available in 3.2 or later. Do something else for 3.1.3.
 	CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-	rect = [self.view convertRect:rect fromView:nil];
-	CGSize size = rect.size;
+	rect = [self.tableView convertRect:rect fromView:nil];
+	/* The rect is the keyboard size in view coordinates (properly rotated). However, for some reason, the *upper* edge is at the bottom of the window -- I guess this is pre-slide-in? So we have to shift the rectangle up. */
+	CGFloat upperedge = rect.origin.y - rect.size.height;
+	CGRect tablerect = self.tableView.bounds;
+	CGFloat diff = (tablerect.origin.y + tablerect.size.height) - upperedge;
 	
-	UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, size.height, 0.0);
-	tableView.contentInset = contentInsets;
-	tableView.scrollIndicatorInsets = contentInsets;
+	if (diff > 0) {
+		UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, diff, 0.0);
+		tableView.contentInset = contentInsets;
+		tableView.scrollIndicatorInsets = contentInsets;
+	}
 }
 
 - (void) keyboardWillBeHidden:(NSNotification*)notification {
