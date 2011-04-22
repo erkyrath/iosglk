@@ -200,13 +200,14 @@ void glk_main() {
 			glk_put_buffer(inbuf, ev.val1);
 			//glk_put_buffer_uni(uinbuf, ev.val1);
 			glk_put_string("\".\n");
-			if (!strncmp(inbuf, "load", ev.val1) || !strncmp(inbuf, "restore", ev.val1)) {
+			inbuf[ev.val1] = '\0';
+			if (!strcmp(inbuf, "load") || !strcmp(inbuf, "restore")) {
 				glk_put_string("Load at file...\n");
 				frefid_t fileref = glk_fileref_create_by_prompt(fileusage_SavedGame|fileusage_BinaryMode, filemode_Read, 123);
 				sprintf(buf, "Created fileref %x!\n", (glui32)fileref);
 				glk_put_string(buf);
 			}
-			if (!strncmp(inbuf, "save", ev.val1) || !strncmp(inbuf, "store", ev.val1)) {
+			if (!strcmp(inbuf, "save") || !strcmp(inbuf, "store")) {
 				glk_put_string("Save at file...\n");
 				frefid_t fileref = glk_fileref_create_by_prompt(fileusage_SavedGame|fileusage_BinaryMode, filemode_Write, 123);
 				sprintf(buf, "Created fileref %x!\n", (glui32)fileref);
