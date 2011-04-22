@@ -41,6 +41,14 @@
 	
 	isload = (prompt.fmode == filemode_Read);
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(keyboardWillBeShown:)
+		name:UIKeyboardWillShowNotification object:nil];
+
+	[[NSNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(keyboardWillBeHidden:)
+		name:UIKeyboardWillHideNotification object:nil];
+		
 	//### localize and customize
 	if (isload) {
 		if (textfield)
@@ -104,6 +112,23 @@
 	self.filelist = nil;
 	self.dateformatter = nil;
 	[super dealloc];
+}
+
+- (void) keyboardWillBeShown:(NSNotification*)notification {
+	NSDictionary *info = [notification userInfo];
+	//BACKC: UIKeyboardFrameBeginUserInfoKey is only available in 3.2 or later. Do something else for 3.1.3.
+	CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+	rect = [self.view convertRect:rect fromView:nil];
+	CGSize size = rect.size;
+	
+	UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, size.height, 0.0);
+	tableView.contentInset = contentInsets;
+	tableView.scrollIndicatorInsets = contentInsets;
+}
+
+- (void) keyboardWillBeHidden:(NSNotification*)notification {
+	tableView.contentInset = UIEdgeInsetsZero;
+	tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
 }
 
 - (IBAction) buttonCancel:(id)sender {
