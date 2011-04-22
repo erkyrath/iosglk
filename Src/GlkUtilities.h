@@ -8,6 +8,7 @@
 
 
 extern NSString *StringFromRect(CGRect rect);
+extern NSString *StringFromRectAlt(CGRect rect);
 extern NSString *StringFromSize(CGSize size);
 extern NSString *StringFromPoint(CGPoint pt);
 extern NSString *StringFromDumbEncoding(NSString *str);

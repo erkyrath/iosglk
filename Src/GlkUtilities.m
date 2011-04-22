@@ -70,10 +70,16 @@ NSString *StringFromDumbEncoding(NSString *str) {
 	return [[[NSString alloc] initWithData:outdata encoding:NSUTF8StringEncoding] autorelease];
 }
 
-/* Return a string showing the size of a rectangle. (For debugging.) */
+/* Return a string showing the size and origin of a rectangle. (For debugging.) */
 NSString *StringFromRect(CGRect rect) {
 	return [NSString stringWithFormat:@"%.1fx%.1f at %.1f,%.1f", 
 		rect.size.width, rect.size.height, rect.origin.x, rect.origin.y];
+}
+
+/* Return a string showing the extent of a rectangle. (For debugging.) */
+NSString *StringFromRectAlt(CGRect rect) {
+	return [NSString stringWithFormat:@"%.1f..%.1f,%.1f..%.1f", 
+		rect.origin.x, rect.origin.x+rect.size.width, rect.origin.y, rect.origin.y+rect.size.height];
 }
 
 /* Return a string showing a size. (For debugging.) */
