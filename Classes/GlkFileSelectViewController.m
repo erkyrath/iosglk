@@ -34,8 +34,6 @@
 	return self;
 }
 
-//### adapt load and save UI for the no-files case
-
 - (void) viewDidLoad {
 	[super viewDidLoad];
 	
