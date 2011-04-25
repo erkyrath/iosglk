@@ -815,7 +815,57 @@
 	}
 	else {
 		/* UTF8 stream (whether the unicode flag is set or not) */
-		//###
+		/* We have to do our own UTF8 decoding here. There's no NSFileHandle method to read a variable-length UTF8 character. I'm very sorry. */
+		NSData *data = [handle readDataOfLength:1];
+		if (data.length < 1)
+			return -1;
+		glui32 val0 = ((char *)data.bytes)[0] & 0xFF;
+		if (val0 < 0x80) {
+			readcount++;
+			return val0;
+		}
+		if ((val0 & 0xE0) == 0xC0) {
+			data = [handle readDataOfLength:1];
+			if (data.length < 1)
+				return -1;
+			glui32 val1 = ((char *)data.bytes)[0] & 0xFF;
+			glui32 res = (val0 & 0x1f) << 6;
+			res |= (val1 & 0x3f);
+			readcount++;
+			if (!wantunicode && res >= 0x100)
+				return '?';
+			return res;
+		}
+		if ((val0 & 0xF0) == 0xE0) {
+			data = [handle readDataOfLength:2];
+			if (data.length < 2)
+				return -1;
+			glui32 val1 = ((char *)data.bytes)[0] & 0xFF;
+			glui32 val2 = ((char *)data.bytes)[1] & 0xFF;
+			glui32 res = (((val0 & 0xf)<<12)  & 0x0000f000);
+			res |= (((val1 & 0x3f)<<6) & 0x00000fc0);
+			res |= (((val2 & 0x3f))    & 0x0000003f);
+			readcount++;
+			if (!wantunicode && res >= 0x100)
+				return '?';
+			return res;
+		}
+		if ((val0 & 0xF0) == 0xF0) {
+			data = [handle readDataOfLength:3];
+			if (data.length < 3)
+				return -1;
+			glui32 val1 = ((char *)data.bytes)[0] & 0xFF;
+			glui32 val2 = ((char *)data.bytes)[1] & 0xFF;
+			glui32 val3 = ((char *)data.bytes)[2] & 0xFF;
+			glui32 res = (((val0 & 0x7)<<18)   & 0x1c0000);
+			res |= (((val1 & 0x3f)<<12) & 0x03f000);
+			res |= (((val2 & 0x3f)<<6)  & 0x000fc0);
+			res |= (((val3 & 0x3f))     & 0x00003f);
+			readcount++;
+			if (!wantunicode && res >= 0x100)
+				return '?';
+			return res;
+		}
 		return -1;
 	}
 }
