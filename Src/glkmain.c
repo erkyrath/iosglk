@@ -98,9 +98,9 @@ void glk_main() {
 	}
 	*/
 	
+	/*
 	frefid_t fileref = glk_fileref_create_by_name(fileusage_SavedGame|fileusage_TextMode, "foobar", 123);
 	stream_result_t result;
-	/*
 	strid_t str = glk_stream_open_file(fileref, filemode_Write, 456);
 	glk_put_string_stream(str, "First line.\nSecond line.");
 	glui32 pos = glk_stream_get_position(str);
@@ -109,24 +109,16 @@ void glk_main() {
 	glk_stream_close(str, &result);
 	sprintf(buf, "Result: %d read, %d written\n", result.readcount, result.writecount);
 	glk_put_string(buf);
-	*/
-	//glui32 ubuf[256];
+	glui32 ubuf[256];
 	strid_t str = glk_stream_open_file(fileref, filemode_Read, 456);
-	while (1) {
-		glsi32 ch = glk_get_char_stream(str);
-		if (ch < 0)
-			break;
-		sprintf(buf, " %x", ch);
-		glk_put_string(buf);
-	}
-	glk_put_string("\n");
-	//glui32 count = glk_get_line_stream(str, buf, 256);
-	//glk_put_buffer(buf, count);
-	//sprintf(buf, "(EOL at %d)\n", count);
-	//glk_put_string(buf);
+	glui32 count = glk_get_line_stream_uni(str, ubuf, 256);
+	glk_put_buffer_uni(ubuf, count);
+	sprintf(buf, "(EOL at %d)\n", count);
+	glk_put_string(buf);
 	glk_stream_close(str, &result);
 	sprintf(buf, "Result: %d read, %d written\n", result.readcount, result.writecount);
 	glk_put_string(buf);
+	*/
 	
 	/*
 	strid_t sx = NULL;

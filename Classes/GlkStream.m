@@ -919,8 +919,31 @@
 	}
 	else {
 		/* UTF8 stream (whether the unicode flag is set or not) */
-		//###
-		return 0;
+		/* Here we shamelessly rely on getChar to do our UTF-8 decoding. */
+		glui32 count = 0;
+		if (wantunicode) {
+			glui32 *ugetbuf = getbuf;
+			while (count < getlen) {
+				glsi32 ch = [self getChar:YES];
+				if (ch < 0)
+					break;
+				ugetbuf[count++] = ch;
+				if (ch == '\n')
+					break;
+			}
+		}
+		else {
+			char *cgetbuf = getbuf;
+			while (count < getlen) {
+				glsi32 ch = [self getChar:NO];
+				if (ch < 0)
+					break;
+				cgetbuf[count++] = ch;
+				if (ch == '\n')
+					break;
+			}
+		}
+		return count;
 	}
 }
 
@@ -974,8 +997,27 @@
 	}
 	else {
 		/* UTF8 stream (whether the unicode flag is set or not) */
-		//###
-		return 0;
+		/* Here we shamelessly rely on getChar to do our UTF-8 decoding. */
+		glui32 count = 0;
+		if (wantunicode) {
+			glui32 *ugetbuf = getbuf;
+			while (count < getlen) {
+				glsi32 ch = [self getChar:YES];
+				if (ch < 0)
+					break;
+				ugetbuf[count++] = ch;
+			}
+		}
+		else {
+			char *cgetbuf = getbuf;
+			while (count < getlen) {
+				glsi32 ch = [self getChar:NO];
+				if (ch < 0)
+					break;
+				cgetbuf[count++] = ch;
+			}
+		}
+		return count;
 	}
 }
 
