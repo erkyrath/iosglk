@@ -25,8 +25,94 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 			/* This implements Glk spec version 0.7.1. */
 			return 0x00000701;
 
-		//### the rest of them
+		case gestalt_CharInput:
+			/* This is not a terrific approximation. Return false for function
+			   keys, control keys, and the high-bit non-printables. For
+			   everything else in the Unicode range, return true. */
+			if (val <= keycode_Left && val >= keycode_End)
+				return 1;
+			if (val >= 0x100000000-keycode_MAXVAL)
+				return 0;
+			if (val > 0x10FFFF)
+				return 0;
+			if ((val >= 0 && val < 32) || (val >= 127 && val < 160))
+				return 0;
+			return 1;
+
+		case gestalt_LineInput:
+			/* Same as the above, except no special keys. */
+			if (val > 0x10FFFF)
+				return 0;
+			if ((val >= 0 && val < 32) || (val >= 127 && val < 160))
+				return 0;
+			return 1;
+
+		case gestalt_CharOutput:
+			/* Same thing again. We assume that all printable characters,
+			   as well as the placeholders for nonprintables, are one character
+			   wide. */
+			if ((val > 0x10FFFF)
+				|| (val >= 0 && val < 32)
+				|| (val >= 127 && val < 160)) {
+				if (arr)
+					arr[0] = 1;
+				return gestalt_CharOutput_CannotPrint;
+			}
+			if (arr)
+				arr[0] = 1;
+			return gestalt_CharOutput_ExactPrint;
+
+		case gestalt_MouseInput:
+			return 0;
+
+		case gestalt_Timer:
+			return 1;
+
+		case gestalt_Graphics:
+			return 0;
+
+		case gestalt_DrawImage:
+			return 0;
+
+		case gestalt_Sound:
+			return 0;
+
+		case gestalt_SoundVolume:
+			return 0;
+
+		case gestalt_SoundNotify:
+			return 0;
+
+		case gestalt_Hyperlinks:
+			return 0;
 		
+		case gestalt_HyperlinkInput:
+			return 0;
+
+		case gestalt_SoundMusic:
+			return 0;
+
+		case gestalt_GraphicsTransparency:
+			return 0;
+
+		case gestalt_Unicode:
+			return 1;
+
+		case gestalt_UnicodeNorm:
+			return 1;
+
+		case gestalt_LineInputEcho:
+			return 1;
+
+		case gestalt_LineTerminators:
+			return 1;
+
+		case gestalt_LineTerminatorKey:
+			return 0;
+
+		//case gestalt_DateTime:
+		//	return 0;
+
 		default:
 			return 0;
 			
