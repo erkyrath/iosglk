@@ -533,3 +533,26 @@ void glk_cancel_line_event(winid_t win, event_t *event)
 	[win cancelLineInput:event];
 }
 
+void glk_request_mouse_event(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"request_mouse_event: invalid ref"];
+		return;
+	}
+	/* Not yet supported */
+}
+
+void glk_cancel_mouse_event(winid_t win)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"cancel_mouse_event: invalid ref"];
+		return;
+	}
+	/* Not yet supported */
+}
+
+void glk_window_flow_break(winid_t win)
+{
+	[GlkLibrary strictWarning:@"window_flow_break: graphics not supported"];
+}
+
