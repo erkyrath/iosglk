@@ -93,20 +93,28 @@
 */
 
 - (void) displayModalRequest:(id)special {
-	if (![special isKindOfClass:[GlkFileRefPrompt class]])
-		[NSException raise:@"GlkException" format:@"tried to raise unknown modal request"];
-	GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
+	if ([special isKindOfClass:[NSNull class]]) {
+		/* No modal view at exit time; just continue displaying and doing nothing. */
+		return;
+	}
 	
-	NSString *nibname;
-	if (prompt.fmode == filemode_Read)
-		nibname = @"GlkFileSelectLoad";
-	else
-		nibname = @"GlkFileSelectStore";
+	if ([special isKindOfClass:[GlkFileRefPrompt class]]) {
+		GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
 		
-	GlkFileSelectViewController *viewc = [[[GlkFileSelectViewController alloc] initWithNibName:nibname prompt:prompt bundle:nil] autorelease];
-	UINavigationController *navc = [[[UINavigationController alloc] initWithRootViewController:viewc] autorelease];
-	navc.modalPresentationStyle = UIModalPresentationFormSheet; //BACKC: requires iOS 3.2 (but it has no effect on iPhone, so just skip it in 3.1.3)
-	[self presentModalViewController:navc animated:YES];
+		NSString *nibname;
+		if (prompt.fmode == filemode_Read)
+			nibname = @"GlkFileSelectLoad";
+		else
+			nibname = @"GlkFileSelectStore";
+			
+		GlkFileSelectViewController *viewc = [[[GlkFileSelectViewController alloc] initWithNibName:nibname prompt:prompt bundle:nil] autorelease];
+		UINavigationController *navc = [[[UINavigationController alloc] initWithRootViewController:viewc] autorelease];
+		navc.modalPresentationStyle = UIModalPresentationFormSheet; //BACKC: requires iOS 3.2 (but it has no effect on iPhone, so just skip it in 3.1.3)
+		[self presentModalViewController:navc animated:YES];
+		return;
+	}
+
+	[NSException raise:@"GlkException" format:@"tried to raise unknown modal request"];
 }
 
 - (void)didReceiveMemoryWarning {

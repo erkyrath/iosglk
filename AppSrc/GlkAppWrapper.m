@@ -20,6 +20,7 @@
 #import "IosGlkAppDelegate.h"
 #import "IosGlkViewController.h"
 #import "GlkFrameView.h"
+#import "GlkFileTypes.h"
 #import "GlkUtilTypes.h"
 #import "GlkUtilities.h"
 #include "glk.h"
@@ -195,10 +196,10 @@ static GlkAppWrapper *singleton = nil;
 
 /* Check whether the VM is blocked and waiting for a special prompt event.
 	This is called from the main thread. It synchronizes with the VM thread. */
-- (BOOL) acceptingEventSpecial {
+- (BOOL) acceptingEventFileSelect {
 	BOOL res;
 	[iowaitcond lock];
-	res = self.iowait && iowait_special;
+	res = self.iowait && iowait_special && [iowait_special isKindOfClass:[GlkFileRefPrompt class]];
 	[iowaitcond unlock];
 	return res;
 }
@@ -250,10 +251,10 @@ static GlkAppWrapper *singleton = nil;
 
 	This is called from the main thread. It synchronizes with the VM thread. 
 */
-- (void) acceptEventSpecial {
+- (void) acceptEventFileSelect {
 	[iowaitcond lock];
 	
-	if (!self.iowait || !iowait_special) {
+	if (!self.iowait || !iowait_special || ![iowait_special isKindOfClass:[GlkFileRefPrompt class]]) {
 		/* The VM thread is working, or else it's waiting for a normal event. Either way, our response is not accepted right now. */
 		[iowaitcond unlock];
 		return;

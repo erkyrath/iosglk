@@ -10,7 +10,17 @@
 */
 
 #import "GlkLibrary.h"
+#import "GlkAppWrapper.h"
 #include "glk.h"
+
+void glk_exit()
+{
+	/* This does not exit the process -- that would be totally un-iPhone-y. Instead, we call selectEvent in a way that will never return. */
+	GlkLibrary *library = [GlkLibrary singleton];
+	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
+	library.specialrequest = [NSNull null];
+	[appwrap selectEvent:nil special:library.specialrequest];
+}
 
 glui32 glk_gestalt(glui32 id, glui32 val)
 {
@@ -117,6 +127,15 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 			return 0;
 			
 	}
+}
+
+void glk_tick() {
+	//### Maybe this should drain the VM thread's NSAutoreleasePool, every N cycles?
+}
+
+/* I'm not sure what this should mean on iOS, but I'm not sure anybody's ever used it, so never mind.
+*/
+void glk_set_interrupt_handler(void (*func)(void)) {
 }
 
 /* None of these stylehint methods were ever good for much. We now have better options in mind. */

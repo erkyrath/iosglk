@@ -213,6 +213,9 @@ void glk_main() {
 				sprintf(buf, "Created fileref %x!\n", (glui32)fileref);
 				glk_put_string(buf);
 			}
+			if (!strcmp(inbuf, "quit") || !strcmp(inbuf, "exit")) {
+				glk_exit(); // does not return
+			}
 			glk_put_char('>');
 			glk_request_line_event(mainwin, inbuf, 32, 0);
 			//glk_request_line_event_uni(mainwin, uinbuf, 32, 0);
