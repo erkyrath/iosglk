@@ -26,6 +26,7 @@
 	GlkWindowPair *parent;
 	int input_request_id;
 	void *line_buffer;
+	gidispatch_rock_t inarrayrock;
 	int line_buffer_length;
 	BOOL char_request;
 	BOOL line_request;

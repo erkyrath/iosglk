@@ -140,7 +140,12 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	/* We don't want this object to evaporate in the middle of this method. */
 	[[self retain] autorelease];
 	
-	//### subclasses: gidispa unregister inbuf
+	if (line_buffer) {
+		if (library.dispatch_unregister_arr) {
+			char *typedesc = (line_request_uni ? "&+#!Iu" : "&+#!Cn");
+			(*library.dispatch_unregister_arr)(line_buffer, line_buffer_length, typedesc, inarrayrock);
+		}
+	}
 	
 	for (GlkWindowPair *wx=self.parent; wx; wx=wx.parent) {
 		if (wx.type == wintype_Pair) {
@@ -284,7 +289,10 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		line_request_initial = str; // retained
 	}
 	
-	//### gidispa register array
+	if (library.dispatch_register_arr) {
+		char *typedesc = (line_request_uni ? "&+#!Iu" : "&+#!Cn");
+		inarrayrock = (*library.dispatch_register_arr)(line_buffer, maxlen, typedesc);
+	}
 }
 
 /* Complete line input. Returns the number of characters that were accepted, or -1 if the window is not accepting line input right now.
@@ -293,6 +301,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	int ix, buflen;
 	char *buf = NULL;
 	glui32 *ubuf = NULL;
+	void *vbuf = line_buffer;
+	glui32 maxlen = line_buffer_length;
 	
 	if (!line_buffer || !line_request)
 		return -1;
@@ -348,7 +358,10 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		style = origstyle;
 	}
 	
-	//### gidispa unregister array
+    if (library.dispatch_unregister_arr) {
+        char *typedesc = (unicode ? "&+#!Iu" : "&+#!Cn");
+        (*library.dispatch_unregister_arr)(vbuf, maxlen, typedesc, inarrayrock);
+    }
 	
 	return buflen;
 }

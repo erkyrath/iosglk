@@ -30,6 +30,8 @@
 	NSInteger tagCounter;
 	gidispatch_rock_t (*dispatch_register_obj)(void *obj, glui32 objclass);
 	void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
+	gidispatch_rock_t (*dispatch_register_arr)(void *array, glui32 len, char *typecode);
+	void (*dispatch_unregister_arr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock);
 }
 
 @property (nonatomic, retain) NSString *gameid;
@@ -44,6 +46,8 @@
 @property (nonatomic, retain) id specialrequest;
 @property (nonatomic) gidispatch_rock_t (*dispatch_register_obj)(void *obj, glui32 objclass);
 @property (nonatomic) void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
+@property (nonatomic) gidispatch_rock_t (*dispatch_register_arr)(void *array, glui32 len, char *typecode);
+@property (nonatomic) void (*dispatch_unregister_arr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock);
 
 + (GlkLibrary *) singleton;
 + (void) strictWarning:(NSString *)msg;

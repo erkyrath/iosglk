@@ -28,6 +28,8 @@
 @synthesize filemanager;
 @synthesize dispatch_register_obj;
 @synthesize dispatch_unregister_obj;
+@synthesize dispatch_register_arr;
+@synthesize dispatch_unregister_arr;
 
 static GlkLibrary *singleton = nil;
 
@@ -46,6 +48,8 @@ static GlkLibrary *singleton = nil;
 		tagCounter = 0;
 		dispatch_register_obj = nil;
 		dispatch_unregister_obj = nil;
+		dispatch_register_arr = nil;
+		dispatch_unregister_arr = nil;
 		
 		self.gameid = @"GameID"; //###
 		

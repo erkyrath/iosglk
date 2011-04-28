@@ -247,7 +247,9 @@
 		ubuf = NULL;
 		ubufptr = NULL;
 		
-		//### gidispa register array
+		if (library.dispatch_register_arr) {
+			arrayrock = (*library.dispatch_register_arr)(buf, buflen, "&+#!Cn");
+		}
 	}
 	
 	return self;
@@ -272,14 +274,21 @@
 		buf = NULL;
 		bufptr = NULL;
 		
-		//### gidispa register array
+		if (library.dispatch_register_arr) {
+			arrayrock = (*library.dispatch_register_arr)(buf, buflen, "&+#!Iu");
+		}
 	}
 	
 	return self;
 }
 
 - (void) streamDelete {
-	//### gidispa unregister array
+	if (library.dispatch_unregister_arr) {
+		char *typedesc = (unicode ? "&+#!Iu" : "&+#!Cn");
+		void *vbuf = (unicode ? (void*)ubuf : (void*)buf);
+		(*library.dispatch_unregister_arr)(vbuf, buflen, typedesc, arrayrock);
+	}
+	
 	buf = NULL;
 	bufptr = NULL;
 	ubuf = NULL;

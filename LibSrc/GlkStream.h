@@ -79,6 +79,7 @@ typedef enum GlkStreamType_enum {
 	glui32 *ubufend;
 	glui32 *ubufeof;
 	glui32 buflen;
+	gidispatch_rock_t arrayrock;
 }
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)buf len:(glui32)buflen;
