@@ -12,6 +12,7 @@
 #import "GlkWindowView.h"
 #import "GlkWinBufferView.h"
 #import "GlkWinGridView.h"
+#import "GlkLibrary.h"
 #import "GlkWindow.h"
 #import "GlkAppWrapper.h"
 #import "GlkUtilities.h"
@@ -57,7 +58,7 @@
 }
 
 - (void) updateFromWindowInputs {
-	BOOL wants_input = (win.char_request || win.line_request);
+	BOOL wants_input = (win.char_request || win.line_request) && (!win.library.vmexited);
 	
 	/* The logic here will make more sense if you remember that any *change* in input request -- including a change from char to line input -- will be accompanied by a change in input_request_id. 
 	

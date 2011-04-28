@@ -148,7 +148,7 @@ void glk_main() {
 	//glk_request_timer_events(2000);
 	glk_request_line_event(mainwin, inbuf, 32, 0);
 	int pending = 1;
-	//glk_request_char_event_uni(mainwin);
+	//glk_request_char_event_uni(statwin);
 	
 	while (1) {
 		glk_select(&ev);

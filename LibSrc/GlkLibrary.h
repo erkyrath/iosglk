@@ -18,6 +18,7 @@
 	NSMutableArray *streams; /* GlkStream objects */
 	NSMutableArray *filerefs; /* GlkFileRef objects */
 	
+	BOOL vmexited;
 	GlkWindow *rootwin;
 	GlkStream *currentstr;
 	CGRect bounds;
@@ -38,6 +39,7 @@
 @property (nonatomic, retain) NSMutableArray *windows;
 @property (nonatomic, retain) NSMutableArray *streams;
 @property (nonatomic, retain) NSMutableArray *filerefs;
+@property (nonatomic) BOOL vmexited;
 @property (nonatomic, retain) GlkWindow *rootwin;
 @property (nonatomic, retain) GlkStream *currentstr;
 @property (nonatomic, readonly) CGRect bounds;

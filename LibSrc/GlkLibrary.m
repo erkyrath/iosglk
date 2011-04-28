@@ -20,6 +20,7 @@
 @synthesize windows;
 @synthesize streams;
 @synthesize filerefs;
+@synthesize vmexited;
 @synthesize rootwin;
 @synthesize currentstr;
 @synthesize bounds;
@@ -53,6 +54,7 @@ static GlkLibrary *singleton = nil;
 		
 		self.gameid = @"GameID"; //###
 		
+		self.vmexited = NO;
 		self.windows = [NSMutableArray arrayWithCapacity:8];
 		self.streams = [NSMutableArray arrayWithCapacity:8];
 		self.filerefs = [NSMutableArray arrayWithCapacity:8];
