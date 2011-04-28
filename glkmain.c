@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "glk.h"
+#include "iosglk_startup.h"
+
+void iosglk_startup_code() {
+}
 
 extern void nslogc(char *str);
 
