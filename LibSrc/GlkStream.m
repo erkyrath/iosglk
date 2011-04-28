@@ -656,7 +656,16 @@
 
 @synthesize handle;
 
+/* This constructor is used by the regular Glk glk_stream_open_file() call.
+*/
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode fileref:(GlkFileRef *)fref {
+	self = [self initWithMode:fmode rock:rockval unicode:isunicode textmode:fref.textmode dirname:fref.dirname pathname:fref.pathname];
+	return self;
+}
+
+/* This constructor is used by iosglk_startup_code(), in iosstart.m.
+*/
+- (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname {
 	BOOL isreadable = (fmode == filemode_Read || fmode == filemode_ReadWrite);
 	BOOL iswritable = (fmode != filemode_Read);
 
@@ -665,32 +674,32 @@
 	if (self) {
 		/* Set the easy fields. */
 		unicode = isunicode;
-		textmode = fref.textmode;
+		textmode = istextmode;
 		
 		if (fmode != filemode_Read) {
 			NSFileManager *filemanager = [GlkLibrary singleton].filemanager;
 			
 			/* Create the directory first, if it doesn't already exist. (If it already exists as a regular file, we won't try the create, the subsequent file-create will fail, and then the filehandle won't open.) */
-			if (![filemanager fileExistsAtPath:fref.dirname isDirectory:nil])
-				[filemanager createDirectoryAtPath:fref.dirname withIntermediateDirectories:YES attributes:nil error:nil];
+			if (![filemanager fileExistsAtPath:dirname isDirectory:nil])
+				[filemanager createDirectoryAtPath:dirname withIntermediateDirectories:YES attributes:nil error:nil];
 			
 			/* Create the file first, if it doesn't already exist. */
-			if (![filemanager fileExistsAtPath:fref.pathname])
-				[filemanager createFileAtPath:fref.pathname contents:nil attributes:nil];
+			if (![filemanager fileExistsAtPath:pathname])
+				[filemanager createFileAtPath:pathname contents:nil attributes:nil];
 		}
 
 		/* Open the file handle. */
 		NSFileHandle *newhandle = nil;
 		switch (fmode) {
 			case filemode_Read:
-				newhandle = [NSFileHandle fileHandleForReadingAtPath:fref.pathname];
+				newhandle = [NSFileHandle fileHandleForReadingAtPath:pathname];
 				break;
 			case filemode_Write:
-				newhandle = [NSFileHandle fileHandleForWritingAtPath:fref.pathname];
+				newhandle = [NSFileHandle fileHandleForWritingAtPath:pathname];
 				break;
 			case filemode_ReadWrite:
 			case filemode_WriteAppend:
-				newhandle = [NSFileHandle fileHandleForUpdatingAtPath:fref.pathname];
+				newhandle = [NSFileHandle fileHandleForUpdatingAtPath:pathname];
 				break;
 		}
 		

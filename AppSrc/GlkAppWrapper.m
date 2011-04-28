@@ -24,7 +24,7 @@
 #import "GlkUtilTypes.h"
 #import "GlkUtilities.h"
 #include "glk.h"
-
+#include "iosglk_startup.h"
 
 @implementation GlkAppWrapper
 
@@ -84,6 +84,8 @@ static GlkAppWrapper *singleton = nil;
 	pendingsizechange = NO;
 	pendingtimerevent = NO;
 	[iowaitcond unlock];
+	
+	iosglk_startup_code();
 	
 	glk_main();
 

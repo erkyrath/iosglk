@@ -96,6 +96,7 @@ typedef enum GlkStreamType_enum {
 @property (nonatomic, retain) NSFileHandle *handle;
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)unicode fileref:(GlkFileRef *)fref;
+- (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname;
 
 @end
 
