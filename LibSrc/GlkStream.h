@@ -35,6 +35,7 @@ typedef enum GlkStreamType_enum {
 
 @property (nonatomic, retain) GlkLibrary *library;
 @property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic) gidispatch_rock_t disprock;
 @property (nonatomic, readonly) GlkStreamType type;
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, readonly) BOOL unicode;

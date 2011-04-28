@@ -24,6 +24,7 @@
 
 @synthesize library;
 @synthesize tag;
+@synthesize disprock;
 @synthesize type;
 @synthesize rock;
 @synthesize parent;

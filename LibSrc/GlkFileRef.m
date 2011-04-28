@@ -18,6 +18,7 @@
 
 @synthesize library;
 @synthesize tag;
+@synthesize disprock;
 @synthesize pathname;
 @synthesize basedir;
 @synthesize filename;

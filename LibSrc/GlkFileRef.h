@@ -30,6 +30,7 @@
 
 @property (nonatomic, retain) GlkLibrary *library;
 @property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic) gidispatch_rock_t disprock;
 @property (nonatomic, retain) NSString *filename;
 @property (nonatomic, retain) NSString *basedir;
 @property (nonatomic, retain) NSString *dirname;
