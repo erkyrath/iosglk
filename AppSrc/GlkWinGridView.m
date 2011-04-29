@@ -11,6 +11,7 @@
 #import "GlkAppWrapper.h"
 #import "StyleSet.h"
 #import "GlkUtilTypes.h"
+#import "GlkUtilities.h"
 
 
 @implementation GlkWinGridView
