@@ -92,6 +92,31 @@ NSString *StringFromPoint(CGPoint pt) {
 	return [NSString stringWithFormat:@"%.1f,%.1f", pt.x, pt.y];
 }
 
+/* Return a simple description of a string. (For debugging.) */
+NSString *StringToCondensedString(NSString *str) {
+	if (str.length == 0)
+		return @"<empty string>";
+	NSMutableString *res = [NSMutableString stringWithCapacity:str.length];
+	int ix = 0;
+	while (ix<str.length) {
+		int bx = ix;
+		unichar ch = [str characterAtIndex:ix];
+		ix++;
+		while (ix<str.length && [str characterAtIndex:ix] == ch)
+			ix++;
+		if (ch < 32) {
+			[res appendFormat:@"(%d*^%c)", ix-bx, (int)(ch+64)];
+		}
+		else if (ix-bx == 1) {
+			[res appendFormat:@"%C", ch];
+		}
+		else {
+			[res appendFormat:@"(%d*%C)", ix-bx, ch];
+		}
+	}
+	return res;
+}
+
 /* Log a C string to console. */
 void nslogc(char *str) {
 	NSLog(@"%s", str);

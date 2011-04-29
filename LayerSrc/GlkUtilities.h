@@ -11,6 +11,7 @@ extern NSString *StringFromRect(CGRect rect);
 extern NSString *StringFromRectAlt(CGRect rect);
 extern NSString *StringFromSize(CGSize size);
 extern NSString *StringFromPoint(CGPoint pt);
+extern NSString *StringToCondensedString(NSString *str);
 extern NSString *StringFromDumbEncoding(NSString *str);
 extern NSString *StringToDumbEncoding(NSString *str);
 extern void nslogc(char *str);
