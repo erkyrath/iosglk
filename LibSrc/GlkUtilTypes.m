@@ -178,7 +178,7 @@
 	if (val > maxwidth) {
 		maxwidth = val*2;
 		chars = (glui32 *)reallocf(chars, maxwidth * sizeof(glui32));
-		styles = (glui32 *)reallocf(chars, maxwidth * sizeof(glui32));
+		styles = (glui32 *)reallocf(styles, maxwidth * sizeof(glui32));
 		if (!chars || !styles)
 			[NSException raise:@"GlkException" format:@"unable to allocate chars or styles for grid line"];
 	}
