@@ -276,7 +276,7 @@
 		bufptr = NULL;
 		
 		if (library.dispatch_register_arr) {
-			arrayrock = (*library.dispatch_register_arr)(buf, buflen, "&+#!Iu");
+			arrayrock = (*library.dispatch_register_arr)(ubuf, buflen, "&+#!Iu");
 		}
 	}
 	
