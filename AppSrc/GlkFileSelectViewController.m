@@ -125,13 +125,12 @@
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
-	//BACKC: UIKeyboardFrameBeginUserInfoKey is only available in 3.2 or later. Do something else for 3.1.3.
-	CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+	//BACKC: UIKeyboardFrameEndUserInfoKey is only available in 3.2 or later. Do something else for 3.1.3.
+	CGRect rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 	rect = [self.tableView convertRect:rect fromView:nil];
-	/* The rect is the keyboard size in view coordinates (properly rotated). However, for some reason, the *upper* edge is at the bottom of the window -- I guess this is pre-slide-in? So we have to shift the rectangle up. */
-	CGFloat upperedge = rect.origin.y - rect.size.height;
+	/* The rect is the keyboard size in view coordinates (properly rotated). */
 	CGRect tablerect = self.tableView.bounds;
-	CGFloat diff = (tablerect.origin.y + tablerect.size.height) - upperedge;
+	CGFloat diff = (tablerect.origin.y + tablerect.size.height) - rect.origin.y;
 	
 	if (diff > 0) {
 		UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, diff, 0.0);

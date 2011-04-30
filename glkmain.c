@@ -216,8 +216,10 @@ void glk_main() {
 				frefid_t fileref = glk_fileref_create_by_prompt(fileusage_SavedGame|fileusage_BinaryMode, filemode_Write, 123);
 				sprintf(buf, "Created fileref %x!\n", (glui32)fileref);
 				glk_put_string(buf);
-				strid_t str = glk_stream_open_file(fileref, filemode_Write, 1);
-				glk_stream_close(str, NULL);
+				if (fileref) {
+					strid_t str = glk_stream_open_file(fileref, filemode_Write, 1);
+					glk_stream_close(str, NULL);
+				}
 			}
 			if (!strcmp(inbuf, "quit") || !strcmp(inbuf, "exit")) {
 				glk_exit(); // does not return

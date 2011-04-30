@@ -54,6 +54,7 @@
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
+	/* This setup assumes that the GlkFrameView extends to the bottom of the display, so the entire keyboard height needs to be subtracted from it. A more flexible plan would be to compare UIKeyboardFrameEndUserInfoKey's top edge with the bottom edge of the view. */
 	NSDictionary *info = [notification userInfo];
 	//BACKC: UIKeyboardFrameBeginUserInfoKey is only available in 3.2 or later. Do something else for 3.1.3.
 	CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
@@ -61,7 +62,6 @@
 	CGSize size = rect.size;
 	NSLog(@"Keyboard will be shown, size %@", StringFromSize(size));
 	
-	//### we could do that clever scroll-inset trick from "Managing the Keyboard"
 	[[self viewAsFrameView] setKeyboardHeight:size.height];
 }
 
