@@ -53,8 +53,13 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		case wintype_TextBuffer:
 			win = [[[GlkWindowBuffer alloc] initWithType:type rock:rock] autorelease];
 			win.styleset = [[[StyleSet alloc] init] autorelease];
-			//BACKC: Helvetica Neue is not available in iOS 3.1.3!
-			[win.styleset setFontFamily:@"Helvetica Neue" size:14.0];
+			/* Helvetica Neue is not available in iOS 3.1.3! */
+			@try {
+				[win.styleset setFontFamily:@"Helvetica Neue" size:14.0];
+			} @catch (NSException *ex) {
+				NSLog(@"Backing off to Helvetica");
+				[win.styleset setFontFamily:@"Helvetica" size:14.0];
+			}
 			break;
 		case wintype_TextGrid:
 			win = [[[GlkWindowGrid alloc] initWithType:type rock:rock] autorelease];
