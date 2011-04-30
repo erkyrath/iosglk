@@ -57,6 +57,7 @@
 		if (!textfield)
 			[NSException raise:@"GlkException" format:@"no textfield in write-mode file selection"];
 		self.navigationItem.title = @"Save";
+		//### Add default-entry-thing "Saved game". Include the number, come to think of it.
 		CGRect rect = CGRectMake(0, 0, tableView.frame.size.width, 32);
 		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
 		label.text = @"Previously saved games:";
@@ -125,12 +126,20 @@
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
-	//BACKC: UIKeyboardFrameEndUserInfoKey is only available in 3.2 or later. Do something else for 3.1.3.
-	CGRect rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-	rect = [self.tableView convertRect:rect fromView:nil];
-	/* The rect is the keyboard size in view coordinates (properly rotated). */
-	CGRect tablerect = self.tableView.bounds;
-	CGFloat diff = (tablerect.origin.y + tablerect.size.height) - rect.origin.y;
+	CGFloat diff = 0;
+	/* UIKeyboardFrameEndUserInfoKey is only available in iOS 3.2 or later. Note the funny idiom for testing the presence of a weak-linked symbol. */
+	if (&UIKeyboardFrameEndUserInfoKey) {
+		CGRect rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+		rect = [self.tableView convertRect:rect fromView:nil];
+		/* The rect is the keyboard size in view coordinates (properly rotated). */
+		CGRect tablerect = self.tableView.bounds;
+		diff = (tablerect.origin.y + tablerect.size.height) - rect.origin.y;
+	}
+	else {
+		/* iOS 3.1.3... This must be an iPhone, so we assume the view extends to the bottom of the screen. */
+		CGRect rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
+		diff = rect.size.height;
+	}
 	
 	if (diff > 0) {
 		UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, diff, 0.0);
