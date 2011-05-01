@@ -122,8 +122,8 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 		case gestalt_LineTerminatorKey:
 			return 0;
 
-		//case gestalt_DateTime:
-		//	return 0;
+		case gestalt_DateTime:
+			return 1;
 
 		default:
 			return 0;

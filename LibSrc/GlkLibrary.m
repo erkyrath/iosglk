@@ -81,6 +81,14 @@ static GlkLibrary *singleton = nil;
 	self.currentstr = nil;
 	self.specialrequest = nil;
 	self.filemanager = nil;
+	if (utccalendar) {
+		[utccalendar release];
+		utccalendar = nil;
+	}
+	if (localcalendar) {
+		[localcalendar release];
+		localcalendar = nil;
+	}
 	[super dealloc];
 }
 
@@ -119,6 +127,27 @@ static GlkLibrary *singleton = nil;
 	}
 	
 	return nil;
+}
+
+/* Return a UTC Gregorian calendar object, allocating it if necessary.
+*/
+- (NSCalendar *) utccalendar {
+	if (!utccalendar) {
+		utccalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar]; // retain
+		utccalendar.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+	}
+	
+	return utccalendar;
+}
+
+/* Return a local-time Gregorian calendar object, allocating it if necessary.
+*/
+- (NSCalendar *) localcalendar {
+	if (!localcalendar) {
+		localcalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar]; // retain
+	}
+	
+	return localcalendar;
 }
 
 /* Display a warning. Really this should be a fatal error. Eventually it will be visible on the screen somehow, but at the moment it's just a console log message.
