@@ -26,6 +26,8 @@ static glsi32 gli_simplify_time(int64_t timestamp, glui32 factor)
 	}
 }
 
+/* Convert a timestamp value to a Glk time structure. (That is, break it down into 32-bit chunks.)
+*/
 static void gli_timestamp_to_time(NSTimeInterval timestamp, glktimeval_t *time)
 {	
 	NSTimeInterval secs = floor(timestamp);
@@ -35,6 +37,19 @@ static void gli_timestamp_to_time(NSTimeInterval timestamp, glktimeval_t *time)
 	time->low_sec = isecs & 0xFFFFFFFF;
 }
 
+/* Convert a timestamp value, plus a separate microseconds value, to a Glk time structure. The fractional part of the timestamp is ignored. (This is useful when we already have the microseconds as an integer, and we don't want to divide by 1000000 and then multiply it back up.)
+*/
+static void gli_timestamp_usec_to_time(NSTimeInterval timestamp, glktimeval_t *time, glsi32 microsec)
+{	
+	NSTimeInterval secs = floor(timestamp);
+	int64_t isecs = secs;
+	time->high_sec = (isecs >> 32) & 0xFFFFFFFF;
+	time->low_sec = isecs & 0xFFFFFFFF;
+	time->microsec = microsec;
+}
+
+/* Convert an NSDate to a Glk date structure, in a given NSCalendar.
+*/
 static void gli_date_from_time(glkdate_t *date, NSCalendar *nscal, NSDate *nsdate)
 {
 	NSCalendarUnit comp_units = (NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekdayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit);
@@ -63,8 +78,8 @@ static void gli_date_to_comps(glkdate_t *date, NSDateComponents *comps, glsi32 *
 {
 	glsi32 microsec;
 
-	comps.year = date->year - 1900;
-	comps.month = date->month - 1;
+	comps.year = date->year;
+	comps.month = date->month;
 	comps.day = date->day;
 	comps.hour = date->hour;
 	comps.minute = date->minute;
@@ -164,7 +179,7 @@ void glk_date_to_time_utc(glkdate_t *date, glktimeval_t *time)
 	}
 	
 	NSTimeInterval timestamp = [nsdate timeIntervalSince1970];
-	gli_timestamp_to_time(timestamp, time);
+	gli_timestamp_usec_to_time(timestamp, time, microsec);
 }
 
 void glk_date_to_time_local(glkdate_t *date, glktimeval_t *time)
@@ -183,7 +198,7 @@ void glk_date_to_time_local(glkdate_t *date, glktimeval_t *time)
 	}
 	
 	NSTimeInterval timestamp = [nsdate timeIntervalSince1970];
-	gli_timestamp_to_time(timestamp, time);
+	gli_timestamp_usec_to_time(timestamp, time, microsec);
 }
 
 glsi32 glk_date_to_simple_time_utc(glkdate_t *date, glui32 factor)
@@ -198,7 +213,7 @@ glsi32 glk_date_to_simple_time_utc(glkdate_t *date, glui32 factor)
 		return -1;
 	}
 
-	NSTimeInterval timestamp = [nsdate timeIntervalSince1970];
+	NSTimeInterval timestamp = [nsdate timeIntervalSince1970]; // drop microseconds
 	return gli_simplify_time((int64_t)timestamp, factor);
 }
 
@@ -214,7 +229,7 @@ glsi32 glk_date_to_simple_time_local(glkdate_t *date, glui32 factor)
 		return -1;
 	}
 
-	NSTimeInterval timestamp = [nsdate timeIntervalSince1970];
+	NSTimeInterval timestamp = [nsdate timeIntervalSince1970]; // drop microseconds
 	return gli_simplify_time((int64_t)timestamp, factor);
 }
 
