@@ -251,7 +251,7 @@ glsi32 glk_get_char_stream(strid_t str)
 {
 	if (!str) {
 		[GlkLibrary strictWarning:@"get_char_stream: invalid ref"];
-		return 0;
+		return -1;
 	}
 	
 	return [str getChar:NO];
@@ -281,7 +281,7 @@ glsi32 glk_get_char_stream_uni(strid_t str)
 {
 	if (!str) {
 		[GlkLibrary strictWarning:@"get_char_stream: invalid ref"];
-		return 0;
+		return -1;
 	}
 	
 	return [str getChar:YES];
