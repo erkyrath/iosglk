@@ -820,9 +820,11 @@
 		if (!writebuffer || buffermark >= maxbuffersize) {
 			[self flush];
 			bufferpos = [handle offsetInFile];
-			NSData *data = [handle readDataOfLength:maxbuffersize];
+			NSData *data = nil;
+			if (readable)
+				data = [handle readDataOfLength:maxbuffersize];
 			if (!data || !data.length) {
-				// Must be at the end of the file.
+				// Must be at the end of the file, or it's a write-only file.
 				self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
 				buffermark = 0;
 				buffertruepos = 0;
@@ -881,9 +883,11 @@
 			return;
 		}
 		bufferpos = [handle offsetInFile];
-		NSData *data = [handle readDataOfLength:maxbuffersize];
+		NSData *data = nil;
+		if (readable)
+			data = [handle readDataOfLength:maxbuffersize];
 		if (!data || !data.length) {
-			// Must be at the end of the file.
+			// Must be at the end of the file, or it's a write-only file.
 			self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
 			buffermark = 0;
 			buffertruepos = 0;
