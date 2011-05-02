@@ -102,10 +102,41 @@ void glk_main() {
 	}
 	*/
 	
-	/*
-	frefid_t fileref = glk_fileref_create_by_name(fileusage_SavedGame|fileusage_TextMode, "foobar", 123);
+	frefid_t fileref = glk_fileref_create_by_name(fileusage_Data|fileusage_BinaryMode, "foobar", 123);
 	stream_result_t result;
+	/*
+	strid_t str = glk_stream_open_file(fileref, filemode_Read, 456);
+	int count = 0;
+	glk_put_string("Reading foobar: ");
+	while (1) {
+		glsi32 ch = glk_get_char_stream(str);
+		if (ch < 0)
+			break;
+		count++;
+		if (ch <= 32)
+			sprintf(buf, "$%02x", ch);
+		else
+			sprintf(buf, "%c", ch);
+		glk_put_string(buf);
+	}
+	sprintf(buf, " (%d chars)\n", count);
+	glk_put_string(buf);
+	glk_stream_close(str, &result);
+	sprintf(buf, "Result: %d read, %d written\n", result.readcount, result.writecount);
+	glk_put_string(buf);
+	*/
+	
 	strid_t str = glk_stream_open_file(fileref, filemode_Write, 456);
+	//glk_stream_set_position(str, -2, seekmode_End);
+	glk_put_char_stream(str, '#');
+	//glk_put_string_stream(str, "This is a test.\n");
+	glk_put_string_stream(str, "123\n");
+	glk_put_char_stream(str, '!'); glk_put_char_stream(str, '\n');
+	glk_stream_close(str, &result);
+	sprintf(buf, "Result: %d read, %d written\n", result.readcount, result.writecount);
+	glk_put_string(buf);
+	
+	/*
 	glk_put_string_stream(str, "First line.\nSecond line.");
 	glui32 pos = glk_stream_get_position(str);
 	sprintf(buf, "Stream %x at pos %d\n", (glui32)str, pos);

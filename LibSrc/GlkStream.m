@@ -768,6 +768,7 @@
 			NSData *data = [handle readDataOfLength:maxbuffersize];
 			if (!data || !data.length) {
 				// Must be at the end of the file. Leave the buffer off.
+				NSLog(@"### readByte: at eof");
 			}
 			else {
 				self.writebuffer = [NSMutableData dataWithData:data];
@@ -775,6 +776,7 @@
 				buffertruepos = writebuffer.length;
 				bufferdirtystart = maxbuffersize;
 				bufferdirtyend = 0;
+				NSLog(@"### readByte: pulled %ld into writebuffer, starting at %ld", buffertruepos, (long)bufferpos);
 			}
 		}
 		if (writebuffer && buffermark < writebuffer.length) {
@@ -789,6 +791,7 @@
 			NSData *data = [handle readDataOfLength:maxbuffersize];
 			if (!data || !data.length) {
 				// Must be at the end of the file. Leave the buffer off.
+				NSLog(@"### readByte: at eof");
 			}
 			else {
 				self.readbuffer = data;
@@ -796,6 +799,7 @@
 				buffertruepos = readbuffer.length;
 				bufferdirtystart = maxbuffersize;
 				bufferdirtyend = 0;
+				NSLog(@"### readByte: pulled %ld into readbuffer, starting at %ld", buffertruepos, (long)bufferpos);
 			}
 		}
 		if (readbuffer && buffermark < readbuffer.length) {
@@ -820,6 +824,11 @@
 			if (!data || !data.length) {
 				// Must be at the end of the file.
 				self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
+				buffermark = 0;
+				buffertruepos = 0;
+				bufferdirtystart = maxbuffersize;
+				bufferdirtyend = 0;
+				NSLog(@"### writeByte: set up empty buffer, starting at %ld", (long)bufferpos);
 			}
 			else {
 				self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
@@ -829,11 +838,14 @@
 				buffertruepos = writebuffer.length;
 				bufferdirtystart = maxbuffersize;
 				bufferdirtyend = 0;
+				NSLog(@"### writeByte: pulled %ld into writebuffer, starting at %ld", buffertruepos, (long)bufferpos);
 			}
 		}
-		if (writebuffer && buffermark < writebuffer.length) {
+		if (writebuffer && buffermark < maxbuffersize) {
 			if (buffermark < bufferdirtystart)
 				bufferdirtystart = buffermark;
+			if (buffermark+1 > writebuffer.length)
+				[writebuffer setLength:buffermark+1];
 			((char *)writebuffer.mutableBytes)[buffermark++] = ch;
 			if (buffermark > bufferdirtyend)
 				bufferdirtyend = buffermark;
@@ -841,8 +853,66 @@
 	}
 }
 
-- (glui32) writeBytes:(void *)bytes len:(glui32)len {
-	//###
+- (void) writeBytes:(void *)bytes len:(glui32)len {
+	if (writable) {
+		if (writebuffer && buffermark < maxbuffersize) {
+			glui32 addlen = maxbuffersize - buffermark;
+			if (addlen > len)
+				addlen = len;
+			NSLog(@"### writeBytes: first adding %ld to writebuffer", addlen);
+			if (buffermark < bufferdirtystart)
+				bufferdirtystart = buffermark;
+			if (buffermark+addlen > writebuffer.length)
+				[writebuffer setLength:buffermark+addlen];
+			memcpy(writebuffer.mutableBytes+buffermark, bytes, addlen);
+			buffermark += addlen;
+			if (buffermark > bufferdirtyend)
+				bufferdirtyend = buffermark;
+			bytes += addlen;
+			len -= addlen;
+			if (!len)
+				return;
+		}
+		[self flush];
+		if (len >= maxbuffersize) {
+			NSLog(@"### writeBytes: now writing %ld to disk", len);
+			NSData *data = [NSData dataWithBytesNoCopy:bytes length:len freeWhenDone:NO];
+			[handle writeData:data];
+			return;
+		}
+		bufferpos = [handle offsetInFile];
+		NSData *data = [handle readDataOfLength:maxbuffersize];
+		if (!data || !data.length) {
+			// Must be at the end of the file.
+			self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
+			buffermark = 0;
+			buffertruepos = 0;
+			bufferdirtystart = maxbuffersize;
+			bufferdirtyend = 0;
+			NSLog(@"### writeBytes: set up empty buffer, starting at %ld", (long)bufferpos);
+		}
+		else {
+			self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
+			[writebuffer setLength:data.length];
+			memcpy(writebuffer.mutableBytes, data.bytes, data.length);
+			buffermark = 0;
+			buffertruepos = writebuffer.length;
+			bufferdirtystart = maxbuffersize;
+			bufferdirtyend = 0;
+			NSLog(@"### writeBytes: pulled %ld into writebuffer, starting at %ld", buffertruepos, (long)bufferpos);
+		}
+		if (writebuffer && len <= maxbuffersize - buffermark) {
+			if (buffermark < bufferdirtystart)
+				bufferdirtystart = buffermark;
+			if (buffermark+len > writebuffer.length)
+				[writebuffer setLength:buffermark+len];
+			NSLog(@"### writeBytes: also adding %ld to writebuffer", len);
+			memcpy(writebuffer.mutableBytes+buffermark, bytes, len);
+			buffermark += len;
+			if (buffermark > bufferdirtyend)
+				bufferdirtyend = buffermark;
+		}
+	}
 }
 
 
@@ -853,6 +923,7 @@
 		
 	if (writable && writebuffer && bufferdirtystart < bufferdirtyend) {
 		/* Write out the dirty part of the buffer. */
+		NSLog(@"### flush (pos %ld): writing %ld chars, leaving truepos at %ld", (long)bufferpos, bufferdirtyend - bufferdirtystart, bufferdirtyend);
 		[handle seekToFileOffset:bufferpos+bufferdirtystart];
 		glui32 len = bufferdirtyend - bufferdirtystart;
 		void *bytes = ((char *)writebuffer.bytes) + bufferdirtystart;
@@ -863,6 +934,7 @@
 	}
 	if (buffermark != buffertruepos) {
 		/* Seek the filehandle pos to where the buffer thinks it ought to be. (We need this to be correct, because we might be doing a relative seek next.) */
+		NSLog(@"### flush: seek to %ld", (long)(bufferpos+buffermark));
 		[handle seekToFileOffset:bufferpos+buffermark];
 	}
 	self.writebuffer = nil;
@@ -885,7 +957,10 @@
 	if (!textmode) {
 		if (!unicode) {
 			/* byte stream */
-			[self writeBytes:buf len:len];
+			if (len == 1)
+				[self writeByte:buf[0]];
+			else
+				[self writeBytes:buf len:len];
 		}
 		else {
 			/* cheap big-endian stream */

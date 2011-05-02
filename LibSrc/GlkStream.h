@@ -114,7 +114,7 @@ typedef enum GlkStreamType_enum {
 - (int) readByte;
 - (glui32) readBytes:(void **)byteref len:(glui32)len;
 - (void) writeByte:(char)ch;
-- (glui32) writeBytes:(void *)bytes len:(glui32)len;
+- (void) writeBytes:(void *)bytes len:(glui32)len;
 
 @end
 
