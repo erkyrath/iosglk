@@ -91,12 +91,30 @@ typedef enum GlkStreamType_enum {
 @interface GlkStreamFile : GlkStream {
 	NSFileHandle *handle;
 	BOOL textmode;
+	
+	int maxbuffersize; // how much data to buffer at a time (ideally)
+	NSData *readbuffer; // if !writable
+	NSMutableData *writebuffer; // if writable
+	unsigned long long bufferpos; // position within the file where the buffer begins
+	// the following are all relative to bufferpos:
+	int buffermark; // offset within the buffer where the mark sits
+	int buffertruepos; // offset within the buffer where the filehandle's mark sits
+	int bufferdirtystart; // buffersize if nothing dirty
+	int bufferdirtyend; // 0 if nothing dirty
 }
 
 @property (nonatomic, retain) NSFileHandle *handle;
+@property (nonatomic, retain) NSData *readbuffer;
+@property (nonatomic, retain) NSMutableData *writebuffer;
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)unicode fileref:(GlkFileRef *)fref;
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname;
+
+- (void) flush;
+- (int) readByte;
+- (glui32) readBytes:(void **)byteref len:(glui32)len;
+- (void) writeByte:(char)ch;
+- (glui32) writeBytes:(void *)bytes len:(glui32)len;
 
 @end
 

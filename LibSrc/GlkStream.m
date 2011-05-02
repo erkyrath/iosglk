@@ -655,6 +655,8 @@
 */
 
 @synthesize handle;
+@synthesize readbuffer;
+@synthesize writebuffer;
 
 /* This constructor is used by the regular Glk glk_stream_open_file() call.
 */
@@ -672,6 +674,16 @@
 	self = [super initWithType:strtype_File readable:isreadable writable:iswritable rock:rockval];
 	
 	if (self) {
+		/* Set up the buffering. */
+		maxbuffersize = 4; //###
+		readbuffer = nil;
+		writebuffer = nil;
+		bufferpos = 0;
+		buffermark = 0;
+		buffertruepos = 0;
+		bufferdirtystart = maxbuffersize;
+		bufferdirtyend = 0;
+		
 		/* Set the easy fields. */
 		unicode = isunicode;
 		textmode = istextmode;
@@ -723,14 +735,147 @@
 
 - (void) dealloc {
 	self.handle = nil;
+	self.readbuffer = nil;
+	self.writebuffer = nil;
 	[super dealloc];
 }
 
 - (void) streamDelete {
+	[self flush];
 	[handle closeFile];
 	self.handle = nil;
 	[super streamDelete];
 }
+
+/* Here we implement some low-level read/write functions, which put an internal byte buffer on top of the underlying NSFileHandle.
+
+	If the buffer is live, the filehandle's real mark (seek position) is always bufferpos+buffertruepos.
+
+	For read-only files, the buffer can be an NSData of up to maxbuffersize bytes. The bufferrtruepos will always be at the end (equal to buffer.length). A caller can read until the buffer is used up; the next call will trigger a filehandle read. (Note that if you keep reading repeatedly after EOF, you'll trigger repeated filehandle reads, which is slow. Don't do that.)
+	
+	For writable files, the buffer can be an NSMutableData of up to maxbuffersize bytes. If the caller writes past buffertruepos, the buffer will get longer.
+
+	This isn't the greatest buffering implementation in the world; it doesn't really try to cope with the possibility that some other process might diddle the file while we have it open. Fortunately, on iOS, no other process *will* diddle the file while we have it open.
+*/
+
+/* Return one byte (0-255), or -1 for EOF.
+*/
+- (int) readByte {
+	if (writable) {
+		if (!writebuffer || buffermark >= writebuffer.length) {
+			[self flush];
+			bufferpos = [handle offsetInFile];
+			NSData *data = [handle readDataOfLength:maxbuffersize];
+			if (!data || !data.length) {
+				// Must be at the end of the file. Leave the buffer off.
+			}
+			else {
+				self.writebuffer = [NSMutableData dataWithData:data];
+				buffermark = 0;
+				buffertruepos = writebuffer.length;
+				bufferdirtystart = maxbuffersize;
+				bufferdirtyend = 0;
+			}
+		}
+		if (writebuffer && buffermark < writebuffer.length) {
+			return ((char *)writebuffer.mutableBytes)[buffermark++] & 0xFF;
+		}
+		return -1;
+	}
+	else {
+		if (!readbuffer || buffermark >= readbuffer.length) {
+			[self flush];
+			bufferpos = [handle offsetInFile];
+			NSData *data = [handle readDataOfLength:maxbuffersize];
+			if (!data || !data.length) {
+				// Must be at the end of the file. Leave the buffer off.
+			}
+			else {
+				self.readbuffer = data;
+				buffermark = 0;
+				buffertruepos = readbuffer.length;
+				bufferdirtystart = maxbuffersize;
+				bufferdirtyend = 0;
+			}
+		}
+		if (readbuffer && buffermark < readbuffer.length) {
+			return ((char *)readbuffer.bytes)[buffermark++] & 0xFF;
+		}
+		return -1;
+	}
+}
+
+- (glui32) readBytes:(void **)byteref len:(glui32)len {
+	//###
+}
+
+/* Write out one byte.
+*/
+- (void) writeByte:(char)ch {
+	if (writable) {
+		if (!writebuffer || buffermark >= maxbuffersize) {
+			[self flush];
+			bufferpos = [handle offsetInFile];
+			NSData *data = [handle readDataOfLength:maxbuffersize];
+			if (!data || !data.length) {
+				// Must be at the end of the file.
+				self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
+			}
+			else {
+				self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
+				[writebuffer setLength:data.length];
+				memcpy(writebuffer.mutableBytes, data.bytes, data.length);
+				buffermark = 0;
+				buffertruepos = writebuffer.length;
+				bufferdirtystart = maxbuffersize;
+				bufferdirtyend = 0;
+			}
+		}
+		if (writebuffer && buffermark < writebuffer.length) {
+			if (buffermark < bufferdirtystart)
+				bufferdirtystart = buffermark;
+			((char *)writebuffer.mutableBytes)[buffermark++] = ch;
+			if (buffermark > bufferdirtyend)
+				bufferdirtyend = buffermark;
+		}
+	}
+}
+
+- (glui32) writeBytes:(void *)bytes len:(glui32)len {
+	//###
+}
+
+
+/* Flush and clear the internal buffer. */
+- (void) flush {
+	if (!(readbuffer || writebuffer))
+		return;
+		
+	if (writable && writebuffer && bufferdirtystart < bufferdirtyend) {
+		/* Write out the dirty part of the buffer. */
+		[handle seekToFileOffset:bufferpos+bufferdirtystart];
+		glui32 len = bufferdirtyend - bufferdirtystart;
+		void *bytes = ((char *)writebuffer.bytes) + bufferdirtystart;
+		NSData *data = [NSData dataWithBytesNoCopy:bytes length:len freeWhenDone:NO];
+		[handle writeData:data];
+		/* Adjust buffertruepos, which we will need in a moment to be correct. */
+		buffertruepos = bufferdirtyend;
+	}
+	if (buffermark != buffertruepos) {
+		/* Seek the filehandle pos to where the buffer thinks it ought to be. (We need this to be correct, because we might be doing a relative seek next.) */
+		[handle seekToFileOffset:bufferpos+buffermark];
+	}
+	self.writebuffer = nil;
+	self.readbuffer = nil;
+	bufferpos = 0;
+	buffermark = 0;
+	buffertruepos = 0;
+	bufferdirtystart = maxbuffersize;
+	bufferdirtyend = 0;
+}
+
+/* The following are the external APIs for reading and writing the stream. They are all written in terms of the internal (buffer-smart) byte calls.
+*/
 
 - (void) putBuffer:(char *)buf len:(glui32)len {
 	if (!len)
@@ -738,10 +883,9 @@
 	writecount += len;
 
 	if (!textmode) {
-		NSData *data;
 		if (!unicode) {
 			/* byte stream */
-			data = [NSData dataWithBytesNoCopy:buf length:len freeWhenDone:NO];
+			[self writeBytes:buf len:len];
 		}
 		else {
 			/* cheap big-endian stream */
@@ -749,16 +893,16 @@
 			bzero(ubuf, 4*len);
 			for (int ix=0; ix<len; ix++)
 				ubuf[4*ix+3] = buf[ix];
-			data = [NSData dataWithBytesNoCopy:ubuf length:4*len freeWhenDone:YES];
+			[self writeBytes:ubuf len:4*len];
+			free(ubuf);
 		}
-		[handle writeData:data];
 	}
 	else {
 		/* UTF8 stream (whether the unicode flag is set or not) */
 		/* Turn the buffer into an NSString. We'll release this at the end of the function. */
 		NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
 		NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-		[handle writeData:data];
+		[self writeBytes:(void *)data.bytes len:data.length];
 		[str release];
 	}
 }
@@ -777,7 +921,8 @@
 				glui32 ch = buf[ix];
 				ubuf[ix] = (ch < 0x100) ? ch : '?';
 			}
-			data = [NSData dataWithBytesNoCopy:ubuf length:len freeWhenDone:YES];
+			[self writeBytes:ubuf len:len];
+			free(ubuf);
 		}
 		else {
 			/* cheap big-endian stream */
@@ -789,7 +934,8 @@
 				ubuf[4*ix+2] = (ch >> 8) & 0xFF;
 				ubuf[4*ix+3] = ch & 0xFF;
 			}
-			data = [NSData dataWithBytesNoCopy:ubuf length:4*len freeWhenDone:YES];
+			[self writeBytes:ubuf len:4*len];
+			free(ubuf);
 		}
 		[handle writeData:data];
 	}
@@ -799,7 +945,7 @@
 			This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
 		NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 		NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-		[handle writeData:data];
+		[self writeBytes:(void *)data.bytes len:data.length];
 		[str release];
 	}
 }
@@ -809,23 +955,22 @@
 		return -1;
 
 	if (!textmode) {
-		NSData *data;
 		if (!unicode) {
 			/* byte stream */
-			data = [handle readDataOfLength:1];
-			if (data.length < 1)
+			int ch = [self readByte];
+			if (ch < 0)
 				return -1;
 			readcount++;
-			char *buf = (char *)data.bytes;
-			return (buf[0] & 0xFF);
+			return ch;
 		}
 		else {
 			/* cheap big-endian stream */
-			data = [handle readDataOfLength:4];
-			if (data.length < 4)
+			void *bytes;
+			glui32 readlen = [self readBytes:&bytes len:4];
+			if (readlen < 4)
 				return -1;
 			readcount++;
-			char *buf = (char *)data.bytes;
+			char *buf = (char *)bytes;
 			glui32 ch = ((buf[0] & 0xFF) << 24) | ((buf[1] & 0xFF) << 16) | ((buf[2] & 0xFF) << 8) | ((buf[3] & 0xFF));
 			if (!wantunicode && ch >= 0x100)
 				return '?';
@@ -835,19 +980,19 @@
 	else {
 		/* UTF8 stream (whether the unicode flag is set or not) */
 		/* We have to do our own UTF8 decoding here. There's no NSFileHandle method to read a variable-length UTF8 character. I'm very sorry. */
-		NSData *data = [handle readDataOfLength:1];
-		if (data.length < 1)
+		int ch = [self readByte];
+		if (ch < 0)
 			return -1;
-		glui32 val0 = ((char *)data.bytes)[0] & 0xFF;
+		glui32 val0 = ch;
 		if (val0 < 0x80) {
 			readcount++;
 			return val0;
 		}
 		if ((val0 & 0xE0) == 0xC0) {
-			data = [handle readDataOfLength:1];
-			if (data.length < 1)
+			ch = [self readByte];
+			if (ch < 0)
 				return -1;
-			glui32 val1 = ((char *)data.bytes)[0] & 0xFF;
+			glui32 val1 = ch;
 			glui32 res = (val0 & 0x1f) << 6;
 			res |= (val1 & 0x3f);
 			readcount++;
@@ -856,11 +1001,14 @@
 			return res;
 		}
 		if ((val0 & 0xF0) == 0xE0) {
-			data = [handle readDataOfLength:2];
-			if (data.length < 2)
+			ch = [self readByte];
+			if (ch < 0)
 				return -1;
-			glui32 val1 = ((char *)data.bytes)[0] & 0xFF;
-			glui32 val2 = ((char *)data.bytes)[1] & 0xFF;
+			glui32 val1 = ch;
+			ch = [self readByte];
+			if (ch < 0)
+				return -1;
+			glui32 val2 = ch;
 			glui32 res = (((val0 & 0xf)<<12)  & 0x0000f000);
 			res |= (((val1 & 0x3f)<<6) & 0x00000fc0);
 			res |= (((val2 & 0x3f))    & 0x0000003f);
@@ -870,12 +1018,18 @@
 			return res;
 		}
 		if ((val0 & 0xF0) == 0xF0) {
-			data = [handle readDataOfLength:3];
-			if (data.length < 3)
+			ch = [self readByte];
+			if (ch < 0)
 				return -1;
-			glui32 val1 = ((char *)data.bytes)[0] & 0xFF;
-			glui32 val2 = ((char *)data.bytes)[1] & 0xFF;
-			glui32 val3 = ((char *)data.bytes)[2] & 0xFF;
+			glui32 val1 = ch;
+			ch = [self readByte];
+			if (ch < 0)
+				return -1;
+			glui32 val2 = ch;
+			ch = [self readByte];
+			if (ch < 0)
+				return -1;
+			glui32 val3 = ch;
 			glui32 res = (((val0 & 0x7)<<18)   & 0x1c0000);
 			res |= (((val1 & 0x3f)<<12) & 0x03f000);
 			res |= (((val2 & 0x3f)<<6)  & 0x000fc0);
@@ -896,17 +1050,14 @@
 	BOOL gotnewline = NO;
 		
 	if (!textmode) {
-		NSData *data;
 		if (!unicode) {
 			/* byte stream */
 			int ix;
 			for (ix=0; !gotnewline && ix<getlen; ix++) {
-				data = [handle readDataOfLength:1];
-				if (data.length < 1)
+				int ch = [self readByte];
+				if (ch < 0)
 					break;
 				readcount++;
-				char *buf = (char *)data.bytes;
-				char ch = (buf[0] & 0xFF);
 				if (!wantunicode)
 					((char *)getbuf)[ix] = ch;
 				else
@@ -920,11 +1071,12 @@
 			/* cheap big-endian stream */
 			int ix;
 			for (ix=0; !gotnewline && ix<getlen; ix++) {
-				data = [handle readDataOfLength:4];
-				if (data.length < 4)
+				void *bytes;
+				glui32 readlen = [self readBytes:&bytes len:4];
+				if (readlen < 4)
 					break;
 				readcount++;
-				char *buf = (char *)data.bytes;
+				char *buf = (char *)bytes;
 				glui32 ch = ((buf[0] & 0xFF) << 24) | ((buf[1] & 0xFF) << 16) | ((buf[2] & 0xFF) << 8) | ((buf[3] & 0xFF));
 				if (!wantunicode)
 					((char *)getbuf)[ix] = (ch >= 0x100) ? '?' : ch;
@@ -971,13 +1123,13 @@
 		return 0;
 		
 	if (!textmode) {
-		NSData *data;
 		if (!unicode) {
 			/* byte stream */
-			data = [handle readDataOfLength:getlen];
-			glui32 gotlen = data.length;
+			void *bytes;
+			glui32 readlen = [self readBytes:&bytes len:getlen];
+			glui32 gotlen = readlen;
 			readcount += gotlen;
-			char *buf = (char *)data.bytes;
+			char *buf = (char *)bytes;
 			if (wantunicode) {
 				glui32 *ugetbuf = getbuf;
 				for (int ix=0; ix<gotlen; ix++) {
@@ -991,10 +1143,11 @@
 		}
 		else {
 			/* cheap big-endian stream */
-			data = [handle readDataOfLength:4*getlen];
-			glui32 gotlen = data.length / 4;
+			void *bytes;
+			glui32 readlen = [self readBytes:&bytes len:4*getlen];
+			glui32 gotlen = readlen / 4;
 			readcount += gotlen;
-			char *buf = (char *)data.bytes;
+			char *buf = (char *)bytes;
 			if (wantunicode) {
 				glui32 *ugetbuf = getbuf;
 				for (int ix=0; ix<gotlen; ix++) {
@@ -1046,6 +1199,9 @@
 		pos *= 4;
 	}
 	
+	/* We don't try to handle seeks efficiently within the buffered data. We just flush and seek on the underlying handle. */
+	[self flush];
+	
 	switch (seekmode) {
 		case seekmode_Start:
 			[handle seekToFileOffset:pos];
@@ -1064,6 +1220,8 @@
 
 - (glui32) getPosition {
 	glui32 pos = [handle offsetInFile];
+	if (readbuffer || writebuffer)
+		pos += buffermark;
 	if (!textmode && unicode) {
 		/* This file is in four-byte chunks. */
 		pos /= 4;
