@@ -675,7 +675,7 @@
 	
 	if (self) {
 		/* Set up the buffering. */
-		maxbuffersize = 4; //###
+		maxbuffersize = 6; //###
 		readbuffer = nil;
 		writebuffer = nil;
 		bufferpos = 0;
@@ -809,8 +809,111 @@
 	}
 }
 
+/* Read (up to) len bytes. Returns the number of bytes read. The array returned in byteref will be this many bytes long, and temporary (on autorelease). If at end of file, this returns 0 and byteref should be ignored.
+*/
 - (glui32) readBytes:(void **)byteref len:(glui32)len {
-	//###
+	if (writable) {
+		if (writebuffer && writebuffer.length - buffermark >= len) {
+			NSLog(@"### readBytes: direct-pulling %ld from writebuffer", len);
+			*byteref = writebuffer.mutableBytes+buffermark;
+			buffermark += len;
+			return len;
+		}
+		NSMutableData *resultdata = [NSMutableData dataWithLength:len];
+		*byteref = resultdata.mutableBytes;
+		glui32 addlen = writebuffer.length - buffermark;
+		if (addlen) {
+			NSLog(@"### readBytes: copying %ld from writebuffer", addlen);
+			memcpy(resultdata.mutableBytes, writebuffer.mutableBytes+buffermark, addlen);
+			buffermark += addlen;
+		}
+		glui32 sofar = addlen;
+		[self flush];
+		if (len-sofar > maxbuffersize) {
+			NSLog(@"### readBytes: now reading %ld from disk", len-sofar);
+			NSData *data = [handle readDataOfLength:len-sofar];
+			memcpy(resultdata.mutableBytes+sofar, data.bytes, data.length);
+			sofar += data.length;
+			return sofar;
+		}
+		bufferpos = [handle offsetInFile];
+		NSData *data = [handle readDataOfLength:maxbuffersize];
+		if (!data || !data.length) {
+			// Must be at the end of the file. Leave the buffer off.
+			NSLog(@"### readBytes: at eof");
+		}
+		else {
+			self.writebuffer = [NSMutableData dataWithData:data];
+			buffermark = 0;
+			buffertruepos = writebuffer.length;
+			bufferdirtystart = maxbuffersize;
+			bufferdirtyend = 0;
+			NSLog(@"### readBytes: pulled %ld into writebuffer, starting at %ld", buffertruepos, (long)bufferpos);
+		}
+		glui32 gotlen = 0;
+		if (writebuffer)
+			gotlen = writebuffer.length;
+		if (gotlen > len-sofar)
+			gotlen = len-sofar;
+		if (gotlen) {
+			NSLog(@"### readBytes: copying another %ld from writebuffer, starting at %ld", gotlen);
+			memcpy(resultdata.mutableBytes+sofar, data.bytes+buffermark, gotlen);
+			buffermark += gotlen;
+		}
+		sofar += gotlen;
+		return sofar;
+	}
+	else {
+		if (readbuffer && readbuffer.length - buffermark >= len) {
+			NSLog(@"### readBytes: direct-pulling %ld from readbuffer", len);
+			*byteref = (char *)readbuffer.bytes+buffermark;
+			buffermark += len;
+			return len;
+		}
+		NSMutableData *resultdata = [NSMutableData dataWithLength:len];
+		*byteref = resultdata.mutableBytes;
+		glui32 addlen = readbuffer.length - buffermark;
+		if (addlen) {
+			NSLog(@"### readBytes: copying %ld from readbuffer", addlen);
+			memcpy(resultdata.mutableBytes, readbuffer.bytes+buffermark, addlen);
+			buffermark += addlen;
+		}
+		glui32 sofar = addlen;
+		[self flush];
+		if (len-sofar > maxbuffersize) {
+			NSLog(@"### readBytes: now reading %ld from disk", len-sofar);
+			NSData *data = [handle readDataOfLength:len-sofar];
+			memcpy(resultdata.mutableBytes+sofar, data.bytes, data.length);
+			sofar += data.length;
+			return sofar;
+		}
+		bufferpos = [handle offsetInFile];
+		NSData *data = [handle readDataOfLength:maxbuffersize];
+		if (!data || !data.length) {
+			// Must be at the end of the file. Leave the buffer off.
+			NSLog(@"### readBytes: at eof");
+		}
+		else {
+			self.readbuffer = [NSMutableData dataWithData:data];
+			buffermark = 0;
+			buffertruepos = readbuffer.length;
+			bufferdirtystart = maxbuffersize;
+			bufferdirtyend = 0;
+			NSLog(@"### readBytes: pulled %ld into readbuffer, starting at %ld", buffertruepos, (long)bufferpos);
+		}
+		glui32 gotlen = 0;
+		if (readbuffer)
+			gotlen = readbuffer.length;
+		if (gotlen > len-sofar)
+			gotlen = len-sofar;
+		if (gotlen) {
+			NSLog(@"### readBytes: copying another %ld from readbuffer, starting at %ld", gotlen);
+			memcpy(resultdata.mutableBytes+sofar, data.bytes+buffermark, gotlen);
+			buffermark += gotlen;
+		}
+		sofar += gotlen;
+		return sofar;
+	}
 }
 
 /* Write out one byte.
@@ -855,6 +958,8 @@
 	}
 }
 
+/* Write out len bytes.
+*/
 - (void) writeBytes:(void *)bytes len:(glui32)len {
 	if (writable) {
 		if (writebuffer && buffermark < maxbuffersize) {
@@ -1206,6 +1311,8 @@
 			/* byte stream */
 			void *bytes;
 			glui32 readlen = [self readBytes:&bytes len:getlen];
+			if (!readlen)
+				return 0;
 			glui32 gotlen = readlen;
 			readcount += gotlen;
 			char *buf = (char *)bytes;
@@ -1224,6 +1331,8 @@
 			/* cheap big-endian stream */
 			void *bytes;
 			glui32 readlen = [self readBytes:&bytes len:4*getlen];
+			if (!readlen)
+				return 0;
 			glui32 gotlen = readlen / 4;
 			readcount += gotlen;
 			char *buf = (char *)bytes;
