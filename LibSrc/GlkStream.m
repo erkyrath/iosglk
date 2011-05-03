@@ -675,7 +675,7 @@
 	
 	if (self) {
 		/* Set up the buffering. */
-		maxbuffersize = 6; //###
+		maxbuffersize = 512;
 		readbuffer = nil;
 		writebuffer = nil;
 		bufferpos = 0;
@@ -1097,7 +1097,6 @@
 	writecount += len;
 
 	if (!textmode) {
-		NSData *data;
 		if (!unicode) {
 			/* byte stream */
 			char *ubuf = malloc(len);
@@ -1121,7 +1120,6 @@
 			[self writeBytes:ubuf len:4*len];
 			free(ubuf);
 		}
-		[handle writeData:data];
 	}
 	else {
 		/* UTF8 stream (whether the unicode flag is set or not) */
