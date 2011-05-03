@@ -87,6 +87,7 @@ static GlkAppWrapper *singleton = nil;
 	
 	iosglk_startup_code();
 	
+	lastwaittime = [NSDate timeIntervalSinceReferenceDate];
 	glk_main();
 
 	[looppool drain]; // releases it
@@ -114,7 +115,7 @@ static GlkAppWrapper *singleton = nil;
 		[NSException raise:@"GlkException" format:@"selectEvent called with wrong special value"];
 	
 	[iowaitcond lock];
-	NSLog(@"VM thread glk_select (event %x, special %x)", event, special);
+	NSLog(@"VM thread glk_select after %lf (event %x, special %x)", [NSDate timeIntervalSinceReferenceDate]-lastwaittime, event, special);
 	
 	if (event) {
 		bzero(event, sizeof(event_t));
@@ -156,6 +157,7 @@ static GlkAppWrapper *singleton = nil;
 		[iowaitcond wait];
 	}
 	
+	lastwaittime = [NSDate timeIntervalSinceReferenceDate];
 	NSLog(@"VM thread glk_select returned (evtype %d)", (event ? event->type : -1));
 	[iowaitcond unlock];
 }

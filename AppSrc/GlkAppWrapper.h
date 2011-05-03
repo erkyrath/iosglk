@@ -15,6 +15,7 @@
 	id iowait_special; /* ditto, for special event requests. (A container type, currently GlkFileRefPrompt.) */
 	NSThread *thread; /* not locked; does not change through the run cycle. */
 	NSAutoreleasePool *looppool; /* not locked; only touched by the VM thread. */
+	NSTimeInterval lastwaittime; /* not locked; only touched by VM thread internals. */
 	
 	BOOL pendingtimerevent;
 	BOOL pendingsizechange;
