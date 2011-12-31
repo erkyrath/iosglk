@@ -1,0 +1,455 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
+		2899E5220DE3E06400AC0155 /* IosGlkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E5210DE3E06400AC0155 /* IosGlkViewController.xib */; };
+		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */; };
+		DF79782412F3ACFC00E8F5FF /* glkmain.c in Sources */ = {isa = PBXBuildFile; fileRef = DF79782312F3ACFC00E8F5FF /* glkmain.c */; };
+		DFAEC3791369047D0014AB94 /* gi_blorb.c in Sources */ = {isa = PBXBuildFile; fileRef = DFAEC3771369047D0014AB94 /* gi_blorb.c */; };
+		DFC0AF581355552000CD1F5D /* GlkFileSelectLoad.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */; };
+		DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */; };
+		DFCE593E13690D0100EACA86 /* GlkDispatchLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */; };
+		DFE9EA34136607AC00DD5F53 /* gi_dispa.c in Sources */ = {isa = PBXBuildFile; fileRef = DFE9EA33136607AC00DD5F53 /* gi_dispa.c */; };
+		DFED7A8F1365F0FC00FBAFFB /* Geometry.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A801365F0FC00FBAFFB /* Geometry.m */; };
+		DFED7A901365F0FC00FBAFFB /* GlkFileRef.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A821365F0FC00FBAFFB /* GlkFileRef.m */; };
+		DFED7A911365F0FC00FBAFFB /* GlkFileTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A841365F0FC00FBAFFB /* GlkFileTypes.m */; };
+		DFED7A921365F0FC00FBAFFB /* GlkLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A861365F0FC00FBAFFB /* GlkLibrary.m */; };
+		DFED7A931365F0FC00FBAFFB /* GlkStream.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A881365F0FC00FBAFFB /* GlkStream.m */; };
+		DFED7A941365F0FC00FBAFFB /* GlkUtilTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A8A1365F0FC00FBAFFB /* GlkUtilTypes.m */; };
+		DFED7A951365F0FC00FBAFFB /* GlkWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A8C1365F0FC00FBAFFB /* GlkWindow.m */; };
+		DFED7A961365F0FC00FBAFFB /* StyleSet.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A8E1365F0FC00FBAFFB /* StyleSet.m */; };
+		DFED7AAE1365F18E00FBAFFB /* GlkAppWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A9B1365F18E00FBAFFB /* GlkAppWrapper.m */; };
+		DFED7AAF1365F18E00FBAFFB /* GlkFileSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A9D1365F18E00FBAFFB /* GlkFileSelectViewController.m */; };
+		DFED7AB01365F18E00FBAFFB /* GlkFrameView.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7A9F1365F18E00FBAFFB /* GlkFrameView.m */; };
+		DFED7AB11365F18E00FBAFFB /* GlkWinBufferView.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AA11365F18E00FBAFFB /* GlkWinBufferView.m */; };
+		DFED7AB21365F18E00FBAFFB /* GlkWindowView.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AA31365F18E00FBAFFB /* GlkWindowView.m */; };
+		DFED7AB31365F18E00FBAFFB /* GlkWinGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AA51365F18E00FBAFFB /* GlkWinGridView.m */; };
+		DFED7AB41365F18E00FBAFFB /* IosGlkAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AA71365F18E00FBAFFB /* IosGlkAppDelegate.m */; };
+		DFED7AB51365F18E00FBAFFB /* IosGlkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AA91365F18E00FBAFFB /* IosGlkViewController.m */; };
+		DFED7AB61365F18E00FBAFFB /* RelDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AAB1365F18E00FBAFFB /* RelDateFormatter.m */; };
+		DFED7AB71365F18E00FBAFFB /* StyledTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AAD1365F18E00FBAFFB /* StyledTextView.m */; };
+		DFED7AD01365F1F200FBAFFB /* GlkEventLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AC81365F1F200FBAFFB /* GlkEventLayer.m */; };
+		DFED7AD11365F1F200FBAFFB /* GlkFileRefLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7AC91365F1F200FBAFFB /* GlkFileRefLayer.m */; };
+		DFED7AD21365F1F200FBAFFB /* GlkMiscLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7ACA1365F1F200FBAFFB /* GlkMiscLayer.m */; };
+		DFED7AD31365F1F200FBAFFB /* GlkStreamLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7ACB1365F1F200FBAFFB /* GlkStreamLayer.m */; };
+		DFED7AD41365F1F200FBAFFB /* GlkUnicodeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7ACC1365F1F200FBAFFB /* GlkUnicodeLayer.m */; };
+		DFED7AD51365F1F200FBAFFB /* GlkUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7ACE1365F1F200FBAFFB /* GlkUtilities.m */; };
+		DFED7AD61365F1F200FBAFFB /* GlkWindowLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFED7ACF1365F1F200FBAFFB /* GlkWindowLayer.m */; };
+		DFF26A84135BCBAC00F2FBFD /* GlkFileSelectStore.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D6058910D05DD3D006BFB54 /* IosGlk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IosGlk.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		2899E5210DE3E06400AC0155 /* IosGlkViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IosGlkViewController.xib; sourceTree = "<group>"; };
+		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		32CA4F630368D1EE00C91783 /* IosGlk_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IosGlk_Prefix.pch; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* IosGlk-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "IosGlk-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		DF2280A413692516000AF225 /* iosglk_startup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iosglk_startup.h; sourceTree = "<group>"; };
+		DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDateTimeLayer.m; sourceTree = "<group>"; };
+		DF79782312F3ACFC00E8F5FF /* glkmain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glkmain.c; sourceTree = "<group>"; };
+		DF97CDDD1365EE39005D2536 /* gi_dispa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_dispa.h; sourceTree = "<group>"; };
+		DF97CDDE1365EE39005D2536 /* glk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glk.h; sourceTree = "<group>"; };
+		DFAEC3771369047D0014AB94 /* gi_blorb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gi_blorb.c; sourceTree = "<group>"; };
+		DFAEC3781369047D0014AB94 /* gi_blorb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_blorb.h; sourceTree = "<group>"; };
+		DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GlkFileSelectLoad.xib; sourceTree = "<group>"; };
+		DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkBlorbLayer.m; sourceTree = "<group>"; };
+		DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDispatchLayer.m; sourceTree = "<group>"; };
+		DFE9EA33136607AC00DD5F53 /* gi_dispa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gi_dispa.c; sourceTree = "<group>"; };
+		DFED7A7F1365F0FC00FBAFFB /* Geometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
+		DFED7A801365F0FC00FBAFFB /* Geometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Geometry.m; sourceTree = "<group>"; };
+		DFED7A811365F0FC00FBAFFB /* GlkFileRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkFileRef.h; sourceTree = "<group>"; };
+		DFED7A821365F0FC00FBAFFB /* GlkFileRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkFileRef.m; sourceTree = "<group>"; };
+		DFED7A831365F0FC00FBAFFB /* GlkFileTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkFileTypes.h; sourceTree = "<group>"; };
+		DFED7A841365F0FC00FBAFFB /* GlkFileTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkFileTypes.m; sourceTree = "<group>"; };
+		DFED7A851365F0FC00FBAFFB /* GlkLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkLibrary.h; sourceTree = "<group>"; };
+		DFED7A861365F0FC00FBAFFB /* GlkLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkLibrary.m; sourceTree = "<group>"; };
+		DFED7A871365F0FC00FBAFFB /* GlkStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkStream.h; sourceTree = "<group>"; };
+		DFED7A881365F0FC00FBAFFB /* GlkStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkStream.m; sourceTree = "<group>"; };
+		DFED7A891365F0FC00FBAFFB /* GlkUtilTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkUtilTypes.h; sourceTree = "<group>"; };
+		DFED7A8A1365F0FC00FBAFFB /* GlkUtilTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkUtilTypes.m; sourceTree = "<group>"; };
+		DFED7A8B1365F0FC00FBAFFB /* GlkWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkWindow.h; sourceTree = "<group>"; };
+		DFED7A8C1365F0FC00FBAFFB /* GlkWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkWindow.m; sourceTree = "<group>"; };
+		DFED7A8D1365F0FC00FBAFFB /* StyleSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StyleSet.h; sourceTree = "<group>"; };
+		DFED7A8E1365F0FC00FBAFFB /* StyleSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StyleSet.m; sourceTree = "<group>"; };
+		DFED7A9A1365F18E00FBAFFB /* GlkAppWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkAppWrapper.h; sourceTree = "<group>"; };
+		DFED7A9B1365F18E00FBAFFB /* GlkAppWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkAppWrapper.m; sourceTree = "<group>"; };
+		DFED7A9C1365F18E00FBAFFB /* GlkFileSelectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkFileSelectViewController.h; sourceTree = "<group>"; };
+		DFED7A9D1365F18E00FBAFFB /* GlkFileSelectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkFileSelectViewController.m; sourceTree = "<group>"; };
+		DFED7A9E1365F18E00FBAFFB /* GlkFrameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkFrameView.h; sourceTree = "<group>"; };
+		DFED7A9F1365F18E00FBAFFB /* GlkFrameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkFrameView.m; sourceTree = "<group>"; };
+		DFED7AA01365F18E00FBAFFB /* GlkWinBufferView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkWinBufferView.h; sourceTree = "<group>"; };
+		DFED7AA11365F18E00FBAFFB /* GlkWinBufferView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkWinBufferView.m; sourceTree = "<group>"; };
+		DFED7AA21365F18E00FBAFFB /* GlkWindowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkWindowView.h; sourceTree = "<group>"; };
+		DFED7AA31365F18E00FBAFFB /* GlkWindowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkWindowView.m; sourceTree = "<group>"; };
+		DFED7AA41365F18E00FBAFFB /* GlkWinGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkWinGridView.h; sourceTree = "<group>"; };
+		DFED7AA51365F18E00FBAFFB /* GlkWinGridView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkWinGridView.m; sourceTree = "<group>"; };
+		DFED7AA61365F18E00FBAFFB /* IosGlkAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IosGlkAppDelegate.h; sourceTree = "<group>"; };
+		DFED7AA71365F18E00FBAFFB /* IosGlkAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IosGlkAppDelegate.m; sourceTree = "<group>"; };
+		DFED7AA81365F18E00FBAFFB /* IosGlkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IosGlkViewController.h; sourceTree = "<group>"; };
+		DFED7AA91365F18E00FBAFFB /* IosGlkViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IosGlkViewController.m; sourceTree = "<group>"; };
+		DFED7AAA1365F18E00FBAFFB /* RelDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RelDateFormatter.h; sourceTree = "<group>"; };
+		DFED7AAB1365F18E00FBAFFB /* RelDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RelDateFormatter.m; sourceTree = "<group>"; };
+		DFED7AAC1365F18E00FBAFFB /* StyledTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StyledTextView.h; sourceTree = "<group>"; };
+		DFED7AAD1365F18E00FBAFFB /* StyledTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StyledTextView.m; sourceTree = "<group>"; };
+		DFED7AC81365F1F200FBAFFB /* GlkEventLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkEventLayer.m; sourceTree = "<group>"; };
+		DFED7AC91365F1F200FBAFFB /* GlkFileRefLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkFileRefLayer.m; sourceTree = "<group>"; };
+		DFED7ACA1365F1F200FBAFFB /* GlkMiscLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkMiscLayer.m; sourceTree = "<group>"; };
+		DFED7ACB1365F1F200FBAFFB /* GlkStreamLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkStreamLayer.m; sourceTree = "<group>"; };
+		DFED7ACC1365F1F200FBAFFB /* GlkUnicodeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkUnicodeLayer.m; sourceTree = "<group>"; };
+		DFED7ACD1365F1F200FBAFFB /* GlkUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkUtilities.h; sourceTree = "<group>"; };
+		DFED7ACE1365F1F200FBAFFB /* GlkUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkUtilities.m; sourceTree = "<group>"; };
+		DFED7ACF1365F1F200FBAFFB /* GlkWindowLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkWindowLayer.m; sourceTree = "<group>"; };
+		DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GlkFileSelectStore.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* IosGlk.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				DF97CDA01365EBF2005D2536 /* GenSrc */,
+				DFED7A991365F17900FBAFFB /* AppSrc */,
+				DFED7A7E1365F0E500FBAFFB /* LibSrc */,
+				DFED7AC71365F1C700FBAFFB /* LayerSrc */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* IosGlk_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+				DF79782312F3ACFC00E8F5FF /* glkmain.c */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
+				2899E5210DE3E06400AC0155 /* IosGlkViewController.xib */,
+				8D1107310486CEB800E47090 /* IosGlk-Info.plist */,
+				DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */,
+				DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				288765A40DF7441C002DB57D /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DF97CDA01365EBF2005D2536 /* GenSrc */ = {
+			isa = PBXGroup;
+			children = (
+				DF97CDDE1365EE39005D2536 /* glk.h */,
+				DF97CDDD1365EE39005D2536 /* gi_dispa.h */,
+				DFE9EA33136607AC00DD5F53 /* gi_dispa.c */,
+				DFAEC3771369047D0014AB94 /* gi_blorb.c */,
+				DFAEC3781369047D0014AB94 /* gi_blorb.h */,
+				DF2280A413692516000AF225 /* iosglk_startup.h */,
+			);
+			path = GenSrc;
+			sourceTree = "<group>";
+		};
+		DFED7A7E1365F0E500FBAFFB /* LibSrc */ = {
+			isa = PBXGroup;
+			children = (
+				DFED7A851365F0FC00FBAFFB /* GlkLibrary.h */,
+				DFED7A861365F0FC00FBAFFB /* GlkLibrary.m */,
+				DFED7A8B1365F0FC00FBAFFB /* GlkWindow.h */,
+				DFED7A8C1365F0FC00FBAFFB /* GlkWindow.m */,
+				DFED7A871365F0FC00FBAFFB /* GlkStream.h */,
+				DFED7A881365F0FC00FBAFFB /* GlkStream.m */,
+				DFED7A811365F0FC00FBAFFB /* GlkFileRef.h */,
+				DFED7A821365F0FC00FBAFFB /* GlkFileRef.m */,
+				DFED7A7F1365F0FC00FBAFFB /* Geometry.h */,
+				DFED7A801365F0FC00FBAFFB /* Geometry.m */,
+				DFED7A8D1365F0FC00FBAFFB /* StyleSet.h */,
+				DFED7A8E1365F0FC00FBAFFB /* StyleSet.m */,
+				DFED7A831365F0FC00FBAFFB /* GlkFileTypes.h */,
+				DFED7A841365F0FC00FBAFFB /* GlkFileTypes.m */,
+				DFED7A891365F0FC00FBAFFB /* GlkUtilTypes.h */,
+				DFED7A8A1365F0FC00FBAFFB /* GlkUtilTypes.m */,
+			);
+			path = LibSrc;
+			sourceTree = "<group>";
+		};
+		DFED7A991365F17900FBAFFB /* AppSrc */ = {
+			isa = PBXGroup;
+			children = (
+				DFED7AA61365F18E00FBAFFB /* IosGlkAppDelegate.h */,
+				DFED7AA71365F18E00FBAFFB /* IosGlkAppDelegate.m */,
+				DFED7AA81365F18E00FBAFFB /* IosGlkViewController.h */,
+				DFED7AA91365F18E00FBAFFB /* IosGlkViewController.m */,
+				DFED7A9C1365F18E00FBAFFB /* GlkFileSelectViewController.h */,
+				DFED7A9D1365F18E00FBAFFB /* GlkFileSelectViewController.m */,
+				DFED7A9A1365F18E00FBAFFB /* GlkAppWrapper.h */,
+				DFED7A9B1365F18E00FBAFFB /* GlkAppWrapper.m */,
+				DFED7A9E1365F18E00FBAFFB /* GlkFrameView.h */,
+				DFED7A9F1365F18E00FBAFFB /* GlkFrameView.m */,
+				DFED7AA21365F18E00FBAFFB /* GlkWindowView.h */,
+				DFED7AA31365F18E00FBAFFB /* GlkWindowView.m */,
+				DFED7AA01365F18E00FBAFFB /* GlkWinBufferView.h */,
+				DFED7AA11365F18E00FBAFFB /* GlkWinBufferView.m */,
+				DFED7AA41365F18E00FBAFFB /* GlkWinGridView.h */,
+				DFED7AA51365F18E00FBAFFB /* GlkWinGridView.m */,
+				DFED7AAA1365F18E00FBAFFB /* RelDateFormatter.h */,
+				DFED7AAB1365F18E00FBAFFB /* RelDateFormatter.m */,
+				DFED7AAC1365F18E00FBAFFB /* StyledTextView.h */,
+				DFED7AAD1365F18E00FBAFFB /* StyledTextView.m */,
+			);
+			path = AppSrc;
+			sourceTree = "<group>";
+		};
+		DFED7AC71365F1C700FBAFFB /* LayerSrc */ = {
+			isa = PBXGroup;
+			children = (
+				DFED7AC81365F1F200FBAFFB /* GlkEventLayer.m */,
+				DFED7ACA1365F1F200FBAFFB /* GlkMiscLayer.m */,
+				DFED7ACF1365F1F200FBAFFB /* GlkWindowLayer.m */,
+				DFED7ACB1365F1F200FBAFFB /* GlkStreamLayer.m */,
+				DFED7AC91365F1F200FBAFFB /* GlkFileRefLayer.m */,
+				DFED7ACC1365F1F200FBAFFB /* GlkUnicodeLayer.m */,
+				DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */,
+				DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */,
+				DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */,
+				DFED7ACD1365F1F200FBAFFB /* GlkUtilities.h */,
+				DFED7ACE1365F1F200FBAFFB /* GlkUtilities.m */,
+			);
+			path = LayerSrc;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* IosGlk */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "IosGlk" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IosGlk;
+			productName = IosGlk;
+			productReference = 1D6058910D05DD3D006BFB54 /* IosGlk.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "IosGlk" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* IosGlk */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
+				2899E5220DE3E06400AC0155 /* IosGlkViewController.xib in Resources */,
+				DFC0AF581355552000CD1F5D /* GlkFileSelectLoad.xib in Resources */,
+				DFF26A84135BCBAC00F2FBFD /* GlkFileSelectStore.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				DF79782412F3ACFC00E8F5FF /* glkmain.c in Sources */,
+				DFED7A8F1365F0FC00FBAFFB /* Geometry.m in Sources */,
+				DFED7A901365F0FC00FBAFFB /* GlkFileRef.m in Sources */,
+				DFED7A911365F0FC00FBAFFB /* GlkFileTypes.m in Sources */,
+				DFED7A921365F0FC00FBAFFB /* GlkLibrary.m in Sources */,
+				DFED7A931365F0FC00FBAFFB /* GlkStream.m in Sources */,
+				DFED7A941365F0FC00FBAFFB /* GlkUtilTypes.m in Sources */,
+				DFED7A951365F0FC00FBAFFB /* GlkWindow.m in Sources */,
+				DFED7A961365F0FC00FBAFFB /* StyleSet.m in Sources */,
+				DFED7AAE1365F18E00FBAFFB /* GlkAppWrapper.m in Sources */,
+				DFED7AAF1365F18E00FBAFFB /* GlkFileSelectViewController.m in Sources */,
+				DFED7AB01365F18E00FBAFFB /* GlkFrameView.m in Sources */,
+				DFED7AB11365F18E00FBAFFB /* GlkWinBufferView.m in Sources */,
+				DFED7AB21365F18E00FBAFFB /* GlkWindowView.m in Sources */,
+				DFED7AB31365F18E00FBAFFB /* GlkWinGridView.m in Sources */,
+				DFED7AB41365F18E00FBAFFB /* IosGlkAppDelegate.m in Sources */,
+				DFED7AB51365F18E00FBAFFB /* IosGlkViewController.m in Sources */,
+				DFED7AB61365F18E00FBAFFB /* RelDateFormatter.m in Sources */,
+				DFED7AB71365F18E00FBAFFB /* StyledTextView.m in Sources */,
+				DFED7AD01365F1F200FBAFFB /* GlkEventLayer.m in Sources */,
+				DFED7AD11365F1F200FBAFFB /* GlkFileRefLayer.m in Sources */,
+				DFED7AD21365F1F200FBAFFB /* GlkMiscLayer.m in Sources */,
+				DFED7AD31365F1F200FBAFFB /* GlkStreamLayer.m in Sources */,
+				DFED7AD41365F1F200FBAFFB /* GlkUnicodeLayer.m in Sources */,
+				DFED7AD51365F1F200FBAFFB /* GlkUtilities.m in Sources */,
+				DFED7AD61365F1F200FBAFFB /* GlkWindowLayer.m in Sources */,
+				DFE9EA34136607AC00DD5F53 /* gi_dispa.c in Sources */,
+				DFAEC3791369047D0014AB94 /* gi_blorb.c in Sources */,
+				DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */,
+				DFCE593E13690D0100EACA86 /* GlkDispatchLayer.m in Sources */,
+				DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = IosGlk_Prefix.pch;
+				INFOPLIST_FILE = "IosGlk-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1.3;
+				PRODUCT_NAME = IosGlk;
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = IosGlk_Prefix.pch;
+				INFOPLIST_FILE = "IosGlk-Info.plist";
+				PRODUCT_NAME = IosGlk;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "IosGlk" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "IosGlk" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}
