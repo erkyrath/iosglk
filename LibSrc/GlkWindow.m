@@ -117,7 +117,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 }
 
 - (void) dealloc {
-	NSLog(@"GlkWindow dealloc %x", self);
+	NSLog(@"GlkWindow dealloc %x", (unsigned int)self);
 	
 	if (inlibrary)
 		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc while in library"];

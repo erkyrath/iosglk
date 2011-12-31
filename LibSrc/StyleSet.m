@@ -93,7 +93,7 @@
 	charbox = size;
 	size = [@"qld" sizeWithFont:fonts[style_Normal]];
 	if (charbox.height < size.height)
-		charbox.height < size.height;
+		charbox.height = size.height;
 	NSLog(@"Measured family %@ (%.1f pt) to have charbox %@", family, fontsize, StringFromSize(charbox));
 	
 	marginframe.origin.x = 6.0;

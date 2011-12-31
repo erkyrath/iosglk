@@ -84,7 +84,7 @@
 }
 
 - (void) dealloc {
-	NSLog(@"GlkFileRef dealloc %x", self);
+	NSLog(@"GlkFileRef dealloc %x", (unsigned int)self);
 	
 	if (inlibrary)
 		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc while in library"];
