@@ -99,6 +99,7 @@
 			span.pos = pos;
 			[arr addObject:span];
 			[span release];
+			[str release];
 		}
 	}
 	

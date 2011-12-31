@@ -108,7 +108,7 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 		return nil;
 	}
 	NSString *basedir = [[dirlist objectAtIndex:0] retain];
-	NSString *dirname = [[GlkFileRef subDirOfBase:basedir forUsage:usage gameid:library.gameid] retain];
+	NSString *dirname = [GlkFileRef subDirOfBase:basedir forUsage:usage gameid:library.gameid];
 
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
 	GlkFileRefPrompt *prompt = [[GlkFileRefPrompt alloc] initWithUsage:usage fmode:fmode dirname:dirname]; // retained
@@ -123,7 +123,6 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	library.specialrequest = nil;
 	[prompt autorelease];
 	[basedir autorelease];
-	[dirname autorelease];
 	
 	if (!filename) {
 		/* The file selection was cancelled. */

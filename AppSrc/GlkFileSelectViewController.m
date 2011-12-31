@@ -315,7 +315,7 @@
 	
 	if ([[NSFileManager defaultManager] fileExistsAtPath:prompt.pathname]) {
 		NSString *str = [NSString stringWithFormat:@"Replace the saved game \"%@\"?", label];
-		UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Replace" otherButtonTitles:nil];
+		UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Replace" otherButtonTitles:nil] autorelease];
 		[sheet showInView:textfield];
 		return;
 	}

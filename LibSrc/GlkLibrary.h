@@ -58,7 +58,7 @@
 + (GlkLibrary *) singleton;
 + (void) strictWarning:(NSString *)msg;
 
-- (NSNumber *) newTag;
+- (NSNumber *) generateTag;
 - (BOOL) setMetrics:(CGRect)box;
 - (GlkWindow *) windowForTag:(NSNumber *)tag;
 

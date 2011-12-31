@@ -167,7 +167,7 @@
 		[wingeometries removeAllObjects];
 		for (GlkWindowPair *win in library.windows) {
 			if (win.type == wintype_Pair) {
-				Geometry *geom = [win.geometry copy];
+				Geometry *geom = [[win.geometry copy] autorelease];
 				[wingeometries setObject:geom forKey:win.tag];
 			}
 		}

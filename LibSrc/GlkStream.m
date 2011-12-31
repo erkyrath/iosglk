@@ -30,7 +30,7 @@
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
-		self.tag = [library newTag];
+		self.tag = [library generateTag];
 		type = strtype;
 		rock = strrock;
 		readable = isreadable;

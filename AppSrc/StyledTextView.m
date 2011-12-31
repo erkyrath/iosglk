@@ -108,7 +108,7 @@
 		[vlines removeAllObjects];
 	}
 	else {
-		int vcount = vlines.count;
+		int vcount;
 		for (vcount = vlines.count; vcount; vcount--) {
 			GlkVisualLine *vln = [vlines objectAtIndex:vcount-1];
 			if (vln.linenum < fromline)
@@ -156,7 +156,7 @@
 				if (!sstr) {
 					spannum++;
 					if (spannum >= sln.arr.count) {
-						linedone = YES;
+						//linedone = YES;
 						paragraphdone = YES;
 						break;
 					}

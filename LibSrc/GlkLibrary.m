@@ -95,7 +95,7 @@ static GlkLibrary *singleton = nil;
 /* Every Glk object (windows, streams, etc) needs a hashable tag. (The objects themselves don't make good hash keys.) The easiest solution is to pass out unique NSNumbers. 
 	Note that these are *not* the glui32 ids seen by the Glulx VM. Those are generated separately, in the gi_dispa layer.
 */
-- (NSNumber *) newTag {
+- (NSNumber *) generateTag {
 	tagCounter++;
 	return [NSNumber numberWithInteger:tagCounter];
 }

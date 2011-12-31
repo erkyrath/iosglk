@@ -87,7 +87,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
-		self.tag = [library newTag];
+		self.tag = [library generateTag];
 		type = wintype;
 		rock = winrock;
 		
