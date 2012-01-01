@@ -100,6 +100,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 		char_request_uni = NO;
 		line_request_uni = NO;
 		echo_line_input = YES;
+		pending_echo_line_input = NO;
 		//terminate_line_input = 0;
 		style = style_Normal;
 		
@@ -285,6 +286,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	line_buffer_length = maxlen;
 	input_request_id++;
 	
+	if (self.type == wintype_TextBuffer)
+		pending_echo_line_input = echo_line_input;
+	else
+		pending_echo_line_input = NO;
+	
 	self.line_request_initial = nil;
 	if (initlen) {
 		NSString *str;
@@ -343,8 +349,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	line_buffer_length = 0;
 	self.line_request_initial = nil;
 	
-	/* Echo the input. ### stash echo_line_input in a per-input flag */
-	if (TRUE) {
+	/* Echo the input, if needed. (On a grid window, it won't be needed.) */
+	if (pending_echo_line_input) {
 		glui32 origstyle = style;
 		
 		if (!unicode) {
@@ -363,6 +369,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 			
 		style = origstyle;
 	}
+	pending_echo_line_input = NO;
 	
     if (library.dispatch_unregister_arr) {
         char *typedesc = (unicode ? "&+#!Iu" : "&+#!Cn");

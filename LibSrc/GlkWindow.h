@@ -33,8 +33,9 @@
 	BOOL char_request_uni;
 	BOOL line_request_uni;
 	NSString *line_request_initial;
+	BOOL pending_echo_line_input; // applies to current input; only meaningful for buffer windows
 	
-	BOOL echo_line_input;
+	BOOL echo_line_input; // applies to future inputs
 	glui32 style;
 	
 	GlkStream *stream;

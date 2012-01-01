@@ -5,8 +5,6 @@
 */
 
 #import "GlkWinGridView.h"
-#import "IosGlkAppDelegate.h" //###
-#import "IosGlkViewController.h" //###
 #import "GlkWindow.h"
 #import "GlkAppWrapper.h"
 #import "StyleSet.h"
@@ -133,18 +131,6 @@
 	field.frame = box;
 	if (!field.superview)
 		[self addSubview:field];
-}
-
-- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	//### totally bogus, testing only
-	/*
-	UITouch *touch = [[event touchesForView:self] anyObject];
-	CGPoint loc = [touch locationInView:self];
-	[[GlkAppWrapper singleton] acceptEventType:99 window:win val1:loc.x val2:loc.y];
-	*/
-	
-	[[IosGlkAppDelegate singleton].viewController hideKeyboard];
-	
 }
 
 @end
