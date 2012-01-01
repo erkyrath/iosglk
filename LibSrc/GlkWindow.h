@@ -55,6 +55,7 @@
 @property (nonatomic, readonly) int input_request_id;
 @property (nonatomic, readonly) BOOL char_request;
 @property (nonatomic, readonly) BOOL line_request;
+@property (nonatomic) BOOL echo_line_input;
 @property (nonatomic) glui32 style;
 @property (nonatomic, retain) GlkStream *stream;
 @property (nonatomic, retain) GlkStream *echostream;

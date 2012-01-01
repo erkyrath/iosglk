@@ -117,7 +117,7 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 			return 1;
 
 		case gestalt_LineTerminators:
-			return 1;
+			return 0;
 
 		case gestalt_LineTerminatorKey:
 			return 0;

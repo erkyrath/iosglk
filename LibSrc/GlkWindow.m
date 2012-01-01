@@ -32,6 +32,7 @@
 @synthesize input_request_id;
 @synthesize char_request;
 @synthesize line_request;
+@synthesize echo_line_input;
 @synthesize style;
 @synthesize stream;
 @synthesize echostream;

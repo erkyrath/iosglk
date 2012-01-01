@@ -533,6 +533,24 @@ void glk_cancel_line_event(winid_t win, event_t *event)
 	[win cancelLineInput:event];
 }
 
+void glk_set_echo_line_event(winid_t win, glui32 val)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"set_echo_line_event: invalid ref"];
+		return;
+	}
+	win.echo_line_input = (val != 0);
+}
+
+void glk_set_terminators_line_event(winid_t win, glui32 *keycodes, glui32 count)
+{
+	if (!win) {
+		[GlkLibrary strictWarning:@"set_terminators_line_event: invalid ref"];
+		return;
+	}
+	[GlkLibrary strictWarning:@"set_terminators_line_event: not supported"];
+}
+
 void glk_request_mouse_event(winid_t win)
 {
 	if (!win) {
