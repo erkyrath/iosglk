@@ -41,8 +41,7 @@ void glk_request_timer_events(glui32 millisecs) {
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
 	NSNumber *interval = nil;
 	if (millisecs) {
-		interval = [[NSNumber alloc] initWithDouble:((double)millisecs * 0.001)];
-		/* This is retained, not on autorelease. We'll pass the retention over to the main thread. */
+		interval = [[[NSNumber alloc] initWithDouble:((double)millisecs * 0.001)] autorelease];
 	}
 	[appwrap performSelectorOnMainThread:@selector(setTimerInterval:) withObject:interval waitUntilDone:NO];
 }

@@ -270,9 +270,13 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond unlock];
 }
 
-/* This method must be run on the main thread.
-	The interval argument, if non-nil, must be retained by the caller. This method will release it. (This simplifies its transfer from the VM thread, which is where this is called from.) */
+/* This method must be run on the main thread. */
 - (void) setTimerInterval:(NSNumber *)interval {
+	/* It isn't really possible that the interval argument is the same object as self.timerinterval. But we should be clean about the handover anyway. */
+	if (interval) {
+		[[interval retain] autorelease];
+	}
+	
 	if (timerinterval) {
 		[GlkAppWrapper cancelPreviousPerformRequestsWithTarget:self selector:@selector(fireTimer:) object:nil];
 		self.timerinterval = nil;
@@ -282,7 +286,6 @@ static GlkAppWrapper *singleton = nil;
 		self.timerinterval = interval;
 		/* The delay value in this method is an NSTimeInterval, which is defined as double. */
 		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:[timerinterval doubleValue]];
-		[interval release];
 	}
 	
 }
