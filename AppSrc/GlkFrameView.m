@@ -211,8 +211,7 @@
 	if (!text)
 		return;
 	
-	/* The VM thread, when it picks this up, will take over the retention. */
-	tagstring.str = [[NSString stringWithString:text] retain];
+	tagstring.str = [NSString stringWithString:text];
 }
 
 @end

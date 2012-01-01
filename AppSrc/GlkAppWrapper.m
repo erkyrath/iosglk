@@ -216,12 +216,12 @@ static GlkAppWrapper *singleton = nil;
 	
 	GlkTagString *tagstring = [[GlkTagString alloc] initWithTag:tag text:nil]; // retain
 	
+	// Block waiting for main thread to update tagstring
 	[frameview performSelectorOnMainThread:@selector(editingTextForWindow:)
 		withObject:tagstring waitUntilDone:YES];
 		
-	NSString *result = tagstring.str; // we take over the retention
+	NSString *result = [[tagstring.str retain] autorelease];
 	[tagstring release];
-	[result autorelease];
 	return result;
 }
 
