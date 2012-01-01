@@ -47,7 +47,7 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 				return 0;
 			if (val > 0x10FFFF)
 				return 0;
-			if ((val >= 0 && val < 32) || (val >= 127 && val < 160))
+			if ((val < 32) || (val >= 127 && val < 160))
 				return 0;
 			return 1;
 
@@ -55,7 +55,7 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 			/* Same as the above, except no special keys. */
 			if (val > 0x10FFFF)
 				return 0;
-			if ((val >= 0 && val < 32) || (val >= 127 && val < 160))
+			if ((val < 32) || (val >= 127 && val < 160))
 				return 0;
 			return 1;
 
@@ -64,7 +64,7 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 			   as well as the placeholders for nonprintables, are one character
 			   wide. */
 			if ((val > 0x10FFFF)
-				|| (val >= 0 && val < 32)
+				|| (val < 32)
 				|| (val >= 127 && val < 160)) {
 				if (arr)
 					arr[0] = 1;

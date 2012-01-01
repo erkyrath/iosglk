@@ -378,7 +378,8 @@ giblorb_err_t giblorb_load_chunk_by_number(giblorb_map_t *map,
 {
     giblorb_chunkdesc_t *chu;
     
-    if (chunknum < 0 || chunknum >= map->numchunks)
+	// XCode: removed "chunknum < 0" test to shut up compiler warning
+    if (chunknum >= map->numchunks)
         return giblorb_err_NotFound;
 
     chu = &(map->chunks[chunknum]);
@@ -443,7 +444,8 @@ giblorb_err_t giblorb_unload_chunk(giblorb_map_t *map, glui32 chunknum)
 {
     giblorb_chunkdesc_t *chu;
     
-    if (chunknum < 0 || chunknum >= map->numchunks)
+	// XCode: removed "chunknum < 0" test to shut up compiler warning
+    if (chunknum >= map->numchunks)
         return giblorb_err_NotFound;
 
     chu = &(map->chunks[chunknum]);

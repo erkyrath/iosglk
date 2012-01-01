@@ -988,6 +988,7 @@
 			bufferdirtystart = maxbuffersize;
 			bufferdirtyend = 0;
 		}
+		/* Yeah, buffermark will always be zero at this point. I still write the code based on it, for clarity. */
 		if (writebuffer && len <= maxbuffersize - buffermark) {
 			if (buffermark < bufferdirtystart)
 				bufferdirtystart = buffermark;
