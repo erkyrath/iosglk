@@ -93,33 +93,106 @@ unsigned char glk_char_to_upper(unsigned char ch)
 	return char_toupper_table[ch];
 }
 
+//### All the following case-changing code is untested.
+
 glui32 glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
-	return 0; //###
+	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	CFStringLowercase((CFMutableStringRef)str, CFLocaleGetSystem());
+	
+	int ix;
+	for (ix=0; ix<str.length; ix++) {
+		if (ix >= len)
+			break;
+		glui32 ch = [str characterAtIndex:ix];
+		//### we should crunch utf16 characters into utf32 if needed
+		buf[ix] = ch;
+	}
+	
+	return ix;
 }
 
 glui32 glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
-	return 0; //###
+	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	CFStringUppercase((CFMutableStringRef)str, CFLocaleGetSystem());
+	
+	int ix;
+	for (ix=0; ix<str.length; ix++) {
+		if (ix >= len)
+			break;
+		glui32 ch = [str characterAtIndex:ix];
+		//### we should crunch utf16 characters into utf32 if needed
+		buf[ix] = ch;
+	}
+	
+	return ix;
 }
 
 glui32 glk_buffer_to_title_case_uni(glui32 *buf, glui32 len,
     glui32 numchars, glui32 lowerrest)
 {
-	return 0; //###
+	/* This is probably an imperfect approximation of Unicode title-casing. */
+	
+	if (numchars == 0)
+		return 0;
+		
+	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:1*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	NSMutableString *strtail = [[[NSMutableString alloc] initWithBytes:buf+1 length:(numchars-1)*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+		
+	CFStringCapitalize((CFMutableStringRef)str, CFLocaleGetSystem());
+	if (lowerrest)
+		CFStringLowercase((CFMutableStringRef)strtail, CFLocaleGetSystem());
+	
+	[str appendString:strtail];
+	
+	int ix;
+	for (ix=0; ix<str.length; ix++) {
+		if (ix >= len)
+			break;
+		glui32 ch = [str characterAtIndex:ix];
+		//### we should crunch utf16 characters into utf32 if needed
+		buf[ix] = ch;
+	}
+	
+	return ix;
 }
 
 glui32 glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
-	return 0; //###
+	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	CFStringNormalize((CFMutableStringRef)str, kCFStringNormalizationFormD);
+	
+	int ix;
+	for (ix=0; ix<str.length; ix++) {
+		if (ix >= len)
+			break;
+		glui32 ch = [str characterAtIndex:ix];
+		//### we should crunch utf16 characters into utf32 if needed
+		buf[ix] = ch;
+	}
+	
+	return ix;
 }
 
 glui32 glk_buffer_canon_normalize_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
-	return 0; //###
+	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	CFStringNormalize((CFMutableStringRef)str, kCFStringNormalizationFormC);
+	
+	int ix;
+	for (ix=0; ix<str.length; ix++) {
+		if (ix >= len)
+			break;
+		glui32 ch = [str characterAtIndex:ix];
+		//### we should crunch utf16 characters into utf32 if needed
+		buf[ix] = ch;
+	}
+	
+	return ix;
 }
 
