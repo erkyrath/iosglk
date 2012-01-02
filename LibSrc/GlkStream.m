@@ -416,7 +416,7 @@
 		if (len) {
 			for (lx=0; lx<len; lx++) {
 				glui32 ch = buffer[lx];
-				*bufptr = (ch >= 100 ? '?' : ch);
+				*bufptr = (ch >= 0x100 ? '?' : ch);
 				bufptr++;
 			}
 			if (bufptr > bufeof)
