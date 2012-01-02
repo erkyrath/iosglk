@@ -93,6 +93,8 @@ unsigned char glk_char_to_upper(unsigned char ch)
 	return char_toupper_table[ch];
 }
 
+//### In all these functions, we should crunch utf16 characters into utf32 if needed. Remember that we'll need two return values -- the number of 32-bit characters found, and the number stored in buf. (str.length is not necessarily either of these.)
+
 glui32 glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
@@ -104,7 +106,6 @@ glui32 glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len,
 		if (ix >= len)
 			break;
 		glui32 ch = [str characterAtIndex:ix];
-		//### we should crunch utf16 characters into utf32 if needed
 		buf[ix] = ch;
 	}
 	
@@ -122,7 +123,6 @@ glui32 glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len,
 		if (ix >= len)
 			break;
 		glui32 ch = [str characterAtIndex:ix];
-		//### we should crunch utf16 characters into utf32 if needed
 		buf[ix] = ch;
 	}
 	
@@ -151,7 +151,6 @@ glui32 glk_buffer_to_title_case_uni(glui32 *buf, glui32 len,
 		if (ix >= len)
 			break;
 		glui32 ch = [str characterAtIndex:ix];
-		//### we should crunch utf16 characters into utf32 if needed
 		buf[ix] = ch;
 	}
 	
@@ -169,7 +168,6 @@ glui32 glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len,
 		if (ix >= len)
 			break;
 		glui32 ch = [str characterAtIndex:ix];
-		//### we should crunch utf16 characters into utf32 if needed
 		buf[ix] = ch;
 	}
 	
@@ -187,7 +185,6 @@ glui32 glk_buffer_canon_normalize_uni(glui32 *buf, glui32 len,
 		if (ix >= len)
 			break;
 		glui32 ch = [str characterAtIndex:ix];
-		//### we should crunch utf16 characters into utf32 if needed
 		buf[ix] = ch;
 	}
 	
