@@ -93,8 +93,6 @@ unsigned char glk_char_to_upper(unsigned char ch)
 	return char_toupper_table[ch];
 }
 
-//### All the following case-changing code is untested.
-
 glui32 glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
@@ -110,7 +108,7 @@ glui32 glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len,
 		buf[ix] = ch;
 	}
 	
-	return ix;
+	return str.length;
 }
 
 glui32 glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len,
@@ -128,7 +126,7 @@ glui32 glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len,
 		buf[ix] = ch;
 	}
 	
-	return ix;
+	return str.length;
 }
 
 glui32 glk_buffer_to_title_case_uni(glui32 *buf, glui32 len,
@@ -157,7 +155,7 @@ glui32 glk_buffer_to_title_case_uni(glui32 *buf, glui32 len,
 		buf[ix] = ch;
 	}
 	
-	return ix;
+	return str.length;
 }
 
 glui32 glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len,
@@ -175,7 +173,7 @@ glui32 glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len,
 		buf[ix] = ch;
 	}
 	
-	return ix;
+	return str.length;
 }
 
 glui32 glk_buffer_canon_normalize_uni(glui32 *buf, glui32 len,
@@ -193,6 +191,6 @@ glui32 glk_buffer_canon_normalize_uni(glui32 *buf, glui32 len,
 		buf[ix] = ch;
 	}
 	
-	return ix;
+	return str.length;
 }
 
