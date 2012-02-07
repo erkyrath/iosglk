@@ -569,8 +569,10 @@ void glk_cancel_mouse_event(winid_t win)
 	/* Not yet supported */
 }
 
+#ifdef GLK_MODULE_IMAGE
 void glk_window_flow_break(winid_t win)
 {
 	[GlkLibrary strictWarning:@"window_flow_break: graphics not supported"];
 }
+#endif /* GLK_MODULE_IMAGE */
 
