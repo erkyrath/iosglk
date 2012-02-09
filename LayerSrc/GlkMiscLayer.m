@@ -18,6 +18,7 @@ void glk_exit()
 	/* This does not exit the process -- that would be totally un-iPhone-y. Instead, we call selectEvent in a way that will never return. */
 	GlkLibrary *library = [GlkLibrary singleton];
 	library.vmexited = YES;
+	NSLog(@"glk_exit()!");
 	
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
 	library.specialrequest = [NSNull null];
