@@ -16,5 +16,7 @@
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;
 
+- (IBAction) toggleKeyboard;
+
 @end
 

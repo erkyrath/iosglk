@@ -89,6 +89,26 @@
 	}
 }
 
+- (IBAction) toggleKeyboard {
+	GlkFrameView *frameview = [self viewAsFrameView];
+	GlkWindowView *firstinputview = nil;
+	
+	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
+		if (winv.textfield && [winv.textfield isFirstResponder]) {
+			NSLog(@"Hiding keyboard for %@", winv);
+			[winv.textfield resignFirstResponder];
+			break;
+		}
+		if (winv.textfield && !firstinputview)
+			firstinputview = winv;
+	}
+	
+	if (firstinputview) {
+		NSLog(@"Reshowing keyboard for %@", firstinputview);
+		[firstinputview.textfield becomeFirstResponder];
+	}
+}
+
 // Allow all orientations
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
