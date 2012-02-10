@@ -191,7 +191,7 @@
 	
 	/* And now, if there's a special prompt going on, fill the screen with it. */
 	if (library.specialrequest)
-		[[IosGlkAppDelegate singleton].viewController displayModalRequest:library.specialrequest];
+		[[IosGlkAppDelegate singleton].glkviewc displayModalRequest:library.specialrequest];
 }
 
 /* Query the main thread about what's in a particular window's input line. The VM thread calls this when it cancels line input and needs to know what in the input buffer.

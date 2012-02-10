@@ -107,7 +107,7 @@ static GlkAppWrapper *singleton = nil;
 	looppool = [[NSAutoreleasePool alloc] init];
 		
 	GlkLibrary *library = [GlkLibrary singleton];
-	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
+	GlkFrameView *frameview = [IosGlkAppDelegate singleton].glkviewc.viewAsFrameView;
 	
 	if (event && special) 
 		[NSException raise:@"GlkException" format:@"selectEvent called with both event and special arguments"];
@@ -210,7 +210,7 @@ static GlkAppWrapper *singleton = nil;
 
 /* This is called from the VM thread, while the VM is running. It throws a call into the main thread, where the user is (presumably) busy editing an input field. */
 - (NSString *) editingTextForWindow:(NSNumber *)tag {
-	GlkFrameView *frameview = [IosGlkAppDelegate singleton].viewController.viewAsFrameView;
+	GlkFrameView *frameview = [IosGlkAppDelegate singleton].glkviewc.viewAsFrameView;
 	if (!frameview)
 		return nil;
 	
