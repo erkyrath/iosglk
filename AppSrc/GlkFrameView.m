@@ -21,11 +21,14 @@
 #import "GlkUtilTypes.h"
 #import "GlkUtilities.h"
 
+#define MAX_HISTORY_LENGTH (12)
+
 @implementation GlkFrameView
 
 @synthesize windowviews;
 @synthesize wingeometries;
 @synthesize rootwintag;
+@synthesize commandhistory;
 
 - (void) awakeFromNib {
 	[super awakeFromNib];
@@ -35,12 +38,15 @@
 	self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 	self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
 	rootwintag = nil;
+	
+	self.commandhistory = [NSMutableArray arrayWithCapacity:MAX_HISTORY_LENGTH];
 }
 
 - (void) dealloc {
 	self.windowviews = nil;
 	self.wingeometries = nil;
 	self.rootwintag = nil;
+	self.commandhistory = nil;
 	[super dealloc];
 }
 
@@ -213,5 +219,31 @@
 	
 	tagstring.str = [NSString stringWithString:text];
 }
+
+- (void) addToCommandHistory:(NSString *)str {
+	NSArray *arr = [str componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	if (arr.count == 0)
+		return;
+	NSMutableArray *arr2 = [NSMutableArray arrayWithCapacity:arr.count];
+	for (NSString *substr in arr) {
+		if (substr.length)
+			[arr2 addObject:substr];
+	}
+	if (!arr2.count)
+		return;
+	str = [arr2 componentsJoinedByString:@" "];
+	str = str.lowercaseString;
+	
+	[commandhistory removeObject:str];
+	[commandhistory addObject:str];
+	if (commandhistory.count > MAX_HISTORY_LENGTH) {
+		NSRange range;
+		range.location = 0;
+		range.length = commandhistory.count - MAX_HISTORY_LENGTH;
+		[commandhistory removeObjectsInRange:range];
+	}
+	NSLog(@"### adding '%@' to history, now: %@", str, commandhistory);
+}
+
 
 @end

@@ -8,6 +8,7 @@
 #include "glk.h"
 
 @class GlkWindow;
+@class GlkFrameView;
 
 @interface GlkWindowView : UIView <UITextFieldDelegate> {
 	GlkWindow *win;
@@ -23,6 +24,7 @@
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win;
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box;
+- (GlkFrameView *) superviewAsFrameView;
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;
 

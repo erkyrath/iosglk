@@ -18,16 +18,20 @@
 	/* Maps tags (NSNumbers) to Geometry objects. (Only for pair windows.) */
 	NSMutableDictionary *wingeometries;
 	NSNumber *rootwintag;
+	
+	NSMutableArray *commandhistory;
 }
 
 @property (nonatomic, retain) NSMutableDictionary *windowviews;
 @property (nonatomic, retain) NSMutableDictionary *wingeometries;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic, retain) NSNumber *rootwintag;
+@property (nonatomic, retain) NSMutableArray *commandhistory;
 
 - (void) setNeedsLayoutPlusSubviews;
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
+- (void) addToCommandHistory:(NSString *)str;
 
 @end

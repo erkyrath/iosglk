@@ -10,6 +10,7 @@
 */
 
 #import "GlkWindowView.h"
+#import "GlkFrameView.h"
 #import "GlkWinBufferView.h"
 #import "GlkWinGridView.h"
 #import "GlkLibrary.h"
@@ -50,6 +51,10 @@
 	self.textfield = nil;
 	self.win = nil;
 	[super dealloc];
+}
+
+- (GlkFrameView *) superviewAsFrameView {
+	return (GlkFrameView *)self.superview;
 }
 
 /* The windowview subclasses will override this. */
@@ -116,6 +121,8 @@
 	[NSException raise:@"GlkException" format:@"placeInputField not implemented"];
 }
 
+/* Delegate methods for UITextField: */
+
 - (BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)str {
 	if (input_single_char) {
 		if (str.length) {
@@ -143,16 +150,18 @@
 }
 
 - (void) textFieldContinueReturn:(UITextField *)textField {
-	NSLog(@"End editing: '%@'", textField.text);
+	NSString *text = textField.text;
+	NSLog(@"End editing: '%@'", text);
+	
 	if (![[GlkAppWrapper singleton] acceptingEvent]) {
 		/* The event must have been filled while we were delaying. Oh well. */
 		return;
 	}
 	
-	//### add to command history?
+	[self.superviewAsFrameView addToCommandHistory:text];
 	
 	/* buflen might be shorter than the text string, either because the buffer is short or utf16 crunching. */
-	int buflen = [win acceptLineInput:textField.text];
+	int buflen = [win acceptLineInput:text];
 	if (buflen < 0) {
 		/* This window isn't accepting input. Oh well. */
 		return; 
