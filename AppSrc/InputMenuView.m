@@ -65,7 +65,26 @@
 		}
 	}
 	else if (mode == inputmenu_Palette) {
-		//###
+		if (!palettemenu) {
+			[[NSBundle mainBundle] loadNibNamed:@"PaletteMenuVC" owner:self options:nil];
+			[palettemenu setUp];
+			CGRect rect = palettemenu.frame;
+			rect.origin.x = buttonrect.origin.x + buttonrect.size.width - rect.size.width - 10;
+			rect.origin.y = buttonrect.origin.y - rect.size.height - 10;
+			palettemenu.frame = rect;
+			[self addSubview:palettemenu];
+		}
+		else {
+			[palettemenu setUp];
+			CGRect rect = palettemenu.frame;
+			rect.origin.x = buttonrect.origin.x + buttonrect.size.width - rect.size.width - 10;
+			rect.origin.y = buttonrect.origin.y - rect.size.height - 10;
+			palettemenu.frame = rect;
+			palettemenu.hidden = NO;
+		}
+		if (historymenu) {
+			historymenu.hidden = YES;
+		}
 	}
 }
 
@@ -97,6 +116,8 @@
 	labelbox = baselabel.frame;
 	labelheight = labelbox.size.height;
 	extraheight = self.bounds.size.height - labelheight;
+	
+	self.layer.cornerRadius = 4;
 }
 
 - (void) setUpFromHistory:(NSArray *)history {
@@ -148,7 +169,6 @@
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	NSLog(@"### history tap");
 	UITouch *touch = [[event touchesForView:self] anyObject];
 	CGPoint loc = [touch locationInView:self];
 	int val = floorf((loc.y - labelbox.origin.y) / labelheight);
@@ -178,5 +198,78 @@
 
 
 @implementation PaletteMenuView
+
+@synthesize labels;
+
+- (void) awakeFromNib {
+	[super awakeFromNib];
+	
+	self.layer.cornerRadius = 6;
+}
+
+- (void) setUp {
+	selection = nil;
+	self.labels = [NSMutableArray arrayWithCapacity:20];
+	for (UIView *view in self.subviews) {
+		if ([view isKindOfClass:[UILabel class]] && view.tag >= 0) {
+			[labels addObject:view];
+		}
+	}
+}
+
+- (void) dealloc {
+	selection = nil;
+	self.labels = nil;
+	[super dealloc];
+}
+
+- (UILabel *) labelAtPoint:(CGPoint)loc {
+	for (UILabel *label in labels) {
+		if (CGRectContainsPoint(label.frame, loc))
+			return label;
+	}
+	return nil;
+}
+
+- (void) selectLabel:(UILabel *)val {
+	if (selection == val)
+		return;
+	
+	if (selection) {
+		selection.backgroundColor = nil;
+	}
+	
+	selection = val;
+	
+	if (selection) {
+		selection.backgroundColor = [UIColor whiteColor];
+	}
+}
+
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	UITouch *touch = [[event touchesForView:self] anyObject];
+	CGPoint loc = [touch locationInView:self];
+	UILabel *label = [self labelAtPoint:loc];
+	[self selectLabel:label];
+}
+
+- (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	UITouch *touch = [[event touchesForView:self] anyObject];
+	CGPoint loc = [touch locationInView:self];
+	UILabel *label = [self labelAtPoint:loc];
+	[self selectLabel:label];
+}
+
+- (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	if (selection) {
+		InputMenuView *menuview = (InputMenuView *)self.superview;
+		[menuview acceptCommand:selection.text];
+	}
+}
+
+- (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+	[self selectLabel:nil];
+}
+
 
 @end

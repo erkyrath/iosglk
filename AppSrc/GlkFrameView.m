@@ -272,7 +272,7 @@
 		CGRect rect = [winv.textfield rightViewRectForBounds:winv.textfield.bounds];
 		rect = [self convertRect:rect fromView:winv.textfield];
 		self.menuview = [[[InputMenuView alloc] initWithFrame:self.bounds buttonFrame:rect history:commandhistory] autorelease];
-		[menuview setMode:inputmenu_History];
+		[menuview setMode:inputmenu_Palette];
 		[self addSubview:menuview];
 	}
 }

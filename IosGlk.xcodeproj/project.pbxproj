@@ -18,6 +18,7 @@
 		DF9D1A5F14E60DAF006A6749 /* CmdTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */; };
 		DF9D1A6214E6DC91006A6749 /* InputMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = DF9D1A6114E6DC90006A6749 /* InputMenuView.m */; };
 		DF9D1A6414E6E27C006A6749 /* HistoryMenuVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF9D1A6314E6E27C006A6749 /* HistoryMenuVC.xib */; };
+		DF9D1A6614E71D6E006A6749 /* PaletteMenuVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF9D1A6514E71D6E006A6749 /* PaletteMenuVC.xib */; };
 		DFAEC3791369047D0014AB94 /* gi_blorb.c in Sources */ = {isa = PBXBuildFile; fileRef = DFAEC3771369047D0014AB94 /* gi_blorb.c */; };
 		DFC0AF581355552000CD1F5D /* GlkFileSelectLoad.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */; };
 		DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */; };
@@ -71,6 +72,7 @@
 		DF9D1A6014E6DC90006A6749 /* InputMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputMenuView.h; sourceTree = "<group>"; };
 		DF9D1A6114E6DC90006A6749 /* InputMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputMenuView.m; sourceTree = "<group>"; };
 		DF9D1A6314E6E27C006A6749 /* HistoryMenuVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryMenuVC.xib; sourceTree = "<group>"; };
+		DF9D1A6514E71D6E006A6749 /* PaletteMenuVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PaletteMenuVC.xib; sourceTree = "<group>"; };
 		DFAEC3771369047D0014AB94 /* gi_blorb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gi_blorb.c; sourceTree = "<group>"; };
 		DFAEC3781369047D0014AB94 /* gi_blorb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_blorb.h; sourceTree = "<group>"; };
 		DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GlkFileSelectLoad.xib; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 				DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */,
 				DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */,
 				DF9D1A6314E6E27C006A6749 /* HistoryMenuVC.xib */,
+				DF9D1A6514E71D6E006A6749 /* PaletteMenuVC.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 				DFC0AF581355552000CD1F5D /* GlkFileSelectLoad.xib in Resources */,
 				DFF26A84135BCBAC00F2FBFD /* GlkFileSelectStore.xib in Resources */,
 				DF9D1A6414E6E27C006A6749 /* HistoryMenuVC.xib in Resources */,
+				DF9D1A6614E71D6E006A6749 /* PaletteMenuVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
