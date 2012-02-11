@@ -10,6 +10,6 @@
 
 @interface CmdTextField : UITextField
 
-- (void) setUpForWindow:(GlkWindowView *)winv;
+- (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar;
 
 @end

@@ -85,7 +85,6 @@
 	if (wants_input) {
 		if (!textfield) {
 			self.textfield = [[[CmdTextField alloc] initWithFrame:CGRectZero] autorelease];
-			[textfield setUpForWindow:self];
 			input_request_id = 0;
 		}
 		
@@ -94,20 +93,7 @@
 			input_request_id = win.input_request_id;
 			input_single_char = win.char_request;
 			
-			if (win.line_request && win.line_request_initial)
-				textfield.text = win.line_request_initial;
-			else
-				textfield.text = @"";
-
-			/* Bug: changing the returnKeyType in an existing field doesn't change the open keyboard. I don't care right now. */
-			if (input_single_char) {
-				textfield.returnKeyType = UIReturnKeyDefault;
-				textfield.autocorrectionType = UITextAutocorrectionTypeNo;
-			}
-			else {
-				textfield.returnKeyType = UIReturnKeyGo;
-				textfield.autocorrectionType = UITextAutocorrectionTypeDefault;
-			}
+			[textfield setUpForWindow:self singleChar:input_single_char];
 			
 			/* This places the field correctly, and adds it as a subview if it isn't already. */
 			[self placeInputField:textfield];

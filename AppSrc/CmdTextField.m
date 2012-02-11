@@ -12,13 +12,34 @@
 
 @implementation CmdTextField
 
-- (void) setUpForWindow:(GlkWindowView *)winv {
+- (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar {
+	GlkWindow *win = winv.win;
+	
+	self.delegate = winv;
+	
 	self.backgroundColor = [UIColor whiteColor];
-	self.font = winv.win.styleset.fonts[style_Input];
+	self.font = win.styleset.fonts[style_Input];
 	//self.borderStyle = UITextBorderStyleBezel;
 	self.autocapitalizationType = UITextAutocapitalizationTypeNone;
 	self.keyboardType = UIKeyboardTypeASCIICapable;
-	self.delegate = winv;
+	
+	self.clearButtonMode = UITextFieldViewModeWhileEditing;
+
+	if (win.line_request && win.line_request_initial)
+		self.text = win.line_request_initial;
+	else
+		self.text = @"";
+	
+	/* Bug: changing the returnKeyType in an existing field doesn't change the open keyboard. I don't care right now. */
+	if (singleChar) {
+		self.returnKeyType = UIReturnKeyDefault;
+		self.autocorrectionType = UITextAutocorrectionTypeNo;
+	}
+	else {
+		self.returnKeyType = UIReturnKeyGo;
+		self.autocorrectionType = UITextAutocorrectionTypeDefault;
+	}
+	
 }
 
 @end

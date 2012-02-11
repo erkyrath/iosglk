@@ -268,6 +268,11 @@ void glk_main() {
 			if (!strcmp(inbuf, "quit")) {
 				return;
 			}
+			if (!strcmp(inbuf, "char")) {
+				glk_put_string("Type a char>");
+				glk_request_char_event_uni(mainwin);
+				continue;
+			}
 			glk_put_char('>');
 			glk_request_line_event(mainwin, inbuf, 32, 0);
 			//glk_request_line_event_uni(mainwin, uinbuf, 32, 0);
@@ -276,6 +281,7 @@ void glk_main() {
 		
 		if (ev.type == evtype_CharInput) {
 			glk_set_window(mainwin);
+			glk_put_char('\n');
 			glk_put_string("You typed '");
 			glk_put_char_uni(ev.val1);
 			glk_put_string("'.\n");
