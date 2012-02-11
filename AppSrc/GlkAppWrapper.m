@@ -89,6 +89,9 @@ static GlkAppWrapper *singleton = nil;
 	
 	lastwaittime = [NSDate timeIntervalSinceReferenceDate];
 	glk_main();
+	
+	/* This doesn't return. So the looppool cleanup below is irrelevant, really. */
+	glk_exit();
 
 	[looppool drain]; // releases it
 	looppool = nil;
