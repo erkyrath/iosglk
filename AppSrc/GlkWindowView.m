@@ -76,7 +76,7 @@
 	if (!wants_input) {
 		if (textfield) {
 			/* The window doesn't want any input at all. Get rid of the textfield. */
-			[self.superviewAsFrameView removeMenuForWindow:win.tag];
+			[self.superviewAsFrameView removeInputMenu];
 			[textfield removeFromSuperview];
 			self.textfield = nil;
 			input_request_id = 0;
@@ -118,6 +118,9 @@
 		}
 		return NO;
 	}
+	else {
+		[self.superviewAsFrameView removeInputMenu];
+	}
 	return YES;
 }
 
@@ -128,7 +131,9 @@
 			[[GlkAppWrapper singleton] acceptEventType:evtype_CharInput window:win val1:ch val2:0];
 		return NO;
 	}
-	
+
+	[self.superviewAsFrameView removeInputMenu];
+
 	/* Don't look at the text yet; the last word hasn't been spellchecked. However, we don't want to close the keyboard either. The only good answer seems to be to fire a function call with a tiny delay, and return YES to ensure that the spellcheck is accepted. */
 	[self performSelector:@selector(textFieldContinueReturn:) withObject:textField afterDelay:0.0];
 	return YES;

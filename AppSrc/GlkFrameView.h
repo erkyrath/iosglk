@@ -12,6 +12,8 @@
 @interface GlkFrameView : UIView {
 	/* How much of the view bounds to reserve for the keyboard. */
 	CGFloat keyboardHeight;
+	/* The current size of the bounds minus keyboard. */
+	CGRect cachedGlkBox;
 	
 	/* Maps tags (NSNumbers) to GlkWindowViews. (But pair windows are excluded.) */
 	NSMutableDictionary *windowviews;
@@ -19,7 +21,12 @@
 	NSMutableDictionary *wingeometries;
 	NSNumber *rootwintag;
 	
+	/* Strings typed into input lines (across all windows) */
 	NSMutableArray *commandhistory;
+
+	UIView *menubackview;
+	/* The window whose text field the popup menu applies to */
+	NSNumber *menuwintag;
 }
 
 @property (nonatomic, retain) NSMutableDictionary *windowviews;
@@ -27,13 +34,21 @@
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic, retain) NSNumber *rootwintag;
 @property (nonatomic, retain) NSMutableArray *commandhistory;
+@property (nonatomic, retain) UIView *menubackview;
+@property (nonatomic, retain) NSNumber *menuwintag;
 
 - (void) setNeedsLayoutPlusSubviews;
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 - (void) addToCommandHistory:(NSString *)str;
-- (void) postMenuForWindow:(NSNumber *)tag;
-- (void) removeMenuForWindow:(NSNumber *)tag;
+- (void) postInputMenuForWindow:(NSNumber *)tag;
+- (void) removeInputMenu;
+
+@end
+
+
+@interface TapOverlayView : UIView {
+}
 
 @end

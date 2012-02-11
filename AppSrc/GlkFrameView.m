@@ -30,6 +30,8 @@
 @synthesize wingeometries;
 @synthesize rootwintag;
 @synthesize commandhistory;
+@synthesize menubackview;
+@synthesize menuwintag;
 
 - (void) awakeFromNib {
 	[super awakeFromNib];
@@ -48,6 +50,8 @@
 	self.wingeometries = nil;
 	self.rootwintag = nil;
 	self.commandhistory = nil;
+	self.menubackview = nil;
+	self.menuwintag = nil;
 	[super dealloc];
 }
 
@@ -75,6 +79,14 @@
 	box.size.height -= keyboardHeight;
 	if (box.size.height < 0)
 		box.size.height = 0;
+	
+	/* Only go through the layout mess if the view size really changed. */
+	if (CGRectEqualToRect(cachedGlkBox, box))
+		return;
+	cachedGlkBox = box;
+
+	if (menubackview)
+		[self removeInputMenu];
 
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
@@ -245,10 +257,31 @@
 	}
 }
 
-- (void) postMenuForWindow:(NSNumber *)tag {
+- (void) postInputMenuForWindow:(NSNumber *)tag {
+	self.menuwintag = tag;
+	
+	if (!menubackview) {
+		self.menubackview = [[[TapOverlayView alloc] initWithFrame:self.bounds] autorelease];
+		menubackview.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5]; //###
+		[self addSubview:menubackview];
+	}
 }
 
-- (void) removeMenuForWindow:(NSNumber *)tag {
+- (void) removeInputMenu {
+	if (menubackview) {
+		[menubackview removeFromSuperview];
+		self.menubackview = nil;
+	}
+}
+
+@end
+
+
+@implementation TapOverlayView
+
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	GlkFrameView *frameview = [IosGlkViewController singleton].viewAsFrameView;
+	[frameview removeInputMenu];
 }
 
 @end
