@@ -164,6 +164,7 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				8D1107310486CEB800E47090 /* IosGlk-Info.plist */,
 				32CA4F630368D1EE00C91783 /* IosGlk_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				DF79782312F3ACFC00E8F5FF /* glkmain.c */,
@@ -176,12 +177,11 @@
 			children = (
 				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
 				2899E5210DE3E06400AC0155 /* IosGlkViewController.xib */,
-				8D1107310486CEB800E47090 /* IosGlk-Info.plist */,
 				DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */,
 				DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */,
 				DF9D1A6314E6E27C006A6749 /* HistoryMenuVC.xib */,
 			);
-			name = Resources;
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
