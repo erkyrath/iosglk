@@ -245,8 +245,11 @@
 	}
 }
 
-- (NSArray *) commandHistory {
-	return [NSArray arrayWithArray:commandhistory];
+- (void) postMenuForWindow:(NSNumber *)tag {
+}
+
+- (void) removeMenuForWindow:(NSNumber *)tag {
 }
 
 @end
+

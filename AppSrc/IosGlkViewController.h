@@ -12,6 +12,8 @@
 
 }
 
++ (IosGlkViewController *) singleton;
+
 - (GlkFrameView *) viewAsFrameView;
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;

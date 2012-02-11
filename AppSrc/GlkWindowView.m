@@ -76,6 +76,7 @@
 	if (!wants_input) {
 		if (textfield) {
 			/* The window doesn't want any input at all. Get rid of the textfield. */
+			[self.superviewAsFrameView removeMenuForWindow:win.tag];
 			[textfield removeFromSuperview];
 			self.textfield = nil;
 			input_request_id = 0;

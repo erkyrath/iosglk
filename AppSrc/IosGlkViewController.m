@@ -5,6 +5,7 @@
 */
 
 #import "IosGlkViewController.h"
+#import "IosGlkAppDelegate.h"
 #import "GlkFrameView.h"
 #import "GlkWindowView.h"
 #import "GlkUtilTypes.h"
@@ -14,7 +15,9 @@
 
 @implementation IosGlkViewController
 
-
++ (IosGlkViewController *) singleton {
+	return [IosGlkAppDelegate singleton].glkviewc;
+}
 
 /*
 // The designated initializer. Override to perform setup that is required before the view is loaded.

@@ -8,7 +8,15 @@
 
 @class GlkWindowView;
 
-@interface CmdTextField : UITextField
+@interface CmdTextField : UITextField {
+	UIButton *menubutton;
+	BOOL singlechar;
+	
+	NSNumber *wintag;
+}
+
+@property (nonatomic, retain) UIButton *menubutton;
+@property (nonatomic, retain) NSNumber *wintag;
 
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar;
 

@@ -6,16 +6,40 @@
 
 
 #import "CmdTextField.h"
+#import "IosGlkViewController.h"
 #import "GlkWindowView.h"
+#import "GlkFrameView.h"
 #import "GlkWindow.h"
 #import "StyleSet.h"
+#import "GlkUtilities.h"
 
 @implementation CmdTextField
 
-- (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar {
+@synthesize menubutton;
+@synthesize wintag;
+
+- (id) initWithFrame:(CGRect)frame {
+	self = [super initWithFrame:frame];
+	if (self) {
+		self.menubutton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+		[menubutton addTarget:self action:@selector(handleMenuButton:) forControlEvents:UIControlEventTouchUpInside];
+	}
+	return self;
+}
+
+- (void) dealloc {
+	self.menubutton = nil;
+	self.wintag = nil;
+	[super dealloc];
+}
+
+
+- (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleval {
 	GlkWindow *win = winv.win;
+	self.wintag = win.tag;
 	
 	self.delegate = winv;
+	singlechar = singleval;
 	
 	self.backgroundColor = [UIColor whiteColor];
 	self.font = win.styleset.fonts[style_Input];
@@ -23,7 +47,15 @@
 	self.autocapitalizationType = UITextAutocapitalizationTypeNone;
 	self.keyboardType = UIKeyboardTypeASCIICapable;
 	
-	self.clearButtonMode = UITextFieldViewModeWhileEditing;
+	//self.clearButtonMode = UITextFieldViewModeWhileEditing;
+	if (singlechar) {
+		self.rightViewMode = UITextFieldViewModeNever;
+		self.rightView = nil;
+	}
+	else {
+		self.rightViewMode = UITextFieldViewModeWhileEditing;
+		self.rightView = self.menubutton;
+	}
 
 	if (win.line_request && win.line_request_initial)
 		self.text = win.line_request_initial;
@@ -31,7 +63,7 @@
 		self.text = @"";
 	
 	/* Bug: changing the returnKeyType in an existing field doesn't change the open keyboard. I don't care right now. */
-	if (singleChar) {
+	if (singlechar) {
 		self.returnKeyType = UIReturnKeyDefault;
 		self.autocorrectionType = UITextAutocorrectionTypeNo;
 	}
@@ -42,4 +74,15 @@
 	
 }
 
+- (CGRect) rightViewRectForBounds:(CGRect)bounds {
+	return CGRectMake(bounds.size.width-48, 0, 48, bounds.size.height);
+}
+
+- (void) handleMenuButton:(id)sender {
+	GlkFrameView *frameview = [IosGlkViewController singleton].viewAsFrameView;
+	[frameview postMenuForWindow:wintag];
+}
+
+
 @end
+
