@@ -74,6 +74,10 @@
 	
 }
 
+- (BOOL) singleChar {
+	return singlechar;
+}
+
 - (CGRect) rightViewRectForBounds:(CGRect)bounds {
 	return CGRectMake(bounds.size.width-48, 0, 48, bounds.size.height);
 }

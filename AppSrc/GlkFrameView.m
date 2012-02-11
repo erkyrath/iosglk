@@ -15,6 +15,7 @@
 #import "GlkWindowView.h"
 #import "GlkWinBufferView.h"
 #import "CmdTextField.h"
+#import "InputMenuView.h"
 #import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
@@ -30,7 +31,7 @@
 @synthesize wingeometries;
 @synthesize rootwintag;
 @synthesize commandhistory;
-@synthesize menubackview;
+@synthesize menuview;
 @synthesize menuwintag;
 
 - (void) awakeFromNib {
@@ -50,7 +51,7 @@
 	self.wingeometries = nil;
 	self.rootwintag = nil;
 	self.commandhistory = nil;
-	self.menubackview = nil;
+	self.menuview = nil;
 	self.menuwintag = nil;
 	[super dealloc];
 }
@@ -85,7 +86,7 @@
 		return;
 	cachedGlkBox = box;
 
-	if (menubackview)
+	if (menuview)
 		[self removeInputMenu];
 
 	if (rootwintag) {
@@ -247,6 +248,9 @@
 	str = [arr2 componentsJoinedByString:@" "];
 	str = str.lowercaseString;
 	
+	if (str.length < 2)
+		return;
+	
 	[commandhistory removeObject:str];
 	[commandhistory addObject:str];
 	if (commandhistory.count > MAX_HISTORY_LENGTH) {
@@ -260,29 +264,26 @@
 - (void) postInputMenuForWindow:(NSNumber *)tag {
 	self.menuwintag = tag;
 	
-	if (!menubackview) {
-		self.menubackview = [[[TapOverlayView alloc] initWithFrame:self.bounds] autorelease];
-		menubackview.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5]; //###
-		[self addSubview:menubackview];
+	GlkWindowView *winv = [windowviews objectForKey:tag];
+	if (!winv || !winv.textfield || winv.textfield.singleChar)
+		return;
+	
+	if (!menuview) {
+		CGRect rect = [winv.textfield rightViewRectForBounds:winv.textfield.bounds];
+		rect = [self convertRect:rect fromView:winv.textfield];
+		self.menuview = [[[InputMenuView alloc] initWithFrame:self.bounds buttonFrame:rect history:commandhistory] autorelease];
+		[menuview setMode:inputmenu_History];
+		[self addSubview:menuview];
 	}
 }
 
 - (void) removeInputMenu {
-	if (menubackview) {
-		[menubackview removeFromSuperview];
-		self.menubackview = nil;
+	if (menuview) {
+		[menuview removeFromSuperview];
+		self.menuview = nil;
 	}
 }
 
 @end
 
-
-@implementation TapOverlayView
-
-- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	GlkFrameView *frameview = [IosGlkViewController singleton].viewAsFrameView;
-	[frameview removeInputMenu];
-}
-
-@end
 

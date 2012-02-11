@@ -19,5 +19,6 @@
 @property (nonatomic, retain) NSNumber *wintag;
 
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar;
+- (BOOL) singleChar;
 
 @end

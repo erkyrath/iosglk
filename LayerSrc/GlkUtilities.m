@@ -117,6 +117,29 @@ NSString *StringToCondensedString(NSString *str) {
 	return res;
 }
 
+
+CGPoint RectCenter(CGRect rect) {
+	CGPoint pt;
+	pt.x = rect.origin.x + 0.5*rect.size.width;
+	pt.y = rect.origin.y + 0.5*rect.size.height;
+	return pt;
+}
+
+CGSize CGSizeEven(CGSize size) {
+	int val = ceilf(size.width);
+	if (val & 1)
+		val++;
+	size.width = val;
+	
+	val = ceilf(size.height);
+	if (val & 1)
+		val++;
+	size.height = val;
+	
+	return size;
+}
+
+
 /* Log a C string to console. */
 void nslogc(char *str) {
 	NSLog(@"%s", str);

@@ -8,6 +8,7 @@
 
 @class GlkLibrary;
 @class GlkTagString;
+@class InputMenuView;
 
 @interface GlkFrameView : UIView {
 	/* How much of the view bounds to reserve for the keyboard. */
@@ -24,7 +25,7 @@
 	/* Strings typed into input lines (across all windows) */
 	NSMutableArray *commandhistory;
 
-	UIView *menubackview;
+	InputMenuView *menuview;
 	/* The window whose text field the popup menu applies to */
 	NSNumber *menuwintag;
 }
@@ -34,7 +35,7 @@
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic, retain) NSNumber *rootwintag;
 @property (nonatomic, retain) NSMutableArray *commandhistory;
-@property (nonatomic, retain) UIView *menubackview;
+@property (nonatomic, retain) UIView *menuview;
 @property (nonatomic, retain) NSNumber *menuwintag;
 
 - (void) setNeedsLayoutPlusSubviews;
@@ -48,7 +49,3 @@
 @end
 
 
-@interface TapOverlayView : UIView {
-}
-
-@end

@@ -14,5 +14,9 @@ extern NSString *StringFromPoint(CGPoint pt);
 extern NSString *StringToCondensedString(NSString *str);
 extern NSString *StringFromDumbEncoding(NSString *str);
 extern NSString *StringToDumbEncoding(NSString *str);
+
+extern CGSize CGSizeEven(CGSize size);
+extern CGPoint RectCenter(CGRect rect);
+
 extern void nslogc(char *str);
 extern void sleep_curthread(NSTimeInterval val);
