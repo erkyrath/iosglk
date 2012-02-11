@@ -17,6 +17,7 @@
 #import "GlkWindow.h"
 #import "GlkAppWrapper.h"
 #import "GlkUtilities.h"
+#import "StyleSet.h"
 
 @implementation GlkWindowView
 
@@ -84,7 +85,8 @@
 		if (!textfield) {
 			self.textfield = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
 			textfield.backgroundColor = [UIColor whiteColor];
-			textfield.borderStyle = UITextBorderStyleBezel;
+			textfield.font = win.styleset.fonts[style_Input];
+			//textfield.borderStyle = UITextBorderStyleBezel;
 			textfield.autocapitalizationType = UITextAutocapitalizationTypeNone;
 			textfield.keyboardType = UIKeyboardTypeASCIICapable;
 			textfield.delegate = self;
