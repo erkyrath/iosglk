@@ -14,6 +14,7 @@
 #import "IosGlkViewController.h"
 #import "GlkWindowView.h"
 #import "GlkWinBufferView.h"
+#import "CmdTextField.h"
 #import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
@@ -209,7 +210,7 @@
 	if (!winv)
 		return;
 	
-	UITextField *textfield = winv.textfield;
+	CmdTextField *textfield = winv.textfield;
 	if (!textfield)
 		return;
 		
@@ -242,8 +243,10 @@
 		range.length = commandhistory.count - MAX_HISTORY_LENGTH;
 		[commandhistory removeObjectsInRange:range];
 	}
-	NSLog(@"### adding '%@' to history, now: %@", str, commandhistory);
 }
 
+- (NSArray *) commandHistory {
+	return [NSArray arrayWithArray:commandhistory];
+}
 
 @end

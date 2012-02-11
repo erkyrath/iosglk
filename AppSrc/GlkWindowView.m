@@ -17,6 +17,7 @@
 #import "GlkWindow.h"
 #import "GlkAppWrapper.h"
 #import "GlkUtilities.h"
+#import "CmdTextField.h"
 #import "StyleSet.h"
 
 @implementation GlkWindowView
@@ -83,13 +84,8 @@
 	
 	if (wants_input) {
 		if (!textfield) {
-			self.textfield = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
-			textfield.backgroundColor = [UIColor whiteColor];
-			textfield.font = win.styleset.fonts[style_Input];
-			//textfield.borderStyle = UITextBorderStyleBezel;
-			textfield.autocapitalizationType = UITextAutocapitalizationTypeNone;
-			textfield.keyboardType = UIKeyboardTypeASCIICapable;
-			textfield.delegate = self;
+			self.textfield = [[[CmdTextField alloc] initWithFrame:CGRectZero] autorelease];
+			[textfield setUpForWindow:self];
 			input_request_id = 0;
 		}
 		

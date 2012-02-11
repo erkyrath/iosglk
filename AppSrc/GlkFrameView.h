@@ -33,5 +33,6 @@
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 - (void) addToCommandHistory:(NSString *)str;
+- (NSArray *) commandHistory;
 
 @end

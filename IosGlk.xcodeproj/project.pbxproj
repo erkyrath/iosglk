@@ -15,6 +15,7 @@
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */; };
 		DF79782412F3ACFC00E8F5FF /* glkmain.c in Sources */ = {isa = PBXBuildFile; fileRef = DF79782312F3ACFC00E8F5FF /* glkmain.c */; };
+		DF9D1A5F14E60DAF006A6749 /* CmdTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */; };
 		DFAEC3791369047D0014AB94 /* gi_blorb.c in Sources */ = {isa = PBXBuildFile; fileRef = DFAEC3771369047D0014AB94 /* gi_blorb.c */; };
 		DFC0AF581355552000CD1F5D /* GlkFileSelectLoad.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */; };
 		DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */; };
@@ -63,6 +64,8 @@
 		DF79782312F3ACFC00E8F5FF /* glkmain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glkmain.c; sourceTree = "<group>"; };
 		DF97CDDD1365EE39005D2536 /* gi_dispa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_dispa.h; sourceTree = "<group>"; };
 		DF97CDDE1365EE39005D2536 /* glk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glk.h; sourceTree = "<group>"; };
+		DF9D1A5D14E60DAF006A6749 /* CmdTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CmdTextField.h; sourceTree = "<group>"; };
+		DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CmdTextField.m; sourceTree = "<group>"; };
 		DFAEC3771369047D0014AB94 /* gi_blorb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gi_blorb.c; sourceTree = "<group>"; };
 		DFAEC3781369047D0014AB94 /* gi_blorb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_blorb.h; sourceTree = "<group>"; };
 		DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GlkFileSelectLoad.xib; sourceTree = "<group>"; };
@@ -242,6 +245,8 @@
 				DFED7AA51365F18E00FBAFFB /* GlkWinGridView.m */,
 				DFED7AAA1365F18E00FBAFFB /* RelDateFormatter.h */,
 				DFED7AAB1365F18E00FBAFFB /* RelDateFormatter.m */,
+				DF9D1A5D14E60DAF006A6749 /* CmdTextField.h */,
+				DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */,
 				DFED7AAC1365F18E00FBAFFB /* StyledTextView.h */,
 				DFED7AAD1365F18E00FBAFFB /* StyledTextView.m */,
 			);
@@ -364,6 +369,7 @@
 				DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */,
 				DFCE593E13690D0100EACA86 /* GlkDispatchLayer.m in Sources */,
 				DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */,
+				DF9D1A5F14E60DAF006A6749 /* CmdTextField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,17 +9,18 @@
 
 @class GlkWindow;
 @class GlkFrameView;
+@class CmdTextField;
 
 @interface GlkWindowView : UIView <UITextFieldDelegate> {
 	GlkWindow *win;
 	
-	UITextField *textfield; /* if input is happening (but not necessarily a subview of this view) */
+	CmdTextField *textfield; /* if input is happening (but not necessarily a subview of this view) */
 	int input_request_id; /* matches the value in the GlkWindow if this input field is current */
 	BOOL input_single_char; /* if we're grabbing character (rather than line) input */
 }
 
 @property (nonatomic, retain) GlkWindow *win;
-@property (nonatomic, retain) UITextField *textfield;
+@property (nonatomic, retain) CmdTextField *textfield;
 
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win;
 

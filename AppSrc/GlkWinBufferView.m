@@ -8,6 +8,7 @@
 #import "GlkWindow.h"
 #import "GlkUtilTypes.h"
 
+#import "CmdTextField.h"
 #import "StyledTextView.h"
 #import "GlkUtilities.h"
 

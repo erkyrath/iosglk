@@ -1,4 +1,3 @@
-//
 /* RelDateFormatter.h: Date formatter subclass with relative times
 	for IosGlk, the iOS implementation of the Glk API.
 	Designed by Andrew Plotkin <erkyrath@eblong.com>
