@@ -13,6 +13,7 @@
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#import "IosGlkLibDelegate.h"
 #import "GlkAppWrapper.h"
 #import "GlkStream.h"
 #import "StyleSet.h"
@@ -53,19 +54,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 	switch (type) {
 		case wintype_TextBuffer:
 			win = [[[GlkWindowBuffer alloc] initWithType:type rock:rock] autorelease];
-			win.styleset = [[[StyleSet alloc] init] autorelease];
-			/* Helvetica Neue is not available in iOS 3.1.3! */
-			@try {
-				[win.styleset setFontFamily:@"Helvetica Neue" size:14.0];
-			} @catch (NSException *ex) {
-				NSLog(@"Backing off to Helvetica");
-				[win.styleset setFontFamily:@"Helvetica" size:14.0];
-			}
+			win.styleset = [StyleSet buildForWindowType:type rock:rock];
 			break;
 		case wintype_TextGrid:
 			win = [[[GlkWindowGrid alloc] initWithType:type rock:rock] autorelease];
-			win.styleset = [[[StyleSet alloc] init] autorelease];
-			[win.styleset setFontFamily:@"Courier" size:14.0];
+			win.styleset = [StyleSet buildForWindowType:type rock:rock];
 			break;
 		case wintype_Pair:
 			/* You can't create a pair window this way. */

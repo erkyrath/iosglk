@@ -6,7 +6,9 @@
 
 
 #import "StyleSet.h"
+#import "GlkLibrary.h"
 #import "GlkUtilities.h"
+#import "IosGlkLibDelegate.h"
 
 @implementation StyleSet
 
@@ -14,6 +16,27 @@
 @synthesize charbox;
 @synthesize margins;
 @synthesize margintotal;
+
++ (StyleSet *) buildForWindowType:(glui32)wintype rock:(glui32)rock {
+	GlkLibrary *library = [GlkLibrary singleton];
+	
+	StyleSet *styles = [[[StyleSet alloc] init] autorelease];
+	[library.glkdelegate prepareStyles:styles forWindowType:wintype rock:rock];
+	[styles completeForWindowType:wintype];
+
+	return styles;
+}
+
++ (FontVariants) fontVariantsForSize:(CGFloat)size family:(NSString *)first, ... {
+	FontVariants variants;
+	variants.normal = nil;
+	variants.italic = nil;
+	variants.bold = nil;
+	
+	//###
+	
+	return variants;
+}
 
 - (id) init {
 	self = [super init];
@@ -43,41 +66,28 @@
 	[super dealloc];
 }
 
-/* Set the fonts according to a family and font size. This is not at all usefully flexible, and will be replaced with something else someday. 
-*/
-- (void) setFontFamily:(NSString *)family size:(CGFloat)fontsize {
-	NSArray *fontnames = [UIFont fontNamesForFamilyName:family];
-	if (!fontnames || fontnames.count == 0)
-		[NSException raise:@"GlkException" format:@"no such font family: %@", family];
+- (void) completeForWindowType:(glui32)wintype {
+	/* Fill in any fonts that were omitted. */
+	for (int ix=0; ix<style_NUMSTYLES; ix++) {
+		if (!fonts[ix]) {
+			switch (ix) {
+				case style_Normal:
+					if (wintype == wintype_TextBuffer)
+						fonts[ix] = [UIFont systemFontOfSize:14];
+					else
+						fonts[ix] = [UIFont fontWithName:@"Courier" size:14];
+					break;
+				default:
+					fonts[ix] = fonts[0];
+					break;
+			}
+		}
+	}
 	
-	UIFont *normalfont = [UIFont fontWithName:family size:fontsize];
-		
-	UIFont *boldfont = [UIFont fontWithName:[family stringByAppendingString:@"-Bold"] size:fontsize];
-	if (!boldfont)
-		boldfont = [UIFont fontWithName:[family stringByAppendingString:@"-Heavy"] size:fontsize];
-	if (!boldfont)
-		boldfont = normalfont;
-
-	UIFont *italicfont = [UIFont fontWithName:[family stringByAppendingString:@"-Italic"] size:fontsize];
-	if (!italicfont)
-		italicfont = [UIFont fontWithName:[family stringByAppendingString:@"-Oblique"] size:fontsize];
-	if (!italicfont)
-		italicfont = normalfont;
-
-	if (!normalfont || !boldfont || !italicfont)
-		[NSException raise:@"GlkException" format:@"font family lacks basic variants: %@", family];
-		
-	fonts[style_Normal] = [normalfont retain];
-	fonts[style_Emphasized] = [italicfont retain];
-	fonts[style_Preformatted] = [[UIFont fontWithName:@"Courier" size:fontsize] retain];
-	fonts[style_Header] = [boldfont retain];
-	fonts[style_Subheader] = [boldfont retain];
-	fonts[style_Alert] = [italicfont retain];
-	fonts[style_Note] = [italicfont retain];
-	fonts[style_BlockQuote] = [normalfont retain];
-	fonts[style_Input] = [normalfont retain];
-	fonts[style_User1] = [normalfont retain];
-	fonts[style_User2] = [normalfont retain];
+	/* The delegate prepareStyles method filled the array with autoreleased fonts. We retain them now. */
+	for (int ix=0; ix<style_NUMSTYLES; ix++) {
+		[fonts[ix] retain];
+	}
 	
 	CGSize size;
 	size = [@"W" sizeWithFont:fonts[style_Normal]];
@@ -85,12 +95,6 @@
 	size = [@"qld" sizeWithFont:fonts[style_Normal]];
 	if (charbox.height < size.height)
 		charbox.height = size.height;
-	NSLog(@"Measured family %@ (%.1f pt) to have charbox %@", family, fontsize, StringFromSize(charbox));
-	
-	margins.left = 6.0;
-	margins.top = 4.0;
-	margins.right = 6.0;
-	margins.bottom = 4.0;
 	
 	margintotal.width = margins.left + margins.right;
 	margintotal.height = margins.top + margins.bottom;

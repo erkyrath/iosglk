@@ -7,6 +7,12 @@
 #import <Foundation/Foundation.h>
 #include "glk.h"
 
+typedef struct FontVariants_struct {
+	UIFont *normal;
+	UIFont *italic;
+	UIFont *bold;
+} FontVariants;
+
 @interface StyleSet : NSObject {
 	UIFont **fonts; /* array[style_NUMSTYLES] of retained UIFonts */
 	CGSize charbox; /* maximum size of a single rendered character (normal style) */
@@ -19,6 +25,9 @@
 @property (nonatomic) UIEdgeInsets margins;
 @property (nonatomic) CGSize margintotal;
 
-- (void) setFontFamily:(NSString *)family size:(CGFloat)fontsize;
++ (StyleSet *) buildForWindowType:(glui32)wintype rock:(glui32)rock;
++ (FontVariants) fontVariantsForSize:(CGFloat)size family:(NSString *)first, ...;
+
+- (void) completeForWindowType:(glui32)wintype;
 
 @end

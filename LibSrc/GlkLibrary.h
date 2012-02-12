@@ -10,9 +10,11 @@
 
 @class GlkWindow;
 @class GlkStream;
+@protocol IosGlkLibDelegate;
 
 @interface GlkLibrary : NSObject {
 	NSString *gameid;
+	id <IosGlkLibDelegate> glkdelegate;
 	
 	NSMutableArray *windows; /* GlkWindow objects */
 	NSMutableArray *streams; /* GlkStream objects */
@@ -38,6 +40,7 @@
 }
 
 @property (nonatomic, retain) NSString *gameid;
+@property (nonatomic, assign) id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
 @property (nonatomic, retain) NSMutableArray *windows;
 @property (nonatomic, retain) NSMutableArray *streams;
 @property (nonatomic, retain) NSMutableArray *filerefs;

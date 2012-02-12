@@ -6,6 +6,7 @@
 
 #import "IosGlkAppDelegate.h"
 #import "IosGlkViewController.h"
+#import "IosGlkLibDelegate.h"
 
 #import "GlkFrameView.h"
 #import "GlkLibrary.h"
@@ -39,6 +40,10 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 	
 	self.library = [[[GlkLibrary alloc] init] autorelease];
 	self.glkapp = [[[GlkAppWrapper alloc] init] autorelease];
+	if (glkviewc.glkdelegate)
+		library.glkdelegate = glkviewc.glkdelegate;
+	else
+		library.glkdelegate = [DefaultGlkLibDelegate singleton];
 	
 	GlkFrameView *frameview = [glkviewc viewAsFrameView];
 	[library setMetrics:frameview.bounds];

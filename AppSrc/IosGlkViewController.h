@@ -7,10 +7,13 @@
 #import <UIKit/UIKit.h>
 
 @class GlkFrameView;
+@protocol IosGlkLibDelegate;
 
 @interface IosGlkViewController : UIViewController {
-
+	id <IosGlkLibDelegate> glkdelegate;
 }
+
+@property (nonatomic, assign) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
 
 + (IosGlkViewController *) singleton;
 

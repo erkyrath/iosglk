@@ -17,6 +17,7 @@
 @implementation GlkLibrary
 
 @synthesize gameid;
+@synthesize glkdelegate;
 @synthesize windows;
 @synthesize streams;
 @synthesize filerefs;
@@ -74,6 +75,7 @@ static GlkLibrary *singleton = nil;
 	if (singleton == self)
 		singleton = nil;
 	self.gameid = nil;
+	self.glkdelegate = nil;
 	self.windows = nil;
 	self.streams = nil;
 	self.filerefs = nil;

@@ -15,6 +15,8 @@
 
 @implementation IosGlkViewController
 
+@synthesize glkdelegate;
+
 + (IosGlkViewController *) singleton {
 	return [IosGlkAppDelegate singleton].glkviewc;
 }
