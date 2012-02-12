@@ -5,6 +5,7 @@
 */
 
 #import <UIKit/UIKit.h>
+#import "InputMenuView.h"
 
 @class GlkLibrary;
 @class GlkTagString;
@@ -26,6 +27,7 @@
 	NSMutableArray *commandhistory;
 
 	InputMenuView *menuview;
+	InputMenuMode inputmenumode;
 	/* The window whose text field the popup menu applies to */
 	NSNumber *menuwintag;
 }
@@ -45,6 +47,7 @@
 - (void) addToCommandHistory:(NSString *)str;
 - (void) postInputMenuForWindow:(NSNumber *)tag;
 - (void) removeInputMenu;
+- (void) setInputMenuMode:(InputMenuMode)mode;
 - (void) applyInputString:(NSString *)cmd replace:(BOOL)replace;
 
 @end

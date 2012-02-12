@@ -12,6 +12,7 @@
 
 @synthesize historymenu;
 @synthesize palettemenu;
+@synthesize flipbutton;
 @synthesize history;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect history:(NSArray *)historylist {
@@ -21,7 +22,10 @@
 		self.history = [NSArray arrayWithArray:historylist];
 		buttonrect = rect;
 		
-		//menuview.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5]; // debugging only
+		self.flipbutton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+		flipbutton.frame = buttonrect;
+		[self addSubview:flipbutton];
+		[flipbutton addTarget:self action:@selector(handleFlipButton:) forControlEvents:UIControlEventTouchUpInside];
 	}
 	return self;
 }
@@ -29,6 +33,7 @@
 - (void) dealloc {
 	self.historymenu = nil;
 	self.palettemenu = nil;
+	self.flipbutton = nil;
 	self.history = nil;
 	[super dealloc];
 }
@@ -86,6 +91,10 @@
 			historymenu.hidden = YES;
 		}
 	}
+}
+
+- (void) handleFlipButton:(id)sender {
+	[self.superviewAsFrameView setInputMenuMode:(mode==inputmenu_History)?inputmenu_Palette:inputmenu_History];
 }
 
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu {
@@ -203,6 +212,12 @@
 
 @synthesize labels;
 
+- (void) dealloc {
+	selection = nil;
+	self.labels = nil;
+	[super dealloc];
+}
+
 - (void) awakeFromNib {
 	[super awakeFromNib];
 	
@@ -217,12 +232,6 @@
 			[labels addObject:view];
 		}
 	}
-}
-
-- (void) dealloc {
-	selection = nil;
-	self.labels = nil;
-	[super dealloc];
 }
 
 - (UILabel *) labelAtPoint:(CGPoint)loc {

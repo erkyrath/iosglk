@@ -44,6 +44,8 @@
 	rootwintag = nil;
 	
 	self.commandhistory = [NSMutableArray arrayWithCapacity:MAX_HISTORY_LENGTH];
+	
+	inputmenumode = inputmenu_Palette;
 }
 
 - (void) dealloc {
@@ -246,7 +248,7 @@
 	if (!arr2.count)
 		return;
 	str = [arr2 componentsJoinedByString:@" "];
-	str = str.lowercaseString;
+	//str = str.lowercaseString;
 	
 	if (str.length < 2)
 		return;
@@ -272,7 +274,7 @@
 		CGRect rect = [winv.textfield rightViewRectForBounds:winv.textfield.bounds];
 		rect = [self convertRect:rect fromView:winv.textfield];
 		self.menuview = [[[InputMenuView alloc] initWithFrame:self.bounds buttonFrame:rect history:commandhistory] autorelease];
-		[menuview setMode:inputmenu_Palette];
+		[menuview setMode:inputmenumode];
 		[self addSubview:menuview];
 	}
 }
@@ -282,6 +284,12 @@
 		[menuview removeFromSuperview];
 		self.menuview = nil;
 	}
+}
+
+- (void) setInputMenuMode:(InputMenuMode)mode {
+	inputmenumode = mode;
+	if (menuview)
+		[menuview setMode:mode];
 }
 
 - (void) applyInputString:(NSString *)cmd replace:(BOOL)replace {

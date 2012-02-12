@@ -18,6 +18,7 @@ typedef enum InputMenuMode_enum {
 @interface InputMenuView : UIView {
 	HistoryMenuView *historymenu;
 	PaletteMenuView *palettemenu;
+	UIButton *flipbutton;
 	
 	InputMenuMode mode;
 	CGRect buttonrect;
@@ -26,6 +27,7 @@ typedef enum InputMenuMode_enum {
 
 @property (nonatomic, retain) IBOutlet HistoryMenuView *historymenu;
 @property (nonatomic, retain) IBOutlet PaletteMenuView *palettemenu;
+@property (nonatomic, retain) UIButton *flipbutton;
 @property (nonatomic, retain) NSArray *history;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect history:(NSArray *)historylist;
