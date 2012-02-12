@@ -30,7 +30,7 @@ typedef enum InputMenuMode_enum {
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect history:(NSArray *)historylist;
 - (void) setMode:(InputMenuMode)mode;
-- (void) acceptCommand:(NSString *)cmd;
+- (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu;
 
 @end
 

@@ -45,6 +45,7 @@
 - (void) addToCommandHistory:(NSString *)str;
 - (void) postInputMenuForWindow:(NSNumber *)tag;
 - (void) removeInputMenu;
+- (void) applyInputString:(NSString *)cmd replace:(BOOL)replace;
 
 @end
 

@@ -88,9 +88,11 @@
 	}
 }
 
-- (void) acceptCommand:(NSString *)cmd {
-	NSLog(@"### command '%@'", cmd);
-	[self.superviewAsFrameView removeInputMenu];
+- (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu {
+	[self.superviewAsFrameView applyInputString:cmd replace:replace];
+	
+	if (closemenu)
+		[self.superviewAsFrameView removeInputMenu];
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -186,7 +188,7 @@
 	if (selection >= 0 && selection < labels.count) {
 		UILabel *label = [labels objectAtIndex:selection];
 		InputMenuView *menuview = (InputMenuView *)self.superview;
-		[menuview acceptCommand:label.text];
+		[menuview acceptCommand:label.text replace:YES close:YES];
 	}
 }
 
@@ -262,8 +264,11 @@
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (selection) {
+		BOOL closemenu = (selection.tag == 0);
+		NSString *cmd = selection.text;
 		InputMenuView *menuview = (InputMenuView *)self.superview;
-		[menuview acceptCommand:selection.text];
+		[self selectLabel:nil];
+		[menuview acceptCommand:cmd replace:NO close:closemenu];
 	}
 }
 
