@@ -47,32 +47,21 @@
 	NSArray *fontnames = [UIFont fontNamesForFamilyName:family];
 	if (!fontnames || fontnames.count == 0)
 		[NSException raise:@"GlkException" format:@"no such font family: %@", family];
-		
-	/* This way of locating the bold and italic fonts in the family is ridiculous, of course. */
-	UIFont *normalfont = nil;
-	UIFont *boldfont = nil;
-	UIFont *italicfont = nil;
-	for (NSString *fontname in fontnames) {
-		BOOL isbold = NO;
-		BOOL isital = NO;
-		NSRange range;
-		range = [fontname rangeOfString:@"Bold"];
-		if (range.location != NSNotFound)
-			isbold = YES;
-		range = [fontname rangeOfString:@"Italic"];
-		if (range.location != NSNotFound)
-			isital = YES;
-		range = [fontname rangeOfString:@"Oblique"];
-		if (range.location != NSNotFound)
-			isital = YES;
-		if (!normalfont && !isbold && !isital)
-			normalfont = [UIFont fontWithName:fontname size:fontsize];
-		if (!boldfont && isbold && !isital)
-			boldfont = [UIFont fontWithName:fontname size:fontsize];
-		if (!italicfont && !isbold && isital)
-			italicfont = [UIFont fontWithName:fontname size:fontsize];
-	}
 	
+	UIFont *normalfont = [UIFont fontWithName:family size:fontsize];
+		
+	UIFont *boldfont = [UIFont fontWithName:[family stringByAppendingString:@"-Bold"] size:fontsize];
+	if (!boldfont)
+		boldfont = [UIFont fontWithName:[family stringByAppendingString:@"-Heavy"] size:fontsize];
+	if (!boldfont)
+		boldfont = normalfont;
+
+	UIFont *italicfont = [UIFont fontWithName:[family stringByAppendingString:@"-Italic"] size:fontsize];
+	if (!italicfont)
+		italicfont = [UIFont fontWithName:[family stringByAppendingString:@"-Oblique"] size:fontsize];
+	if (!italicfont)
+		italicfont = normalfont;
+
 	if (!normalfont || !boldfont || !italicfont)
 		[NSException raise:@"GlkException" format:@"font family lacks basic variants: %@", family];
 		
