@@ -535,8 +535,8 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 - (void) windowRearrange:(CGRect)box {
 	bbox = box;
 	
-	int newwidth = ((bbox.size.width-styleset.marginframe.size.width) / styleset.charbox.width);
-	int newheight = ((bbox.size.height-styleset.marginframe.size.height) / styleset.charbox.height);
+	int newwidth = ((bbox.size.width-styleset.margintotal.width) / styleset.charbox.width);
+	int newheight = ((bbox.size.height-styleset.margintotal.height) / styleset.charbox.height);
 	if (newwidth < 0)
 		newwidth = 0;
 	if (newheight < 0)

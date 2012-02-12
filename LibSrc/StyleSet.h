@@ -10,12 +10,14 @@
 @interface StyleSet : NSObject {
 	UIFont **fonts; /* array[style_NUMSTYLES] of retained UIFonts */
 	CGSize charbox; /* maximum size of a single rendered character (normal style) */
-	CGRect marginframe; /* abusing the concept of a CGRect -- read "width" as the total of left+right margins, and "x" as the left margin */
+	UIEdgeInsets margins; /* margin widths around the text */
+	CGSize margintotal; /* width = left+right; height = top+bottom */
 }
 
 @property (nonatomic, readonly) UIFont **fonts;
 @property (nonatomic) CGSize charbox;
-@property (nonatomic) CGRect marginframe;
+@property (nonatomic) UIEdgeInsets margins;
+@property (nonatomic) CGSize margintotal;
 
 - (void) setFontFamily:(NSString *)family size:(CGFloat)fontsize;
 

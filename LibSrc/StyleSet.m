@@ -12,14 +12,16 @@
 
 @synthesize fonts;
 @synthesize charbox;
-@synthesize marginframe;
+@synthesize margins;
+@synthesize margintotal;
 
 - (id) init {
 	self = [super init];
 	
 	if (self) {
 		charbox = CGSizeZero;
-		marginframe = CGRectZero;
+		margins = UIEdgeInsetsZero;
+		margintotal = CGSizeZero;
 		/* We have to malloc this buffer. I tried embedding it as an array of pointers in the StyleSet object, but ObjC threw a hissy-cow. */
 		fonts = malloc(sizeof(UIFont*) * style_NUMSTYLES);
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
@@ -85,10 +87,13 @@
 		charbox.height = size.height;
 	NSLog(@"Measured family %@ (%.1f pt) to have charbox %@", family, fontsize, StringFromSize(charbox));
 	
-	marginframe.origin.x = 6.0;
-	marginframe.origin.y = 4.0;
-	marginframe.size.width = 12.0;
-	marginframe.size.height = 8.0;
+	margins.left = 6.0;
+	margins.top = 4.0;
+	margins.right = 6.0;
+	margins.bottom = 4.0;
+	
+	margintotal.width = margins.left + margins.right;
+	margintotal.height = margins.top + margins.bottom;
 }
 
 

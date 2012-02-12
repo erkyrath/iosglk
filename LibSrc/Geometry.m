@@ -102,9 +102,9 @@
 		if (keystyleset) {
 			/* This really should depend on the type of the keywin also. Graphics windows are in pixels, etc. But we'll add that later. */
 			if (!vertical)
-				split = (size * keystyleset.charbox.height + keystyleset.marginframe.size.height);
+				split = (size * keystyleset.charbox.height + keystyleset.margintotal.height);
 			else
-				split = (size * keystyleset.charbox.width + keystyleset.marginframe.size.width);
+				split = (size * keystyleset.charbox.width + keystyleset.margintotal.width);
 		}
 		split = ceilf(split);
 	}

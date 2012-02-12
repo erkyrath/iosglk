@@ -42,7 +42,7 @@
 		
 	NSLog(@"STV: setTotalWidth %.01f", val);
 	totalwidth = val;
-	wrapwidth = val - styleset.marginframe.size.width;
+	wrapwidth = val - styleset.margintotal.width;
 	[self layoutFromLine:0];
 }
 
@@ -58,7 +58,7 @@
 /* The total height of the window, including rendered text and margins. 
 */
 - (CGFloat) totalHeight {
-	return [self textHeight] + styleset.marginframe.size.height;
+	return [self textHeight] + styleset.margintotal.height;
 }
 
 /* Add the given lines (as taken from the GlkWindowBuffer) to the contents of the view. 
@@ -126,7 +126,7 @@
 	UIFont **fonts = styleset.fonts;
 	CGFloat normalpointsize = styleset.charbox.height;
 	
-	CGFloat ypos = styleset.marginframe.origin.y + [self textHeight];
+	CGFloat ypos = styleset.margins.top + [self textHeight];
 	
 	for (int snum = fromline; snum < lines.count; snum++) {
 		GlkStyledLine *sln = [lines objectAtIndex:snum];
@@ -251,7 +251,7 @@
 	}
 	else {
 		GlkVisualLine *vln = [vlines lastObject];
-		CGFloat ptx = styleset.marginframe.origin.x;
+		CGFloat ptx = styleset.margins.left;
 		for (GlkVisualString *vwd in vln.arr) {
 			UIFont *font = fonts[vwd.style];
 			CGSize wordsize = [vwd.str sizeWithFont:font];
@@ -289,7 +289,7 @@
 			continue;
 		CGPoint pt;
 		pt.y = vln.ypos;
-		pt.x = styleset.marginframe.origin.x;
+		pt.x = styleset.margins.left;
 		for (GlkVisualString *vwd in vln.arr) {
 			UIFont *font = fonts[vwd.style];
 			CGSize wordsize = [vwd.str drawAtPoint:pt withFont:font];

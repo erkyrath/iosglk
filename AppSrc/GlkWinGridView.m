@@ -50,7 +50,9 @@
 	
 	UIFont **fonts = styleset.fonts;
 	CGSize charbox = styleset.charbox;
-	CGPoint marginoffset = styleset.marginframe.origin;
+	CGPoint marginoffset;
+	marginoffset.x = styleset.margins.left;
+	marginoffset.y = styleset.margins.top;
 	
 	int jx = 0;
 	for (GlkStyledLine *sln in lines) {
@@ -116,8 +118,10 @@
 	GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
 	
 	CGSize charbox = styleset.charbox;
-	CGPoint marginoffset = styleset.marginframe.origin;
 	CGRect box;
+	CGPoint marginoffset;
+	marginoffset.x = styleset.margins.left;
+	marginoffset.y = styleset.margins.top;
 	
 	box.origin.x = marginoffset.x + gridwin.curx * charbox.width;
 	if (box.origin.x >= self.bounds.size.width * 0.75)
