@@ -27,6 +27,12 @@
 	return styles;
 }
 
+/* Given a list of font names, try to locate a set of normal/bold/italic fonts that match.
+ 
+	This will use the first listed font which is available. The list of font names must be nil-terminated.
+ 
+	This returns a struct containing non-retained (autoreleased) UIFont objects.
+ */
 + (FontVariants) fontVariantsForSize:(CGFloat)size name:(NSString *)first, ... {
 	FontVariants variants;
 	variants.normal = nil;
