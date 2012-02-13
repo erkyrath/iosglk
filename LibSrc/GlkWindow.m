@@ -40,12 +40,7 @@
 @synthesize styleset;
 @synthesize bbox;
 
-static NSCharacterSet *newlineCharSet; /* retained forever */
-
-+ (void) initialize {
-	/* We need this for breaking up printing strings, so we set it up at class init time. I think this shows up as a memory leak in Apple's tools -- sorry about that. */
-	newlineCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"\n"] retain];
-}
+NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 
 /* Create a window with a given type. (But not Pair windows -- those use a different path.) This is invoked by glk_window_open().
 */
@@ -76,6 +71,11 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 /* GlkWindow designated initializer. */
 - (id) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super init];
+	
+	if (!_GlkWindow_newlineCharSet) {
+		/* We need this for breaking up printing strings, so we set it up at init time. I think this shows up as a memory leak in Apple's tools -- sorry about that. */
+		_GlkWindow_newlineCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"\n"] retain];
+	}
 	
 	if (self) {
 		self.library = [GlkLibrary singleton];
@@ -451,7 +451,7 @@ static NSCharacterSet *newlineCharSet; /* retained forever */
 /* Break the string up into GlkStyledLines. When the GlkWinBufferView updates, it will pluck these out and make use of them.
 */
 - (void) putString:(NSString *)str {
-	NSArray *linearr = [str componentsSeparatedByCharactersInSet:newlineCharSet];
+	NSArray *linearr = [str componentsSeparatedByCharactersInSet:_GlkWindow_newlineCharSet];
 	BOOL isfirst = YES;
 	for (NSString *ln in linearr) {
 		if (isfirst) {

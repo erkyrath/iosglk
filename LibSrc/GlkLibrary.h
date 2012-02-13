@@ -40,7 +40,7 @@
 }
 
 @property (nonatomic, retain) NSString *gameid;
-@property (nonatomic, assign) id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
+@property (nonatomic, retain) id <IosGlkLibDelegate> glkdelegate;
 @property (nonatomic, retain) NSMutableArray *windows;
 @property (nonatomic, retain) NSMutableArray *streams;
 @property (nonatomic, retain) NSMutableArray *filerefs;

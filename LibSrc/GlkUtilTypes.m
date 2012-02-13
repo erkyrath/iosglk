@@ -111,8 +111,8 @@
 	[super dealloc];
 }
 
-
 @end
+
 
 @implementation GlkVisualString
 
@@ -130,7 +130,13 @@
 	return self;
 }
 
+- (void) dealloc {
+	self.str = nil;
+	[super dealloc];
+}
+
 @end
+
 
 @implementation GlkGridLine
 /* GlkGridLine: Represents one line of a text grid. This contains nasty C arrays, because they're easier. */

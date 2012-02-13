@@ -62,7 +62,6 @@
 @property (nonatomic, retain) StyleSet *styleset;
 @property (nonatomic, readonly) CGRect bbox;
 
-+ (void) initialize;
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
 
 - (id) initWithType:(glui32)type rock:(glui32)rock;
