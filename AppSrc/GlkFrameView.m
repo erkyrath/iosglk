@@ -49,6 +49,7 @@
 }
 
 - (void) dealloc {
+	NSLog(@"GlkFrameView dealloc %x", (unsigned int)self);
 	self.windowviews = nil;
 	self.wingeometries = nil;
 	self.rootwintag = nil;

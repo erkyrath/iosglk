@@ -85,7 +85,7 @@
 - (void) handleMenuButton:(id)sender {
 	if (singlechar)
 		return;
-	GlkFrameView *frameview = [IosGlkViewController singleton].viewAsFrameView;
+	GlkFrameView *frameview = [IosGlkViewController singleton].frameview;
 	[frameview postInputMenuForWindow:wintag];
 }
 

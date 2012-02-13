@@ -45,8 +45,8 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 	else
 		library.glkdelegate = [DefaultGlkLibDelegate singleton];
 	
-	GlkFrameView *frameview = [glkviewc viewAsFrameView];
-	[library setMetrics:frameview.bounds];
+	[glkviewc loadView]; // needed or things go badly in the VM thread
+	[library setMetrics:glkviewc.frameview.bounds];
 
 	NSLog(@"AppDelegate finished launching");
 	

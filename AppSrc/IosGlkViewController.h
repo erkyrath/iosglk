@@ -11,13 +11,14 @@
 
 @interface IosGlkViewController : UIViewController {
 	id <IosGlkLibDelegate> glkdelegate;
+	GlkFrameView *frameview;
 }
 
 @property (nonatomic, assign) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
+@property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
 
 + (IosGlkViewController *) singleton;
 
-- (GlkFrameView *) viewAsFrameView;
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;
 
