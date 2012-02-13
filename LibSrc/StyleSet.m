@@ -27,13 +27,43 @@
 	return styles;
 }
 
-+ (FontVariants) fontVariantsForSize:(CGFloat)size family:(NSString *)first, ... {
++ (FontVariants) fontVariantsForSize:(CGFloat)size name:(NSString *)first, ... {
 	FontVariants variants;
 	variants.normal = nil;
 	variants.italic = nil;
 	variants.bold = nil;
 	
-	//###
+	va_list arglist;
+    va_start(arglist, first);
+	for (NSString *family = first; family; family = va_arg(arglist, NSString *)) {
+		UIFont *normalfont = [UIFont fontWithName:family size:size];
+		if (!normalfont)
+			continue;
+		
+		UIFont *italicfont = [UIFont fontWithName:[family stringByAppendingString:@"-Italic"] size:size];
+		if (!italicfont)
+			italicfont = [UIFont fontWithName:[family stringByAppendingString:@"-Oblique"] size:size];
+		if (!italicfont)
+			italicfont = normalfont;
+		
+		UIFont *boldfont = [UIFont fontWithName:[family stringByAppendingString:@"-Bold"] size:size];
+		if (!boldfont)
+			boldfont = [UIFont fontWithName:[family stringByAppendingString:@"-Heavy"] size:size];
+		if (!boldfont)
+			boldfont = normalfont;
+		
+		variants.normal = normalfont;
+		variants.italic = italicfont;
+		variants.bold = boldfont;
+		break;
+	}
+	va_end(arglist);
+	
+	if (!variants.normal) {
+		variants.normal = [UIFont systemFontOfSize:size];
+		variants.italic = [UIFont italicSystemFontOfSize:size];
+		variants.bold = [UIFont boldSystemFontOfSize:size];
+	}
 	
 	return variants;
 }

@@ -21,7 +21,7 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	if (wintype == wintype_TextGrid) {
 		styles.margins = UIEdgeInsetsMake(4, 6, 4, 6);
 		
-		FontVariants variants = [StyleSet fontVariantsForSize:14 family:@"Courier", nil];
+		FontVariants variants = [StyleSet fontVariantsForSize:14 name:@"Courier", nil];
 		styles.fonts[style_Normal] = variants.normal;
 		styles.fonts[style_Emphasized] = variants.italic;
 		styles.fonts[style_Preformatted] = variants.normal;
@@ -34,7 +34,7 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	else {
 		styles.margins = UIEdgeInsetsMake(4, 6, 4, 6);
 		
-		FontVariants variants = [StyleSet fontVariantsForSize:14 family:@"Helvetica Neue", @"Helvetica", nil];
+		FontVariants variants = [StyleSet fontVariantsForSize:14 name:@"Helvetica Neue", @"Helvetica", nil];
 		styles.fonts[style_Normal] = variants.normal;
 		styles.fonts[style_Emphasized] = variants.italic;
 		styles.fonts[style_Preformatted] = [UIFont fontWithName:@"Courier" size:14];

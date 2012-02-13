@@ -26,7 +26,7 @@ typedef struct FontVariants_struct {
 @property (nonatomic) CGSize margintotal;
 
 + (StyleSet *) buildForWindowType:(glui32)wintype rock:(glui32)rock;
-+ (FontVariants) fontVariantsForSize:(CGFloat)size family:(NSString *)first, ...;
++ (FontVariants) fontVariantsForSize:(CGFloat)size name:(NSString *)first, ...;
 
 - (void) completeForWindowType:(glui32)wintype;
 
