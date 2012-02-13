@@ -50,5 +50,9 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return CGSizeMake(4, 4);
 }
 
+- (CGRect) adjustFrame:(CGRect)rect {
+	return rect;
+}
+
 @end
 
