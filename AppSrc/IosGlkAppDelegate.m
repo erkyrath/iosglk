@@ -30,7 +30,7 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 
 
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
-	
+	NSLog(@"AppDelegate finished launching");	
 	// Override point for customization after application launch.
 	singleton = self;
 
@@ -46,9 +46,17 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 		library.glkdelegate = [DefaultGlkLibDelegate singleton];
 	
 	[glkviewc loadView]; // needed or things go badly in the VM thread
+	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
+											 selector:@selector(keyboardWillBeShown:)
+												 name:UIKeyboardWillShowNotification object:nil];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
+											 selector:@selector(keyboardWillBeHidden:)
+												 name:UIKeyboardWillHideNotification object:nil];
+	
 	[library setMetrics:glkviewc.frameview.bounds];
 
-	NSLog(@"AppDelegate finished launching");
+	NSLog(@"AppDelegate launching app thread");
 	
 	[glkapp launchAppThread];
 	return YES;

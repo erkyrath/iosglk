@@ -36,20 +36,6 @@
 
 
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void) viewDidLoad {
-	[super viewDidLoad];
-	NSLog(@"IosGlkViewController viewDidLoad");
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-		selector:@selector(keyboardWillBeShown:)
-		name:UIKeyboardWillShowNotification object:nil];
-
-	[[NSNotificationCenter defaultCenter] addObserver:self
-		selector:@selector(keyboardWillBeHidden:)
-		name:UIKeyboardWillHideNotification object:nil];
-}
-
 - (void) dealloc {
 	NSLog(@"IosGlkViewController dealloc %x", (unsigned int)self);
 	[super dealloc];
