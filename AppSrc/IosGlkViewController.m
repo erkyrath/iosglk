@@ -22,20 +22,6 @@
 	return [IosGlkAppDelegate singleton].glkviewc;
 }
 
-/*
-// The designated initializer. Override to perform setup that is required before the view is loaded.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-	if (self) {
-		// Custom initialization
-	}
-	return self;
-}
-*/
-
-
-
-
 - (void) dealloc {
 	NSLog(@"IosGlkViewController dealloc %x", (unsigned int)self);
 	[super dealloc];
