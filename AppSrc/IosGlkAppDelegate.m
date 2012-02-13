@@ -37,7 +37,9 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 	// Add the view controller's view to the window and display.
 	[self.window addSubview:rootviewc.view];
 	[self.window makeKeyAndVisible];
-	
+
+	NSLog(@"AppDelegate loaded root view controller");
+
 	self.library = [[[GlkLibrary alloc] init] autorelease];
 	self.glkapp = [[[GlkAppWrapper alloc] init] autorelease];
 	if (glkviewc.glkdelegate)
@@ -45,7 +47,10 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 	else
 		library.glkdelegate = [DefaultGlkLibDelegate singleton];
 	
-	[glkviewc loadView]; // needed or things go badly in the VM thread
+	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view, and then discarding the value -- *that* confuses Xcode's static analyzer, but I don't care. */
+	UIView *view = glkviewc.view;
+	view = nil;
+	
 	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
 											 selector:@selector(keyboardWillBeShown:)
 												 name:UIKeyboardWillShowNotification object:nil];
