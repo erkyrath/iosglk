@@ -34,6 +34,24 @@
 @synthesize menuview;
 @synthesize menuwintag;
 
+- (id) initWithCoder:(NSCoder *)decoder
+{
+	self = [super initWithCoder:decoder];
+	if (self) {
+		NSLog(@"GlkFrameView allocated");
+		keyboardHeight = 0.0;
+		self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
+		self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
+		rootwintag = nil;
+		
+		self.commandhistory = [NSMutableArray arrayWithCapacity:MAX_HISTORY_LENGTH];
+		
+		inputmenumode = inputmenu_Palette;
+	}
+	return self;
+}
+
+/*###
 - (void) awakeFromNib {
 	[super awakeFromNib];
 	NSLog(@"GlkFrameView awakened, bounds %@", StringFromRect(self.bounds));
@@ -47,6 +65,7 @@
 	
 	inputmenumode = inputmenu_Palette;
 }
+ ###*/
 
 - (void) dealloc {
 	NSLog(@"GlkFrameView dealloc %x", (unsigned int)self);
