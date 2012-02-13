@@ -65,7 +65,7 @@
 	/* UIKeyboardFrameBeginUserInfoKey is only available in iOS 3.2 or later. Note the funny idiom for testing the presence of a weak-linked symbol. */
 	if (&UIKeyboardFrameBeginUserInfoKey) {
 		CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-		rect = [self.view convertRect:rect fromView:nil];
+		rect = [self.viewAsFrameView convertRect:rect fromView:nil];
 		size = rect.size;
 	}
 	else {

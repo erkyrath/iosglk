@@ -46,5 +46,9 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	}
 }
 
+- (CGSize) interWindowSpacing {
+	return CGSizeMake(4, 4);
+}
+
 @end
 

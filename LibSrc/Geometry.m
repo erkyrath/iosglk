@@ -15,6 +15,7 @@
 
 #import "Geometry.h"
 #import "GlkLibrary.h"
+#import "IosGlkLibDelegate.h"
 #import "StyleSet.h"
 
 @implementation Geometry
@@ -78,17 +79,18 @@
 - (void) computeDivision:(CGRect)bbox for1:(CGRect *)boxref1 for2:(CGRect *)boxref2 {
 	CGFloat min, max, diff;
 	CGFloat split;
-	CGFloat splitwid;	
+	CGFloat splitwid;
+	CGSize windowspacing = [GlkLibrary singleton].glkdelegate.interWindowSpacing;
 		
 	if (vertical) {
 		min = bbox.origin.x;
 		max = min + bbox.size.width;
-		splitwid = 4; //content_metrics.inspacingx;
+		splitwid = windowspacing.width;
 	}
 	else {
 		min = bbox.origin.y;
 		max = min + bbox.size.height;
-		splitwid = 4; //content_metrics.inspacingy;
+		splitwid = windowspacing.height;
 	}
 	if (!hasborder)
 		splitwid = 0;
