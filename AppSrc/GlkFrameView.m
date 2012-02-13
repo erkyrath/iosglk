@@ -39,7 +39,7 @@
 	self = [super initWithCoder:decoder];
 	if (self) {
 		NSLog(@"GlkFrameView allocated");
-		keyboardHeight = 0.0;
+		keyboardBox = CGRectZero;
 		self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 		self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
 		rootwintag = nil;
@@ -62,12 +62,12 @@
 	[super dealloc];
 }
 
-- (CGFloat) keyboardHeight {
-	return keyboardHeight;
+- (CGRect) keyboardBox {
+	return keyboardBox;
 }
 
-- (void) setKeyboardHeight:(CGFloat)val {
-	keyboardHeight = val;
+- (void) setKeyboardBox:(CGRect)val {
+	keyboardBox = val;
 	//NSLog(@"### setKeyboardHeight calling setNeedsLayout");
 	[self setNeedsLayoutPlusSubviews];
 }
@@ -80,12 +80,19 @@
 }
 
 - (void) layoutSubviews {
-	NSLog(@"frameview layoutSubviews to %@ (minus %.1f)", StringFromRect(self.bounds), keyboardHeight);
+	NSLog(@"frameview layoutSubviews to %@ (minus %@)", StringFromRect(self.bounds), StringFromSize(keyboardBox.size));
 	
 	CGRect box = self.bounds;
-	box.size.height -= keyboardHeight;
-	if (box.size.height < 0)
-		box.size.height = 0;
+	//### apply bounds-shaving
+	
+	if (keyboardBox.size.width > 0 && keyboardBox.size.height > 0) {
+		CGFloat bottom = box.origin.y + box.size.height;
+		CGRect rect = [self convertRect:keyboardBox fromView:self.window];
+		if (rect.origin.y < bottom) {
+			bottom = rect.origin.y;
+			box.size.height = bottom - box.origin.y;
+		}
+	}
 	
 	/* Only go through the layout mess if the view size really changed. */
 	if (CGRectEqualToRect(cachedGlkBox, box))

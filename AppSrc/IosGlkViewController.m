@@ -28,28 +28,27 @@
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
-	/* This setup assumes that the GlkFrameView extends to the bottom of the display, so the entire keyboard height needs to be subtracted from it. A more flexible plan would be to compare UIKeyboardFrameEndUserInfoKey's top edge with the bottom edge of the view. */
 	NSDictionary *info = [notification userInfo];
-	CGSize size = CGSizeZero;
+	CGRect rect = CGRectZero;
 	/* UIKeyboardFrameBeginUserInfoKey is only available in iOS 3.2 or later. Note the funny idiom for testing the presence of a weak-linked symbol. */
-	if (&UIKeyboardFrameBeginUserInfoKey) {
-		CGRect rect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-		rect = [self.frameview convertRect:rect fromView:nil];
-		size = rect.size;
+	if (&UIKeyboardFrameEndUserInfoKey) {
+		rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+		rect = [self.frameview.window convertRect:rect fromWindow:nil];
 	}
 	else {
 		/* iOS 3.1.3... */
-		CGRect rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
-		size = rect.size;
+		rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
 	}
-	NSLog(@"Keyboard will be shown, size %@", StringFromSize(size));
+	NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
 	
-	[[self frameview] setKeyboardHeight:size.height];
+	/* This rect is in window coordinates. */
+	
+	[[self frameview] setKeyboardBox:rect];
 }
 
 - (void) keyboardWillBeHidden:(NSNotification*)notification {
 	NSLog(@"Keyboard will be hidden");
-	[frameview setKeyboardHeight:0];
+	[frameview setKeyboardBox:CGRectZero];
 }
 
 - (void) hideKeyboard {

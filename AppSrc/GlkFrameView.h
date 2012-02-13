@@ -13,7 +13,7 @@
 
 @interface GlkFrameView : UIView {
 	/* How much of the view bounds to reserve for the keyboard. */
-	CGFloat keyboardHeight;
+	CGRect keyboardBox;
 	/* The current size of the bounds minus keyboard. */
 	CGRect cachedGlkBox;
 	
@@ -34,7 +34,7 @@
 
 @property (nonatomic, retain) NSMutableDictionary *windowviews;
 @property (nonatomic, retain) NSMutableDictionary *wingeometries;
-@property (nonatomic) CGFloat keyboardHeight;
+@property (nonatomic) CGRect keyboardBox;
 @property (nonatomic, retain) NSNumber *rootwintag;
 @property (nonatomic, retain) NSMutableArray *commandhistory;
 @property (nonatomic, retain) UIView *menuview;
