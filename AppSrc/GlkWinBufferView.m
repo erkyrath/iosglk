@@ -10,6 +10,7 @@
 
 #import "CmdTextField.h"
 #import "StyledTextView.h"
+#import "StyleSet.h"
 #import "GlkUtilities.h"
 
 @implementation GlkWinBufferView
@@ -27,6 +28,7 @@
 		scrollview.alwaysBounceVertical = YES;
 		scrollview.contentSize = self.bounds.size;
 		textview.styleset = win.styleset;
+		textview.backgroundColor = win.styleset.backgroundcolor;
 		[scrollview addSubview:textview];
 		[self addSubview:scrollview];
 	}

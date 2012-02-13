@@ -41,7 +41,7 @@
 	self.delegate = winv;
 	singlechar = singleval;
 	
-	self.backgroundColor = [UIColor whiteColor];
+	self.backgroundColor = winv.backgroundColor;
 	self.font = win.styleset.fonts[style_Input];
 	//self.borderStyle = UITextBorderStyleBezel;
 	self.autocapitalizationType = UITextAutocapitalizationTypeNone;

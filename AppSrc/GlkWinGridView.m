@@ -22,6 +22,7 @@
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:8];
 		self.styleset = win.styleset;
+		self.backgroundColor = win.styleset.backgroundcolor;
 		
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
 		self.contentMode = UIViewContentModeRedraw;
@@ -43,8 +44,8 @@
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"GridView: drawRect");
 	CGContextRef gc = UIGraphicsGetCurrentContext();
-	CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
-	CGContextFillRect(gc, rect);
+	//CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
+	//CGContextFillRect(gc, rect);
 	
 	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
 	

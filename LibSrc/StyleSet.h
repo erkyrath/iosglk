@@ -16,12 +16,14 @@ typedef struct FontVariants_struct {
 @interface StyleSet : NSObject {
 	UIFont **fonts; /* array[style_NUMSTYLES] of retained UIFonts */
 	CGSize charbox; /* maximum size of a single rendered character (normal style) */
+	UIColor *backgroundcolor; /* background color for window */
 	UIEdgeInsets margins; /* margin widths around the text */
 	CGSize margintotal; /* width = left+right; height = top+bottom */
 }
 
 @property (nonatomic, readonly) UIFont **fonts;
 @property (nonatomic) CGSize charbox;
+@property (nonatomic, retain) UIColor *backgroundcolor;
 @property (nonatomic) UIEdgeInsets margins;
 @property (nonatomic) CGSize margintotal;
 

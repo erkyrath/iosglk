@@ -274,8 +274,8 @@
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"StyledTextView: drawRect %@ (bounds are %@)", StringFromRect(rect), StringFromRect(self.bounds));
 	CGContextRef gc = UIGraphicsGetCurrentContext();
-	CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
-	CGContextFillRect(gc, rect);
+	//CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
+	//CGContextFillRect(gc, rect);
 
 	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
 	

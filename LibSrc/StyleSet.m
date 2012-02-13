@@ -14,6 +14,7 @@
 
 @synthesize fonts;
 @synthesize charbox;
+@synthesize backgroundcolor;
 @synthesize margins;
 @synthesize margintotal;
 
@@ -81,6 +82,7 @@
 		charbox = CGSizeZero;
 		margins = UIEdgeInsetsZero;
 		margintotal = CGSizeZero;
+		self.backgroundcolor = [UIColor whiteColor];
 		/* We have to malloc this buffer. I tried embedding it as an array of pointers in the StyleSet object, but ObjC threw a hissy-cow. */
 		fonts = malloc(sizeof(UIFont*) * style_NUMSTYLES);
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
@@ -99,6 +101,7 @@
 	}
 	free(fonts);
 	fonts = nil;
+	self.backgroundcolor = nil;
 	[super dealloc];
 }
 
