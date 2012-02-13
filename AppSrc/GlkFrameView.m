@@ -87,7 +87,7 @@
 	
 	if (keyboardBox.size.width > 0 && keyboardBox.size.height > 0) {
 		CGFloat bottom = box.origin.y + box.size.height;
-		CGRect rect = [self convertRect:keyboardBox fromView:self.window];
+		CGRect rect = [self convertRect:keyboardBox fromView:[IosGlkViewController singleton].view];
 		if (rect.origin.y < bottom) {
 			bottom = rect.origin.y;
 			box.size.height = bottom - box.origin.y;

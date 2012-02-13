@@ -30,18 +30,21 @@
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
 	CGRect rect = CGRectZero;
-	/* UIKeyboardFrameBeginUserInfoKey is only available in iOS 3.2 or later. Note the funny idiom for testing the presence of a weak-linked symbol. */
+	/* UIKeyboardFrameEndUserInfoKey is only available in iOS 3.2 or later. Note the funny idiom for testing the presence of a weak-linked symbol. */
 	if (&UIKeyboardFrameEndUserInfoKey) {
 		rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-		rect = [self.frameview.window convertRect:rect fromWindow:nil];
+		rect = [self.view.window convertRect:rect fromWindow:nil];
+		rect = [self.view convertRect:rect fromView:self.view.window];
 	}
 	else {
 		/* iOS 3.1.3... */
 		rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
+		rect.origin.x = 0;
+		rect.origin.y = self.view.bounds.size.height - rect.size.height;
 	}
-	NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
+	NSLog(@"Keyboard will be shown, box %@ (root view coords)", StringFromRect(rect));
 	
-	/* This rect is in window coordinates. */
+	/* This rect is in root view coordinates. */
 	
 	[[self frameview] setKeyboardBox:rect];
 }
