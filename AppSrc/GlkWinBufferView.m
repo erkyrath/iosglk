@@ -23,12 +23,10 @@
 	if (self) {
 		lastLayoutBounds = CGRectZero;
 		self.scrollview = [[[UIScrollView alloc] initWithFrame:self.bounds] autorelease];
-		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds] autorelease];
+		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:win.styleset] autorelease];
 		scrollview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		scrollview.alwaysBounceVertical = YES;
 		scrollview.contentSize = self.bounds.size;
-		textview.styleset = win.styleset;
-		textview.backgroundColor = win.styleset.backgroundcolor;
 		[scrollview addSubview:textview];
 		[self addSubview:scrollview];
 	}

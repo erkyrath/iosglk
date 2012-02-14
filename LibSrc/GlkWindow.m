@@ -538,7 +538,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	width = newwidth;
 	height = newheight;
 	
-	NSLog(@"grid window now %dx%d", width, height);
+	//NSLog(@"grid window now %dx%d", width, height);
 	
 	while (lines.count > height)
 		[lines removeLastObject];

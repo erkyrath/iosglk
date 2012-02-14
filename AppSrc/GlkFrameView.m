@@ -197,7 +197,7 @@
 	
 	/* If the window geometry has changed (windows created, deleted, or arrangement-set) then rebuild the geometry cache. */
 	if (library.geometrychanged) {
-		NSLog(@"Recaching window geometries");
+		//NSLog(@"Recaching window geometries");
 		library.geometrychanged = NO;
 		if (library.rootwin)
 			self.rootwintag = library.rootwin.tag;

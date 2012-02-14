@@ -15,14 +15,18 @@
 @synthesize vlines;
 @synthesize styleset;
 
-- (id) initWithFrame:(CGRect)frame {
+- (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval {
 	self = [super initWithFrame:frame];
 	if (self) {
-		wrapwidth = self.bounds.size.width;
 		self.lines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
-		styleset = nil;
-		
+		self.styleset = stylesval;
+
+		totalwidth = self.bounds.size.width;
+		wrapwidth = totalwidth - styleset.margintotal.width;
+
+		self.backgroundColor = styleset.backgroundcolor;
+
 		/* We don't try set the contentMode, because this thing isn't really capable of smart resizing-with-partial-redrawing. Instead, both of the paths that resize the view (updateFromWindowState and layoutSubviews) cause a complete redraw. */
 		//self.contentMode = UIViewContentModeRedraw;
 	}
@@ -37,12 +41,13 @@
 }
 
 - (void) setTotalWidth:(CGFloat)val {
-	if (totalwidth == val)
+	CGFloat newwrap = val - styleset.margintotal.width;
+	if (totalwidth == val && wrapwidth == newwrap)
 		return;
 		
 	NSLog(@"STV: setTotalWidth %.01f", val);
 	totalwidth = val;
-	wrapwidth = val - styleset.margintotal.width;
+	wrapwidth = newwrap;
 	[self layoutFromLine:0];
 }
 

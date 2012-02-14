@@ -23,6 +23,7 @@
 @property (nonatomic, retain) NSMutableArray *vlines;
 @property (nonatomic, retain) StyleSet *styleset;
 
+- (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
 - (CGFloat) textHeight;
 - (CGFloat) totalHeight;
 - (void) setTotalWidth:(CGFloat)totalwidth;

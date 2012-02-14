@@ -117,7 +117,7 @@ static GlkAppWrapper *singleton = nil;
 		[NSException raise:@"GlkException" format:@"selectEvent called with wrong special value"];
 	
 	[iowaitcond lock];
-	NSLog(@"VM thread glk_select after %lf (event %x, special %x)", [NSDate timeIntervalSinceReferenceDate]-lastwaittime, (unsigned int)event, (unsigned int)special);
+	//NSLog(@"VM thread glk_select after %lf (event %x, special %x)", [NSDate timeIntervalSinceReferenceDate]-lastwaittime, (unsigned int)event, (unsigned int)special);
 	
 	if (event) {
 		bzero(event, sizeof(event_t));
