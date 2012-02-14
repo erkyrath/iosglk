@@ -27,6 +27,10 @@
 	[super dealloc];
 }
 
+- (void) didFinishLaunching {
+	/* Subclasses may override this */
+}
+
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
 	CGRect rect = CGRectZero;

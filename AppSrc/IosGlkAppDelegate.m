@@ -59,7 +59,10 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 											 selector:@selector(keyboardWillBeHidden:)
 												 name:UIKeyboardWillHideNotification object:nil];
 	
-	[library setMetrics:glkviewc.frameview.bounds];
+	[glkviewc didFinishLaunching];
+	
+	CGRect box = [glkviewc.glkdelegate adjustFrame:glkviewc.frameview.bounds];
+	[library setMetrics:box];
 
 	NSLog(@"AppDelegate launching app thread");
 	

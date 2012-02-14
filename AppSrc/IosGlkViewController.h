@@ -19,6 +19,7 @@
 
 + (IosGlkViewController *) singleton;
 
+- (void) didFinishLaunching;
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;
 
