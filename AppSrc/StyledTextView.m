@@ -78,6 +78,7 @@
 			[lines removeAllObjects];
 			[vlines removeAllObjects];
 			lineslaidout = 0;
+			continue;
 		}
 		
 		if (sln.status == linestat_Continue && lines.count > 0) {
@@ -98,7 +99,7 @@
 /* Do the work of laying out the text. Start with line number fromline (in the lines array). All vlines from that point on are discarded and re-laid-out.
 */
 - (void) layoutFromLine:(int)fromline {
-	if (wrapwidth <= styleset.charbox.width) {
+	if (wrapwidth <= 4*styleset.charbox.width) {
 		/* This isn't going to work out. */
 		//NSLog(@"STV: too narrow; refusing layout.");
 		[vlines removeAllObjects];

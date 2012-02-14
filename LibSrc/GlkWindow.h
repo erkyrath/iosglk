@@ -86,7 +86,7 @@
 
 
 @interface GlkWindowBuffer : GlkWindow {
-	NSMutableArray *updatetext; /* array of GlkStyledLine */
+	NSMutableArray *updatetext; /* array of GlkStyledLine (accumulated lines for the next update only) */
 }
 
 @property (nonatomic, retain) NSMutableArray *updatetext;
@@ -98,7 +98,7 @@
 
 @interface GlkWindowGrid : GlkWindow {
 	int width, height;
-	NSMutableArray *lines; /* array of GlkGridLine */
+	NSMutableArray *lines; /* array of GlkGridLine (length is self.height) */
 	
 	int curx, cury; /* the window cursor position */
 }

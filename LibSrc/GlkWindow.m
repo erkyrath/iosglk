@@ -490,7 +490,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (void) clearWindow {
-	//####
+	//#### Drop all updatetext lines, then add one with linestat_ClearPage.
 }
 
 @end

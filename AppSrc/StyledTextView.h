@@ -16,7 +16,7 @@
 	StyleSet *styleset;
 	
 	NSMutableArray *lines; /* Array of GlkStyledLine -- lines (paragraphs) of text */
-	NSMutableArray *vlines; /* Array of GlkVisualLine -- the wrapped lines with positional info */
+	NSMutableArray *vlines; /* Array of GlkVisualLine -- the wrapped lines with positional info (there may be several vlines per line) */
 }
 
 @property (nonatomic, retain) NSMutableArray *lines;
