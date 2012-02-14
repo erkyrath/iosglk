@@ -81,12 +81,15 @@
 }
 
 - (void) layoutSubviews {
-	NSLog(@"frameview layoutSubviews to %@ (minus %@)", StringFromRect(self.bounds), StringFromSize(keyboardBox.size));
+	NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardBox.size));
 	
 	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 	
 	CGRect box = self.bounds;
-	box = [glkviewc.glkdelegate adjustFrame:box];
+	
+	/* Due to annoying startup inconsistencies, layoutSubviews can be called before the glkdelegate is set. If so, skip this step. */
+	if (glkviewc.glkdelegate)
+		box = [glkviewc.glkdelegate adjustFrame:box];
 	
 	if (keyboardBox.size.width > 0 && keyboardBox.size.height > 0) {
 		CGFloat bottom = box.origin.y + box.size.height;
