@@ -82,36 +82,6 @@
 	[textview setNeedsLayout];
 }
 
-/* ###
-- (void) layoutSubviews {
-	if (CGRectEqualToRect(lastLayoutBounds, self.bounds)) {
-		NSLog(@"### boring layoutSubviews; scroll pos is %.1f of %.1f", textview.contentOffset.y, textview.contentSize.height - textview.bounds.size.height);
-		return;
-	}
-	lastLayoutBounds = self.bounds;
-	NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
-	
-	[textview setTotalWidth:textview.bounds.size.width];
-
-	CGRect box;
-	box.origin = CGPointZero;
-	box.size = self.bounds.size;
-	CGFloat totalheight = [textview totalHeight];
-	if (box.size.height < totalheight)
-		box.size.height = totalheight;
-	textview.frame = box;
-	[textview setNeedsDisplay];
-	
-	if (textfield) {
-		CGRect tfbox = [textview placeForInputField];
-		textfield.frame = tfbox;
-	}
-	
-	textview.contentSize = box.size;
-	[self scrollToBottom:NO];
-}
- */
-
 - (void) updateFromWindowState {
 	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
 	
@@ -123,16 +93,7 @@
 	[textview updateWithLines:updates];
 	[bufwin.updatetext removeAllObjects];
 	
-	CGFloat totalheight = [textview totalHeight];
-	
-	CGRect box;
-	box.origin = CGPointZero;
-	box.size = self.bounds.size;
-	if (box.size.height < totalheight)
-		box.size.height = totalheight;
-	textview.frame = box;
 	[textview setNeedsDisplay];
-	textview.contentSize = box.size;
 	
 	[self scrollToBottom:YES];
 }
@@ -145,14 +106,6 @@
 	if (!field.superview)
 		[textview addSubview:field];
 
-	CGFloat totalheight = [textview totalHeight];
-	
-	box.origin = CGPointZero;
-	box.size = self.bounds.size;
-	if (box.size.height < totalheight)
-		box.size.height = totalheight;
-	textview.contentSize = box.size;
-	
 	[self scrollToBottom:YES];
 }
 

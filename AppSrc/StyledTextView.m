@@ -45,19 +45,13 @@
 	[super dealloc];
 }
 
-/* The total height of rendered text in the window (excluding margins). 
-*/
-- (CGFloat) textHeight {
-	if (!vlines || !vlines.count)
-		return 0.0;
-	GlkVisualLine *vln = [vlines lastObject];
-	return vln.ypos + vln.height;
-}
-
 /* The total height of the window, including rendered text and margins. 
 */
 - (CGFloat) totalHeight {
-	return [self textHeight] + styleset.margintotal.height;
+	if (!vlines || !vlines.count)
+		return styleset.margins.top + styleset.margins.bottom;
+	GlkVisualLine *vln = [vlines lastObject];
+	return vln.bottom + styleset.margins.bottom;
 }
 
 /* Add the given lines (as taken from the GlkWindowBuffer) to the contents of the view. 
@@ -181,6 +175,15 @@
 		NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
 	
+	/* Adjust the contentSize to match newly-created vlines. */
+	//### if vlines were added on top, this should adjust contentOffset as well!
+	
+	CGFloat contentheight = self.totalHeight;
+	
+	if (self.contentSize.height != contentheight) {
+		self.contentSize = CGSizeMake(visbounds.size.width, contentheight);
+	}
+	
 	/* Now, adjust the bottom of linesviews up or down (deleting or adding VisualLinesViews) until it reaches the bottom of visbounds. */
 	//### again, smarten for ending
 	
@@ -215,7 +218,7 @@
 			VisualLinesView *linev = [[[VisualLinesView alloc] initWithFrame:CGRectZero styles:styleset vlines:subarr] autorelease];
 			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 			[linesviews addObject:linev];
-			[self addSubview:linev];
+			[self insertSubview:linev atIndex:0];
 			NSLog(@"### appending lineview (%d), yrange is %.1f-%.1f", linesviews.count-1, linev.ytop, linev.ybottom);
 		}
 		
@@ -256,7 +259,7 @@
 			VisualLinesView *linev = [[[VisualLinesView alloc] initWithFrame:CGRectZero styles:styleset vlines:subarr] autorelease];
 			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 			[linesviews insertObject:linev atIndex:0];
-			[self addSubview:linev];
+			[self insertSubview:linev atIndex:0];
 			NSLog(@"### prepending lineview, yrange is %.1f-%.1f", linev.ytop, linev.ybottom);
 		}
 		

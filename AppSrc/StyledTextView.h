@@ -27,9 +27,7 @@
 @property (nonatomic, retain) StyleSet *styleset;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
-- (CGFloat) textHeight;
 - (CGFloat) totalHeight;
-//###- (void) setTotalWidth:(CGFloat)totalwidth;
 - (void) updateWithLines:(NSArray *)addlines;
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yStart:(CGFloat)ystart yMax:(CGFloat)ymax;
 - (void) sanityCheck;
