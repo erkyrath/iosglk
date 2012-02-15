@@ -223,6 +223,47 @@
 		bottom = newbottom;
 	}
 	
+	/* Similarly, adjust the top of linesviews up or down. */
+	
+	startlaid = 0;
+	top = 0;
+	while (linesviews.count) {
+		VisualLinesView *linev = [linesviews objectAtIndex:0];
+		if (linev.ybottom >= visbounds.origin.y) {
+			startlaid = linev.vlinestart;
+			top = linev.ytop;
+			break;
+		}
+		NSLog(@"### removing first lineview, yrange is %.1f-%.1f", linev.ytop, linev.ybottom);
+		[linev removeFromSuperview];
+		[linesviews removeObjectAtIndex:0];
+	}
+	
+	while (top > visbounds.origin.y && startlaid > 0) {
+		int newstart = startlaid;
+		CGFloat newtop = top;
+		while (newtop > top-STRIPE_WIDTH && newstart > 0) {
+			newstart--;
+			GlkVisualLine *vln = [vlines objectAtIndex:newstart];
+			newtop = vln.ypos;
+		}
+		
+		if (newstart < startlaid) {
+			NSRange range;
+			range.location = newstart;
+			range.length = startlaid - newstart;
+			NSArray *subarr = [vlines subarrayWithRange:range];
+			VisualLinesView *linev = [[[VisualLinesView alloc] initWithFrame:CGRectZero styles:styleset vlines:subarr] autorelease];
+			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
+			[linesviews insertObject:linev atIndex:0];
+			[self addSubview:linev];
+			NSLog(@"### prepending lineview, yrange is %.1f-%.1f", linev.ytop, linev.ybottom);
+		}
+		
+		startlaid = newstart;
+		top = newtop;
+	}
+	
 	[self sanityCheck]; //###
 }
 
@@ -444,19 +485,27 @@
 	if (count != linesviews.count)
 		NSLog(@"STV-SANITY: wrong number of subviews (%d, not %d)", count, linesviews.count);
 	
-	int lastv = 0;
-	bottom = styleset.margins.top;
-	for (VisualLinesView *linev in linesviews) {
-		if (linev.vlines.count == 0)
-			NSLog(@"STV-SANITY: linev has no lines");
-		if (linev.vlines.count != linev.vlineend - linev.vlinestart)
-			NSLog(@"STV-SANITY: linev count %d is not %d", linev.vlines.count, linev.vlineend - linev.vlinestart);
-		if (linev.vlinestart != lastv)
-			NSLog(@"STV-SANITY: vlinestart %d is not %d", linev.vlinestart, lastv);
-		if (linev.ytop != bottom)
-			NSLog(@"STV-SANITY: vlinestart %.1f is not %.1f", linev.ytop, bottom);
-		lastv = linev.vlineend;
-		bottom = linev.ybottom;
+	if (linesviews.count > 0) {
+		VisualLinesView *firstlinev = [linesviews objectAtIndex:0];
+		int lastv = firstlinev.vlinestart;
+		bottom = firstlinev.ytop;
+		
+		for (VisualLinesView *linev in linesviews) {
+			if (linev.vlines.count == 0)
+				NSLog(@"STV-SANITY: linev has no lines");
+			if (linev.vlines.count != linev.vlineend - linev.vlinestart)
+				NSLog(@"STV-SANITY: linev count %d is not %d", linev.vlines.count, linev.vlineend - linev.vlinestart);
+			if (linev.vlinestart != lastv)
+				NSLog(@"STV-SANITY: vlinestart %d is not %d", linev.vlinestart, lastv);
+			if (linev.vlinestart != (((GlkVisualLine *)([linev.vlines objectAtIndex:0])).vlinenum))
+				NSLog(@"STV-SANITY: vlinestart %d does not match first vline", linev.vlinestart);
+			if (linev.vlineend != (((GlkVisualLine *)([linev.vlines lastObject])).vlinenum) + 1)
+				NSLog(@"STV-SANITY: vlineend %d does not match end vline", linev.vlineend);
+			if (linev.ytop != bottom)
+				NSLog(@"STV-SANITY: vlinestart %.1f is not %.1f", linev.ytop, bottom);
+			lastv = linev.vlineend;
+			bottom = linev.ybottom;
+		}
 	}
 }
 
