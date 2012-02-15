@@ -9,6 +9,8 @@
 #import "StyleSet.h"
 #import "GlkUtilities.h"
 
+#define LAYOUT_HEADROOM (0)
+
 @implementation StyledTextView
 
 @synthesize lines;
@@ -25,10 +27,9 @@
 		totalwidth = self.bounds.size.width;
 		wrapwidth = totalwidth - styleset.margintotal.width;
 
-		self.backgroundColor = styleset.backgroundcolor;
-
-		/* We don't try set the contentMode, because this thing isn't really capable of smart resizing-with-partial-redrawing. Instead, both of the paths that resize the view (updateFromWindowState and layoutSubviews) cause a complete redraw. */
-		//self.contentMode = UIViewContentModeRedraw;
+		self.alwaysBounceVertical = YES;
+		self.contentSize = self.bounds.size;
+		//self.backgroundColor = styleset.backgroundcolor;
 	}
 	return self;
 }
@@ -40,6 +41,7 @@
 	[super dealloc];
 }
 
+/*###
 - (void) setTotalWidth:(CGFloat)val {
 	CGFloat newwrap = val - styleset.margintotal.width;
 	if (totalwidth == val && wrapwidth == newwrap)
@@ -48,8 +50,9 @@
 	NSLog(@"STV: setTotalWidth %.01f", val);
 	totalwidth = val;
 	wrapwidth = newwrap;
-	[self layoutFromLine:0];
+	//###[self layoutFromLine:0];
 }
+ ###*/
 
 /* The total height of rendered text in the window (excluding margins). 
 */
@@ -70,22 +73,26 @@
 */
 - (void) updateWithLines:(NSArray *)addlines {
 	//NSLog(@"STV: updating, adding %d lines", addlines.count);
-	int lineslaidout = lines.count;
 	
 	/* First, add the data to the raw (unformatted) lines array. This may include clear operations, although hopefully only one per invocation. */
 	for (GlkStyledLine *sln in addlines) {
 		if (sln.status == linestat_ClearPage) {
 			[lines removeAllObjects];
 			[vlines removeAllObjects];
-			lineslaidout = 0;
-			continue;
+			/* A ClearPage line can contain text as well, so we continue. */
 		}
 		
 		if (sln.status == linestat_Continue && lines.count > 0) {
-			if (lineslaidout > (lines.count - 1))
-				lineslaidout = (lines.count - 1);
 			GlkStyledLine *prevln = [lines lastObject];
 			[prevln.arr addObjectsFromArray:sln.arr];
+			/* The vlines corresponding to this line are no longer valid. Remove them. */
+			int prevlnindex = lines.count-1;
+			while (vlines.count > 0) {
+				GlkVisualLine *vln = [vlines lastObject];
+				if (vln.linenum < prevlnindex)
+					break;
+				[vlines removeLastObject];
+			}
 		}
 		else {
 			[lines addObject:sln];
@@ -93,48 +100,111 @@
 	}
 	
 	/* Now do a layout operation, starting with the first line that changed. */
-	[self layoutFromLine:lineslaidout];
+	//###[self layoutFromLine:lineslaidout];
+	
+	//### trash all VisualLinesView objects. Or only ones that have been invalidated?
 }
 
-/* Do the work of laying out the text. Start with line number fromline (in the lines array). All vlines from that point on are discarded and re-laid-out.
+- (void) layoutSubviews {
+	[super layoutSubviews];
+	NSLog(@"STV: layoutSubviews to %@", StringFromRect(self.bounds));
+	
+	CGRect visbounds = self.bounds;
+	CGFloat visbottom = visbounds.origin.y + visbounds.size.height;
+	
+	CGFloat newtotal = visbounds.size.width;
+	CGFloat newwrap = newtotal - styleset.margintotal.width;
+	if (totalwidth != newtotal || wrapwidth != newwrap) {
+		totalwidth = newtotal;
+		wrapwidth = newwrap;
+		NSLog(@"STV: width has changed! now %.01f (wrap %.01f)", totalwidth, wrapwidth);
+		
+		[vlines removeAllObjects];
+	}
+	
+	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.) */
+	
+	CGFloat bottom = styleset.margins.top;
+	int endlaid = 0;
+	if (vlines.count > 0) {
+		GlkVisualLine *vln = [vlines lastObject];
+		bottom = vln.bottom;
+		endlaid = vln.linenum+1;
+	}
+	
+	NSMutableArray *newlines = [self layoutFromLine:endlaid forward:YES yStart:bottom yMax:visbottom+LAYOUT_HEADROOM];
+	if (newlines && newlines.count) {
+		[vlines addObjectsFromArray:newlines];
+		NSLog(@"STV: appended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
+	}
+	
+	CGFloat top = styleset.margins.top;
+	int startlaid = 0;
+	if (vlines.count > 0) {
+		GlkVisualLine *vln = [vlines objectAtIndex:0];
+		top = vln.ypos;
+		startlaid = vln.linenum;
+	}
+	
+	newlines = [self layoutFromLine:startlaid-1 forward:NO yStart:top yMax:visbounds.origin.y-LAYOUT_HEADROOM];
+	if (newlines && newlines.count) {
+		//### piecewise-reverse newlines!
+		
+		/* We're inserting at the beginning of the vlines array, so the existing vlines all shift downwards. */
+		GlkVisualLine *lastvln = [newlines lastObject];
+		CGFloat offset = lastvln.bottom - styleset.margins.top;
+		int newcount = newlines.count;
+		for (GlkVisualLine *vln in vlines) {
+			vln.linenum += newcount;
+			vln.ypos += offset;
+		}
+		
+		NSRange range = {0,0};
+		[vlines replaceObjectsInRange:range withObjectsFromArray:newlines];
+		NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
+	}
+}
+
+/* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the yposition reaches ymax or the lines run out. Return a temporary array containing the new lines.
 */
-- (void) layoutFromLine:(int)fromline {
+- (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yStart:(CGFloat)ystart yMax:(CGFloat)ymax {
 	if (wrapwidth <= 4*styleset.charbox.width) {
 		/* This isn't going to work out. */
 		//NSLog(@"STV: too narrow; refusing layout.");
-		[vlines removeAllObjects];
-		return;
+		return nil;
 	}
 	
-	if (vlines.count == 0) {
-		/* nothing to discard. */
-	}
-	else if (fromline == 0) {
-		//NSLog(@"STV: discarding all %d vlines...", vlines.count);
-		[vlines removeAllObjects];
+	int loopincrement;
+	
+	/* If the loop won't run, we'll save ourselves the effort. */
+	if (forward) {
+		loopincrement = 1;
+		if (startline >= lines.count || ystart >= ymax)
+			return nil;
 	}
 	else {
-		int vcount;
-		for (vcount = vlines.count; vcount; vcount--) {
-			GlkVisualLine *vln = [vlines objectAtIndex:vcount-1];
-			if (vln.linenum < fromline)
-				break;
-		}
-		if (vcount < vlines.count) {
-			NSRange range;
-			range.location = vcount;
-			range.length = vlines.count - vcount;
-			//NSLog(@"STV: discarding %d vlines (starting at %d)...", range.length, range.location);
-			[vlines removeObjectsInRange:range];
-		}
+		loopincrement = -1;
+		if (startline < 0 || ystart < ymax)
+			return nil;
 	}
 	
 	UIFont **fonts = styleset.fonts;
 	CGFloat normalpointsize = styleset.charbox.height;
+	NSMutableArray *result = [NSMutableArray arrayWithCapacity:32]; // vlines laid out
+	NSMutableArray *tmparr = [NSMutableArray arrayWithCapacity:64]; // words in a line
 	
-	CGFloat ypos = styleset.margins.top + [self textHeight];
+	CGFloat ypos = ystart;
 	
-	for (int snum = fromline; snum < lines.count; snum++) {
+	for (int snum = startline; YES; snum += loopincrement) {
+		if (forward) {
+			if (snum >= lines.count || ypos >= ymax)
+				break;
+		}
+		else {
+			if (snum < 0 || ypos < ymax)
+				break;
+		}
+		
 		GlkStyledLine *sln = [lines objectAtIndex:snum];
 		
 		int spannum = -1;
@@ -147,11 +217,6 @@
 		BOOL paragraphdone = NO;
 		
 		while (!paragraphdone) {
-			GlkVisualLine *vln = [[[GlkVisualLine alloc] init] autorelease];
-			[vlines addObject:vln];
-			vln.ypos = ypos;
-			vln.linenum = snum;
-			
 			CGFloat hpos = 0.0;
 			CGFloat maxheight = normalpointsize;
 			CGFloat maxascender = 0.0;
@@ -194,7 +259,7 @@
 					CGSize wordsize = [wdtext sizeWithFont:sfont];
 					
 					/* We want to wrap if this word will overflow the line. But if this is the first word on the line (which must be a very long word), we don't wrap here -- that would cause an infinite loop. */
-					if (vln.arr.count > 0 && hpos+wordsize.width > wrapwidth) {
+					if (tmparr.count > 0 && hpos+wordsize.width > wrapwidth) {
 						/* We don't advance wdpos to wdend, because we'll be re-measuring this word on the next line. However, we do want to squash out whitespace across the break -- the next line shouldn't start with a space. */
 						while (wdpos < strlen) {
 							if ([str characterAtIndex:wdpos] != ' ')
@@ -218,7 +283,7 @@
 					}
 					
 					GlkVisualString *vwd = [[GlkVisualString alloc] initWithText:wdtext style:sstr.style];
-					[vln.arr addObject:vwd];
+					[tmparr addObject:vwd];
 					[vwd release];
 					
 					hpos += wordsize.width;
@@ -236,13 +301,20 @@
 					sstr = nil;
 				}
 			}
-			
+
+			GlkVisualLine *vln = [[[GlkVisualLine alloc] initWithStrings:tmparr] autorelease];
+			vln.ypos = ypos;
+			vln.linenum = snum;
 			vln.height = maxheight;
 			ypos += maxheight;
+			
+			[result addObject:vln];
+			[tmparr removeAllObjects];
 		}
 	}
 		
-	//NSLog(@"STV: laid out %d vislines, wrapwidth %.1f, textheight %.1f", vlines.count, wrapwidth, [self textHeight]);
+	NSLog(@"STV: laid out %d vislines, final ypos %.1f (first line %d of %d)", result.count, ypos, startline, lines.count);
+	return result;
 }
 
 - (CGRect) placeForInputField {
@@ -277,24 +349,59 @@
 	return box;
 }
 
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	//NSLog(@"STV: Touch began");
+}
+
+@end
+
+
+@implementation VisualLinesView
+
+@synthesize vlines;
+@synthesize styleset;
+
+- (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval vlines:(NSArray *)arr {
+	self = [super initWithFrame:frame];
+	if (self) {
+		self.vlines = [NSArray arrayWithArray:arr];
+		self.styleset = stylesval;
+		
+		self.backgroundColor = styleset.backgroundcolor;
+		self.userInteractionEnabled = NO;
+		
+		if (vlines.count > 0) {
+			GlkVisualLine *vln = [vlines objectAtIndex:0];
+			yoffset = vln.ypos;
+			
+			vln = [vlines lastObject];
+			height = vln.bottom;
+		}
+		else {
+			yoffset = 0;
+			height = 0;
+		}
+	}
+	return self;
+}
+
+- (void) dealloc {
+	self.vlines = nil;
+	self.styleset = nil;
+	[super dealloc];
+}
+
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"StyledTextView: drawRect %@ (bounds are %@)", StringFromRect(rect), StringFromRect(self.bounds));
 	CGContextRef gc = UIGraphicsGetCurrentContext();
-	//CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
-	//CGContextFillRect(gc, rect);
-
-	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
 	
-	CGFloat rectminy = rect.origin.y;
-	CGFloat rectmaxy = rect.origin.y+rect.size.height;
+	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
 	
 	UIFont **fonts = styleset.fonts;
 	
 	for (GlkVisualLine *vln in vlines) {
-		if (vln.ypos+vln.height < rectminy || vln.ypos > rectmaxy)
-			continue;
 		CGPoint pt;
-		pt.y = vln.ypos;
+		pt.y = vln.ypos - yoffset;
 		pt.x = styleset.margins.left;
 		for (GlkVisualString *vwd in vln.arr) {
 			UIFont *font = fonts[vwd.style];
@@ -304,8 +411,6 @@
 	}
 }
 
-- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	//NSLog(@"STV: Touch began");
-}
-
 @end
+
+

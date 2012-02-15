@@ -70,15 +70,17 @@
 - (void) setKeyboardBox:(CGRect)val {
 	keyboardBox = val;
 	//NSLog(@"### setKeyboardHeight calling setNeedsLayout");
-	[self setNeedsLayoutPlusSubviews];
+	[self setNeedsLayout];
 }
 
+/*###
 - (void) setNeedsLayoutPlusSubviews {
 	[self setNeedsLayout];
 	for (UIView *view in self.subviews) {
 		[view setNeedsLayout];
 	}
 }
+ ###*/
 
 - (void) layoutSubviews {
 	NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardBox.size));
@@ -135,8 +137,9 @@
 		[NSException raise:@"GlkException" format:@"neither view and geometry for same window"];
 	
 	if (winv) {
-		winv.frame = box;
 		//NSLog(@"### setting frame for winview %@", winv);
+		winv.frame = box;
+		[winv setNeedsLayout];
 	}
 	else {
 		CGRect box1;

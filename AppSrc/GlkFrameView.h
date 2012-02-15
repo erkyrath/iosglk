@@ -40,7 +40,6 @@
 @property (nonatomic, retain) UIView *menuview;
 @property (nonatomic, retain) NSNumber *menuwintag;
 
-- (void) setNeedsLayoutPlusSubviews;
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;

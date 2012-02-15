@@ -95,12 +95,12 @@
 @synthesize height;
 @synthesize linenum;
 
-- (id) init {
+- (id) initWithStrings:(NSArray *)strings {
 	self = [super init];
 	
 	if (self) {
 		linenum = 0;
-		self.arr = [NSMutableArray arrayWithCapacity:4];
+		self.arr = [NSArray arrayWithArray:strings];
 	}
 	
 	return self;
@@ -109,6 +109,10 @@
 - (void) dealloc {
 	self.arr = nil;
 	[super dealloc];
+}
+
+- (CGFloat) bottom {
+	return ypos + height;
 }
 
 @end
