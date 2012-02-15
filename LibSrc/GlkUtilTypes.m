@@ -93,13 +93,13 @@
 @synthesize arr;
 @synthesize ypos;
 @synthesize height;
+@synthesize vlinenum;
 @synthesize linenum;
 
 - (id) initWithStrings:(NSArray *)strings {
 	self = [super init];
 	
 	if (self) {
-		linenum = 0;
 		self.arr = [NSArray arrayWithArray:strings];
 	}
 	

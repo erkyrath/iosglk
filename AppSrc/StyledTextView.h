@@ -18,10 +18,12 @@
 	NSMutableArray *lines; /* Array of GlkStyledLine -- lines (paragraphs) of text */
 	NSMutableArray *vlines; /* Array of GlkVisualLine -- the wrapped lines with positional info */
 	/* The range of vlines is always a subset (or equal to) the range of lines. There may be many vlines per line. */
+	NSMutableArray *linesviews; /* Array of VisualLinesView -- stripes of vlines. There may be many vlines of linesview. */
 }
 
 @property (nonatomic, retain) NSMutableArray *lines;
 @property (nonatomic, retain) NSMutableArray *vlines;
+@property (nonatomic, retain) NSMutableArray *linesviews;
 @property (nonatomic, retain) StyleSet *styleset;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
@@ -38,12 +40,20 @@
 @interface VisualLinesView : UIView {
 	NSArray *vlines; /* Array of GlkVisualLine */
 	StyleSet *styleset;
-	CGFloat yoffset; /* The ypos of the first line */
+	CGFloat ytop; /* The ypos of the first line */
+	CGFloat ybottom; /* The bottom of the last line */
 	CGFloat height; /* The total height of all lines */
+	int vlinestart; /* The index of the first line */
+	int vlineend; /* The index after the last line */
 }
 
 @property (nonatomic, retain) NSArray *vlines;
 @property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic) CGFloat ytop;
+@property (nonatomic) CGFloat ybottom;
+@property (nonatomic) CGFloat height;
+@property (nonatomic) int vlinestart;
+@property (nonatomic) int vlineend;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)styleset vlines:(NSArray *)vlines;
 

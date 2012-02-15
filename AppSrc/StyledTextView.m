@@ -10,11 +10,13 @@
 #import "GlkUtilities.h"
 
 #define LAYOUT_HEADROOM (0)
+#define STRIPE_WIDTH (100)
 
 @implementation StyledTextView
 
 @synthesize lines;
 @synthesize vlines;
+@synthesize linesviews;
 @synthesize styleset;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval {
@@ -22,6 +24,7 @@
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
+		self.linesviews = [NSMutableArray arrayWithCapacity:32];
 		self.styleset = stylesval;
 
 		totalwidth = self.bounds.size.width;
@@ -37,6 +40,7 @@
 - (void) dealloc {
 	self.lines = nil;
 	self.vlines = nil;
+	self.linesviews = nil;
 	self.styleset = nil;
 	[super dealloc];
 }
@@ -99,10 +103,12 @@
 		}
 	}
 	
-	/* Now do a layout operation, starting with the first line that changed. */
-	//###[self layoutFromLine:lineslaidout];
-	
-	//### trash all VisualLinesView objects. Or only ones that have been invalidated?
+	/* Now trash all the VisualLinesViews. We'll create new ones at the next layout call. */
+	//### Or only trash the ones that have been invalidated?
+	for (VisualLinesView *linev in linesviews) {
+		[linev removeFromSuperview];
+	}
+	[linesviews removeAllObjects];
 }
 
 - (void) layoutSubviews {
@@ -123,6 +129,7 @@
 	}
 	
 	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.) */
+	//### This should be smart enough to no-op if vlines is empty but we're near the bottom.
 	
 	CGFloat bottom = styleset.margins.top;
 	int endlaid = 0;
@@ -134,9 +141,18 @@
 	
 	NSMutableArray *newlines = [self layoutFromLine:endlaid forward:YES yStart:bottom yMax:visbottom+LAYOUT_HEADROOM];
 	if (newlines && newlines.count) {
+		int oldcount = vlines.count;
+		int newcount = 0;
+		for (GlkVisualLine *vln in vlines) {
+			vln.vlinenum = oldcount+newcount;
+			newcount++;
+		}
 		[vlines addObjectsFromArray:newlines];
 		NSLog(@"STV: appended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
+	
+	/* Extend vlines up, similarly. */
+	//### Similarly, this should run from the end if we're empty.
 	
 	CGFloat top = styleset.margins.top;
 	int startlaid = 0;
@@ -148,21 +164,72 @@
 	
 	newlines = [self layoutFromLine:startlaid-1 forward:NO yStart:top yMax:visbounds.origin.y-LAYOUT_HEADROOM];
 	if (newlines && newlines.count) {
+		int newcount = 0;
+		for (GlkVisualLine *vln in vlines) {
+			vln.vlinenum = newcount;
+			newcount++;
+		}
+		
 		//### piecewise-reverse newlines!
 		
 		/* We're inserting at the beginning of the vlines array, so the existing vlines all shift downwards. */
 		GlkVisualLine *lastvln = [newlines lastObject];
 		CGFloat offset = lastvln.bottom - styleset.margins.top;
-		int newcount = newlines.count;
 		for (GlkVisualLine *vln in vlines) {
-			vln.linenum += newcount;
+			vln.vlinenum += newcount;
 			vln.ypos += offset;
 		}
-		
+		for (VisualLinesView *linev in linesviews) {
+			linev.vlinestart += newcount;
+			linev.vlineend += newcount;
+		}
+
 		NSRange range = {0,0};
 		[vlines replaceObjectsInRange:range withObjectsFromArray:newlines];
 		NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
+	
+	/* Now, adjust the bottom of linesviews up or down (deleting or adding VisualLinesViews) until it reaches the bottom of visbounds. */
+	//### again, smarten for ending
+	
+	endlaid = 0;
+	bottom = 0;
+	while (linesviews.count) {
+		VisualLinesView *linev = [linesviews lastObject];
+		if (linev.ytop < visbottom) {
+			endlaid = linev.vlinestart;
+			bottom = linev.ybottom;
+			break;
+		}
+		[linev removeFromSuperview];
+		[linesviews removeLastObject];
+	}
+	
+	while (bottom < visbottom && endlaid < vlines.count) {
+		int newend = endlaid;
+		CGFloat newbottom = bottom;
+		while (newbottom < bottom+STRIPE_WIDTH && newend < vlines.count) {
+			GlkVisualLine *vln = [vlines objectAtIndex:newend];
+			newend++;
+			newbottom = vln.bottom;
+		}
+		
+		if (newend > endlaid) {
+			NSRange range;
+			range.location = endlaid;
+			range.length = newend - endlaid;
+			NSArray *subarr = [vlines subarrayWithRange:range];
+			VisualLinesView *linev = [[[VisualLinesView alloc] initWithFrame:CGRectZero styles:styleset vlines:subarr] autorelease];
+			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
+			[linesviews addObject:linev];
+			[self addSubview:linev];
+		}
+		
+		endlaid = newend;
+		bottom = newbottom;
+	}
+	
+	//### sanity check!
 }
 
 /* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the yposition reaches ymax or the lines run out. Return a temporary array containing the new lines.
@@ -303,6 +370,7 @@
 			}
 
 			GlkVisualLine *vln = [[[GlkVisualLine alloc] initWithStrings:tmparr] autorelease];
+			// vln.vlinesnum will be filled in by the caller.
 			vln.ypos = ypos;
 			vln.linenum = snum;
 			vln.height = maxheight;
@@ -360,11 +428,16 @@
 
 @synthesize vlines;
 @synthesize styleset;
+@synthesize ytop;
+@synthesize ybottom;
+@synthesize height;
+@synthesize vlinestart;
+@synthesize vlineend;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval vlines:(NSArray *)arr {
 	self = [super initWithFrame:frame];
 	if (self) {
-		self.vlines = [NSArray arrayWithArray:arr];
+		self.vlines = arr;
 		self.styleset = stylesval;
 		
 		self.backgroundColor = styleset.backgroundcolor;
@@ -372,14 +445,13 @@
 		
 		if (vlines.count > 0) {
 			GlkVisualLine *vln = [vlines objectAtIndex:0];
-			yoffset = vln.ypos;
+			vlinestart = vln.vlinenum;
+			ytop = vln.ypos;
 			
 			vln = [vlines lastObject];
-			height = vln.bottom;
-		}
-		else {
-			yoffset = 0;
-			height = 0;
+			vlineend = vln.vlinenum+1;
+			ybottom = vln.bottom;
+			height = ybottom - ytop;
 		}
 	}
 	return self;
@@ -401,7 +473,7 @@
 	
 	for (GlkVisualLine *vln in vlines) {
 		CGPoint pt;
-		pt.y = vln.ypos - yoffset;
+		pt.y = vln.ypos - ytop;
 		pt.x = styleset.margins.left;
 		for (GlkVisualString *vwd in vln.arr) {
 			UIFont *font = fonts[vwd.style];

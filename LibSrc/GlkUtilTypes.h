@@ -45,12 +45,14 @@ typedef enum GlkStyledLineStatus_enum {
 
 
 @interface GlkVisualLine : NSObject {
-	int linenum; /* The raw line number that this laid-out lines belongs to */
+	int vlinenum; /* This vline's index in the vlines array */
+	int linenum; /* The raw line number that this vline belongs to */
 	CGFloat ypos; /* Rendered top location */
 	CGFloat height; /* Rendered height */
 	NSArray *arr; /* array of GlkVisualString */
 }
 
+@property (nonatomic) int vlinenum;
 @property (nonatomic) int linenum;
 @property (nonatomic) CGFloat ypos;
 @property (nonatomic) CGFloat height;
