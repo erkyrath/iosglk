@@ -32,6 +32,7 @@
 //###- (void) setTotalWidth:(CGFloat)totalwidth;
 - (void) updateWithLines:(NSArray *)addlines;
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yStart:(CGFloat)ystart yMax:(CGFloat)ymax;
+- (void) sanityCheck;
 - (CGRect) placeForInputField;
 
 @end

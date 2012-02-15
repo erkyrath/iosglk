@@ -45,19 +45,6 @@
 	[super dealloc];
 }
 
-/*###
-- (void) setTotalWidth:(CGFloat)val {
-	CGFloat newwrap = val - styleset.margintotal.width;
-	if (totalwidth == val && wrapwidth == newwrap)
-		return;
-		
-	NSLog(@"STV: setTotalWidth %.01f", val);
-	totalwidth = val;
-	wrapwidth = newwrap;
-	//###[self layoutFromLine:0];
-}
- ###*/
-
 /* The total height of rendered text in the window (excluding margins). 
 */
 - (CGFloat) textHeight {
@@ -76,7 +63,7 @@
 /* Add the given lines (as taken from the GlkWindowBuffer) to the contents of the view. 
 */
 - (void) updateWithLines:(NSArray *)addlines {
-	//NSLog(@"STV: updating, adding %d lines", addlines.count);
+	NSLog(@"STV: updating, adding %d lines", addlines.count);
 	
 	/* First, add the data to the raw (unformatted) lines array. This may include clear operations, although hopefully only one per invocation. */
 	for (GlkStyledLine *sln in addlines) {
@@ -125,7 +112,12 @@
 		wrapwidth = newwrap;
 		NSLog(@"STV: width has changed! now %.01f (wrap %.01f)", totalwidth, wrapwidth);
 		
+		/* Trash all laid-out lines and VisualLinesViews. */
 		[vlines removeAllObjects];
+		for (VisualLinesView *linev in linesviews) {
+			[linev removeFromSuperview];
+		}
+		[linesviews removeAllObjects];
 	}
 	
 	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.) */
@@ -143,7 +135,7 @@
 	if (newlines && newlines.count) {
 		int oldcount = vlines.count;
 		int newcount = 0;
-		for (GlkVisualLine *vln in vlines) {
+		for (GlkVisualLine *vln in newlines) {
 			vln.vlinenum = oldcount+newcount;
 			newcount++;
 		}
@@ -165,7 +157,7 @@
 	newlines = [self layoutFromLine:startlaid-1 forward:NO yStart:top yMax:visbounds.origin.y-LAYOUT_HEADROOM];
 	if (newlines && newlines.count) {
 		int newcount = 0;
-		for (GlkVisualLine *vln in vlines) {
+		for (GlkVisualLine *vln in newlines) {
 			vln.vlinenum = newcount;
 			newcount++;
 		}
@@ -197,7 +189,7 @@
 	while (linesviews.count) {
 		VisualLinesView *linev = [linesviews lastObject];
 		if (linev.ytop < visbottom) {
-			endlaid = linev.vlinestart;
+			endlaid = linev.vlineend+1;
 			bottom = linev.ybottom;
 			break;
 		}
@@ -229,7 +221,7 @@
 		bottom = newbottom;
 	}
 	
-	//### sanity check!
+	[self sanityCheck]; //###
 }
 
 /* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the yposition reaches ymax or the lines run out. Return a temporary array containing the new lines.
@@ -417,6 +409,46 @@
 	return box;
 }
 
+- (void) sanityCheck {
+	/*
+	NSLog(@"### STV sanity check:");
+	NSLog(@"   %d vlines:", vlines.count);
+	for (GlkVisualLine *vln in vlines) {
+		NSLog(@"    %d (raw %d): %.1f to %.1f, height %.1f", vln.vlinenum, vln.linenum, vln.ypos, vln.bottom, vln.height);
+	}
+	 */
+	
+	int count = 0;
+	int lastraw = -1;
+	CGFloat bottom = styleset.margins.top;
+	for (GlkVisualLine *vln in vlines) {
+		if (vln.vlinenum != count)
+			NSLog(@"STV-SANITY: vlinenum %d is not %d", vln.vlinenum, count);
+		if (vln.linenum != lastraw && vln.linenum != lastraw+1)
+			NSLog(@"STV-SANITY: linenum %d is not %d or +1", vln.linenum, lastraw);
+		if (vln.ypos != bottom)
+			NSLog(@"STV-SANITY: ypos %.1f is not %.1f", vln.ypos, bottom);
+		bottom = vln.bottom;
+		lastraw = vln.linenum;
+		count++;
+	}
+	
+	int lastv = 0;
+	bottom = styleset.margins.top;
+	for (VisualLinesView *linev in linesviews) {
+		if (linev.vlines.count == 0)
+			NSLog(@"STV-SANITY: linev has no lines");
+		if (linev.vlines.count != linev.vlineend - linev.vlinestart)
+			NSLog(@"STV-SANITY: linev count %d is not %d", linev.vlines.count, linev.vlineend - linev.vlinestart);
+		if (linev.vlinestart != lastv)
+			NSLog(@"STV-SANITY: vlinestart %d is not %d", linev.vlinestart, lastv);
+		if (linev.ytop != bottom)
+			NSLog(@"STV-SANITY: vlinestart %.1f is not %.1f", linev.ytop, bottom);
+		lastv = linev.vlineend;
+		bottom = linev.ybottom;
+	}
+}
+
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	//NSLog(@"STV: Touch began");
 }
@@ -440,7 +472,8 @@
 		self.vlines = arr;
 		self.styleset = stylesval;
 		
-		self.backgroundColor = styleset.backgroundcolor;
+		//###self.backgroundColor = styleset.backgroundcolor;
+		self.backgroundColor = [UIColor colorWithRed:(random()%127+128)/256.0 green:(random()%127+128)/256.0 blue:1 alpha:1]; //###
 		self.userInteractionEnabled = NO;
 		
 		if (vlines.count > 0) {
