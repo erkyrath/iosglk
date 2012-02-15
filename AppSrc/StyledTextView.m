@@ -32,7 +32,7 @@
 
 		self.alwaysBounceVertical = YES;
 		self.contentSize = self.bounds.size;
-		//self.backgroundColor = styleset.backgroundcolor;
+		self.backgroundColor = styleset.backgroundcolor;
 	}
 	return self;
 }
@@ -100,10 +100,10 @@
 
 - (void) layoutSubviews {
 	[super layoutSubviews];
-	NSLog(@"STV: layoutSubviews to %@", StringFromRect(self.bounds));
 	
 	CGRect visbounds = self.bounds;
 	CGFloat visbottom = visbounds.origin.y + visbounds.size.height;
+	//NSLog(@"STV: layoutSubviews to visbottom %.1f (%@)", visbottom, StringFromRect(self.bounds));
 	
 	CGFloat newtotal = visbounds.size.width;
 	CGFloat newwrap = newtotal - styleset.margintotal.width;
@@ -189,10 +189,11 @@
 	while (linesviews.count) {
 		VisualLinesView *linev = [linesviews lastObject];
 		if (linev.ytop < visbottom) {
-			endlaid = linev.vlineend+1;
+			endlaid = linev.vlineend;
 			bottom = linev.ybottom;
 			break;
 		}
+		NSLog(@"### removing last lineview (%d), yrange is %.1f-%.1f", linesviews.count-1, linev.ytop, linev.ybottom);
 		[linev removeFromSuperview];
 		[linesviews removeLastObject];
 	}
@@ -215,6 +216,7 @@
 			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 			[linesviews addObject:linev];
 			[self addSubview:linev];
+			NSLog(@"### appending lineview (%d), yrange is %.1f-%.1f", linesviews.count-1, linev.ytop, linev.ybottom);
 		}
 		
 		endlaid = newend;
@@ -432,6 +434,15 @@
 		lastraw = vln.linenum;
 		count++;
 	}
+	
+	count = 0;
+	for (UIView *subview in self.subviews) {
+		if ([subview isKindOfClass:[VisualLinesView class]])
+			count++;
+	}
+	
+	if (count != linesviews.count)
+		NSLog(@"STV-SANITY: wrong number of subviews (%d, not %d)", count, linesviews.count);
 	
 	int lastv = 0;
 	bottom = styleset.margins.top;
