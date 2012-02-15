@@ -102,6 +102,7 @@
 */
 - (void) placeInputField:(UITextField *)field {
 	CGRect box = [textview placeForInputField];
+	NSLog(@"WBV: input field goes to %@", StringFromRect(box));
 	field.frame = box;
 	if (!field.superview)
 		[textview addSubview:field];

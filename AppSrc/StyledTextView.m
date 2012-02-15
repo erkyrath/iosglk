@@ -5,6 +5,8 @@
 */
 
 #import "StyledTextView.h"
+#import "GlkWinBufferView.h"
+#import "CmdTextField.h"
 #import "GlkUtilTypes.h"
 #import "StyleSet.h"
 #import "GlkUtilities.h"
@@ -45,6 +47,10 @@
 	[super dealloc];
 }
 
+- (GlkWinBufferView *) superviewAsBufferView {
+	return (GlkWinBufferView *)self.superview;
+}
+
 /* The total height of the window, including rendered text and margins. 
 */
 - (CGFloat) totalHeight {
@@ -52,6 +58,63 @@
 		return styleset.margins.top + styleset.margins.bottom;
 	GlkVisualLine *vln = [vlines lastObject];
 	return vln.bottom + styleset.margins.bottom;
+}
+
+/* The first raw line that exists in vlines (laid-out lines). Return -1 if vlines is empty.
+ */
+- (int) firstLaidOutLine {
+	if (!vlines || !vlines.count)
+		return -1;
+	GlkVisualLine *vln = [vlines objectAtIndex:0];
+	return vln.linenum;
+}
+
+/* The last raw line that exists in vlines, plus one. (That is, the first non-laid-out line. If this is equal to lines.count, layout extends all the way down.) Returns 0 if vlines is empty.
+ */
+- (int) lastLaidOutLine {
+	if (!vlines || !vlines.count)
+		return 0;
+	GlkVisualLine *vln = [vlines lastObject];
+	return vln.linenum + 1;
+}
+
+- (CGRect) placeForInputField {
+	CGRect box;
+	UIFont **fonts = styleset.fonts;
+	
+	if (!vlines || !vlines.count) {
+		box.origin.x = styleset.margins.left;
+		box.size.width = totalwidth - styleset.margintotal.width;
+		box.origin.y = 0;
+		box.size.height = 24;
+		return box;
+	}
+	
+	if (self.lastLaidOutLine < self.lines.count) {
+		box.origin.x = styleset.margins.left;
+		box.size.width = totalwidth - styleset.margintotal.width;
+		box.origin.y = self.totalHeight;
+		box.size.height = 24;
+		return box;
+	}
+	
+	GlkVisualLine *vln = [vlines lastObject];
+	CGFloat ptx = styleset.margins.left;
+	for (GlkVisualString *vwd in vln.arr) {
+		UIFont *font = fonts[vwd.style];
+		CGSize wordsize = [vwd.str sizeWithFont:font];
+		ptx += wordsize.width;
+	}
+	
+	if (ptx >= totalwidth * 0.75)
+		ptx = totalwidth * 0.75;
+	
+	box.origin.x = ptx;
+	box.size.width = (totalwidth-styleset.margins.right) - ptx;
+	box.origin.y = vln.ypos;
+	box.size.height = vln.height;
+	
+	return box;
 }
 
 /* Add the given lines (as taken from the GlkWindowBuffer) to the contents of the view. 
@@ -181,12 +244,23 @@
 	//### if vlines were added on top, this should adjust contentOffset as well!
 	
 	CGFloat contentheight = self.totalHeight;
-	
-	if (self.contentSize.height != contentheight) {
+	CGSize oldcontentsize = self.contentSize;
+	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width) {
+		NSLog(@"STV: contentSize now %.1f,%.1f", visbounds.size.width, contentheight);
 		self.contentSize = CGSizeMake(visbounds.size.width, contentheight);
 		/* Recompute the visual bounds. */
 		visbounds = self.bounds;
 		visbottom = visbounds.origin.y + visbounds.size.height;
+	}
+	
+	/* If there is a textfield, push it to the new vline bottom. */
+	CmdTextField *textfield = self.superviewAsBufferView.textfield;
+	if (textfield) {
+		CGRect rect = [self placeForInputField];
+		if (!CGRectEqualToRect(textfield.frame, rect)) {
+			NSLog(@"STV: input field shifts to %@", StringFromRect(rect));
+			textfield.frame = rect;
+		}
 	}
 	
 	/* Now, adjust the bottom of linesviews up or down (deleting or adding VisualLinesViews) until it reaches the bottom of visbounds. */
@@ -426,38 +500,6 @@
 		
 	NSLog(@"STV: laid out %d vislines, final ypos %.1f (first line %d of %d)", result.count, ypos, startline, lines.count);
 	return result;
-}
-
-- (CGRect) placeForInputField {
-	CGRect box;
-	UIFont **fonts = styleset.fonts;
-	
-	if (!vlines || !vlines.count) {
-		box.origin.x = 0;
-		box.size.width = totalwidth;
-		box.origin.y = 0;
-		box.size.height = 24;
-	}
-	else {
-		GlkVisualLine *vln = [vlines lastObject];
-		CGFloat ptx = styleset.margins.left;
-		for (GlkVisualString *vwd in vln.arr) {
-			UIFont *font = fonts[vwd.style];
-			CGSize wordsize = [vwd.str sizeWithFont:font];
-			ptx += wordsize.width;
-		}
-		
-		if (ptx >= totalwidth * 0.75)
-			ptx = totalwidth * 0.75;
-		
-		box.origin.x = ptx;
-		box.size.width = totalwidth - ptx;
-		box.origin.y = vln.ypos;
-		box.size.height = 24;
-	}
-	
-	//NSLog(@"placeForInputField: %@", StringFromRect(box));
-	return box;
 }
 
 - (void) sanityCheck {
