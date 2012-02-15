@@ -9,7 +9,7 @@
 #import "StyleSet.h"
 #import "GlkUtilities.h"
 
-#define LAYOUT_HEADROOM (0)
+#define LAYOUT_HEADROOM (100)
 #define STRIPE_WIDTH (100)
 
 @implementation StyledTextView
@@ -85,6 +85,7 @@
 	}
 	
 	/* Now trash all the VisualLinesViews. We'll create new ones at the next layout call. */
+	NSLog(@"### removing all linesviews (for update)");
 	//### Or only trash the ones that have been invalidated?
 	for (VisualLinesView *linev in linesviews) {
 		[linev removeFromSuperview];
@@ -107,6 +108,7 @@
 		NSLog(@"STV: width has changed! now %.01f (wrap %.01f)", totalwidth, wrapwidth);
 		
 		/* Trash all laid-out lines and VisualLinesViews. */
+		NSLog(@"### removing all linesviews (for width change)");
 		[vlines removeAllObjects];
 		for (VisualLinesView *linev in linesviews) {
 			[linev removeFromSuperview];
@@ -182,6 +184,9 @@
 	
 	if (self.contentSize.height != contentheight) {
 		self.contentSize = CGSizeMake(visbounds.size.width, contentheight);
+		/* Recompute the visual bounds. */
+		visbounds = self.bounds;
+		visbottom = visbounds.origin.y + visbounds.size.height;
 	}
 	
 	/* Now, adjust the bottom of linesviews up or down (deleting or adding VisualLinesViews) until it reaches the bottom of visbounds. */
