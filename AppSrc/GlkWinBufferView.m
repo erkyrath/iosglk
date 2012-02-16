@@ -108,7 +108,7 @@
 	holder.contentSize = box.size;
 	holder.frame = box;
 	if (!holder.superview)
-		[self addSubview:holder];
+		[textview addSubview:holder];
 
 	//###[self scrollToBottom:YES];
 }

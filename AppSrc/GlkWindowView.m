@@ -91,6 +91,8 @@
 		if (!inputfield) {
 			self.inputfield = [[[CmdTextField alloc] initWithFrame:CGRectZero] autorelease];
 			self.inputholder = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+			self.inputholder.opaque = NO;
+			self.inputholder.backgroundColor = nil;
 			[inputholder addSubview:inputfield];
 			input_request_id = 0;
 		}
