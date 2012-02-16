@@ -413,7 +413,7 @@
 	if (newcontent) {
 		NSLog(@"STV: new content time!");
 		newcontent = NO;
-		//[self performSelectorOnMainThread:@selector(pageDown) withObject:nil waitUntilDone:NO];
+		[self performSelectorOnMainThread:@selector(pageDown) withObject:nil waitUntilDone:NO];
 	}
 }
 
@@ -432,24 +432,41 @@
 	
 	NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
 	
-	if (endvlineseen < vlines.count || self.lastLaidOutLine < lines.count) {
-		scrollto = self.contentOffset.y + visbounds.size.height - 24;
+	if (vlines.count && endvlineseen < vlines.count) {
+		int topline = endvlineseen;
+		if (topline > 0) {
+			GlkVisualLine *vln = [vlines objectAtIndex:topline-1];
+			scrollto = vln.ypos;
+		}
+		else {
+			GlkVisualLine *vln = [vlines objectAtIndex:topline];
+			scrollto = vln.ypos - styleset.charbox.height;
+		}
 		if (scrollto > scrolltobottom)
 			scrollto = scrolltobottom;
 		NSLog(@"STV: pageDown one page: %.1f", scrollto);
+	}
+	else if (vlines.count && self.lastLaidOutLine < lines.count) {
+		GlkVisualLine *vln = [vlines lastObject];
+		scrollto = vln.ypos;
+		if (scrollto > scrolltobottom)
+			scrollto = scrolltobottom;
+		NSLog(@"STV: pageDown one page (unlaid case): %.1f", scrollto);
 	}
 	else {
 		scrollto = scrolltobottom;
 		NSLog(@"STV: pageDown to bottom: %.1f", scrollto);
 	}
 	
-	//[self setContentOffset:CGPointMake(0, scrollto) animated:YES];
+	[self setContentOffset:CGPointMake(0, scrollto) animated:YES];
 	
+	/*
 	[UIView beginAnimations:@"autoscroll" context:nil];
 	[UIView setAnimationDuration:0.3];
 	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
 	self.contentOffset = CGPointMake(0, scrollto);
 	[UIView commitAnimations];
+	 */
 }
 
 /* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the total height reaches ymax or the lines run out. Return a temporary array containing the new lines.
