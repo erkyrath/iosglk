@@ -401,7 +401,10 @@
 		top = newtop;
 	}
 	
+	#ifdef DEBUG
+	/* This verifies that I haven't screwed up the consistency of the lines, vlines, linesviews arrays. */
 	[self sanityCheck]; //###
+	#endif // DEBUG
 	
 	if (newcontent) {
 		NSLog(@"STV: new content time!");
@@ -573,6 +576,7 @@
 }
 
 - (void) sanityCheck {
+	#ifdef DEBUG
 	/*
 	NSLog(@"### STV sanity check:");
 	NSLog(@"   %d vlines:", vlines.count);
@@ -630,6 +634,7 @@
 			bottom = linev.ybottom;
 		}
 	}
+	#endif // DEBUG
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
