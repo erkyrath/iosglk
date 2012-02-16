@@ -115,7 +115,7 @@
 	[self setNeedsDisplay];
 }
 
-- (void) placeInputField:(UITextField *)field {
+- (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
 	GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
 	
 	CGSize charbox = styleset.charbox;
@@ -133,9 +133,11 @@
 	if (box.origin.y + box.size.height > self.bounds.size.height)
 		box.origin.y = self.bounds.size.height - box.size.height;
 		
-	field.frame = box;
-	if (!field.superview)
-		[self addSubview:field];
+	field.frame = CGRectMake(0, 0, box.size.width, box.size.height);
+	holder.contentSize = box.size;
+	holder.frame = box;
+	if (!holder.superview)
+		[self addSubview:holder];
 }
 
 @end

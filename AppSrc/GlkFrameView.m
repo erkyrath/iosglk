@@ -182,7 +182,8 @@
 	for (NSNumber *tag in closed) {
 		GlkWindowView *winv = [closed objectForKey:tag];
 		[winv removeFromSuperview];
-		winv.textfield = nil; /* detach this now */
+		winv.inputfield = nil; /* detach this now */
+		winv.inputholder = nil;
 		//### probably should detach all subviews
 		[windowviews removeObjectForKey:tag];
 	}
@@ -245,7 +246,7 @@
 	if (!winv)
 		return;
 	
-	CmdTextField *textfield = winv.textfield;
+	CmdTextField *textfield = winv.inputfield;
 	if (!textfield)
 		return;
 		
@@ -287,12 +288,12 @@
 	self.menuwintag = tag;
 	
 	GlkWindowView *winv = [windowviews objectForKey:menuwintag];
-	if (!winv || !winv.textfield || winv.textfield.singleChar)
+	if (!winv || !winv.inputfield || winv.inputfield.singleChar)
 		return;
 	
 	if (!menuview) {
-		CGRect rect = [winv.textfield rightViewRectForBounds:winv.textfield.bounds];
-		rect = [self convertRect:rect fromView:winv.textfield];
+		CGRect rect = [winv.inputfield rightViewRectForBounds:winv.inputfield.bounds];
+		rect = [self convertRect:rect fromView:winv.inputfield];
 		self.menuview = [[[InputMenuView alloc] initWithFrame:self.bounds buttonFrame:rect history:commandhistory] autorelease];
 		[menuview setMode:inputmenumode];
 		[self addSubview:menuview];
@@ -316,10 +317,10 @@
 	if (!menuwintag)
 		return;
 	GlkWindowView *winv = [windowviews objectForKey:menuwintag];
-	if (!winv || !winv.textfield || winv.textfield.singleChar)
+	if (!winv || !winv.inputfield || winv.inputfield.singleChar)
 		return;
 	
-	CmdTextField *textfield = winv.textfield;
+	CmdTextField *textfield = winv.inputfield;
 	if (replace) {
 		textfield.text = cmd;
 		return;

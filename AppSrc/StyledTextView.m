@@ -11,7 +11,7 @@
 #import "StyleSet.h"
 #import "GlkUtilities.h"
 
-#define LAYOUT_HEADROOM (100)
+#define LAYOUT_HEADROOM (1000)
 #define STRIPE_WIDTH (100)
 
 @implementation StyledTextView
@@ -277,11 +277,12 @@
 	CGSize oldcontentsize = self.contentSize;
 	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width || upextension > 0) {
 		if (upextension > 0) {
+			NSLog(@"STV: up-extension by %.1f; adjusting contentOffset", upextension);
 			CGPoint offset = self.contentOffset;
 			offset.y += upextension;
 			self.contentOffset = offset;
 		}
-		
+
 		NSLog(@"STV: contentSize now %.1f,%.1f", visbounds.size.width, contentheight);
 		self.contentSize = CGSizeMake(visbounds.size.width, contentheight);
 		/* Recompute the visual bounds. */
@@ -298,15 +299,18 @@
 	}
 	if (endvlineseen < lastseen+1)
 		endvlineseen = lastseen+1;
-	NSLog(@"STV: endvlineseen is now %d of %d", endvlineseen, vlines.count);
+	//NSLog(@"STV: endvlineseen is now %d of %d", endvlineseen, vlines.count);
 	
 	/* If there is a textfield, push it to the new vline bottom. */
-	CmdTextField *textfield = self.superviewAsBufferView.textfield;
-	if (textfield) {
+	CmdTextField *inputfield = self.superviewAsBufferView.inputfield;
+	UIScrollView *inputholder = self.superviewAsBufferView.inputholder;
+	if (inputholder) {
 		CGRect rect = [self placeForInputField];
-		if (!CGRectEqualToRect(textfield.frame, rect)) {
+		if (!CGRectEqualToRect(inputholder.frame, rect)) {
 			NSLog(@"STV: input field shifts to %@", StringFromRect(rect));
-			textfield.frame = rect;
+			inputfield.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+			inputholder.contentSize = rect.size;
+			inputholder.frame = rect;
 		}
 	}
 	
@@ -404,12 +408,48 @@
 	#ifdef DEBUG
 	/* This verifies that I haven't screwed up the consistency of the lines, vlines, linesviews arrays. */
 	[self sanityCheck]; //###
-	#endif // DEBUG
 	
+	#endif // DEBUG
 	if (newcontent) {
 		NSLog(@"STV: new content time!");
 		newcontent = NO;
+		//[self performSelectorOnMainThread:@selector(pageDown) withObject:nil waitUntilDone:NO];
 	}
+}
+
+- (void) debugDisplay {
+	CGRect visbounds = self.bounds;
+	CGSize contentsize = self.contentSize;
+	CGFloat scrolltobottom = contentsize.height - visbounds.size.height;
+	NSLog(@"DEBUG: STV is at %.1f of %.1f (contentheight %.1f - visheight %.1f)", self.contentOffset.y, scrolltobottom, contentsize.height, visbounds.size.height);
+}
+
+- (void) pageDown {
+	CGRect visbounds = self.bounds;
+	CGSize contentsize = self.contentSize;
+	CGFloat scrolltobottom = contentsize.height - visbounds.size.height;
+	CGFloat scrollto;
+	
+	NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
+	
+	if (endvlineseen < vlines.count || self.lastLaidOutLine < lines.count) {
+		scrollto = self.contentOffset.y + visbounds.size.height - 24;
+		if (scrollto > scrolltobottom)
+			scrollto = scrolltobottom;
+		NSLog(@"STV: pageDown one page: %.1f", scrollto);
+	}
+	else {
+		scrollto = scrolltobottom;
+		NSLog(@"STV: pageDown to bottom: %.1f", scrollto);
+	}
+	
+	//[self setContentOffset:CGPointMake(0, scrollto) animated:YES];
+	
+	[UIView beginAnimations:@"autoscroll" context:nil];
+	[UIView setAnimationDuration:0.3];
+	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
+	self.contentOffset = CGPointMake(0, scrollto);
+	[UIView commitAnimations];
 }
 
 /* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the total height reaches ymax or the lines run out. Return a temporary array containing the new lines.

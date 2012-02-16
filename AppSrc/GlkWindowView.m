@@ -23,7 +23,8 @@
 @implementation GlkWindowView
 
 @synthesize win;
-@synthesize textfield;
+@synthesize inputfield;
+@synthesize inputholder;
 @synthesize morewaiting;
 
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win {
@@ -43,7 +44,6 @@
 	self = [super initWithFrame:box];
 	if (self) {
 		self.win = winref;
-		self.textfield = nil;
 		input_request_id = 0;
 	}
 	return self;
@@ -51,7 +51,8 @@
 
 - (void) dealloc {
 	input_request_id = 0;
-	self.textfield = nil;
+	self.inputfield = nil;
+	self.inputholder = nil;
 	self.win = nil;
 	[super dealloc];
 }
@@ -75,18 +76,22 @@
 		(If an input request is cancelled in one window and started in a different window, the keyboard will roll down. That's unfortunate, but we'll fix it later. It will require some coordinating between updateFromWindowInputs calls.) */
 	
 	if (!wants_input) {
-		if (textfield) {
+		if (inputfield) {
 			/* The window doesn't want any input at all. Get rid of the textfield. */
 			[self.superviewAsFrameView removeInputMenu];
-			[textfield removeFromSuperview];
-			self.textfield = nil;
+			[inputfield removeFromSuperview];
+			[inputholder removeFromSuperview];
+			self.inputfield = nil;
+			self.inputholder = nil;
 			input_request_id = 0;
 		}
 	}
 	
 	if (wants_input) {
-		if (!textfield) {
-			self.textfield = [[[CmdTextField alloc] initWithFrame:CGRectZero] autorelease];
+		if (!inputfield) {
+			self.inputfield = [[[CmdTextField alloc] initWithFrame:CGRectZero] autorelease];
+			self.inputholder = [[[UIScrollView alloc] initWithFrame:CGRectZero] autorelease];
+			[inputholder addSubview:inputfield];
 			input_request_id = 0;
 		}
 		
@@ -95,15 +100,15 @@
 			input_request_id = win.input_request_id;
 			input_single_char = win.char_request;
 			
-			[textfield setUpForWindow:self singleChar:input_single_char];
+			[inputfield setUpForWindow:self singleChar:input_single_char];
 			
 			/* This places the field correctly, and adds it as a subview if it isn't already. */
-			[self placeInputField:textfield];
+			[self placeInputField:inputfield holder:inputholder];
 		}
 	}
 }
 
-- (void) placeInputField:(UITextField *)field {
+- (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
 	[NSException raise:@"GlkException" format:@"placeInputField not implemented"];
 }
 

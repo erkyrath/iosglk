@@ -60,9 +60,9 @@
 
 - (void) hideKeyboard {
 	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
-		if (winv.textfield && [winv.textfield isFirstResponder]) {
+		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
 			NSLog(@"Hiding keyboard for %@", winv);
-			[winv.textfield resignFirstResponder];
+			[winv.inputfield resignFirstResponder];
 			break;
 		}
 	}
@@ -72,18 +72,18 @@
 	GlkWindowView *firstinputview = nil;
 	
 	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
-		if (winv.textfield && [winv.textfield isFirstResponder]) {
+		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
 			NSLog(@"Hiding keyboard for %@", winv);
-			[winv.textfield resignFirstResponder];
+			[winv.inputfield resignFirstResponder];
 			break;
 		}
-		if (winv.textfield && !firstinputview)
+		if (winv.inputfield && !firstinputview)
 			firstinputview = winv;
 	}
 	
 	if (firstinputview) {
 		NSLog(@"Reshowing keyboard for %@", firstinputview);
-		[firstinputview.textfield becomeFirstResponder];
+		[firstinputview.inputfield becomeFirstResponder];
 	}
 }
 

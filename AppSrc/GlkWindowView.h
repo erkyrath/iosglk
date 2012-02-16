@@ -14,7 +14,8 @@
 @interface GlkWindowView : UIView <UITextFieldDelegate> {
 	GlkWindow *win;
 	
-	CmdTextField *textfield; /* if input is happening (but not necessarily a subview of this view) */
+	CmdTextField *inputfield; /* if input is happening (but not necessarily a subview of this view) */
+	UIScrollView *inputholder; /* terrible hack: all textfields must be wrapped in a UIScrollView container of the same size. */
 	int input_request_id; /* matches the value in the GlkWindow if this input field is current */
 	BOOL input_single_char; /* if we're grabbing character (rather than line) input */
 	
@@ -22,7 +23,8 @@
 }
 
 @property (nonatomic, retain) GlkWindow *win;
-@property (nonatomic, retain) CmdTextField *textfield;
+@property (nonatomic, retain) CmdTextField *inputfield;
+@property (nonatomic, retain) UIScrollView *inputholder;
 @property (nonatomic) BOOL morewaiting;
 
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win;
@@ -32,7 +34,7 @@
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;
 
-- (void) placeInputField:(UITextField *)field;
+- (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder;
 - (void) textFieldContinueReturn:(UITextField *)textField;
 
 @end

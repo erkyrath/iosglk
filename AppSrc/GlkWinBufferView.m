@@ -100,12 +100,15 @@
 
 /* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place. Also we'll want to scroll down.
 */
-- (void) placeInputField:(UITextField *)field {
+- (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
 	CGRect box = [textview placeForInputField];
 	NSLog(@"WBV: input field goes to %@", StringFromRect(box));
-	field.frame = box;
-	if (!field.superview)
-		[textview addSubview:field];
+	
+	field.frame = CGRectMake(0, 0, box.size.width, box.size.height);
+	holder.contentSize = box.size;
+	holder.frame = box;
+	if (!holder.superview)
+		[self addSubview:holder];
 
 	//###[self scrollToBottom:YES];
 }
