@@ -224,6 +224,8 @@
 	
 	/* Extend vlines up, similarly. */
 	
+	CGFloat upextension = 0;
+	
 	CGFloat top = visbottom;
 	int startlaid = lines.count;
 	if (vlines.count > 0) {
@@ -244,17 +246,17 @@
 		}
 		
 		/* We're inserting at the beginning of the vlines array, so the existing vlines all shift downwards. */
-		CGFloat offset = newypos - styleset.margins.top;
-		NSLog(@"### shifting the universe down %.1f", offset);
+		upextension = newypos - styleset.margins.top;
+		NSLog(@"### shifting the universe down %.1f", upextension);
 		for (GlkVisualLine *vln in vlines) {
 			vln.vlinenum += newcount;
-			vln.ypos += offset;
+			vln.ypos += upextension;
 		}
 		for (VisualLinesView *linev in linesviews) {
 			linev.vlinestart += newcount;
 			linev.vlineend += newcount;
-			linev.ytop += offset;
-			linev.ybottom += offset;
+			linev.ytop += upextension;
+			linev.ybottom += upextension;
 			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 		}
 
@@ -263,12 +265,17 @@
 		NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
 	
-	/* Adjust the contentSize to match newly-created vlines. */
-	//### if vlines were added on top, this should adjust contentOffset as well!
+	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. */
 	
 	CGFloat contentheight = self.totalHeight;
 	CGSize oldcontentsize = self.contentSize;
-	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width) {
+	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width || upextension > 0) {
+		if (upextension > 0) {
+			CGPoint offset = self.contentOffset;
+			offset.y += upextension;
+			self.contentOffset = offset;
+		}
+		
 		NSLog(@"STV: contentSize now %.1f,%.1f", visbounds.size.width, contentheight);
 		self.contentSize = CGSizeMake(visbounds.size.width, contentheight);
 		/* Recompute the visual bounds. */
@@ -531,6 +538,7 @@
 				[result addObject:vln];
 			}
 			else {
+				/* If we're laying out in reverse order, the vlines for a single raw line still go in forwards order. So we insert at index 0, then 1, then 2, then (for the next raw line) 0, 1, ... */
 				[result insertObject:vln atIndex:vlineforthis];
 			}
 			vlineforthis++;
