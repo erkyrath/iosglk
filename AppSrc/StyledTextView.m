@@ -51,6 +51,17 @@
 	return (GlkWinBufferView *)self.superview;
 }
 
+/* Return the scroll position in the page, between 0.0 and 1.0. This is only an approximation, because we don't always have the whole page laid out (into vlines). If the page content is empty or shorter than its height, returns 0.
+ */
+- (CGFloat) scrollPercentage {
+	CGSize contentsize = self.contentSize;
+	CGSize vissize = self.bounds.size;
+	if (contentsize.height <= vissize.height)
+		return 0;
+	CGFloat res = self.contentOffset.y / (contentsize.height - vissize.height);
+	return res;
+}
+
 /* The total height of the window, including rendered text and margins. 
 */
 - (CGFloat) totalHeight {
@@ -163,6 +174,8 @@
 	CGFloat visbottom = visbounds.origin.y + visbounds.size.height;
 	//NSLog(@"STV: layoutSubviews to visbottom %.1f (%@)", visbottom, StringFromRect(self.bounds));
 	
+	/* First step: check the page width. If it's changed, discard all layout and start over. (Changing the margins has the same effect.) */
+	
 	CGFloat newtotal = visbounds.size.width;
 	CGFloat newwrap = newtotal - styleset.margintotal.width;
 	if (totalwidth != newtotal || wrapwidth != newwrap) {
@@ -179,8 +192,12 @@
 		[linesviews removeAllObjects];
 	}
 	
-	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.) */
-	//### This should be smart enough to no-op if vlines is empty but we're near the bottom.
+	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.) 
+	 
+		Special case: if there are no vlines at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. (If there are vlines, we always extend that range both ways.) */
+
+	BOOL frombottom = (vlines.count == 0 && self.scrollPercentage > 0.5);
+	if (frombottom) NSLog(@"#### special frombottom case!");
 	
 	CGFloat bottom = styleset.margins.top;
 	int endlaid = 0;
@@ -190,12 +207,15 @@
 		endlaid = vln.linenum+1;
 	}
 	
-	NSMutableArray *newlines = [self layoutFromLine:endlaid forward:YES yStart:bottom yMax:visbottom+LAYOUT_HEADROOM];
+	NSMutableArray *newlines = nil;
+	if (!frombottom)
+		newlines = [self layoutFromLine:endlaid forward:YES yMax:(visbottom-bottom)+LAYOUT_HEADROOM];
 	if (newlines && newlines.count) {
 		int oldcount = vlines.count;
 		int newcount = 0;
 		for (GlkVisualLine *vln in newlines) {
 			vln.vlinenum = oldcount+newcount;
+			vln.ypos += bottom;
 			newcount++;
 		}
 		[vlines addObjectsFromArray:newlines];
@@ -203,29 +223,29 @@
 	}
 	
 	/* Extend vlines up, similarly. */
-	//### Similarly, this should run from the end if we're empty.
 	
-	CGFloat top = styleset.margins.top;
-	int startlaid = 0;
+	CGFloat top = visbottom;
+	int startlaid = lines.count;
 	if (vlines.count > 0) {
 		GlkVisualLine *vln = [vlines objectAtIndex:0];
 		top = vln.ypos;
 		startlaid = vln.linenum;
 	}
 	
-	newlines = [self layoutFromLine:startlaid-1 forward:NO yStart:top yMax:visbounds.origin.y-LAYOUT_HEADROOM];
+	newlines = [self layoutFromLine:startlaid-1 forward:NO yMax:(top-visbounds.origin.y)+LAYOUT_HEADROOM];
 	if (newlines && newlines.count) {
 		int newcount = 0;
+		CGFloat newypos = styleset.margins.top;
 		for (GlkVisualLine *vln in newlines) {
 			vln.vlinenum = newcount;
+			vln.ypos = newypos;
+			newypos += vln.height;
 			newcount++;
 		}
 		
-		//### piecewise-reverse newlines!
-		
 		/* We're inserting at the beginning of the vlines array, so the existing vlines all shift downwards. */
-		GlkVisualLine *lastvln = [newlines lastObject];
-		CGFloat offset = lastvln.bottom - styleset.margins.top;
+		CGFloat offset = newypos - styleset.margins.top;
+		NSLog(@"### shifting the universe down %.1f", offset);
 		for (GlkVisualLine *vln in vlines) {
 			vln.vlinenum += newcount;
 			vln.ypos += offset;
@@ -233,6 +253,9 @@
 		for (VisualLinesView *linev in linesviews) {
 			linev.vlinestart += newcount;
 			linev.vlineend += newcount;
+			linev.ytop += offset;
+			linev.ybottom += offset;
+			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 		}
 
 		NSRange range = {0,0};
@@ -263,8 +286,10 @@
 		}
 	}
 	
-	/* Now, adjust the bottom of linesviews up or down (deleting or adding VisualLinesViews) until it reaches the bottom of visbounds. */
-	//### again, smarten for ending
+	/* Now, adjust the bottom of linesviews up or down (deleting or adding VisualLinesViews) until it reaches the bottom of visbounds. 
+	 
+		Special case (much like the last case): if there are no linesviews at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. */
+	frombottom = (linesviews.count == 0 && self.scrollPercentage > 0.5);
 	
 	endlaid = 0;
 	bottom = 0;
@@ -275,12 +300,12 @@
 			bottom = linev.ybottom;
 			break;
 		}
-		NSLog(@"### removing last lineview (%d), yrange is %.1f-%.1f", linesviews.count-1, linev.ytop, linev.ybottom);
+		//NSLog(@"### removing last lineview (%d), yrange is %.1f-%.1f", linesviews.count-1, linev.ytop, linev.ybottom);
 		[linev removeFromSuperview];
 		[linesviews removeLastObject];
 	}
 	
-	while (bottom < visbottom && endlaid < vlines.count) {
+	while ((!frombottom) && bottom < visbottom && endlaid < vlines.count) {
 		int newend = endlaid;
 		CGFloat newbottom = bottom;
 		while (newbottom < bottom+STRIPE_WIDTH && newend < vlines.count) {
@@ -298,7 +323,7 @@
 			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 			[linesviews addObject:linev];
 			[self insertSubview:linev atIndex:0];
-			NSLog(@"### appending lineview (%d), yrange is %.1f-%.1f", linesviews.count-1, linev.ytop, linev.ybottom);
+			//NSLog(@"### appending lineview (%d), yrange is %.1f-%.1f", linesviews.count-1, linev.ytop, linev.ybottom);
 		}
 		
 		endlaid = newend;
@@ -307,8 +332,14 @@
 	
 	/* Similarly, adjust the top of linesviews up or down. */
 	
-	startlaid = 0;
-	top = 0;
+	if (!vlines.count) {
+		startlaid = 0;
+		top = 0;
+	}
+	else {
+		startlaid = vlines.count;
+		top = self.totalHeight;
+	}
 	while (linesviews.count) {
 		VisualLinesView *linev = [linesviews objectAtIndex:0];
 		if (linev.ybottom >= visbounds.origin.y) {
@@ -316,7 +347,7 @@
 			top = linev.ytop;
 			break;
 		}
-		NSLog(@"### removing first lineview, yrange is %.1f-%.1f", linev.ytop, linev.ybottom);
+		//NSLog(@"### removing first lineview, yrange is %.1f-%.1f", linev.ytop, linev.ybottom);
 		[linev removeFromSuperview];
 		[linesviews removeObjectAtIndex:0];
 	}
@@ -339,7 +370,7 @@
 			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 			[linesviews insertObject:linev atIndex:0];
 			[self insertSubview:linev atIndex:0];
-			NSLog(@"### prepending lineview, yrange is %.1f-%.1f", linev.ytop, linev.ybottom);
+			//NSLog(@"### prepending lineview, yrange is %.1f-%.1f", linev.ytop, linev.ybottom);
 		}
 		
 		startlaid = newstart;
@@ -349,26 +380,28 @@
 	[self sanityCheck]; //###
 }
 
-/* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the yposition reaches ymax or the lines run out. Return a temporary array containing the new lines.
+/* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the total height reaches ymax or the lines run out. Return a temporary array containing the new lines.
 */
-- (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yStart:(CGFloat)ystart yMax:(CGFloat)ymax {
+- (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax {
 	if (wrapwidth <= 4*styleset.charbox.width) {
 		/* This isn't going to work out. */
 		//NSLog(@"STV: too narrow; refusing layout.");
 		return nil;
 	}
 	
-	int loopincrement;
-	
 	/* If the loop won't run, we'll save ourselves the effort. */
+	if (ymax <= 0)
+		return nil;
+	
+	int loopincrement;
 	if (forward) {
 		loopincrement = 1;
-		if (startline >= lines.count || ystart >= ymax)
+		if (startline >= lines.count)
 			return nil;
 	}
 	else {
 		loopincrement = -1;
-		if (startline < 0 || ystart < ymax)
+		if (startline < 0)
 			return nil;
 	}
 	
@@ -377,19 +410,20 @@
 	NSMutableArray *result = [NSMutableArray arrayWithCapacity:32]; // vlines laid out
 	NSMutableArray *tmparr = [NSMutableArray arrayWithCapacity:64]; // words in a line
 	
-	CGFloat ypos = ystart;
+	CGFloat ypos = 0;
 	
-	for (int snum = startline; YES; snum += loopincrement) {
+	for (int snum = startline; ypos < ymax; snum += loopincrement) {
 		if (forward) {
-			if (snum >= lines.count || ypos >= ymax)
+			if (snum >= lines.count)
 				break;
 		}
 		else {
-			if (snum < 0 || ypos < ymax)
+			if (snum < 0)
 				break;
 		}
 		
 		GlkStyledLine *sln = [lines objectAtIndex:snum];
+		int vlineforthis = 0;
 		
 		int spannum = -1;
 		GlkStyledString *sstr = nil;
@@ -493,7 +527,13 @@
 			vln.height = maxheight;
 			ypos += maxheight;
 			
-			[result addObject:vln];
+			if (forward) {
+				[result addObject:vln];
+			}
+			else {
+				[result insertObject:vln atIndex:vlineforthis];
+			}
+			vlineforthis++;
 			[tmparr removeAllObjects];
 		}
 	}
@@ -511,22 +551,25 @@
 	}
 	 */
 	
-	int count = 0;
-	int lastraw = -1;
-	CGFloat bottom = styleset.margins.top;
-	for (GlkVisualLine *vln in vlines) {
-		if (vln.vlinenum != count)
-			NSLog(@"STV-SANITY: vlinenum %d is not %d", vln.vlinenum, count);
-		if (vln.linenum != lastraw && vln.linenum != lastraw+1)
-			NSLog(@"STV-SANITY: linenum %d is not %d or +1", vln.linenum, lastraw);
-		if (vln.ypos != bottom)
-			NSLog(@"STV-SANITY: ypos %.1f is not %.1f", vln.ypos, bottom);
-		bottom = vln.bottom;
-		lastraw = vln.linenum;
-		count++;
+	if (vlines.count) {
+		GlkVisualLine *firstvln = [vlines objectAtIndex:0];
+		int count = 0;
+		int lastraw = firstvln.linenum-1;
+		CGFloat bottom = styleset.margins.top;
+		for (GlkVisualLine *vln in vlines) {
+			if (vln.vlinenum != count)
+				NSLog(@"STV-SANITY: (%d) vlinenum %d is not %d", count, vln.vlinenum, count);
+			if (vln.linenum != lastraw && vln.linenum != lastraw+1)
+				NSLog(@"STV-SANITY: (%d) linenum %d is not %d or +1", count, vln.linenum, lastraw);
+			if (vln.ypos != bottom)
+				NSLog(@"STV-SANITY: (%d) ypos %.1f is not %.1f", count, vln.ypos, bottom);
+			bottom = vln.bottom;
+			lastraw = vln.linenum;
+			count++;
+		}
 	}
 	
-	count = 0;
+	int count = 0;
 	for (UIView *subview in self.subviews) {
 		if ([subview isKindOfClass:[VisualLinesView class]])
 			count++;
@@ -538,7 +581,7 @@
 	if (linesviews.count > 0) {
 		VisualLinesView *firstlinev = [linesviews objectAtIndex:0];
 		int lastv = firstlinev.vlinestart;
-		bottom = firstlinev.ytop;
+		CGFloat bottom = firstlinev.ytop;
 		
 		for (VisualLinesView *linev in linesviews) {
 			if (linev.vlines.count == 0)

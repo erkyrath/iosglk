@@ -29,7 +29,7 @@
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
 - (CGFloat) totalHeight;
 - (void) updateWithLines:(NSArray *)addlines;
-- (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yStart:(CGFloat)ystart yMax:(CGFloat)ymax;
+- (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax;
 - (void) sanityCheck;
 - (CGRect) placeForInputField;
 
