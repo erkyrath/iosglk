@@ -132,12 +132,14 @@
 */
 - (void) updateWithLines:(NSArray *)addlines {
 	NSLog(@"STV: updating, adding %d lines", addlines.count);
+	newcontent = YES;
 	
 	/* First, add the data to the raw (unformatted) lines array. This may include clear operations, although hopefully only one per invocation. */
 	for (GlkStyledLine *sln in addlines) {
 		if (sln.status == linestat_ClearPage) {
 			[lines removeAllObjects];
 			[vlines removeAllObjects];
+			endvlineseen = 0;
 			/* A ClearPage line can contain text as well, so we continue. */
 		}
 		
@@ -152,6 +154,8 @@
 					break;
 				[vlines removeLastObject];
 			}
+			if (endvlineseen > vlines.count)
+				endvlineseen = vlines.count;
 		}
 		else {
 			[lines addObject:sln];
@@ -173,7 +177,7 @@
 	CGRect visbounds = self.bounds;
 	CGFloat visbottom = visbounds.origin.y + visbounds.size.height;
 	//NSLog(@"STV: layoutSubviews to visbottom %.1f (%@)", visbottom, StringFromRect(self.bounds));
-	
+		
 	/* First step: check the page width. If it's changed, discard all layout and start over. (Changing the margins has the same effect.) */
 	
 	CGFloat newtotal = visbounds.size.width;
@@ -190,6 +194,8 @@
 			[linev removeFromSuperview];
 		}
 		[linesviews removeAllObjects];
+		
+		endvlineseen = 0;
 	}
 	
 	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.) 
@@ -252,6 +258,7 @@
 			vln.vlinenum += newcount;
 			vln.ypos += upextension;
 		}
+		endvlineseen += newcount;
 		for (VisualLinesView *linev in linesviews) {
 			linev.vlinestart += newcount;
 			linev.vlineend += newcount;
@@ -266,7 +273,6 @@
 	}
 	
 	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. */
-	
 	CGFloat contentheight = self.totalHeight;
 	CGSize oldcontentsize = self.contentSize;
 	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width || upextension > 0) {
@@ -282,6 +288,17 @@
 		visbounds = self.bounds;
 		visbottom = visbounds.origin.y + visbounds.size.height;
 	}
+	
+	/* Locate the last unseen line (erring on the "seen" side), and bump endvlineseen. */
+	int lastseen;
+	for (lastseen = vlines.count-1; lastseen >= 0; lastseen--) {
+		GlkVisualLine *vln = [vlines objectAtIndex:lastseen];
+		if (vln.bottom-1 <= visbottom)
+			break;
+	}
+	if (endvlineseen < lastseen+1)
+		endvlineseen = lastseen+1;
+	NSLog(@"STV: endvlineseen is now %d of %d", endvlineseen, vlines.count);
 	
 	/* If there is a textfield, push it to the new vline bottom. */
 	CmdTextField *textfield = self.superviewAsBufferView.textfield;
@@ -385,6 +402,11 @@
 	}
 	
 	[self sanityCheck]; //###
+	
+	if (newcontent) {
+		NSLog(@"STV: new content time!");
+		newcontent = NO;
+	}
 }
 
 /* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the total height reaches ymax or the lines run out. Return a temporary array containing the new lines.

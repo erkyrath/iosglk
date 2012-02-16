@@ -17,10 +17,13 @@
 	CmdTextField *textfield; /* if input is happening (but not necessarily a subview of this view) */
 	int input_request_id; /* matches the value in the GlkWindow if this input field is current */
 	BOOL input_single_char; /* if we're grabbing character (rather than line) input */
+	
+	BOOL morewaiting; /* only used for buffer windows */
 }
 
 @property (nonatomic, retain) GlkWindow *win;
 @property (nonatomic, retain) CmdTextField *textfield;
+@property (nonatomic) BOOL morewaiting;
 
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win;
 

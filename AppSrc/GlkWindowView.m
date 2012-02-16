@@ -24,6 +24,7 @@
 
 @synthesize win;
 @synthesize textfield;
+@synthesize morewaiting;
 
 + (GlkWindowView *) viewForWindow:(GlkWindow *)win {
 	switch (win.type) {

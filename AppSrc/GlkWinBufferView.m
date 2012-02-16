@@ -95,7 +95,7 @@
 	
 	[textview setNeedsDisplay];
 	
-	[self scrollToBottom:YES];
+	//###[self scrollToBottom:YES];
 }
 
 /* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place. Also we'll want to scroll down.
@@ -107,7 +107,7 @@
 	if (!field.superview)
 		[textview addSubview:field];
 
-	[self scrollToBottom:YES];
+	//###[self scrollToBottom:YES];
 }
 
 @end
