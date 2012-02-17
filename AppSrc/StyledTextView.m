@@ -472,7 +472,7 @@
 - (BOOL) pageToBottom {
 	CGRect visbounds = self.bounds;
 	CGSize contentsize = self.contentSize;
-	CGFloat scrolltobottom = contentsize.height - visbounds.size.height;
+	CGFloat scrolltobottom = MAX(0, contentsize.height - visbounds.size.height);
 	
 	if (self.contentOffset.y >= scrolltobottom)
 		return NO;
@@ -486,7 +486,7 @@
 - (BOOL) pageDown {
 	CGRect visbounds = self.bounds;
 	CGSize contentsize = self.contentSize;
-	CGFloat scrolltobottom = contentsize.height - visbounds.size.height;
+	CGFloat scrolltobottom = MAX(0, contentsize.height - visbounds.size.height);
 	CGFloat scrollto;
 	
 	NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
