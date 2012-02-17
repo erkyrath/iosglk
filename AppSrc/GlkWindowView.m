@@ -123,6 +123,21 @@
 /* Delegate methods for UITextField: */
 
 - (BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)str {
+	if ([self isKindOfClass:[GlkWinBufferView class]]) {
+		GlkWinBufferView *winv = (GlkWinBufferView *)self;
+		if ([winv pageDownOnInput]) {
+			NSLog(@"### pageDownOnInput (more prompt)");
+			if (input_single_char) {
+				NSLog(@"### ...eating single-char input");
+				return NO;
+			}
+			if ([@" " isEqualToString:str]) {
+				NSLog(@"### ...eating space");
+				return NO;
+			}
+		}
+	}
+	
 	if (input_single_char) {
 		if (str.length) {
 			/* We should crunch utf16 characters here. */

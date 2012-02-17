@@ -77,6 +77,18 @@
 	//###[self scrollToBottom:YES];
 }
 
+/* This is invoked whenever the user types something. If we're at a "more" prompt, it pages down once, and returns YES. Otherwise, it pages all the way to the bottom and returns NO.
+ */
+- (BOOL) pageDownOnInput {
+	if (textview.moreToSee) {
+		[textview pageDown];
+		return YES;
+	}
+	
+	[textview pageToBottom];
+	return NO;
+}
+
 - (void) setMoreFlag:(BOOL)flag {
 	if (morewaiting == flag)
 		return;

@@ -37,6 +37,8 @@
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax;
 - (void) sanityCheck;
 - (CGRect) placeForInputField;
+- (BOOL) pageDown;
+- (BOOL) pageToBottom;
 
 @end
 

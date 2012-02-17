@@ -21,4 +21,6 @@
 @property (nonatomic, retain) UIView *moreview;
 @property (nonatomic) BOOL nowcontentscrolling;
 
+- (BOOL) pageDownOnInput;
+
 @end

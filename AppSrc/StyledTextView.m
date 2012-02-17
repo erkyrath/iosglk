@@ -450,6 +450,7 @@
 	}
 }
 
+//###
 - (void) debugDisplay {
 	CGRect visbounds = self.bounds;
 	CGSize contentsize = self.contentSize;
@@ -457,7 +458,23 @@
 	NSLog(@"DEBUG: STV is at %.1f of %.1f (contentheight %.1f - visheight %.1f)", self.contentOffset.y, scrolltobottom, contentsize.height, visbounds.size.height);
 }
 
-- (void) pageDown {
+/* Page to the bottom, if necessary. Returns YES if this occurred, NO if we were already there.
+ */
+- (BOOL) pageToBottom {
+	CGRect visbounds = self.bounds;
+	CGSize contentsize = self.contentSize;
+	CGFloat scrolltobottom = contentsize.height - visbounds.size.height;
+	
+	if (self.contentOffset.y >= scrolltobottom)
+		return NO;
+
+	[self setContentOffset:CGPointMake(0, scrolltobottom) animated:YES];
+	return YES;
+}
+
+/* Page down, if necessary. Returns YES if further paging is necessary, or NO if we're at the bottom.
+ */
+- (BOOL) pageDown {
 	CGRect visbounds = self.bounds;
 	CGSize contentsize = self.contentSize;
 	CGFloat scrolltobottom = contentsize.height - visbounds.size.height;
@@ -508,6 +525,8 @@
 					 animations:^{ self.contentOffset = CGPointMake(0, scrollto); }
 					 completion:nil];
 	 */
+	
+	return (scrollto < scrolltobottom);
 }
 
 /* Do the work of laying out the text. Start with line number startline (in the lines array); continue until the total height reaches ymax or the lines run out. Return a temporary array containing the new lines.
