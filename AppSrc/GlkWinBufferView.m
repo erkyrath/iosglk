@@ -110,6 +110,8 @@
 		[textview addSubview:holder];
 }
 
+/* UIScrollView delegate methods: */
+
 - (void) scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
 	if (nowcontentscrolling && textview.moreToSee)
 		[self setMoreFlag:YES];

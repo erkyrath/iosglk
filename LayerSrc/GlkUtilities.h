@@ -17,6 +17,7 @@ extern NSString *StringToDumbEncoding(NSString *str);
 
 extern CGSize CGSizeEven(CGSize size);
 extern CGPoint RectCenter(CGRect rect);
+extern CGFloat DistancePoints(CGPoint p1, CGPoint p2);
 
 extern void nslogc(char *str);
 extern void sleep_curthread(NSTimeInterval val);

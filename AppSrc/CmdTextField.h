@@ -20,5 +20,6 @@
 
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar;
 - (BOOL) singleChar;
+- (void) applyInputString:(NSString *)cmd replace:(BOOL)replace;
 
 @end

@@ -37,6 +37,8 @@
 		self.alwaysBounceVertical = YES;
 		self.contentSize = self.bounds.size;
 		self.backgroundColor = styleset.backgroundcolor;
+		
+		taplastat = 0; // the past
 	}
 	return self;
 }
@@ -764,8 +766,97 @@
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	//NSLog(@"STV: Touch began");
+	//NSLog(@"STV: Touch began (%d)", event.allTouches.count);
+	if (event.allTouches.count > 1) {
+		taptracking = NO;
+		return;
+	}
+	
+	NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+	if (now - taplastat > 0.5)
+		tapnumber = 0;
+	
+	taptracking = YES;
+	taplastat = now;
+	UITouch *touch = [[event touchesForView:self] anyObject];
+	taploc = [touch locationInView:self];
+	
+	//### start timer for select-loupe popup
 }
+
+- (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	if (!taptracking)
+		return;
+	
+	//NSLog(@"STV: Touch moved (%d)", event.allTouches.count);
+	UITouch *touch = [[event touchesForView:self] anyObject];
+	CGPoint loc = [touch locationInView:self];
+	
+	if (DistancePoints(loc, taploc) > 20) {
+		//NSLog(@"STV: Touch moved too far");
+		taptracking = NO;
+		taplastat = 0; // the past
+		return;
+	}
+}
+
+- (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	if (!taptracking)
+		return;
+	
+	//NSLog(@"STV: Touch ended");
+	taptracking = NO;
+	
+	NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+	if (now - taplastat > 0.75) {
+		//NSLog(@"STV: Touch took too long");
+		taptracking = NO;
+		taplastat = 0; // the past
+		return;		
+	}
+	
+	tapnumber++;
+	taplastat = now;
+	NSLog(@"### tap %d!", tapnumber);
+	
+	if (self.moreToSee) {
+		/* If paging, all taps scroll down. */
+		tapnumber = 0;
+		[self pageDown];
+		return;
+	}
+	
+	GlkWinBufferView *winv = [self superviewAsBufferView];
+	
+	/* If there is no input line, ignore single-tap. On double-tap, scroll to bottom. */
+	if (!winv.inputfield) {
+		if (tapnumber >= 2) {
+			tapnumber = 0;
+			[self pageToBottom];
+		}
+		return;
+	}
+	
+	/* Otherwise, single-tap focuses the input line. On double-tap, paste a word in. */
+	if (tapnumber == 1) {
+		//tapnumber = 0;
+		if (![winv.inputfield isFirstResponder]) {
+			[self pageToBottom];
+			[winv.inputfield becomeFirstResponder];
+		}
+	}
+	else {
+		tapnumber = 0;
+		[winv.inputfield applyInputString:@"###" replace:NO];
+	}
+}
+
+- (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+	//NSLog(@"STV: Touch cancelled");
+	taptracking = NO;
+	taplastat = 0; // the past
+}
+
 
 @end
 

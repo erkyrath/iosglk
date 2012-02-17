@@ -125,6 +125,12 @@ CGPoint RectCenter(CGRect rect) {
 	return pt;
 }
 
+CGFloat DistancePoints(CGPoint p1, CGPoint p2) {
+	CGFloat dx = p1.x - p2.x;
+	CGFloat dy = p1.y - p2.y;
+	return hypotf(dx, dy);
+}
+
 CGSize CGSizeEven(CGSize size) {
 	int val = ceilf(size.width);
 	if (val & 1)

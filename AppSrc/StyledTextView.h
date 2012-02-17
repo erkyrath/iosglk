@@ -24,6 +24,11 @@
 	BOOL newcontent; /* True if new text has been added recently. This is cleared by the subsequent layoutSubviews. */
 	BOOL wasclear; /* True if the new content is *entirely* new -- i.e., the screen was cleared this update. */
 	int endvlineseen; /* End of the range of vlines that are known to have been seen. (Or, the index of the first unseen vline.) If this is equal to vlines.count, the whole page is seen. */
+	
+	BOOL taptracking;
+	CGPoint taploc;
+	NSTimeInterval taplastat;
+	int tapnumber;
 }
 
 @property (nonatomic, retain) NSMutableArray *lines;

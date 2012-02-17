@@ -317,36 +317,10 @@
 	if (!menuwintag)
 		return;
 	GlkWindowView *winv = [windowviews objectForKey:menuwintag];
-	if (!winv || !winv.inputfield || winv.inputfield.singleChar)
+	if (!winv || !winv.inputfield)
 		return;
 	
-	CmdTextField *textfield = winv.inputfield;
-	if (replace) {
-		textfield.text = cmd;
-		return;
-	}
-	
-	NSString *oldcmd = textfield.text;
-	
-	// OS dependency: UITextRange and selectedTextRange are iOS 3.2 and later. Actually, in the simulator at least, they require iOS 5.
-	if ([textfield respondsToSelector:@selector(selectedTextRange)]) {
-		UITextRange *selection = textfield.selectedTextRange;
-		if (selection) {
-			NSString *prefix = [textfield textInRange:[textfield textRangeFromPosition:textfield.beginningOfDocument toPosition:selection.start]];
-			if (prefix && prefix.length > 0 && ![prefix hasSuffix:@" "])
-				cmd = [@" " stringByAppendingString:cmd];
-			NSString *suffix = [textfield textInRange:[textfield textRangeFromPosition:selection.end toPosition:textfield.endOfDocument]];
-			if (suffix && suffix.length > 0 && ![suffix hasPrefix:@" "])
-				cmd = [cmd stringByAppendingString:@" "];
-			[textfield replaceRange:selection withText:cmd];
-			return;
-		}
-	}
-
-	// Fallback -- old iOS, or we couldn't get the selection, or whatever. Just append the text.
-	if (oldcmd.length > 0 && ![oldcmd hasSuffix:@" "])
-		cmd = [@" " stringByAppendingString:cmd];
-	textfield.text = [oldcmd stringByAppendingString:cmd];
+	[winv.inputfield applyInputString:cmd replace:replace];
 }
 
 @end
