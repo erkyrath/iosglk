@@ -28,6 +28,7 @@
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
 		self.linesviews = [NSMutableArray arrayWithCapacity:32];
 		self.styleset = stylesval;
+		wasclear = YES;
 
 		totalheight = self.bounds.size.height;
 		totalwidth = self.bounds.size.width;
@@ -149,6 +150,7 @@
 			[lines removeAllObjects];
 			[vlines removeAllObjects];
 			endvlineseen = 0;
+			wasclear = YES;
 			/* A ClearPage line can contain text as well, so we continue. */
 		}
 		
@@ -223,8 +225,7 @@
 	 
 		Special case: if there are no vlines at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. (If there are vlines, we always extend that range both ways.) 
 	 */
-	BOOL frombottom = (vlines.count == 0 && self.scrollPercentage > 0.5);
-	if (frombottom) NSLog(@"#### special frombottom case!");
+	BOOL frombottom = (vlines.count == 0 && !wasclear && self.scrollPercentage > 0.5);
 	
 	CGFloat bottom = styleset.margins.top;
 	int endlaid = 0;
@@ -293,10 +294,12 @@
 		NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
 	
-	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. */
+	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. If the screen started out clear, scroll straight to the top regardless */
 	CGFloat contentheight = self.totalHeight;
 	CGSize oldcontentsize = self.contentSize;
 	CGFloat vshift = upextension + heightchangeoffset;
+	if (wasclear)
+		vshift = -self.contentOffset.y;
 	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width || vshift != 0) {
 		if (vshift != 0) {
 			CGPoint offset = self.contentOffset;
@@ -327,7 +330,7 @@
 	}
 	if (endvlineseen < lastseen+1)
 		endvlineseen = lastseen+1;
-	//NSLog(@"STV: endvlineseen is now %d of %d", endvlineseen, vlines.count);
+	//NSLog(@"STV: endvlineseen is now %d of %d (wasclear %d)", endvlineseen, vlines.count, wasclear);
 
 	/* The endvlineseen value determines whether the buffer's "more" flag is visible. */
 	if (!self.moreToSee) {
@@ -444,9 +447,15 @@
 	
 	#endif // DEBUG
 	if (newcontent) {
-		NSLog(@"STV: new content time!");
+		NSLog(@"STV: new content time! (wasclear %d)", wasclear);
+		if (wasclear) {
+			[self.superviewAsBufferView setMoreFlag:self.moreToSee];
+		}
+		else {
+			[self performSelectorOnMainThread:@selector(pageDown) withObject:nil waitUntilDone:NO];
+		}
 		newcontent = NO;
-		[self performSelectorOnMainThread:@selector(pageDown) withObject:nil waitUntilDone:NO];
+		wasclear = NO;
 	}
 }
 
