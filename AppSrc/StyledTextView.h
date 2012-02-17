@@ -10,6 +10,7 @@
 @class StyleSet;
 
 @interface StyledTextView : UIScrollView {
+	CGFloat totalheight; /* vertical space available */
 	CGFloat totalwidth; /* horizontal space available */
 	CGFloat wrapwidth; /* totalwidth minus margins */
 

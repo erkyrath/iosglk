@@ -29,6 +29,7 @@
 		self.linesviews = [NSMutableArray arrayWithCapacity:32];
 		self.styleset = stylesval;
 
+		totalheight = self.bounds.size.height;
 		totalwidth = self.bounds.size.width;
 		wrapwidth = totalwidth - styleset.margintotal.width;
 
@@ -206,10 +207,22 @@
 		endvlineseen = 0;
 	}
 	
+	/* If the page height has changed, we will want to do a vertical shift later on. (But if the width changed too, forget it -- that's a complete re-layout.)
+	 
+		(Also, if the view is expanding and we're at the bottom, the shift may already have been applied -- I guess when the frame changed. In that case, we leave heightchangeoffset at zero.) 
+	 */
+	CGFloat heightchangeoffset = 0;
+	if (totalheight != visbounds.size.height) {
+		if (vlines.count > 0 && self.contentOffset.y+visbounds.size.height < self.contentSize.height) {
+			heightchangeoffset = totalheight - visbounds.size.height;
+		}
+		totalheight = visbounds.size.height;
+	}
+	
 	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.) 
 	 
-		Special case: if there are no vlines at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. (If there are vlines, we always extend that range both ways.) */
-
+		Special case: if there are no vlines at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. (If there are vlines, we always extend that range both ways.) 
+	 */
 	BOOL frombottom = (vlines.count == 0 && self.scrollPercentage > 0.5);
 	if (frombottom) NSLog(@"#### special frombottom case!");
 	
@@ -283,16 +296,23 @@
 	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. */
 	CGFloat contentheight = self.totalHeight;
 	CGSize oldcontentsize = self.contentSize;
-	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width || upextension > 0) {
-		if (upextension > 0) {
-			NSLog(@"STV: up-extension by %.1f; adjusting contentOffset", upextension);
+	CGFloat vshift = upextension + heightchangeoffset;
+	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width || vshift != 0) {
+		if (vshift != 0) {
 			CGPoint offset = self.contentOffset;
-			offset.y += upextension;
+			NSLog(@"STV: up-extension %.1f, height-change %.1f; adjusting contentOffset by %.1f (from %.1f to %.1f)", upextension, heightchangeoffset, vshift, offset.y, offset.y+vshift);
+			offset.y += vshift;
+			if (offset.y < 0)
+				offset.y = 0;
 			self.contentOffset = offset;
 		}
 
-		NSLog(@"STV: contentSize now %.1f,%.1f", visbounds.size.width, contentheight);
-		self.contentSize = CGSizeMake(visbounds.size.width, contentheight);
+		CGSize newsize = CGSizeMake(visbounds.size.width, contentheight);
+		if (!CGSizeEqualToSize(oldcontentsize, newsize)) {
+			NSLog(@"STV: contentSize now %.1f,%.1f", visbounds.size.width, contentheight);
+			self.contentSize = newsize;
+		}
+		
 		/* Recompute the visual bounds. */
 		visbounds = self.bounds;
 		visbottom = visbounds.origin.y + visbounds.size.height;
@@ -738,8 +758,8 @@
 		self.vlines = arr;
 		self.styleset = stylesval;
 		
-		//###self.backgroundColor = styleset.backgroundcolor;
-		self.backgroundColor = [UIColor colorWithRed:(random()%127+128)/256.0 green:(random()%127+128)/256.0 blue:1 alpha:1]; //###
+		self.backgroundColor = styleset.backgroundcolor;
+		//self.backgroundColor = [UIColor colorWithRed:(random()%127+128)/256.0 green:(random()%127+128)/256.0 blue:1 alpha:1]; //###
 		self.userInteractionEnabled = NO;
 		
 		if (vlines.count > 0) {
