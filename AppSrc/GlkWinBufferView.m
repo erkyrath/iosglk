@@ -17,6 +17,7 @@
 
 @synthesize textview;
 @synthesize moreview;
+@synthesize nowcontentscrolling;
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
@@ -24,6 +25,7 @@
 		lastLayoutBounds = CGRectZero;
 		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:win.styleset] autorelease];
 		//textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+		textview.delegate = self;
 		[self addSubview:textview];
 		
 		CGRect rect = CGRectMake(box.size.width-32, box.size.height-32, 32, 32);
@@ -37,6 +39,7 @@
 }
 
 - (void) dealloc {
+	textview.delegate = nil;
 	self.textview = nil;
 	self.moreview = nil;
 	[super dealloc];
@@ -113,6 +116,8 @@
 	
 	morewaiting = flag;
 	moreview.hidden = !flag;
+	
+	nowcontentscrolling = NO;
 }
 
 /* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place. Also we'll want to scroll down.
@@ -129,5 +134,11 @@
 
 	//###[self scrollToBottom:YES];
 }
+
+- (void) scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+	if (nowcontentscrolling && textview.moreToSee)
+		[self setMoreFlag:YES];
+}
+
 
 @end

@@ -89,6 +89,14 @@
 	return vln.linenum + 1;
 }
 
+/* 
+ ### also check (self.lastLaidOutLine < lines.count)?
+ */
+- (BOOL) moreToSee {
+	BOOL mustpage = (endvlineseen < vlines.count);
+	return mustpage;
+}
+
 - (CGRect) placeForInputField {
 	CGRect box;
 	UIFont **fonts = styleset.fonts;
@@ -301,10 +309,10 @@
 		endvlineseen = lastseen+1;
 	//NSLog(@"STV: endvlineseen is now %d of %d", endvlineseen, vlines.count);
 
-	/* The endvlineseen value determines whether the buffer's "more" flag is visible.
-		### also check (self.lastLaidOutLine < lines.count)?  */
-	BOOL mustpage = (endvlineseen < vlines.count);
-	[self.superviewAsBufferView setMoreFlag:mustpage];
+	/* The endvlineseen value determines whether the buffer's "more" flag is visible. */
+	if (!self.moreToSee) {
+		[self.superviewAsBufferView setMoreFlag:NO];
+	}
 
 	/* If there is a textfield, push it to the new vline bottom. */
 	CmdTextField *inputfield = self.superviewAsBufferView.inputfield;
@@ -463,14 +471,22 @@
 		NSLog(@"STV: pageDown to bottom: %.1f", scrollto);
 	}
 	
+	self.superviewAsBufferView.nowcontentscrolling = YES;
+	
 	[self setContentOffset:CGPointMake(0, scrollto) animated:YES];
 	
 	/*
 	[UIView beginAnimations:@"autoscroll" context:nil];
+	[UIView setAnimationBeginsFromCurrentState:YES];
 	[UIView setAnimationDuration:0.3];
 	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
 	self.contentOffset = CGPointMake(0, scrollto);
 	[UIView commitAnimations];
+	 */
+	/*
+	[UIView animateWithDuration:0.3 delay:0 options:(UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionBeginFromCurrentState)
+					 animations:^{ self.contentOffset = CGPointMake(0, scrollto); }
+					 completion:nil];
 	 */
 }
 

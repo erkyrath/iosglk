@@ -31,6 +31,7 @@
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
 - (CGFloat) totalHeight;
+- (BOOL) moreToSee;
 - (void) updateWithLines:(NSArray *)addlines;
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax;
 - (void) sanityCheck;

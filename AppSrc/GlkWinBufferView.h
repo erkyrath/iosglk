@@ -14,9 +14,11 @@
 	UIView *moreview;
 	
 	CGRect lastLayoutBounds;
+	BOOL nowcontentscrolling;
 }
 
 @property (nonatomic, retain) StyledTextView *textview;
 @property (nonatomic, retain) UIView *moreview;
+@property (nonatomic) BOOL nowcontentscrolling;
 
 @end
