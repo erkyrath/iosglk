@@ -32,6 +32,7 @@
 		self.moreview = [[[UIView alloc] initWithFrame:rect] autorelease];
 		moreview.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
 		moreview.backgroundColor = [UIColor redColor];
+		moreview.userInteractionEnabled = NO;
 		moreview.hidden = YES;
 		[self addSubview:moreview];		
 	}
@@ -45,41 +46,7 @@
 	[super dealloc];
 }
 
-/* Called when there is new output or a new input field.
-
-	One irritating case is when new output appears at the same time as a screen resize. (For example, if a timer cancels line input and then prints some output.) This will be called *before* the layoutSubviews call hits, so we'll be scrolling to the wrong place. The resize's scroll-adjustment should take care of that.
-*/
-- (void) scrollToBottom:(BOOL)animated {
-	return; //####
-	
-	CGFloat totalheight = [textview totalHeight];
-	CGFloat curheight = self.bounds.size.height;
-	//NSLog(@"### WBV: scrollToBottom, height %.1f, totalheight %.1f, diff (target) is %.1f", curheight, totalheight, totalheight - curheight);
-	
-	if (totalheight < curheight)
-		return;
-	
-	CGPoint pt;
-	pt.x = 0;
-	pt.y = totalheight - curheight;
-	
-	/* I'm not using setContentOffset:animated: here, because that produces nasty weird animations. Specifically, if the scrollview changes size in the near future -- which can easily happen, if an output update is followed by the keyboard closing -- then the setContentOffset animation will continue to the original scroll position. Even if that's outside the bounds of the new scrollview size. There's no way to interrupt it. 
-	
-		So we run our own animation. (Fortunately, contentOffset is an animatable property.) */
-	
-	if (!animated) {
-		textview.contentOffset = pt;
-	}
-	else {
-		[UIView beginAnimations:@"autoscroll" context:nil];
-		[UIView setAnimationDuration:0.3];
-		[UIView setAnimationCurve:UIViewAnimationCurveLinear];
-		textview.contentOffset = pt;
-		[UIView commitAnimations];
-	}
-}
-
-/* This is called when the GlkFrameView changes size, and also when the child scrollview scrolls. This is a mysterious mix of cases, but we can safely ignore the latter by only acting when the bounds actually change. 
+/* This is called when the GlkFrameView changes size, and also (in iOS4) when the child scrollview scrolls. This is a mysterious mix of cases, but we can safely ignore the latter by only acting when the bounds actually change. 
 */
 - (void) layoutSubviews {
 	[super layoutSubviews];
