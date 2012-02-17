@@ -154,6 +154,14 @@
 }
 
 - (BOOL) textFieldShouldReturn:(UITextField *)textField {
+	if ([self isKindOfClass:[GlkWinBufferView class]]) {
+		GlkWinBufferView *winv = (GlkWinBufferView *)self;
+		if ([winv pageDownOnInput]) {
+			NSLog(@"### pageDownOnInput (more prompt); eating Enter");
+			return NO;
+		}
+	}
+	
 	if (input_single_char) {
 		glui32 ch = '\n';
 		if ([win acceptCharInput:&ch])
