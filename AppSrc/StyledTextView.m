@@ -300,7 +300,12 @@
 	if (endvlineseen < lastseen+1)
 		endvlineseen = lastseen+1;
 	//NSLog(@"STV: endvlineseen is now %d of %d", endvlineseen, vlines.count);
-	
+
+	/* The endvlineseen value determines whether the buffer's "more" flag is visible.
+		### also check (self.lastLaidOutLine < lines.count)?  */
+	BOOL mustpage = (endvlineseen < vlines.count);
+	[self.superviewAsBufferView setMoreFlag:mustpage];
+
 	/* If there is a textfield, push it to the new vline bottom. */
 	CmdTextField *inputfield = self.superviewAsBufferView.inputfield;
 	UIScrollView *inputholder = self.superviewAsBufferView.inputholder;

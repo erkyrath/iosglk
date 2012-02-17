@@ -11,10 +11,12 @@
 
 @interface GlkWinBufferView : GlkWindowView <UIScrollViewDelegate> {
 	StyledTextView *textview;
+	UIView *moreview;
 	
 	CGRect lastLayoutBounds;
 }
 
 @property (nonatomic, retain) StyledTextView *textview;
+@property (nonatomic, retain) UIView *moreview;
 
 @end

@@ -66,6 +66,12 @@
 	[NSException raise:@"GlkException" format:@"updateFromWindowState not implemented"];
 }
 
+/* The buffer view subclass overrides this. */
+- (void) setMoreFlag:(BOOL)flag {
+	/* By default, do nothing. */
+}
+
+
 - (void) updateFromWindowInputs {
 	BOOL wants_input = (win.char_request || win.line_request) && (!win.library.vmexited);
 	

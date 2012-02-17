@@ -34,6 +34,7 @@
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;
 
+- (void) setMoreFlag:(BOOL)flag;
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder;
 - (void) textFieldContinueReturn:(UITextField *)textField;
 

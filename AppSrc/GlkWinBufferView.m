@@ -16,6 +16,7 @@
 @implementation GlkWinBufferView
 
 @synthesize textview;
+@synthesize moreview;
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
@@ -24,12 +25,20 @@
 		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:win.styleset] autorelease];
 		//textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		[self addSubview:textview];
+		
+		CGRect rect = CGRectMake(box.size.width-32, box.size.height-32, 32, 32);
+		self.moreview = [[[UIView alloc] initWithFrame:rect] autorelease];
+		moreview.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+		moreview.backgroundColor = [UIColor redColor];
+		moreview.hidden = YES;
+		[self addSubview:moreview];		
 	}
 	return self;
 }
 
 - (void) dealloc {
 	self.textview = nil;
+	self.moreview = nil;
 	[super dealloc];
 }
 
@@ -96,6 +105,14 @@
 	[textview setNeedsDisplay];
 	
 	//###[self scrollToBottom:YES];
+}
+
+- (void) setMoreFlag:(BOOL)flag {
+	if (morewaiting == flag)
+		return;
+	
+	morewaiting = flag;
+	moreview.hidden = !flag;
 }
 
 /* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place. Also we'll want to scroll down.
