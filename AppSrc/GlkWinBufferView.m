@@ -73,8 +73,6 @@
 	[bufwin.updatetext removeAllObjects];
 	
 	[textview setNeedsDisplay];
-	
-	//###[self scrollToBottom:YES];
 }
 
 /* This is invoked whenever the user types something. If we're at a "more" prompt, it pages down once, and returns YES. Otherwise, it pages all the way to the bottom and returns NO.
@@ -99,7 +97,7 @@
 	nowcontentscrolling = NO;
 }
 
-/* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place. Also we'll want to scroll down.
+/* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place.
 */
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
 	CGRect box = [textview placeForInputField];
@@ -110,8 +108,6 @@
 	holder.frame = box;
 	if (!holder.superview)
 		[textview addSubview:holder];
-
-	//###[self scrollToBottom:YES];
 }
 
 - (void) scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {

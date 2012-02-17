@@ -490,7 +490,10 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (void) clearWindow {
-	//#### Drop all updatetext lines, then add one with linestat_ClearPage.
+	[updatetext removeAllObjects];
+	
+	GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithStatus:linestat_ClearPage] autorelease];
+	[updatetext addObject:sln];
 }
 
 @end
