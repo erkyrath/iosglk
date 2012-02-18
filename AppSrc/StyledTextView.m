@@ -122,7 +122,7 @@
 	}
 	
 	GlkVisualLine *vln = [vlines lastObject];
-	CGFloat ptx = styleset.margins.left;
+	CGFloat ptx = vln.xstart;
 	for (GlkVisualString *vwd in vln.arr) {
 		UIFont *font = fonts[vwd.style];
 		CGSize wordsize = [vwd.str sizeWithFont:font];
@@ -685,6 +685,7 @@
 			vln.ypos = ypos;
 			vln.linenum = snum;
 			vln.height = maxheight;
+			vln.xstart = styleset.margins.left;
 			ypos += maxheight;
 			
 			if (forward) {
@@ -912,7 +913,7 @@
 	for (GlkVisualLine *vln in vlines) {
 		CGPoint pt;
 		pt.y = vln.ypos - ytop;
-		pt.x = styleset.margins.left;
+		pt.x = vln.xstart;
 		for (GlkVisualString *vwd in vln.arr) {
 			UIFont *font = fonts[vwd.style];
 			CGSize wordsize = [vwd.str drawAtPoint:pt withFont:font];

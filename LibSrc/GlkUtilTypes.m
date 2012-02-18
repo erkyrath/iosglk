@@ -93,6 +93,7 @@
 @synthesize arr;
 @synthesize ypos;
 @synthesize height;
+@synthesize xstart;
 @synthesize vlinenum;
 @synthesize linenum;
 

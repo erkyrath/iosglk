@@ -49,6 +49,7 @@ typedef enum GlkStyledLineStatus_enum {
 	int linenum; /* The raw line number that this vline belongs to */
 	CGFloat ypos; /* Rendered top location */
 	CGFloat height; /* Rendered height */
+	CGFloat xstart; /* Left location of rendered text (left margin) */
 	NSArray *arr; /* array of GlkVisualString */
 }
 
@@ -56,6 +57,7 @@ typedef enum GlkStyledLineStatus_enum {
 @property (nonatomic) int linenum;
 @property (nonatomic) CGFloat ypos;
 @property (nonatomic) CGFloat height;
+@property (nonatomic) CGFloat xstart;
 @property (nonatomic, retain) NSArray *arr;
 
 - (id) initWithStrings:(NSArray *)strings;
