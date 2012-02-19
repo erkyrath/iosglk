@@ -867,8 +867,10 @@
 		tapnumber = 0;
 		GlkVisualLine *vln = [self lineAtPos:taploc.y];
 		if (vln) {
-			[vln wordAtPos:taploc.x];
-			//[winv.inputfield applyInputString:@"###" replace:NO];
+			NSString *wd = [vln wordAtPos:taploc.x];
+			if (wd) {
+				[winv.inputfield applyInputString:wd replace:NO];
+			}
 		}
 	}
 }

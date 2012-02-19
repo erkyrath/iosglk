@@ -194,7 +194,7 @@
 	CGFloat frac = (xpos-xstart) / (self.right-xstart);
 	
 	int pos = (int)(concatlen * frac);
-	pos = MIN(concatlen-1, pos);
+	pos = MIN(concatlen, pos);
 	pos = MAX(pos, 0);
 	
 	while (pos > 0 && xpos < letterpos[pos])
@@ -202,8 +202,22 @@
 	while (pos < concatlen-1 && xpos >= letterpos[pos+1])
 		pos++;
 	
-	NSLog(@"### wordAtPos %.1f: pos %d (initial guess %d)", xpos, pos, (int)(concatlen * frac));
-	return @"###";
+	int wdstart = pos;
+	int wdend = pos;
+	NSString *line = self.concatLine;
+	
+	while (wdstart > 0 && isalnum([line characterAtIndex:wdstart-1]))
+		wdstart--;
+	while (wdend < concatlen && isalnum([line characterAtIndex:wdend]))
+		wdend++;
+	
+	if (wdstart >= wdend)
+		return nil;
+	
+	NSRange range;
+	range.location = wdstart;
+	range.length = wdend - wdstart;
+	return [line substringWithRange:range];
 }
 
 @end
