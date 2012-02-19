@@ -75,6 +75,7 @@ typedef enum GlkStyledLineStatus_enum {
 - (CGFloat) right;
 - (NSString *) concatLine;
 - (NSString *) wordAtPos:(CGFloat)xpos;
+- (NSString *) wordAtPos:(CGFloat)xpos inBox:(CGRect *)boxref;
 
 @end
 

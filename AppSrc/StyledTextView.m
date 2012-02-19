@@ -867,8 +867,30 @@
 		tapnumber = 0;
 		GlkVisualLine *vln = [self lineAtPos:taploc.y];
 		if (vln) {
-			NSString *wd = [vln wordAtPos:taploc.x];
+			CGRect rect;
+			NSString *wd = [vln wordAtPos:taploc.x inBox:&rect];
 			if (wd) {
+				/* Send an animated label flying downhill */
+				rect = CGRectInset(rect, -4, -2);
+				UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+				label.font = styleset.fonts[style_Normal];
+				label.text = wd;
+				label.textAlignment = UITextAlignmentCenter;
+				label.backgroundColor = nil;
+				label.opaque = NO;
+				[self addSubview:label];
+				CGPoint newpt = RectCenter(winv.inputholder.frame);
+				CGSize curinputsize = [winv.inputfield.text sizeWithFont:winv.inputfield.font];
+				newpt.x = winv.inputholder.frame.origin.x + curinputsize.width + 0.5*rect.size.width;
+				[UIView beginAnimations:@"labelFling" context:label];
+				[UIView setAnimationDelegate:self];
+				[UIView setAnimationDuration:0.3];
+				[UIView setAnimationDidStopSelector:@selector(labelFlingEnd:finished:context:)];
+				[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+				label.center = newpt;
+				label.alpha = 0.25;
+				[UIView commitAnimations];
+				
 				[winv.inputfield applyInputString:wd replace:NO];
 			}
 		}
@@ -881,6 +903,10 @@
 	taplastat = 0; // the past
 }
 
+- (void) labelFlingEnd:(NSString *)animid finished:(NSNumber *)finished context:(void *)context {
+	UILabel *label = (UILabel *)context;
+	[label removeFromSuperview];
+}
 
 @end
 

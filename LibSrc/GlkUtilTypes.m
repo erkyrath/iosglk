@@ -155,6 +155,10 @@
 }
 
 - (NSString *) wordAtPos:(CGFloat)xpos {
+	return [self wordAtPos:xpos inBox:nil];
+}
+
+- (NSString *) wordAtPos:(CGFloat)xpos inBox:(CGRect *)boxref {
 	int concatlen = self.concatLine.length;
 	
 	if (!letterpos) {
@@ -188,8 +192,11 @@
 		}
 	}
 	
-	if (self.right <= xstart || concatlen == 0)
+	if (self.right <= xstart || concatlen == 0) {
+		if (boxref)
+			*boxref = CGRectNull;
 		return nil;
+	}
 	
 	CGFloat frac = (xpos-xstart) / (self.right-xstart);
 	
@@ -211,9 +218,16 @@
 	while (wdend < concatlen && isalnum([line characterAtIndex:wdend]))
 		wdend++;
 	
-	if (wdstart >= wdend)
+	if (wdstart >= wdend) {
+		if (boxref)
+			*boxref = CGRectNull;
 		return nil;
+	}
 	
+	if (boxref) {
+		*boxref = CGRectMake(letterpos[wdstart], ypos, letterpos[wdend]-letterpos[wdstart], height);
+	}
+
 	NSRange range;
 	range.location = wdstart;
 	range.length = wdend - wdstart;
