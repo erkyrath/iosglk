@@ -835,7 +835,7 @@
 	
 	tapnumber++;
 	taplastat = now;
-	NSLog(@"### tap %d!", tapnumber);
+	//NSLog(@"### tap %d!", tapnumber);
 	
 	if (self.moreToSee) {
 		/* If paging, all taps scroll down. */
@@ -891,6 +891,7 @@
 				label.alpha = 0.25;
 				[UIView commitAnimations];
 				
+				/* Put the word into the input field */
 				[winv.inputfield applyInputString:wd replace:NO];
 			}
 		}
