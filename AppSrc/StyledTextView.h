@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class StyleSet;
+@class GlkVisualLine;
 
 @interface StyledTextView : UIScrollView {
 	CGFloat totalheight; /* vertical space available */
@@ -39,6 +40,7 @@
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
 - (CGFloat) totalHeight;
 - (BOOL) moreToSee;
+- (GlkVisualLine *) lineAtPos:(CGFloat)ypos;
 - (void) updateWithLines:(NSArray *)addlines;
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax;
 - (void) sanityCheck;

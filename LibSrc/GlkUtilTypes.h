@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 #include "glk.h"
 
+@class StyleSet;
+
 typedef enum GlkStyledLineStatus_enum {
 	linestat_Continue=0,
 	linestat_NewLine=1,
@@ -45,12 +47,17 @@ typedef enum GlkStyledLineStatus_enum {
 
 
 @interface GlkVisualLine : NSObject {
+	StyleSet *styleset;
 	int vlinenum; /* This vline's index in the vlines array */
 	int linenum; /* The raw line number that this vline belongs to */
 	CGFloat ypos; /* Rendered top location */
 	CGFloat height; /* Rendered height */
 	CGFloat xstart; /* Left location of rendered text (left margin) */
 	NSArray *arr; /* array of GlkVisualString */
+	
+	NSString *concatline; /* the line contents, smushed together with no style information (cached value) */
+	CGFloat *letterpos; /* array of letter positions (nth value is the left position of letter n, etc; last value is the right position of the last character). Length is concatline.length+1. (cached, malloced array of floats) */
+	CGFloat right; /* Right edge of rendered text (cached value; -1 if not yet computed) */
 }
 
 @property (nonatomic) int vlinenum;
@@ -59,9 +66,15 @@ typedef enum GlkStyledLineStatus_enum {
 @property (nonatomic) CGFloat height;
 @property (nonatomic) CGFloat xstart;
 @property (nonatomic, retain) NSArray *arr;
+@property (nonatomic, retain) NSString *concatline;
+@property (nonatomic) CGFloat *letterpos;
+@property (nonatomic, retain) StyleSet *styleset;
 
-- (id) initWithStrings:(NSArray *)strings;
+- (id) initWithStrings:(NSArray *)strings styles:(StyleSet *)styles;
 - (CGFloat) bottom;
+- (CGFloat) right;
+- (NSString *) concatLine;
+- (NSString *) wordAtPos:(CGFloat)xpos;
 
 @end
 

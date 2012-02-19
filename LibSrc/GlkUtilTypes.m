@@ -8,6 +8,7 @@
 */
 
 #import "GlkUtilTypes.h"
+#import "StyleSet.h"
 
 @implementation GlkStyledLine
 /* GlkStyledLine: Represents a line of text. It's just an array of GlkStyledStrings, with an additional optional flag saying "This starts a new line" or "This starts a new page." (Consider either to be a newline at the *beginning* of the GlkStyledLine, possibly with page-breaking behavior.)
@@ -90,18 +91,24 @@
 
 @implementation GlkVisualLine
 
+@synthesize styleset;
 @synthesize arr;
+@synthesize concatline;
+@synthesize letterpos;
 @synthesize ypos;
 @synthesize height;
 @synthesize xstart;
 @synthesize vlinenum;
 @synthesize linenum;
 
-- (id) initWithStrings:(NSArray *)strings {
+- (id) initWithStrings:(NSArray *)strings styles:(StyleSet *)styles {
 	self = [super init];
 	
 	if (self) {
 		self.arr = [NSArray arrayWithArray:strings];
+		self.styleset = styles;
+		right = -1;
+		letterpos = nil;
 	}
 	
 	return self;
@@ -109,11 +116,94 @@
 
 - (void) dealloc {
 	self.arr = nil;
+	self.concatline = nil;
+	self.styleset = nil;
+	if (letterpos) {
+		free(letterpos);
+		letterpos = nil;
+	}
 	[super dealloc];
 }
 
 - (CGFloat) bottom {
 	return ypos + height;
+}
+
+- (CGFloat) right {
+	if (right < 0) {
+		UIFont **fonts = styleset.fonts;
+		CGFloat ptx = xstart;
+		for (GlkVisualString *vwd in arr) {
+			UIFont *font = fonts[vwd.style];
+			CGSize wordsize = [vwd.str sizeWithFont:font];
+			ptx += wordsize.width;
+		}
+		right = ptx;
+	}
+	return right;
+}
+
+- (NSString *) concatLine {
+	if (!concatline) {
+		NSMutableString *tmpstr = [NSMutableString stringWithCapacity:80];
+		for (GlkVisualString *sstr in arr) {
+			[tmpstr appendString:sstr.str];
+		}
+		self.concatline = [NSString stringWithString:tmpstr];
+	}
+	return concatline;
+}
+
+- (NSString *) wordAtPos:(CGFloat)xpos {
+	int concatlen = self.concatLine.length;
+	
+	if (!letterpos) {
+		letterpos = (CGFloat *)malloc(sizeof(CGFloat) * (1+concatlen));
+		
+		UIFont **fonts = styleset.fonts;
+		
+		CGFloat wdxstart = xstart;
+		CGFloat wdxpos = wdxstart;
+		int pos = 0;
+		letterpos[0] = wdxstart;
+		for (GlkVisualString *sstr in arr) {
+			NSString *substr = sstr.str;
+			int strlen = substr.length;
+			UIFont *sfont = fonts[sstr.style];
+
+			NSRange range;
+			range.location = 0;
+
+			for (int ix=1; ix<=strlen; ix++) {
+				range.length = ix;
+				NSString *wdtext = [substr substringWithRange:range];
+				CGSize wordsize = [wdtext sizeWithFont:sfont];
+				wdxpos = wdxstart+wordsize.width;
+				if (pos+ix <= concatlen)
+					letterpos[pos+ix] = wdxpos;
+			}
+			
+			pos += strlen;
+			wdxstart = wdxpos;
+		}
+	}
+	
+	if (self.right <= xstart || concatlen == 0)
+		return nil;
+	
+	CGFloat frac = (xpos-xstart) / (self.right-xstart);
+	
+	int pos = (int)(concatlen * frac);
+	pos = MIN(concatlen-1, pos);
+	pos = MAX(pos, 0);
+	
+	while (pos > 0 && xpos < letterpos[pos])
+		pos--;
+	while (pos < concatlen-1 && xpos >= letterpos[pos+1])
+		pos++;
+	
+	NSLog(@"### wordAtPos %.1f: pos %d (initial guess %d)", xpos, pos, (int)(concatlen * frac));
+	return @"###";
 }
 
 @end

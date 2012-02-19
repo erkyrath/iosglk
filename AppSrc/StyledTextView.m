@@ -101,9 +101,32 @@
 	return mustpage;
 }
 
+- (GlkVisualLine *) lineAtPos:(CGFloat)ypos {
+	if (!vlines || !vlines.count)
+		return nil;
+	CGFloat height = self.totalHeight;
+	if (ypos >= height)
+		return nil;
+	if (height <= styleset.margins.top)
+		return nil;
+	
+	CGFloat frac = (ypos-styleset.margins.top) / (height-styleset.margins.top);
+	int pos = (vlines.count * frac);
+	pos = MIN(vlines.count-1, pos);
+	pos = MAX(pos, 0);
+	
+	while (pos > 0 && ypos < ((GlkVisualLine *)[vlines objectAtIndex:pos]).ypos) {
+		pos--;
+	}
+	while (pos < vlines.count-1 && ypos >= ((GlkVisualLine *)[vlines objectAtIndex:pos+1]).ypos) {
+		pos++;
+	}
+	
+	return ((GlkVisualLine *)[vlines objectAtIndex:pos]);
+}
+
 - (CGRect) placeForInputField {
 	CGRect box;
-	UIFont **fonts = styleset.fonts;
 	
 	if (!vlines || !vlines.count) {
 		box.origin.x = styleset.margins.left;
@@ -122,13 +145,7 @@
 	}
 	
 	GlkVisualLine *vln = [vlines lastObject];
-	CGFloat ptx = vln.xstart;
-	for (GlkVisualString *vwd in vln.arr) {
-		UIFont *font = fonts[vwd.style];
-		CGSize wordsize = [vwd.str sizeWithFont:font];
-		ptx += wordsize.width;
-	}
-	
+	CGFloat ptx = vln.right;
 	if (ptx >= totalwidth * 0.75)
 		ptx = totalwidth * 0.75;
 	
@@ -680,7 +697,7 @@
 				}
 			}
 
-			GlkVisualLine *vln = [[[GlkVisualLine alloc] initWithStrings:tmparr] autorelease];
+			GlkVisualLine *vln = [[[GlkVisualLine alloc] initWithStrings:tmparr styles:styleset] autorelease];
 			// vln.vlinesnum will be filled in by the caller.
 			vln.ypos = ypos;
 			vln.linenum = snum;
@@ -840,15 +857,19 @@
 	
 	/* Otherwise, single-tap focuses the input line. On double-tap, paste a word in. */
 	if (tapnumber == 1) {
-		//tapnumber = 0;
 		if (![winv.inputfield isFirstResponder]) {
+			tapnumber = 0;
 			[self pageToBottom];
 			[winv.inputfield becomeFirstResponder];
 		}
 	}
 	else {
 		tapnumber = 0;
-		[winv.inputfield applyInputString:@"###" replace:NO];
+		GlkVisualLine *vln = [self lineAtPos:taploc.y];
+		if (vln) {
+			[vln wordAtPos:taploc.x];
+			//[winv.inputfield applyInputString:@"###" replace:NO];
+		}
 	}
 }
 
