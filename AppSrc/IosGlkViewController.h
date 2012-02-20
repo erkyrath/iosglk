@@ -20,6 +20,9 @@
 + (IosGlkViewController *) singleton;
 
 - (void) didFinishLaunching;
+- (void) becameInactive;
+- (void) becameActive;
+- (void) enteredBackground;
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;
 

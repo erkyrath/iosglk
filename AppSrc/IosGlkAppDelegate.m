@@ -80,41 +80,37 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 }
 
 
+/* The application is about to become inactive. (Incoming phone call or SMS alert; device is going to sleep; the user called up the process-bar; or the user "quit" and we are about to be backgrounded.)
+ 
+ We should save, and also pause tasks and timers.
+ */
 - (void) applicationWillResignActive:(UIApplication *)application {
-	/*
-	 Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-	 Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-	 */
+	[glkviewc becameInactive];
+	
+	/* I think maybe this happens automatically, but I'm not positive. Doesn't hurt to be sure. */
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-
+/* User "quit" the application, either with the home button or the process-bar. We should release as much memory as possible.
+ */
 - (void) applicationDidEnterBackground:(UIApplication *)application {
-	/*
-	 Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-	 If your application supports background execution, called instead of applicationWillTerminate: when the user quits.
-	 */
+	[glkviewc enteredBackground];
 }
 
-
+/* User "launched" the application. This will be followed immediately by applicationDidBecomeActive.
+ */
 - (void) applicationWillEnterForeground:(UIApplication *)application {
-	/*
-	 Called as part of  transition from the background to the inactive state: here you can undo many of the changes made on entering the background.
-	 */
 }
 
-
+/* The application has returned to being active.
+ */
 - (void) applicationDidBecomeActive:(UIApplication *)application {
-	/*
-	 Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-	 */
+	[glkviewc becameActive];
 }
 
-
+/* The application is being seriously shut down. (This is only called for OS3 and for old (third-gen) devices, where backgrounding doesn't exist.)
+ */
 - (void) applicationWillTerminate:(UIApplication *)application {
-	/*
-	 Called when the application is about to terminate.
-	 See also applicationDidEnterBackground:.
-	 */
 }
 
 

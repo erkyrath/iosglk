@@ -31,6 +31,18 @@
 	/* Subclasses may override this */
 }
 
+- (void) becameInactive {
+	/* Subclasses may override this */
+}
+
+- (void) becameActive {
+	/* Subclasses may override this */
+}
+
+- (void) enteredBackground {
+	/* Subclasses may override this */
+}
+
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
 	CGRect rect = CGRectZero;
