@@ -86,7 +86,9 @@
 	if (singlechar)
 		return;
 	GlkFrameView *frameview = [IosGlkViewController singleton].frameview;
-	[frameview postInputMenuForWindow:wintag];
+	GlkWindowView *winv = [frameview windowViewForTag:wintag];
+	
+	[winv postInputMenu];
 }
 
 - (void) applyInputString:(NSString *)cmd replace:(BOOL)replace {

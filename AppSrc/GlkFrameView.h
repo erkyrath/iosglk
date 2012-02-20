@@ -8,8 +8,9 @@
 #import "InputMenuView.h"
 
 @class GlkLibrary;
+@class GlkWindowView;
 @class GlkTagString;
-@class InputMenuView;
+@class PopMenuView;
 
 @interface GlkFrameView : UIView {
 	/* How much of the view bounds to reserve for the keyboard. */
@@ -26,10 +27,8 @@
 	/* Strings typed into input lines (across all windows) */
 	NSMutableArray *commandhistory;
 
-	InputMenuView *menuview;
+	PopMenuView *menuview;
 	InputMenuMode inputmenumode;
-	/* The window whose text field the popup menu applies to */
-	NSNumber *menuwintag;
 }
 
 @property (nonatomic, retain) NSMutableDictionary *windowviews;
@@ -37,17 +36,15 @@
 @property (nonatomic) CGRect keyboardBox;
 @property (nonatomic, retain) NSNumber *rootwintag;
 @property (nonatomic, retain) NSMutableArray *commandhistory;
-@property (nonatomic, retain) UIView *menuview;
-@property (nonatomic, retain) NSNumber *menuwintag;
+@property (nonatomic, retain) PopMenuView *menuview;
 
+- (GlkWindowView *) windowViewForTag:(NSNumber *)tag;
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 - (void) addToCommandHistory:(NSString *)str;
-- (void) postInputMenuForWindow:(NSNumber *)tag;
-- (void) removeInputMenu;
-- (void) setInputMenuMode:(InputMenuMode)mode;
-- (void) applyInputString:(NSString *)cmd replace:(BOOL)replace;
+- (void) postPopMenu:(PopMenuView *)menuview;
+- (void) removePopMenu;
 
 @end
 

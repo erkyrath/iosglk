@@ -16,6 +16,7 @@
 #import "GlkWindowView.h"
 #import "GlkWinBufferView.h"
 #import "CmdTextField.h"
+#import "PopMenuView.h"
 #import "InputMenuView.h"
 #import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
@@ -33,7 +34,6 @@
 @synthesize rootwintag;
 @synthesize commandhistory;
 @synthesize menuview;
-@synthesize menuwintag;
 
 - (id) initWithCoder:(NSCoder *)decoder
 {
@@ -59,8 +59,11 @@
 	self.rootwintag = nil;
 	self.commandhistory = nil;
 	self.menuview = nil;
-	self.menuwintag = nil;
 	[super dealloc];
+}
+
+- (GlkWindowView *) windowViewForTag:(NSNumber *)tag {
+	return [windowviews objectForKey:tag];
 }
 
 - (CGRect) keyboardBox {
@@ -72,15 +75,6 @@
 	//NSLog(@"### setKeyboardHeight calling setNeedsLayout");
 	[self setNeedsLayout];
 }
-
-/*###
-- (void) setNeedsLayoutPlusSubviews {
-	[self setNeedsLayout];
-	for (UIView *view in self.subviews) {
-		[view setNeedsLayout];
-	}
-}
- ###*/
 
 - (void) layoutSubviews {
 	NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardBox.size));
@@ -108,7 +102,7 @@
 	cachedGlkBox = box;
 
 	if (menuview)
-		[self removeInputMenu];
+		[self removePopMenu];
 
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
@@ -257,6 +251,7 @@
 	tagstring.str = [NSString stringWithString:text];
 }
 
+//### move this to the GlkLibrary? Or the IosGlkVC?
 - (void) addToCommandHistory:(NSString *)str {
 	NSArray *arr = [str componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	if (arr.count == 0)
@@ -284,43 +279,24 @@
 	}
 }
 
-- (void) postInputMenuForWindow:(NSNumber *)tag {
-	self.menuwintag = tag;
-	
-	GlkWindowView *winv = [windowviews objectForKey:menuwintag];
-	if (!winv || !winv.inputfield || winv.inputfield.singleChar)
-		return;
-	
+- (void) postPopMenu:(PopMenuView *)menu {
 	if (!menuview) {
-		CGRect rect = [winv.inputfield rightViewRectForBounds:winv.inputfield.bounds];
-		rect = [self convertRect:rect fromView:winv.inputfield];
-		self.menuview = [[[InputMenuView alloc] initWithFrame:self.bounds buttonFrame:rect history:commandhistory] autorelease];
-		[menuview setMode:inputmenumode];
+		self.menuview = menu;
+		[[IosGlkAppDelegate singleton].glkviewc buildPopMenu:menuview];
+
+		menuview.framemargins = UIEdgeInsetsRectDiff(menuview.frameview.frame, menuview.content.frame);
+		[menuview loadContent];
+		
+		[menuview addSubview:menuview.frameview];
 		[self addSubview:menuview];
 	}
 }
 
-- (void) removeInputMenu {
+- (void) removePopMenu {
 	if (menuview) {
 		[menuview removeFromSuperview];
 		self.menuview = nil;
 	}
-}
-
-- (void) setInputMenuMode:(InputMenuMode)mode {
-	inputmenumode = mode;
-	if (menuview)
-		[menuview setMode:mode];
-}
-
-- (void) applyInputString:(NSString *)cmd replace:(BOOL)replace {
-	if (!menuwintag)
-		return;
-	GlkWindowView *winv = [windowviews objectForKey:menuwintag];
-	if (!winv || !winv.inputfield)
-		return;
-	
-	[winv.inputfield applyInputString:cmd replace:replace];
 }
 
 @end

@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 @class GlkFrameView;
+@class PopMenuView;
 @protocol IosGlkLibDelegate;
 
 @interface IosGlkViewController : UIViewController {
@@ -26,6 +27,7 @@
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;
 
+- (void) buildPopMenu:(PopMenuView *)menuview;
 - (IBAction) toggleKeyboard;
 
 @end

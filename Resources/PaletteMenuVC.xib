@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1280</int>
 		<string key="IBDocument.SystemVersion">11D50</string>
-		<string key="IBDocument.InterfaceBuilderVersion">1938</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2177</string>
 		<string key="IBDocument.AppKitVersion">1138.32</string>
 		<string key="IBDocument.HIToolboxVersion">568.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">933</string>
+			<string key="NS.object.0">1173</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBProxyObject</string>
@@ -38,7 +38,7 @@
 					<object class="IBUILabel" id="125127927">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 0}, {260, 21}}</string>
+						<string key="NSFrame">{{10, 0}, {260, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="389484740"/>
@@ -70,7 +70,7 @@
 					<object class="IBUILabel" id="389484740">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 20}, {65, 21}}</string>
+						<string key="NSFrame">{{10, 20}, {65, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="553128"/>
@@ -101,7 +101,7 @@
 					<object class="IBUILabel" id="553128">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 37}, {65, 21}}</string>
+						<string key="NSFrame">{{10, 37}, {65, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="199672460"/>
@@ -122,7 +122,7 @@
 					<object class="IBUILabel" id="199672460">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 54}, {65, 21}}</string>
+						<string key="NSFrame">{{10, 54}, {65, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="425672531"/>
@@ -143,7 +143,7 @@
 					<object class="IBUILabel" id="841807858">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 71}, {65, 21}}</string>
+						<string key="NSFrame">{{10, 71}, {65, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="312051917"/>
@@ -164,10 +164,9 @@
 					<object class="IBUILabel" id="25171361">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 88}, {65, 21}}</string>
+						<string key="NSFrame">{{10, 88}, {65, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:345</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -184,8 +183,8 @@
 					</object>
 					<object class="IBUILabel" id="455142714">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{255, 20}, {18, 21}}</string>
+						<int key="NSvFlags">289</int>
+						<string key="NSFrame">{{215, 20}, {20, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="841807858"/>
@@ -207,8 +206,8 @@
 					</object>
 					<object class="IBUILabel" id="312051917">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{255, 53}, {18, 21}}</string>
+						<int key="NSvFlags">289</int>
+						<string key="NSFrame">{{215, 53}, {20, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="787475671"/>
@@ -230,8 +229,8 @@
 					</object>
 					<object class="IBUILabel" id="425672531">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{236, 37}, {18, 21}}</string>
+						<int key="NSvFlags">289</int>
+						<string key="NSFrame">{{196, 37}, {20, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="455142714"/>
@@ -253,8 +252,8 @@
 					</object>
 					<object class="IBUILabel" id="787475671">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{275, 37}, {18, 21}}</string>
+						<int key="NSvFlags">289</int>
+						<string key="NSFrame">{{235, 37}, {20, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="25171361"/>
@@ -275,7 +274,7 @@
 						<reference key="IBUIFont" ref="496262176"/>
 					</object>
 				</array>
-				<string key="NSFrameSize">{300, 179}</string>
+				<string key="NSFrameSize">{260, 160}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="125127927"/>
@@ -295,6 +294,14 @@
 						<reference key="destination" ref="191373211"/>
 					</object>
 					<int key="connectionID">7</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">menuview</string>
+						<reference key="source" ref="191373211"/>
+						<reference key="destination" ref="372490531"/>
+					</object>
+					<int key="connectionID">16</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -407,24 +414,27 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">15</int>
+			<int key="maxID">16</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">HistoryMenuView</string>
 					<string key="superclassName">UIView</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">baselabel</string>
-						<string key="NS.object.0">UILabel</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">baselabel</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="baselabel">UILabel</string>
+						<string key="menuview">InputMenuView</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="baselabel">
 							<string key="name">baselabel</string>
 							<string key="candidateClassName">UILabel</string>
 						</object>
-					</object>
+						<object class="IBToOneOutletInfo" key="menuview">
+							<string key="name">menuview</string>
+							<string key="candidateClassName">InputMenuView</string>
+						</object>
+					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/HistoryMenuView.h</string>
@@ -432,7 +442,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">InputMenuView</string>
-					<string key="superclassName">UIView</string>
+					<string key="superclassName">PopMenuView</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="historymenu">HistoryMenuView</string>
 						<string key="palettemenu">PaletteMenuView</string>
@@ -455,9 +465,42 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">PaletteMenuView</string>
 					<string key="superclassName">UIView</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">menuview</string>
+						<string key="NS.object.0">InputMenuView</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">menuview</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">menuview</string>
+							<string key="candidateClassName">InputMenuView</string>
+						</object>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/PaletteMenuView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">PopMenuView</string>
+					<string key="superclassName">UIView</string>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="content">UIView</string>
+						<string key="frameview">UIView</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="content">
+							<string key="name">content</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="frameview">
+							<string key="name">frameview</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/PopMenuView.h</string>
 					</object>
 				</object>
 			</array>
@@ -466,6 +509,6 @@
 		<string key="IBDocument.TargetRuntimeIdentifier">IBIPadFramework</string>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
-		<string key="IBCocoaTouchPluginVersion">933</string>
+		<string key="IBCocoaTouchPluginVersion">1173</string>
 	</data>
 </archive>

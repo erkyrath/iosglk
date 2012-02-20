@@ -6,15 +6,29 @@
 
 #import "InputMenuView.h"
 #import "GlkFrameView.h"
+#import "GlkWindowView.h"
+#import "CmdTextField.h"
 #import "GlkUtilities.h"
 
 @implementation InputMenuView
 
+@synthesize winview;
 @synthesize historymenu;
 @synthesize palettemenu;
 @synthesize flipbutton;
 @synthesize history;
 
+- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winval history:(NSArray *)historylist {
+	self = [super initWithFrame:frame buttonFrame:rect];
+	if (self) {
+		mode = inputmenu_None;
+		self.winview = winval;
+		self.history = [NSArray arrayWithArray:historylist];
+	}
+	return self;
+}
+
+/*###
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect history:(NSArray *)historylist {
 	self = [super initWithFrame:frame];
 	if (self) {
@@ -29,8 +43,10 @@
 	}
 	return self;
 }
+ ###*/
 
 - (void) dealloc {
+	self.winview = nil;
 	self.historymenu = nil;
 	self.palettemenu = nil;
 	self.flipbutton = nil;
@@ -38,8 +54,13 @@
 	[super dealloc];
 }
 
-- (GlkFrameView *) superviewAsFrameView {
-	return (GlkFrameView *)self.superview;
+- (void) loadContent {
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	InputMenuMode curmode = [defaults integerForKey:@"InputMenuMode"];
+	if (curmode != inputmenu_History && curmode != inputmenu_Palette)
+		curmode = inputmenu_Palette;
+	
+	[self setMode:inputmenu_Palette]; //###
 }
 
 - (void) setMode:(InputMenuMode)modeval {
@@ -51,18 +72,12 @@
 		if (!historymenu) {
 			[[NSBundle mainBundle] loadNibNamed:@"HistoryMenuVC" owner:self options:nil];
 			[historymenu setUpFromHistory:history];
-			CGRect rect = historymenu.frame;
-			rect.origin.x = buttonrect.origin.x + buttonrect.size.width - rect.size.width - 10;
-			rect.origin.y = buttonrect.origin.y - rect.size.height - 10;
-			historymenu.frame = rect;
-			[self addSubview:historymenu];
+			[self resizeContentTo:historymenu.frame.size animated:NO];
+			[content addSubview:historymenu];
 		}
 		else {
 			[historymenu setUpFromHistory:history];
-			CGRect rect = historymenu.frame;
-			rect.origin.x = buttonrect.origin.x + buttonrect.size.width - rect.size.width - 10;
-			rect.origin.y = buttonrect.origin.y - rect.size.height - 10;
-			historymenu.frame = rect;
+			[self resizeContentTo:historymenu.frame.size animated:YES];
 			historymenu.hidden = NO;
 		}
 		if (palettemenu) {
@@ -73,18 +88,12 @@
 		if (!palettemenu) {
 			[[NSBundle mainBundle] loadNibNamed:@"PaletteMenuVC" owner:self options:nil];
 			[palettemenu setUp];
-			CGRect rect = palettemenu.frame;
-			rect.origin.x = buttonrect.origin.x + buttonrect.size.width - rect.size.width - 10;
-			rect.origin.y = buttonrect.origin.y - rect.size.height - 10;
-			palettemenu.frame = rect;
-			[self addSubview:palettemenu];
+			[self resizeContentTo:palettemenu.frame.size animated:NO];
+			[content addSubview:palettemenu];
 		}
 		else {
 			[palettemenu setUp];
-			CGRect rect = palettemenu.frame;
-			rect.origin.x = buttonrect.origin.x + buttonrect.size.width - rect.size.width - 10;
-			rect.origin.y = buttonrect.origin.y - rect.size.height - 10;
-			palettemenu.frame = rect;
+			[self resizeContentTo:palettemenu.frame.size animated:YES];
 			palettemenu.hidden = NO;
 		}
 		if (historymenu) {
@@ -94,18 +103,17 @@
 }
 
 - (void) handleFlipButton:(id)sender {
-	[self.superviewAsFrameView setInputMenuMode:(mode==inputmenu_History)?inputmenu_Palette:inputmenu_History];
+	[self setMode:(mode==inputmenu_History)?inputmenu_Palette:inputmenu_History];
 }
 
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu {
-	[self.superviewAsFrameView applyInputString:cmd replace:replace];
+	if (!winview || !winview.inputfield)
+		return;
+	
+	[winview.inputfield applyInputString:cmd replace:replace];
 	
 	if (closemenu)
-		[self.superviewAsFrameView removeInputMenu];
-}
-
-- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	[self.superviewAsFrameView removeInputMenu];
+		[self.superviewAsFrameView removePopMenu];
 }
 
 @end
@@ -113,10 +121,12 @@
 
 @implementation HistoryMenuView
 
+@synthesize menuview;
 @synthesize baselabel;
 @synthesize labels;
 
 - (void) dealloc {
+	self.menuview = nil;
 	self.baselabel = nil;
 	self.labels = nil;
 	[super dealloc];
@@ -127,8 +137,6 @@
 	labelbox = baselabel.frame;
 	labelheight = labelbox.size.height;
 	extraheight = self.bounds.size.height - labelheight;
-	
-	self.layer.cornerRadius = 4;
 }
 
 - (void) setUpFromHistory:(NSArray *)history {
@@ -157,7 +165,7 @@
 	rect = self.bounds;
 	rect.size.height = extraheight + self.labels.count * labelheight;
 	rect.size = CGSizeEven(rect.size);
-	self.bounds = rect;
+	self.frame = rect;
 }
 
 - (void) selectLabel:(int)val {
@@ -196,8 +204,9 @@
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (selection >= 0 && selection < labels.count) {
 		UILabel *label = [labels objectAtIndex:selection];
-		InputMenuView *menuview = (InputMenuView *)self.superview;
-		[menuview acceptCommand:label.text replace:YES close:YES];
+		if (menuview && menuview.superview) {
+			[menuview acceptCommand:label.text replace:YES close:YES];
+		}
 	}
 }
 
@@ -210,9 +219,11 @@
 
 @implementation PaletteMenuView
 
+@synthesize menuview;
 @synthesize labels;
 
 - (void) dealloc {
+	self.menuview = nil;
 	selection = nil;
 	self.labels = nil;
 	[super dealloc];
@@ -220,8 +231,6 @@
 
 - (void) awakeFromNib {
 	[super awakeFromNib];
-	
-	self.layer.cornerRadius = 6;
 }
 
 - (void) setUp {
@@ -275,9 +284,10 @@
 	if (selection) {
 		BOOL closemenu = (selection.tag == 0);
 		NSString *cmd = selection.text;
-		InputMenuView *menuview = (InputMenuView *)self.superview;
-		[self selectLabel:nil];
-		[menuview acceptCommand:cmd replace:NO close:closemenu];
+		if (menuview && menuview.superview) {
+			[self selectLabel:nil];
+			[menuview acceptCommand:cmd replace:NO close:closemenu];
+		}
 	}
 }
 

@@ -11,6 +11,7 @@
 #import "GlkUtilTypes.h"
 #import "GlkFileTypes.h"
 #import "GlkFileSelectViewController.h"
+#import "PopMenuView.h"
 #import "GlkUtilities.h"
 
 @implementation IosGlkViewController
@@ -41,6 +42,15 @@
 
 - (void) enteredBackground {
 	/* Subclasses may override this */
+}
+
+- (void) viewDidUnload {
+	// Release any retained subviews of the main view.
+	// ### drop the frameview
+}
+
+- (void) buildPopMenu:(PopMenuView *)menuview {
+	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:menuview options:nil];
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
@@ -138,17 +148,11 @@
 	[NSException raise:@"GlkException" format:@"tried to raise unknown modal request"];
 }
 
-- (void)didReceiveMemoryWarning {
+- (void) didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
 	[super didReceiveMemoryWarning];
 	
 	// Release any cached data, images, etc that aren't in use.
 }
-
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-}
-
 
 @end

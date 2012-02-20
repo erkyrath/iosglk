@@ -18,6 +18,7 @@
 #import "GlkAppWrapper.h"
 #import "GlkUtilities.h"
 #import "CmdTextField.h"
+#import "InputMenuView.h"
 #import "StyleSet.h"
 
 @implementation GlkWindowView
@@ -84,7 +85,7 @@
 	if (!wants_input) {
 		if (inputfield) {
 			/* The window doesn't want any input at all. Get rid of the textfield. */
-			[self.superviewAsFrameView removeInputMenu];
+			[self.superviewAsFrameView removePopMenu];
 			[inputfield removeFromSuperview];
 			[inputholder removeFromSuperview];
 			self.inputfield = nil;
@@ -148,7 +149,7 @@
 		return NO;
 	}
 	else {
-		[self.superviewAsFrameView removeInputMenu];
+		[self.superviewAsFrameView removePopMenu];
 	}
 	return YES;
 }
@@ -169,7 +170,7 @@
 		return NO;
 	}
 
-	[self.superviewAsFrameView removeInputMenu];
+	[self.superviewAsFrameView removePopMenu];
 
 	/* Don't look at the text yet; the last word hasn't been spellchecked. However, we don't want to close the keyboard either. The only good answer seems to be to fire a function call with a tiny delay, and return YES to ensure that the spellcheck is accepted. */
 	[self performSelector:@selector(textFieldContinueReturn:) withObject:textField afterDelay:0.0];
@@ -197,4 +198,21 @@
 	[[GlkAppWrapper singleton] acceptEventType:evtype_LineInput window:win val1:buflen val2:0];
 }
 
+- (void) postInputMenu {
+	if (!inputfield || inputfield.singleChar)
+		return;
+	if (self.superviewAsFrameView.menuview)
+		return;
+	
+	NSArray *historylist = [NSArray arrayWithObjects:@"###1", @"###2", @"###3", @"###4", nil];
+	
+	GlkFrameView *frameview = self.superviewAsFrameView;
+	CGRect rect = [inputfield rightViewRectForBounds:inputfield.bounds];
+	rect = [frameview convertRect:rect fromView:inputfield];
+	InputMenuView *menuview = [[[InputMenuView alloc] initWithFrame:frameview.bounds buttonFrame:rect view:self history:historylist] autorelease];
+	[frameview postPopMenu:menuview];	
+}
+
 @end
+
+

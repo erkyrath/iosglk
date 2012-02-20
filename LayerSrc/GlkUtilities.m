@@ -131,6 +131,19 @@ CGFloat DistancePoints(CGPoint p1, CGPoint p2) {
 	return hypotf(dx, dy);
 }
 
+UIEdgeInsets UIEdgeInsetsInvert(UIEdgeInsets margins) {
+	return UIEdgeInsetsMake(-margins.top, -margins.left, -margins.bottom, -margins.right);
+}
+
+UIEdgeInsets UIEdgeInsetsRectDiff(CGRect rect1, CGRect rect2) {
+	UIEdgeInsets res;
+	res.left = rect2.origin.x - rect1.origin.x;
+	res.top = rect2.origin.y - rect1.origin.y;
+	res.right = (rect1.size.width - rect2.size.width) - res.left;
+	res.bottom = (rect1.size.height - rect2.size.height) - res.top;
+	return res;
+}
+
 CGSize CGSizeEven(CGSize size) {
 	int val = ceilf(size.width);
 	if (val & 1)

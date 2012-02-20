@@ -5,6 +5,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "PopMenuView.h"
 
 typedef enum InputMenuMode_enum {
 	inputmenu_None = 0,
@@ -14,23 +15,25 @@ typedef enum InputMenuMode_enum {
 
 @class HistoryMenuView;
 @class PaletteMenuView;
+@class GlkWindowView;
 
-@interface InputMenuView : UIView {
+@interface InputMenuView : PopMenuView {
+	GlkWindowView *winview;
 	HistoryMenuView *historymenu;
 	PaletteMenuView *palettemenu;
 	UIButton *flipbutton;
 	
 	InputMenuMode mode;
-	CGRect buttonrect;
 	NSArray *history;
 }
 
+@property (nonatomic, retain) GlkWindowView *winview;
 @property (nonatomic, retain) IBOutlet HistoryMenuView *historymenu;
 @property (nonatomic, retain) IBOutlet PaletteMenuView *palettemenu;
 @property (nonatomic, retain) UIButton *flipbutton;
 @property (nonatomic, retain) NSArray *history;
 
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect history:(NSArray *)historylist;
+- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winview history:(NSArray *)historylist;
 - (void) setMode:(InputMenuMode)mode;
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu;
 
@@ -38,6 +41,7 @@ typedef enum InputMenuMode_enum {
 
 
 @interface HistoryMenuView : UIView {
+	InputMenuView *menuview;
 	UILabel *baselabel;
 	NSMutableArray *labels;
 	
@@ -48,6 +52,7 @@ typedef enum InputMenuMode_enum {
 	int selection;
 }
 
+@property (nonatomic, retain) IBOutlet InputMenuView *menuview;
 @property (nonatomic, retain) IBOutlet UILabel *baselabel;
 @property (nonatomic, retain) NSMutableArray *labels;
 
@@ -58,11 +63,13 @@ typedef enum InputMenuMode_enum {
 
 
 @interface PaletteMenuView : UIView {
+	InputMenuView *menuview;
 	NSMutableArray *labels;
 	
 	UILabel *selection; // not retained; always refers to an entry in labels
 }
 
+@property (nonatomic, retain) IBOutlet InputMenuView *menuview;
 @property (nonatomic, retain) NSMutableArray *labels;
 
 - (void) setUp;
