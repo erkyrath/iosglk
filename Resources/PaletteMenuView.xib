@@ -279,9 +279,10 @@
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="125127927"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
-					<int key="NSColorSpace">1</int>
-					<bytes key="NSRGB">MC44ODY0NjM0MDM3IDAuNzc2ODA0ODA0OCAwLjYwNDAzMjc1NDkAA</bytes>
+					<int key="NSColorSpace">3</int>
+					<bytes key="NSWhite">MCAwAA</bytes>
 				</object>
+				<bool key="IBUIOpaque">NO</bool>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 			</object>
 		</array>

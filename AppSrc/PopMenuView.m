@@ -1,10 +1,11 @@
 //
 //  PopBoxView.m
 //  IosFizmo
-//
-//  Created by Andrew Plotkin on 2/20/12.
-//  Copyright (c) 2012 Zarfhome. All rights reserved.
-//
+/* PopMenuView.m: Base class for on-screen pop-up menus
+ for IosGlk, the iOS implementation of the Glk API.
+ Designed by Andrew Plotkin <erkyrath@eblong.com>
+ http://eblong.com/zarf/glk/
+ */
 
 #import "PopMenuView.h"
 #import "GlkFrameView.h"

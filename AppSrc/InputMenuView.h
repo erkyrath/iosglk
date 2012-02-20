@@ -1,4 +1,4 @@
-/* InputMenuView.h: A simple pop-up menu of strings
+/* InputMenuView.h: A popmenu subclass that can display the command history or common-verb palette
  for IosGlk, the iOS implementation of the Glk API.
  Designed by Andrew Plotkin <erkyrath@eblong.com>
  http://eblong.com/zarf/glk/
