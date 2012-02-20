@@ -20,7 +20,7 @@
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect {
 	self = [super initWithFrame:frame];
 	if (self) {
-		self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5]; //###
+		//self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5]; //###
 		buttonrect = rect;
 	}
 	return self;
