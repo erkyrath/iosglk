@@ -47,9 +47,8 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 	else
 		library.glkdelegate = [DefaultGlkLibDelegate singleton];
 	
-	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view, and then discarding the value -- *that* confuses Xcode's static analyzer, but I don't care. */
-	UIView *view = glkviewc.view;
-	view = nil;
+	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
+	[glkviewc view];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
 											 selector:@selector(keyboardWillBeShown:)
