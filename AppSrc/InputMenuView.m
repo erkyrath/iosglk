@@ -24,17 +24,6 @@
 		mode = inputmenu_None;
 		self.winview = winval;
 		self.history = [NSArray arrayWithArray:historylist];
-	}
-	return self;
-}
-
-/*###
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect history:(NSArray *)historylist {
-	self = [super initWithFrame:frame];
-	if (self) {
-		mode = inputmenu_None;
-		self.history = [NSArray arrayWithArray:historylist];
-		buttonrect = rect;
 		
 		self.flipbutton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
 		flipbutton.frame = buttonrect;
@@ -43,7 +32,6 @@
 	}
 	return self;
 }
- ###*/
 
 - (void) dealloc {
 	self.winview = nil;
@@ -60,7 +48,7 @@
 	if (curmode != inputmenu_History && curmode != inputmenu_Palette)
 		curmode = inputmenu_Palette;
 	
-	[self setMode:inputmenu_Palette]; //###
+	[self setMode:curmode];
 }
 
 - (void) setMode:(InputMenuMode)modeval {
@@ -103,7 +91,12 @@
 }
 
 - (void) handleFlipButton:(id)sender {
-	[self setMode:(mode==inputmenu_History)?inputmenu_Palette:inputmenu_History];
+	InputMenuMode newmode = (mode==inputmenu_History)?inputmenu_Palette:inputmenu_History;
+	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	[defaults setInteger:newmode forKey:@"InputMenuMode"];
+
+	[self setMode:newmode];
 }
 
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu {
@@ -231,6 +224,7 @@
 
 - (void) awakeFromNib {
 	[super awakeFromNib];
+	origbounds = self.bounds;
 }
 
 - (void) setUp {
@@ -241,6 +235,8 @@
 			[labels addObject:view];
 		}
 	}
+	
+	self.frame = origbounds;
 }
 
 - (UILabel *) labelAtPoint:(CGPoint)loc {

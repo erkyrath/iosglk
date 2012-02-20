@@ -65,7 +65,9 @@ typedef enum InputMenuMode_enum {
 @interface PaletteMenuView : UIView {
 	InputMenuView *menuview;
 	NSMutableArray *labels;
-	
+
+	CGRect origbounds;
+
 	UILabel *selection; // not retained; always refers to an entry in labels
 }
 
