@@ -58,7 +58,7 @@
 	
 	if (mode == inputmenu_History) {
 		if (!historymenu) {
-			[[NSBundle mainBundle] loadNibNamed:@"HistoryMenuVC" owner:self options:nil];
+			[[NSBundle mainBundle] loadNibNamed:@"HistoryMenuView" owner:self options:nil];
 			[historymenu setUpFromHistory:history];
 			[self resizeContentTo:historymenu.frame.size animated:NO];
 			[content addSubview:historymenu];
@@ -74,7 +74,7 @@
 	}
 	else if (mode == inputmenu_Palette) {
 		if (!palettemenu) {
-			[[NSBundle mainBundle] loadNibNamed:@"PaletteMenuVC" owner:self options:nil];
+			[[NSBundle mainBundle] loadNibNamed:@"PaletteMenuView" owner:self options:nil];
 			[palettemenu setUp];
 			[self resizeContentTo:palettemenu.frame.size animated:NO];
 			[content addSubview:palettemenu];
