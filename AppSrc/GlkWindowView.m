@@ -204,12 +204,10 @@
 	if (self.superviewAsFrameView.menuview)
 		return;
 	
-	NSArray *historylist = [NSArray arrayWithObjects:@"###1", @"###2", @"###3", @"###4", nil];
-	
 	GlkFrameView *frameview = self.superviewAsFrameView;
 	CGRect rect = [inputfield rightViewRectForBounds:inputfield.bounds];
 	rect = [frameview convertRect:rect fromView:inputfield];
-	InputMenuView *menuview = [[[InputMenuView alloc] initWithFrame:frameview.bounds buttonFrame:rect view:self history:historylist] autorelease];
+	InputMenuView *menuview = [[[InputMenuView alloc] initWithFrame:frameview.bounds buttonFrame:rect view:self history:frameview.commandhistory] autorelease];
 	[frameview postPopMenu:menuview];	
 }
 
