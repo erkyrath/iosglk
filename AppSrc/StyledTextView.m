@@ -27,16 +27,15 @@
 		self.lines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
 		self.linesviews = [NSMutableArray arrayWithCapacity:32];
-		self.styleset = stylesval;
 		wasclear = YES;
 
 		totalheight = self.bounds.size.height;
 		totalwidth = self.bounds.size.width;
-		wrapwidth = totalwidth - styleset.margintotal.width;
 
 		self.alwaysBounceVertical = YES;
 		self.contentSize = self.bounds.size;
-		self.backgroundColor = styleset.backgroundcolor;
+		
+		[self acceptStyleset:stylesval];
 		
 		taplastat = 0; // the past
 	}
@@ -53,6 +52,12 @@
 
 - (GlkWinBufferView *) superviewAsBufferView {
 	return (GlkWinBufferView *)self.superview;
+}
+
+- (void) acceptStyleset:(StyleSet *)stylesval {
+	self.styleset = stylesval;
+	wrapwidth = totalwidth - styleset.margintotal.width;
+	self.backgroundColor = styleset.backgroundcolor;
 }
 
 /* Return the scroll position in the page, between 0.0 and 1.0. This is only an approximation, because we don't always have the whole page laid out (into vlines). If the page content is empty or shorter than its height, returns 0.
@@ -195,6 +200,15 @@
 	/* Now trash all the VisualLinesViews. We'll create new ones at the next layout call. */
 	NSLog(@"### removing all linesviews (for update)");
 	//### Or only trash the ones that have been invalidated?
+	[self uncacheLayoutAndVLines:NO];
+}
+
+- (void) uncacheLayoutAndVLines:(BOOL)andvlines {
+	if (andvlines) {
+		[vlines removeAllObjects];
+		endvlineseen = 0;
+	}
+	
 	for (VisualLinesView *linev in linesviews) {
 		[linev removeFromSuperview];
 	}
@@ -219,13 +233,7 @@
 		
 		/* Trash all laid-out lines and VisualLinesViews. */
 		NSLog(@"### removing all linesviews (for width change)");
-		[vlines removeAllObjects];
-		for (VisualLinesView *linev in linesviews) {
-			[linev removeFromSuperview];
-		}
-		[linesviews removeAllObjects];
-		
-		endvlineseen = 0;
+		[self uncacheLayoutAndVLines:YES];
 	}
 	
 	/* If the page height has changed, we will want to do a vertical shift later on. (But if the width changed too, forget it -- that's a complete re-layout.)

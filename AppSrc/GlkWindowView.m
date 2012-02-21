@@ -67,6 +67,11 @@
 	[NSException raise:@"GlkException" format:@"updateFromWindowState not implemented"];
 }
 
+/* Discard everything the window knows about its layout, fonts, colors, etc. Windowview subclasses will override this. */
+- (void) uncacheLayoutAndStyles:(StyleSet *)styleset {
+	/* By default, do nothing. */
+}
+
 /* The buffer view subclass overrides this. */
 - (void) setMoreFlag:(BOOL)flag {
 	/* By default, do nothing. */

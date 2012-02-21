@@ -8,6 +8,7 @@
 #import "GlkWindow.h"
 #import "GlkAppWrapper.h"
 #import "StyleSet.h"
+#import "CmdTextField.h"
 #import "GlkUtilTypes.h"
 #import "GlkUtilities.h"
 
@@ -36,9 +37,16 @@
 	[super dealloc];
 }
 
+- (void) uncacheLayoutAndStyles:(StyleSet *)stylesval {
+	self.styleset = stylesval;
+	if (inputfield)
+		[inputfield adjustForStyles:styleset];
+	[self setNeedsDisplay];
+}
+
 - (void) layoutSubviews {
 	//NSLog(@"GridView: layoutSubviews");
-	//### need to move or resize the text view here
+	//### need to move or resize the text input view here
 }
 
 - (void) drawRect:(CGRect)rect {

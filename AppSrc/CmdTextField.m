@@ -41,8 +41,7 @@
 	self.delegate = winv;
 	singlechar = singleval;
 	
-	self.backgroundColor = winv.backgroundColor;
-	self.font = win.styleset.fonts[style_Input];
+	[self adjustForStyles:win.styleset];
 	//self.borderStyle = UITextBorderStyleBezel;
 	self.autocapitalizationType = UITextAutocapitalizationTypeNone;
 	self.keyboardType = UIKeyboardTypeASCIICapable;
@@ -72,6 +71,11 @@
 		self.autocorrectionType = UITextAutocorrectionTypeDefault;
 	}
 	
+}
+
+- (void) adjustForStyles:(StyleSet *)styleset {
+	self.backgroundColor = styleset.backgroundcolor;
+	self.font = styleset.fonts[style_Input];
 }
 
 - (BOOL) singleChar {

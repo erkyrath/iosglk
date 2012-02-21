@@ -22,6 +22,7 @@
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
 #import "Geometry.h"
+#import "StyleSet.h"
 #import "GlkUtilTypes.h"
 #import "GlkUtilities.h"
 
@@ -74,6 +75,23 @@
 	keyboardBox = val;
 	//NSLog(@"### setKeyboardHeight calling setNeedsLayout");
 	[self setNeedsLayout];
+}
+
+/* Force all the windows to pick up new stylesets, and then force all the windowviews to notice that fact.
+ 
+	This leaves the windowview stylesets detached from the window stylesets, which is irritating, but not a real problem (since stylesets are immutable).
+ */
+- (void) updateWindowStyles {
+	[self setNeedsLayout];
+	for (NSNumber *tag in windowviews) {
+		GlkWindowView *winv = [windowviews objectForKey:tag];
+		StyleSet *styleset = [StyleSet buildForWindowType:winv.win.type rock:winv.win.rock];
+		[winv uncacheLayoutAndStyles:styleset];
+	}
+	
+	//### skip for color-only changes?
+	/* Now tell the VM thread. */
+	[[GlkAppWrapper singleton] noteMetricsChanged];
 }
 
 - (void) layoutSubviews {

@@ -38,10 +38,12 @@
 @property (nonatomic, retain) StyleSet *styleset;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
+- (void) acceptStyleset:(StyleSet *)stylesval;
 - (CGFloat) totalHeight;
 - (BOOL) moreToSee;
 - (GlkVisualLine *) lineAtPos:(CGFloat)ypos;
 - (void) updateWithLines:(NSArray *)addlines;
+- (void) uncacheLayoutAndVLines:(BOOL)andvlines;
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax;
 - (void) sanityCheck;
 - (CGRect) placeForInputField;

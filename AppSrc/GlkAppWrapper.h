@@ -18,7 +18,8 @@
 	NSTimeInterval lastwaittime; /* not locked; only touched by VM thread internals. */
 	
 	BOOL pendingtimerevent;
-	BOOL pendingsizechange;
+	BOOL pendingmetricchange; /* the fonts or font sizes have just changed */
+	BOOL pendingsizechange; /* the frame rectangle has just changed (to pendingsize) */
 	CGRect pendingsize;
 	NSNumber *timerinterval; /* not locked; only touched by the main thread. */
 }
@@ -32,6 +33,7 @@
 - (void) launchAppThread;
 - (void) appThreadMain:(id)rock;
 - (void) setFrameSize:(CGRect)box;
+- (void) noteMetricsChanged;
 - (void) selectEvent:(event_t *)event special:(id)special;
 - (void) selectPollEvent:(event_t *)event;
 - (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2;

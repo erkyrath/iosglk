@@ -61,6 +61,13 @@
 	[textview setNeedsLayout];
 }
 
+- (void) uncacheLayoutAndStyles:(StyleSet *)styleset {
+	[textview acceptStyleset:styleset];
+	if (inputfield)
+		[inputfield adjustForStyles:styleset];
+	[textview uncacheLayoutAndVLines:YES];
+}
+
 - (void) updateFromWindowState {
 	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
 	

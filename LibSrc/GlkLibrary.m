@@ -12,6 +12,7 @@
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
 #import "GlkUtilities.h"
+#import "Geometry.h"
 #include "glk.h"
 
 @implementation GlkLibrary
@@ -111,11 +112,32 @@ static GlkLibrary *singleton = nil;
 		return NO;
 	
 	bounds = box;
-	//NSLog(@"library metrics now %@", StringFromRect(bounds));
+	NSLog(@"library metrics now %@", StringFromRect(bounds));
 	if (rootwin)
 		[rootwin windowRearrange:bounds];
 	return YES;
 }
+
+/* Force all the windows to accept a new styleset. 
+ */
+#if 0 //###
+- (void) updateWindowStyles {
+	for (GlkWindow *win in windows) {
+		[win updateStyleset];
+	}
+	
+	/* Pair windows need a little additional work. */
+	for (GlkWindow *win in windows) {
+		if (win.type == wintype_Pair) {
+			Geometry *geometry = ((GlkWindowPair *)win).geometry;
+			if (geometry.keytag) {
+				GlkWindow *keywin = [self windowForTag:geometry.keytag];
+				geometry.keystyleset = keywin.styleset;
+			}
+		}
+	}
+}
+#endif //###
 
 /* Locate the window matching a given tag. (Or nil, if no window matches or the tag is nil.) This isn't efficient, but it's not heavily used.
 */

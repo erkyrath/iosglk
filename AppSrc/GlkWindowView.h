@@ -10,6 +10,7 @@
 @class GlkWindow;
 @class GlkFrameView;
 @class CmdTextField;
+@class StyleSet;
 
 @interface GlkWindowView : UIView <UITextFieldDelegate> {
 	GlkWindow *win;
@@ -33,6 +34,7 @@
 - (GlkFrameView *) superviewAsFrameView;
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;
+- (void) uncacheLayoutAndStyles:(StyleSet *)styleset;
 
 - (void) setMoreFlag:(BOOL)flag;
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder;

@@ -51,6 +51,7 @@ static GlkAppWrapper *singleton = nil;
 		pendingtimerevent = NO;
 		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
 		
+		pendingmetricchange = NO;
 		pendingsizechange = NO;
 		timerinterval = nil;
 	}
@@ -80,6 +81,7 @@ static GlkAppWrapper *singleton = nil;
 
 	[iowaitcond lock];
 	iowait = NO;
+	pendingmetricchange = NO;
 	pendingsizechange = NO;
 	pendingtimerevent = NO;
 	[iowaitcond unlock];
@@ -140,9 +142,9 @@ static GlkAppWrapper *singleton = nil;
 		withObject:library waitUntilDone:NO];
 	
 	while (self.iowait) {
-		if (event && pendingsizechange) {
+		if (event && (pendingsizechange || pendingmetricchange)) {
 			/* This could be set while we're waiting, or it could have been set already when we entered selectEvent. Note that we won't get in here if this is a special event request (because event will be null). */
-			pendingsizechange = NO;
+			//### or metrics!
 			BOOL sizechanged = [library setMetrics:pendingsize];
 			if (sizechanged) {
 				/* We duplicate all the event-setting machinery here, because we're already in the VM thread and inside the lock. */
@@ -154,6 +156,8 @@ static GlkAppWrapper *singleton = nil;
 				iowait = NO;
 				break;
 			}
+			pendingsizechange = NO;
+			pendingmetricchange = NO;
 		}
 		
 		[iowaitcond wait];
@@ -186,6 +190,17 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond lock];
 	pendingsizechange = YES;
 	pendingsize = box;
+	[iowaitcond signal];
+	[iowaitcond unlock];
+}
+
+/* The UI's fonts or font sizes have changed. Again, all the UI windowviews have already done this; we need to apply the changes to the VM windows. (It matters because, for example, a GlkGridWindow might now be a different number of characters across.
+ 
+	This is called from the main thread. It synchronizes with the VM thread. If the VM thread is blocked, it will wake up briefly to handle the size change (and maybe begin a evtype_Arrange event). If the VM thread is running, it will get back to the size change at the next glk_select() time. */
+- (void) noteMetricsChanged {
+	//NSLog(@"setFrameSize: %@", StringFromRect(box));
+	[iowaitcond lock];
+	pendingmetricchange = YES;
 	[iowaitcond signal];
 	[iowaitcond unlock];
 }

@@ -40,6 +40,7 @@
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag;
 - (void) updateFromLibraryState:(GlkLibrary *)library;
+- (void) updateWindowStyles;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 - (void) addToCommandHistory:(NSString *)str;
