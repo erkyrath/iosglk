@@ -44,7 +44,7 @@
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 - (void) addToCommandHistory:(NSString *)str;
 - (void) postPopMenu:(PopMenuView *)menuview;
-- (void) removePopMenu;
+- (void) removePopMenuAnimated:(BOOL)animated;
 
 @end
 

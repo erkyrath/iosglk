@@ -102,7 +102,7 @@
 	cachedGlkBox = box;
 
 	if (menuview)
-		[self removePopMenu];
+		[self removePopMenuAnimated:YES];
 
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
@@ -280,23 +280,42 @@
 }
 
 - (void) postPopMenu:(PopMenuView *)menu {
-	if (!menuview) {
-		self.menuview = menu;
-		[[IosGlkAppDelegate singleton].glkviewc buildPopMenu:menuview];
+	if (menuview) {
+		[self removePopMenuAnimated:YES];
+	}
+	
+	self.menuview = menu;
+	[[IosGlkAppDelegate singleton].glkviewc buildPopMenu:menuview];
 
-		menuview.framemargins = UIEdgeInsetsRectDiff(menuview.frameview.frame, menuview.content.frame);
-		[menuview loadContent];
-		
-		[menuview addSubview:menuview.frameview];
+	menuview.framemargins = UIEdgeInsetsRectDiff(menuview.frameview.frame, menuview.content.frame);
+	[menuview loadContent];
+	
+	[menuview addSubview:menuview.frameview];
+	if ([IosGlkAppDelegate animblocksavailable]) {
+		menuview.alpha = 0;
+		[self addSubview:menuview];
+		[UIView animateWithDuration:0.25 
+						 animations:^{ menuview.alpha = 1; } ];
+	}
+	else {
 		[self addSubview:menuview];
 	}
 }
 
-- (void) removePopMenu {
-	if (menuview) {
-		[menuview removeFromSuperview];
-		self.menuview = nil;
+- (void) removePopMenuAnimated:(BOOL)animated {
+	if (!menuview)
+		return;
+	
+	if (animated && [IosGlkAppDelegate animblocksavailable]) {
+		UIView *oldview = menuview;
+		[UIView animateWithDuration:0.25 
+						 animations:^{ oldview.alpha = 0; } 
+						 completion:^(BOOL finished) { [oldview removeFromSuperview]; } ];
 	}
+	else {
+		[menuview removeFromSuperview];
+	}
+	self.menuview = nil;
 }
 
 @end

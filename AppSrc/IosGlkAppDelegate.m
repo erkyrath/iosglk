@@ -23,16 +23,22 @@
 @synthesize glkapp;
 
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
+static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 
 + (IosGlkAppDelegate *) singleton {
 	return singleton;
 }
 
++ (BOOL) animblocksavailable {
+	return animblocksavailable;
+}
 
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
 	NSLog(@"AppDelegate finished launching");	
 	// Override point for customization after application launch.
 	singleton = self;
+	
+	animblocksavailable = [[UIView class] respondsToSelector:@selector(animateWithDuration:animations:)];
 
 	// Add the view controller's view to the window and display.
 	[self.window addSubview:rootviewc.view];

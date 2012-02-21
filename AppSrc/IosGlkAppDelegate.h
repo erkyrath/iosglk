@@ -29,6 +29,7 @@
 @property (nonatomic, retain) GlkAppWrapper *glkapp;
 
 + (IosGlkAppDelegate *) singleton;
++ (BOOL) animblocksavailable;
 
 @end
 

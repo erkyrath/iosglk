@@ -85,7 +85,7 @@
 	if (!wants_input) {
 		if (inputfield) {
 			/* The window doesn't want any input at all. Get rid of the textfield. */
-			[self.superviewAsFrameView removePopMenu];
+			[self.superviewAsFrameView removePopMenuAnimated:YES];
 			[inputfield removeFromSuperview];
 			[inputholder removeFromSuperview];
 			self.inputfield = nil;
@@ -149,7 +149,7 @@
 		return NO;
 	}
 	else {
-		[self.superviewAsFrameView removePopMenu];
+		[self.superviewAsFrameView removePopMenuAnimated:YES];
 	}
 	return YES;
 }
@@ -170,7 +170,7 @@
 		return NO;
 	}
 
-	[self.superviewAsFrameView removePopMenu];
+	[self.superviewAsFrameView removePopMenuAnimated:YES];
 
 	/* Don't look at the text yet; the last word hasn't been spellchecked. However, we don't want to close the keyboard either. The only good answer seems to be to fire a function call with a tiny delay, and return YES to ensure that the spellcheck is accepted. */
 	[self performSelector:@selector(textFieldContinueReturn:) withObject:textField afterDelay:0.0];

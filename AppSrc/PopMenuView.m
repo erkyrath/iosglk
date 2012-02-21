@@ -8,6 +8,7 @@
  */
 
 #import "PopMenuView.h"
+#import "IosGlkAppDelegate.h"
 #import "GlkFrameView.h"
 #import "GlkUtilities.h"
 
@@ -54,11 +55,17 @@
 	rect.origin.x = (buttonrect.origin.x + buttonrect.size.width) - rect.size.width;
 	rect.origin.y = buttonrect.origin.y - rect.size.height;
 	
-	frameview.frame = rect;
+	if (animated && [IosGlkAppDelegate animblocksavailable] && self.superview) {
+		[UIView animateWithDuration:0.25 
+						 animations:^{ frameview.frame = rect; } ];
+	}
+	else {
+		frameview.frame = rect;
+	}
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	[self.superviewAsFrameView removePopMenu];
+	[self.superviewAsFrameView removePopMenuAnimated:YES];
 }
 
 

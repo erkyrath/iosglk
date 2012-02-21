@@ -60,7 +60,7 @@
 		if (!historymenu) {
 			[[NSBundle mainBundle] loadNibNamed:@"HistoryMenuView" owner:self options:nil];
 			[historymenu setUpFromHistory:history];
-			[self resizeContentTo:historymenu.frame.size animated:NO];
+			[self resizeContentTo:historymenu.frame.size animated:YES];
 			[content addSubview:historymenu];
 		}
 		else {
@@ -76,7 +76,7 @@
 		if (!palettemenu) {
 			[[NSBundle mainBundle] loadNibNamed:@"PaletteMenuView" owner:self options:nil];
 			[palettemenu setUp];
-			[self resizeContentTo:palettemenu.frame.size animated:NO];
+			[self resizeContentTo:palettemenu.frame.size animated:YES];
 			[content addSubview:palettemenu];
 		}
 		else {
@@ -106,7 +106,7 @@
 	[winview.inputfield applyInputString:cmd replace:replace];
 	
 	if (closemenu)
-		[self.superviewAsFrameView removePopMenu];
+		[self.superviewAsFrameView removePopMenuAnimated:YES];
 }
 
 @end
@@ -198,6 +198,7 @@
 	if (selection >= 0 && selection < labels.count) {
 		UILabel *label = [labels objectAtIndex:selection];
 		if (menuview && menuview.superview) {
+			[self selectLabel:-1];
 			[menuview acceptCommand:label.text replace:YES close:YES];
 		}
 	}
