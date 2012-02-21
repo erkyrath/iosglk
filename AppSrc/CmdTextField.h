@@ -20,7 +20,7 @@
 @property (nonatomic, retain) NSNumber *wintag;
 
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar;
-- (void) adjustForStyles:(StyleSet *)styleset;
+- (void) adjustForWindowStyles:(StyleSet *)styleset;
 - (BOOL) singleChar;
 - (void) applyInputString:(NSString *)cmd replace:(BOOL)replace;
 

@@ -24,6 +24,7 @@
 @implementation GlkWindowView
 
 @synthesize win;
+@synthesize styleset;
 @synthesize inputfield;
 @synthesize inputholder;
 @synthesize morewaiting;
@@ -45,6 +46,7 @@
 	self = [super initWithFrame:box];
 	if (self) {
 		self.win = winref;
+		self.styleset = win.styleset;
 		input_request_id = 0;
 	}
 	return self;
@@ -54,6 +56,7 @@
 	input_request_id = 0;
 	self.inputfield = nil;
 	self.inputholder = nil;
+	self.styleset = nil;
 	self.win = nil;
 	[super dealloc];
 }
@@ -67,8 +70,8 @@
 	[NSException raise:@"GlkException" format:@"updateFromWindowState not implemented"];
 }
 
-/* Discard everything the window knows about its layout, fonts, colors, etc. Windowview subclasses will override this. */
-- (void) uncacheLayoutAndStyles:(StyleSet *)styleset {
+/* Discard everything the window knows about its layout, fonts, colors, etc. Look at the current view.styleset to pick up new information. Windowview subclasses will override this. */
+- (void) uncacheLayoutAndStyles {
 	/* By default, do nothing. */
 }
 

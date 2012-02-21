@@ -85,8 +85,8 @@
 	[self setNeedsLayout];
 	for (NSNumber *tag in windowviews) {
 		GlkWindowView *winv = [windowviews objectForKey:tag];
-		StyleSet *styleset = [StyleSet buildForWindowType:winv.win.type rock:winv.win.rock];
-		[winv uncacheLayoutAndStyles:styleset];
+		winv.styleset = [StyleSet buildForWindowType:winv.win.type rock:winv.win.rock];
+		[winv uncacheLayoutAndStyles];
 	}
 	
 	//### skip for color-only changes?

@@ -14,6 +14,7 @@
 
 @interface GlkWindowView : UIView <UITextFieldDelegate> {
 	GlkWindow *win;
+	StyleSet *styleset; /* the same as the window's, unless the player is changing things */
 	
 	CmdTextField *inputfield; /* if input is happening (but not necessarily a subview of this view) */
 	UIScrollView *inputholder; /* terrible hack: all textfields must be wrapped in a UIScrollView container of the same size. */
@@ -24,6 +25,7 @@
 }
 
 @property (nonatomic, retain) GlkWindow *win;
+@property (nonatomic, retain) StyleSet *styleset;
 @property (nonatomic, retain) CmdTextField *inputfield;
 @property (nonatomic, retain) UIScrollView *inputholder;
 @property (nonatomic) BOOL morewaiting;
@@ -34,7 +36,7 @@
 - (GlkFrameView *) superviewAsFrameView;
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;
-- (void) uncacheLayoutAndStyles:(StyleSet *)styleset;
+- (void) uncacheLayoutAndStyles;
 
 - (void) setMoreFlag:(BOOL)flag;
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder;

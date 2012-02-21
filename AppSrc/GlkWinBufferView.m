@@ -23,7 +23,7 @@
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		lastLayoutBounds = CGRectZero;
-		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:win.styleset] autorelease];
+		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:styleset] autorelease];
 		//textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		textview.delegate = self;
 		[self addSubview:textview];
@@ -61,10 +61,10 @@
 	[textview setNeedsLayout];
 }
 
-- (void) uncacheLayoutAndStyles:(StyleSet *)styleset {
+- (void) uncacheLayoutAndStyles {
 	[textview acceptStyleset:styleset];
 	if (inputfield)
-		[inputfield adjustForStyles:styleset];
+		[inputfield adjustForWindowStyles:styleset];
 	[textview uncacheLayoutAndVLines:YES];
 }
 

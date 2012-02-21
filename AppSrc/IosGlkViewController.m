@@ -49,6 +49,11 @@
 	// ### drop the frameview
 }
 
+- (void) viewDidDisappear:(BOOL)animated {
+	[super viewDidDisappear:animated];
+	[frameview removePopMenuAnimated:NO];
+}
+
 - (void) buildPopMenu:(PopMenuView *)menuview {
 	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:menuview options:nil];
 }

@@ -16,14 +16,12 @@
 @implementation GlkWinGridView
 
 @synthesize lines;
-@synthesize styleset;
 
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:8];
-		self.styleset = win.styleset;
-		self.backgroundColor = win.styleset.backgroundcolor;
+		self.backgroundColor = styleset.backgroundcolor;
 		
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
 		self.contentMode = UIViewContentModeRedraw;
@@ -33,14 +31,12 @@
 
 - (void) dealloc {
 	self.lines = nil;
-	self.styleset = nil;
 	[super dealloc];
 }
 
-- (void) uncacheLayoutAndStyles:(StyleSet *)stylesval {
-	self.styleset = stylesval;
+- (void) uncacheLayoutAndStyles {
 	if (inputfield)
-		[inputfield adjustForStyles:styleset];
+		[inputfield adjustForWindowStyles:styleset];
 	[self setNeedsDisplay];
 }
 
