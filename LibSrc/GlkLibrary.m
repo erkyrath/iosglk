@@ -13,6 +13,7 @@
 #import "GlkWindow.h"
 #import "GlkUtilities.h"
 #import "Geometry.h"
+#import "StyleSet.h"
 #include "glk.h"
 
 @implementation GlkLibrary
@@ -103,41 +104,51 @@ static GlkLibrary *singleton = nil;
 	return [NSNumber numberWithInteger:tagCounter];
 }
 
-/* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation. Or the keyboard opening or closing. Or a phone call, probably. Okay, lots of reasons.) 
-	Returns YES if the bounds changed.
+/* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation. Or the keyboard opening or closing. Or a phone call, probably. Okay, lots of reasons.) The UI also calls this if the window stylesets needs to change (because the player changed a preference).
+ 
+	Returns YES if the geometry changed (in a way visible to the VM -- i.e., grid window rows/cols changed). This errs on the side of YES, however. (A one-pixel change probably won't change the window, but it will return YES anyhow.)
+ 
 	This is called only at startup time and from the selectEvent loop.
 */
-- (BOOL) setMetrics:(CGRect)box {
-	if (CGRectEqualToRect(box, bounds))
+- (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)boxref {
+	BOOL rearrange = NO;
+	
+	if (boxref) {
+		/* The screen sized changed. */
+		CGRect box = *boxref;
+		if (!CGRectEqualToRect(box, bounds)) {
+			bounds = box;
+			rearrange = YES;
+			//NSLog(@"setMetrics: bounds now %@", StringFromRect(bounds));
+		}
+	}
+	if (metricschanged) {
+		/* The stylesets need to change. */
+		for (GlkWindow *win in windows) {
+			win.styleset = [StyleSet buildForWindowType:win.type rock:win.rock];
+		}
+		/* Pair windows need a little additional work. */
+		for (GlkWindow *win in windows) {
+			if (win.type == wintype_Pair) {
+				Geometry *geometry = ((GlkWindowPair *)win).geometry;
+				if (geometry && geometry.keytag) {
+					GlkWindow *keywin = [self windowForTag:geometry.keytag];
+					geometry.keystyleset = keywin.styleset;
+				}
+			}
+		}
+		rearrange = YES;
+		//NSLog(@"setMetrics: metrics have changed");
+	}
+	
+	if (!rearrange)
 		return NO;
 	
-	bounds = box;
-	NSLog(@"library metrics now %@", StringFromRect(bounds));
+	NSLog(@"setMetrics: library rearrange, bounds now %@", StringFromRect(bounds));
 	if (rootwin)
 		[rootwin windowRearrange:bounds];
 	return YES;
 }
-
-/* Force all the windows to accept a new styleset. 
- */
-#if 0 //###
-- (void) updateWindowStyles {
-	for (GlkWindow *win in windows) {
-		[win updateStyleset];
-	}
-	
-	/* Pair windows need a little additional work. */
-	for (GlkWindow *win in windows) {
-		if (win.type == wintype_Pair) {
-			Geometry *geometry = ((GlkWindowPair *)win).geometry;
-			if (geometry.keytag) {
-				GlkWindow *keywin = [self windowForTag:geometry.keytag];
-				geometry.keystyleset = keywin.styleset;
-			}
-		}
-	}
-}
-#endif //###
 
 /* Locate the window matching a given tag. (Or nil, if no window matches or the tag is nil.) This isn't efficient, but it's not heavily used.
 */

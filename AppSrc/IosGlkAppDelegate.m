@@ -67,7 +67,7 @@ static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 	[glkviewc didFinishLaunching];
 	
 	CGRect box = [glkviewc.glkdelegate adjustFrame:glkviewc.frameview.bounds];
-	[library setMetrics:box];
+	[library setMetricsChanged:YES bounds:&box];
 
 	NSLog(@"AppDelegate launching app thread");
 	

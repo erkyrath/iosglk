@@ -144,8 +144,14 @@ static GlkAppWrapper *singleton = nil;
 	while (self.iowait) {
 		if (event && (pendingsizechange || pendingmetricchange)) {
 			/* This could be set while we're waiting, or it could have been set already when we entered selectEvent. Note that we won't get in here if this is a special event request (because event will be null). */
-			//### or metrics!
-			BOOL sizechanged = [library setMetrics:pendingsize];
+			BOOL metricschanged = pendingmetricchange;
+			CGRect *boxref = nil;
+			if (pendingsizechange)
+				boxref = &pendingsize;
+			pendingsizechange = NO;
+			pendingmetricchange = NO;
+			
+			BOOL sizechanged = [library setMetricsChanged:metricschanged bounds:boxref];
 			if (sizechanged) {
 				/* We duplicate all the event-setting machinery here, because we're already in the VM thread and inside the lock. */
 				iowait_evptr = NULL;
@@ -156,8 +162,6 @@ static GlkAppWrapper *singleton = nil;
 				iowait = NO;
 				break;
 			}
-			pendingsizechange = NO;
-			pendingmetricchange = NO;
 		}
 		
 		[iowaitcond wait];

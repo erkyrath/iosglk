@@ -62,7 +62,7 @@
 + (void) strictWarning:(NSString *)msg;
 
 - (NSNumber *) generateTag;
-- (BOOL) setMetrics:(CGRect)box;
+- (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)box;
 - (GlkWindow *) windowForTag:(NSNumber *)tag;
 
 @end
