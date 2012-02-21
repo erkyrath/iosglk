@@ -19,7 +19,7 @@
 @synthesize history;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winval history:(NSArray *)historylist {
-	self = [super initWithFrame:frame buttonFrame:rect];
+	self = [super initWithFrame:frame buttonFrame:rect belowButton:NO];
 	if (self) {
 		mode = inputmenu_None;
 		self.winview = winval;

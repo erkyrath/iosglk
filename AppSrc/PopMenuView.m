@@ -19,10 +19,11 @@
 @synthesize framemargins;
 @synthesize buttonrect;
 
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect {
+- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below {
 	self = [super initWithFrame:frame];
 	if (self) {
 		//self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5]; //###
+		belowbutton = below;
 		buttonrect = rect;
 	}
 	return self;
@@ -52,8 +53,14 @@
 - (void) resizeContentTo:(CGSize)size animated:(BOOL)animated {
 	CGRect rect = CGRectMake(0, 0, size.width+framemargins.left+framemargins.right, size.height+framemargins.top+framemargins.bottom);
 	
-	rect.origin.x = (buttonrect.origin.x + buttonrect.size.width) - rect.size.width;
-	rect.origin.y = buttonrect.origin.y - rect.size.height;
+	if (belowbutton) {
+		rect.origin.x = buttonrect.origin.x;
+		rect.origin.y = (buttonrect.origin.y + buttonrect.size.height);
+	}
+	else {
+		rect.origin.x = (buttonrect.origin.x + buttonrect.size.width) - rect.size.width;
+		rect.origin.y = buttonrect.origin.y - rect.size.height;
+	}
 	
 	if (animated && [IosGlkAppDelegate animblocksavailable] && self.superview) {
 		[UIView animateWithDuration:0.25 
