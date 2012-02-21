@@ -294,7 +294,7 @@
 	if ([IosGlkAppDelegate animblocksavailable]) {
 		menuview.alpha = 0;
 		[self addSubview:menuview];
-		[UIView animateWithDuration:0.25 
+		[UIView animateWithDuration:0.1 
 						 animations:^{ menuview.alpha = 1; } ];
 	}
 	else {
