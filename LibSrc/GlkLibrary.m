@@ -125,7 +125,8 @@ static GlkLibrary *singleton = nil;
 	if (metricschanged) {
 		/* The stylesets need to change. */
 		for (GlkWindow *win in windows) {
-			win.styleset = [StyleSet buildForWindowType:win.type rock:win.rock];
+			if (win.styleset)
+				win.styleset = [StyleSet buildForWindowType:win.type rock:win.rock];
 		}
 		/* Pair windows need a little additional work. */
 		for (GlkWindow *win in windows) {
