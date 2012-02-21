@@ -20,6 +20,7 @@
 @property (nonatomic, retain) IBOutlet UIView *content;
 @property (nonatomic) UIEdgeInsets framemargins;
 @property (nonatomic, readonly) CGRect buttonrect;
+@property (nonatomic, readonly) BOOL belowbutton;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below;
 - (GlkFrameView *) superviewAsFrameView;

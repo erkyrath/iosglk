@@ -18,6 +18,7 @@
 @synthesize content;
 @synthesize framemargins;
 @synthesize buttonrect;
+@synthesize belowbutton;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below {
 	self = [super initWithFrame:frame];
