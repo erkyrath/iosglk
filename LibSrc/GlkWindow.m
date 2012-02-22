@@ -346,6 +346,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	/* Echo the input, if needed. (On a grid window, it won't be needed.) */
 	if (pending_echo_line_input) {
 		glui32 origstyle = style;
+		style = style_Input;
 		
 		if (!unicode) {
 			[self putBuffer:buf len:buflen];
