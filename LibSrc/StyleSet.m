@@ -13,6 +13,7 @@
 @implementation StyleSet
 
 @synthesize fonts;
+@synthesize colors;
 @synthesize charbox;
 @synthesize backgroundcolor;
 @synthesize margins;
@@ -113,10 +114,13 @@
 		margins = UIEdgeInsetsZero;
 		margintotal = CGSizeZero;
 		self.backgroundcolor = [UIColor whiteColor];
-		/* We have to malloc this buffer. I tried embedding it as an array of pointers in the StyleSet object, but ObjC threw a hissy-cow. */
+		/* We have to malloc these buffers. I tried embedding it as an array of pointers in the StyleSet object, but ObjC threw a hissy-cow. */
 		fonts = malloc(sizeof(UIFont*) * style_NUMSTYLES);
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
 			fonts[ix] = nil;
+		colors = malloc(sizeof(UIColor*) * style_NUMSTYLES);
+		for (int ix=0; ix<style_NUMSTYLES; ix++)
+			colors[ix] = nil;
 	}
 	
 	return self;
@@ -128,15 +132,22 @@
 			[fonts[ix] release];
 			fonts[ix] = nil;
 		}
+		if (colors[ix]) {
+			[colors[ix] release];
+			colors[ix] = nil;
+		}
 	}
 	free(fonts);
+	free(colors);
 	fonts = nil;
+	colors = nil;
 	self.backgroundcolor = nil;
 	[super dealloc];
 }
 
 - (void) completeForWindowType:(glui32)wintype {
-	/* Fill in any fonts that were omitted. */
+	/* Fill in any fonts and colors that were omitted. Use autoreleased references at this point. */
+	
 	for (int ix=0; ix<style_NUMSTYLES; ix++) {
 		if (!fonts[ix]) {
 			switch (ix) {
@@ -147,15 +158,27 @@
 						fonts[ix] = [UIFont fontWithName:@"Courier" size:14];
 					break;
 				default:
-					fonts[ix] = fonts[0];
+					fonts[ix] = fonts[style_Normal];
+					break;
+			}
+		}
+		
+		if (!colors[ix]) {
+			switch (ix) {
+				case style_Normal:
+					colors[ix] = [UIColor blackColor];
+					break;
+				default:
+					colors[ix] = colors[style_Normal];
 					break;
 			}
 		}
 	}
 	
-	/* The delegate prepareStyles method filled the array with autoreleased fonts. We retain them now. */
+	/* The delegate prepareStyles method (also the code above) filled the arrays with autoreleased fonts and colors. We retain them now. */
 	for (int ix=0; ix<style_NUMSTYLES; ix++) {
 		[fonts[ix] retain];
+		[colors[ix] retain];
 	}
 	
 	CGSize size;

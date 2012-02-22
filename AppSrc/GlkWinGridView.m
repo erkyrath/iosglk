@@ -48,22 +48,27 @@
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"GridView: drawRect");
 	CGContextRef gc = UIGraphicsGetCurrentContext();
-	//CGContextSetRGBFillColor(gc,  1, 1, 1,  1);
-	//CGContextFillRect(gc, rect);
-	
-	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
 	
 	UIFont **fonts = styleset.fonts;
+	UIColor **colors = styleset.colors;
 	CGSize charbox = styleset.charbox;
 	CGPoint marginoffset;
 	marginoffset.x = styleset.margins.left;
 	marginoffset.y = styleset.margins.top;
+	
+	/* We'll be using a limited list of colors, so it makes sense to track them by identity. */
+	UIColor *lastcolor = nil;
 	
 	int jx = 0;
 	for (GlkStyledLine *sln in lines) {
 		CGPoint pt;
 		pt.y = marginoffset.y + jx * charbox.height;
 		for (GlkStyledString *str in sln.arr) {
+			UIColor *color = colors[str.style];
+			if (color != lastcolor) {
+				CGContextSetFillColorWithColor(gc, color.CGColor);
+				lastcolor = color;
+			}
 			pt.x = marginoffset.x + str.pos * charbox.width;
 			[str.str drawAtPoint:pt withFont:fonts[str.style]];
 		}

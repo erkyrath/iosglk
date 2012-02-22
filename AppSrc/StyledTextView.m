@@ -963,10 +963,12 @@
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"StyledTextView: drawRect %@ (bounds are %@)", StringFromRect(rect), StringFromRect(self.bounds));
 	CGContextRef gc = UIGraphicsGetCurrentContext();
-	
-	CGContextSetRGBFillColor(gc,  0, 0, 0,  1);
-	
+		
 	UIFont **fonts = styleset.fonts;
+	UIColor **colors = styleset.colors;
+	
+	/* We'll be using a limited list of colors, so it makes sense to track them by identity. */
+	UIColor *lastcolor = nil;
 	
 	for (GlkVisualLine *vln in vlines) {
 		CGPoint pt;
@@ -974,6 +976,11 @@
 		pt.x = vln.xstart;
 		for (GlkVisualString *vwd in vln.arr) {
 			UIFont *font = fonts[vwd.style];
+			UIColor *color = colors[vwd.style];
+			if (color != lastcolor) {
+				CGContextSetFillColorWithColor(gc, color.CGColor);
+				lastcolor = color;
+			}
 			CGSize wordsize = [vwd.str drawAtPoint:pt withFont:font];
 			pt.x += wordsize.width;
 		}
