@@ -65,7 +65,7 @@
 			break;
 		}
 		if ([family isEqualToString:@"Hoefler Text"]) {
-			variants.normal = [UIFont fontWithName:@"HoeflerText" size:size];
+			variants.normal = [UIFont fontWithName:@"HoeflerText-Regular" size:size];
 			if (!variants.normal)
 				continue;
 			variants.bold = [UIFont fontWithName:@"HoeflerText-Bold" size:size];
