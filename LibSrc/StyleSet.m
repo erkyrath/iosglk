@@ -43,6 +43,36 @@
 	va_list arglist;
     va_start(arglist, first);
 	for (NSString *family = first; family; family = va_arg(arglist, NSString *)) {
+		
+		/* Some special cases first! */
+		if ([family isEqualToString:@"Times New Roman"]) {
+			variants.normal = [UIFont fontWithName:@"TimesNewRomanPSMT" size:size];
+			if (!variants.normal)
+				continue;
+			variants.italic = [UIFont fontWithName:@"TimesNewRomanPS-ItalicMT" size:size];
+			variants.bold = [UIFont fontWithName:@"TimesNewRomanPS-BoldMT" size:size];
+			break;
+		}
+		if ([family isEqualToString:@"Helvetica Neue"]) {
+			variants.normal = [UIFont fontWithName:@"HelveticaNeue" size:size];
+			if (!variants.normal)
+				continue;
+			variants.bold = [UIFont fontWithName:@"HelveticaNeue-Bold" size:size];
+			variants.italic = [UIFont fontWithName:@"HelveticaNeue-Italic" size:size];
+			/* iOS 3 had HelveticaNeue and Bold, but not Italic. Substitute original Helvetica-Oblique. */
+			if (!variants.italic)
+				variants.italic = [UIFont fontWithName:@"Helvetica-Oblique" size:size];
+			break;
+		}
+		if ([family isEqualToString:@"Hoefler Text"]) {
+			variants.normal = [UIFont fontWithName:@"HoeflerText" size:size];
+			if (!variants.normal)
+				continue;
+			variants.bold = [UIFont fontWithName:@"HoeflerText-Bold" size:size];
+			variants.italic = [UIFont fontWithName:@"HoeflerText-Italic" size:size];
+			break;
+		}
+		
 		UIFont *normalfont = [UIFont fontWithName:family size:size];
 		if (!normalfont)
 			continue;
