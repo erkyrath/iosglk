@@ -37,6 +37,7 @@
 - (void) uncacheLayoutAndStyles {
 	if (inputfield)
 		[inputfield adjustForWindowStyles:styleset];
+	self.backgroundColor = styleset.backgroundcolor;
 	[self setNeedsDisplay];
 }
 
