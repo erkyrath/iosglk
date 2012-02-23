@@ -18,9 +18,10 @@
 		DF79782412F3ACFC00E8F5FF /* glkmain.c in Sources */ = {isa = PBXBuildFile; fileRef = DF79782312F3ACFC00E8F5FF /* glkmain.c */; };
 		DF9D1A5F14E60DAF006A6749 /* CmdTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */; };
 		DF9D1A6214E6DC91006A6749 /* InputMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = DF9D1A6114E6DC90006A6749 /* InputMenuView.m */; };
-		DF9D1A6414E6E27C006A6749 /* HistoryMenuVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF9D1A6314E6E27C006A6749 /* HistoryMenuVC.xib */; };
-		DF9D1A6614E71D6E006A6749 /* PaletteMenuVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF9D1A6514E71D6E006A6749 /* PaletteMenuVC.xib */; };
+		DF9D1A6414E6E27C006A6749 /* HistoryMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF9D1A6314E6E27C006A6749 /* HistoryMenuView.xib */; };
+		DF9D1A6614E71D6E006A6749 /* PaletteMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF9D1A6514E71D6E006A6749 /* PaletteMenuView.xib */; };
 		DFAEC3791369047D0014AB94 /* gi_blorb.c in Sources */ = {isa = PBXBuildFile; fileRef = DFAEC3771369047D0014AB94 /* gi_blorb.c */; };
+		DFBB4DF014F5DAC90041016A /* PopMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBB4DEF14F5DAC90041016A /* PopMenuView.m */; };
 		DFC0AF581355552000CD1F5D /* GlkFileSelectLoad.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */; };
 		DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */; };
 		DFCE593E13690D0100EACA86 /* GlkDispatchLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */; };
@@ -73,10 +74,12 @@
 		DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CmdTextField.m; sourceTree = "<group>"; };
 		DF9D1A6014E6DC90006A6749 /* InputMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputMenuView.h; sourceTree = "<group>"; };
 		DF9D1A6114E6DC90006A6749 /* InputMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputMenuView.m; sourceTree = "<group>"; };
-		DF9D1A6314E6E27C006A6749 /* HistoryMenuVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryMenuVC.xib; sourceTree = "<group>"; };
-		DF9D1A6514E71D6E006A6749 /* PaletteMenuVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PaletteMenuVC.xib; sourceTree = "<group>"; };
+		DF9D1A6314E6E27C006A6749 /* HistoryMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryMenuView.xib; sourceTree = "<group>"; };
+		DF9D1A6514E71D6E006A6749 /* PaletteMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PaletteMenuView.xib; sourceTree = "<group>"; };
 		DFAEC3771369047D0014AB94 /* gi_blorb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gi_blorb.c; sourceTree = "<group>"; };
 		DFAEC3781369047D0014AB94 /* gi_blorb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_blorb.h; sourceTree = "<group>"; };
+		DFBB4DEE14F5DAC90041016A /* PopMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopMenuView.h; sourceTree = "<group>"; };
+		DFBB4DEF14F5DAC90041016A /* PopMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopMenuView.m; sourceTree = "<group>"; };
 		DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GlkFileSelectLoad.xib; sourceTree = "<group>"; };
 		DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkBlorbLayer.m; sourceTree = "<group>"; };
 		DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDispatchLayer.m; sourceTree = "<group>"; };
@@ -184,8 +187,8 @@
 				2899E5210DE3E06400AC0155 /* IosGlkViewController.xib */,
 				DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */,
 				DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */,
-				DF9D1A6314E6E27C006A6749 /* HistoryMenuVC.xib */,
-				DF9D1A6514E71D6E006A6749 /* PaletteMenuVC.xib */,
+				DF9D1A6314E6E27C006A6749 /* HistoryMenuView.xib */,
+				DF9D1A6514E71D6E006A6749 /* PaletteMenuView.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -261,6 +264,8 @@
 				DFED7AAB1365F18E00FBAFFB /* RelDateFormatter.m */,
 				DF9D1A5D14E60DAF006A6749 /* CmdTextField.h */,
 				DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */,
+				DFBB4DEE14F5DAC90041016A /* PopMenuView.h */,
+				DFBB4DEF14F5DAC90041016A /* PopMenuView.m */,
 				DF9D1A6014E6DC90006A6749 /* InputMenuView.h */,
 				DF9D1A6114E6DC90006A6749 /* InputMenuView.m */,
 				DFED7AAC1365F18E00FBAFFB /* StyledTextView.h */,
@@ -313,7 +318,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "IosGlk" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -343,8 +348,8 @@
 				2899E5220DE3E06400AC0155 /* IosGlkViewController.xib in Resources */,
 				DFC0AF581355552000CD1F5D /* GlkFileSelectLoad.xib in Resources */,
 				DFF26A84135BCBAC00F2FBFD /* GlkFileSelectStore.xib in Resources */,
-				DF9D1A6414E6E27C006A6749 /* HistoryMenuVC.xib in Resources */,
-				DF9D1A6614E71D6E006A6749 /* PaletteMenuVC.xib in Resources */,
+				DF9D1A6414E6E27C006A6749 /* HistoryMenuView.xib in Resources */,
+				DF9D1A6614E71D6E006A6749 /* PaletteMenuView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,6 +395,7 @@
 				DF9D1A5F14E60DAF006A6749 /* CmdTextField.m in Sources */,
 				DF9D1A6214E6DC91006A6749 /* InputMenuView.m in Sources */,
 				DF19DDC914E87CC4007DCB29 /* IosGlkLibDelegate.m in Sources */,
+				DFBB4DF014F5DAC90041016A /* PopMenuView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
