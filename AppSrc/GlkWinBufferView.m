@@ -22,7 +22,7 @@
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
-		lastLayoutBounds = CGRectZero;
+		lastLayoutBounds = CGRectNull;
 		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:styleset] autorelease];
 		//textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		textview.delegate = self;
@@ -65,6 +65,7 @@
 	[textview acceptStyleset:styleset];
 	if (inputfield)
 		[inputfield adjustForWindowStyles:styleset];
+	lastLayoutBounds = CGRectNull;
 	[textview uncacheLayoutAndVLines:YES];
 }
 

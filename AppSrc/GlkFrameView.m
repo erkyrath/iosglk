@@ -46,6 +46,7 @@
 		self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
 		rootwintag = nil;
 		
+		cachedGlkBox = CGRectNull;
 		self.commandhistory = [NSMutableArray arrayWithCapacity:MAX_HISTORY_LENGTH];
 		
 		inputmenumode = inputmenu_Palette;
@@ -88,6 +89,8 @@
 		winv.styleset = [StyleSet buildForWindowType:winv.win.type rock:winv.win.rock];
 		[winv uncacheLayoutAndStyles];
 	}
+	
+	cachedGlkBox = CGRectNull;
 	
 	//### skip for color-only changes?
 	/* Now tell the VM thread. */
