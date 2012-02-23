@@ -27,7 +27,7 @@
 	if (self) {
 		self.prompt = promptref;
 		self.filelist = [NSMutableArray arrayWithCapacity:16];
-		dateformatter = [[RelDateFormatter alloc] init]; // retained
+		self.dateformatter = [[[RelDateFormatter alloc] init] autorelease];
 		[dateformatter setDateStyle:NSDateFormatterMediumStyle];
 		[dateformatter setTimeStyle:NSDateFormatterShortStyle];
 	}
