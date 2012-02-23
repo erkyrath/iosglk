@@ -213,12 +213,14 @@
 			GlkWindowView *winv = nil;
 			switch (win.type) {
 				case wintype_TextBuffer:
-					winv = [glkviewc.glkdelegate viewForBufferWindow:win frame:win.bbox];
+					if (glkviewc.glkdelegate)
+						winv = [glkviewc.glkdelegate viewForBufferWindow:win frame:win.bbox];
 					if (!winv)
 						winv = [[[GlkWinBufferView alloc] initWithWindow:win frame:win.bbox] autorelease];
 					break;
 				case wintype_TextGrid:
-					winv = [glkviewc.glkdelegate viewForGridWindow:win frame:win.bbox];
+					if (glkviewc.glkdelegate)
+						winv = [glkviewc.glkdelegate viewForGridWindow:win frame:win.bbox];
 					if (!winv)
 						winv = [[[GlkWinGridView alloc] initWithWindow:win frame:win.bbox] autorelease];
 					break;

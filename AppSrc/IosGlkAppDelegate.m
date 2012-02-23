@@ -35,7 +35,6 @@ static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
 	NSLog(@"AppDelegate finished launching");	
-	// Override point for customization after application launch.
 	singleton = self;
 	
 	animblocksavailable = [[UIView class] respondsToSelector:@selector(animateWithDuration:animations:)];
@@ -44,10 +43,11 @@ static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 	[self.window addSubview:rootviewc.view];
 	[self.window makeKeyAndVisible];
 
-	NSLog(@"AppDelegate loaded root view controller");
+	NSLog(@"AppDelegate loaded root view controller %x, glkviewc %x", (unsigned int)rootviewc, (unsigned int)glkviewc);
 
 	self.library = [[[GlkLibrary alloc] init] autorelease];
 	self.glkapp = [[[GlkAppWrapper alloc] init] autorelease];
+	/* Set library.glkdelegate to a default value, if the glkviewc doesn't provide one. (Remember, from now on, that glkviewc.glkdelegate may be null!) */
 	if (glkviewc.glkdelegate)
 		library.glkdelegate = glkviewc.glkdelegate;
 	else
@@ -66,7 +66,9 @@ static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 	
 	[glkviewc didFinishLaunching];
 	
-	CGRect box = [glkviewc.glkdelegate adjustFrame:glkviewc.frameview.bounds];
+	CGRect box = glkviewc.frameview.bounds;
+	if (glkviewc.glkdelegate)
+		box = [glkviewc.glkdelegate adjustFrame:box];
 	[library setMetricsChanged:YES bounds:&box];
 
 	NSLog(@"AppDelegate launching app thread");
