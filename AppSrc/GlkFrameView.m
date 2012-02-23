@@ -14,6 +14,7 @@
 #import "IosGlkViewController.h"
 #import "IosGlkLibDelegate.h"
 #import "GlkWindowView.h"
+#import "GlkWinGridView.h"
 #import "GlkWinBufferView.h"
 #import "CmdTextField.h"
 #import "PopMenuView.h"
@@ -208,7 +209,22 @@
 	/* If there are any new windows, create windowviews for them. */
 	for (GlkWindow *win in library.windows) {
 		if (win.type != wintype_Pair && ![windowviews objectForKey:win.tag]) {
-			GlkWindowView *winv = [GlkWindowView viewForWindow:win];
+			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
+			GlkWindowView *winv = nil;
+			switch (win.type) {
+				case wintype_TextBuffer:
+					winv = [glkviewc.glkdelegate viewForBufferWindow:win frame:win.bbox];
+					if (!winv)
+						winv = [[[GlkWinBufferView alloc] initWithWindow:win frame:win.bbox] autorelease];
+					break;
+				case wintype_TextGrid:
+					winv = [glkviewc.glkdelegate viewForGridWindow:win frame:win.bbox];
+					if (!winv)
+						winv = [[[GlkWinGridView alloc] initWithWindow:win frame:win.bbox] autorelease];
+					break;
+				default:
+					[NSException raise:@"GlkException" format:@"no windowview class for this window"];
+			}
 			[windowviews setObject:winv forKey:win.tag];
 			[self addSubview:winv];
 		}

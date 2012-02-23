@@ -29,19 +29,6 @@
 @synthesize inputholder;
 @synthesize morewaiting;
 
-+ (GlkWindowView *) viewForWindow:(GlkWindow *)win {
-	switch (win.type) {
-		case wintype_TextBuffer:
-			return [[[GlkWinBufferView alloc] initWithWindow:win frame:win.bbox] autorelease];
-		case wintype_TextGrid:
-			return [[[GlkWinGridView alloc] initWithWindow:win frame:win.bbox] autorelease];
-		default:
-			[NSException raise:@"GlkException" format:@"no windowview class for this window"];
-			return nil; // not really
-	}
-}
-
-
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithFrame:box];
 	if (self) {

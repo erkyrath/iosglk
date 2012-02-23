@@ -302,7 +302,7 @@
 		
 		/* We're inserting at the beginning of the vlines array, so the existing vlines all shift downwards. */
 		upextension = newypos - styleset.margins.top;
-		NSLog(@"### shifting the universe down %.1f", upextension);
+		//NSLog(@"### shifting the universe down %.1f", upextension);
 		for (GlkVisualLine *vln in vlines) {
 			vln.vlinenum += newcount;
 			vln.ypos += upextension;

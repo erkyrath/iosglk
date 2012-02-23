@@ -30,8 +30,6 @@
 @property (nonatomic, retain) UIScrollView *inputholder;
 @property (nonatomic) BOOL morewaiting;
 
-+ (GlkWindowView *) viewForWindow:(GlkWindow *)win;
-
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box;
 - (GlkFrameView *) superviewAsFrameView;
 - (void) updateFromWindowState;

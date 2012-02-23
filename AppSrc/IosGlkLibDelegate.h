@@ -8,9 +8,14 @@
 #include "glk.h"
 
 @class StyleSet;
+@class GlkWinBufferView;
+@class GlkWinGridView;
+@class GlkWindow;
 
 @protocol IosGlkLibDelegate <NSObject>
 
+- (GlkWinBufferView *) viewForBufferWindow:(GlkWindow *)win frame:(CGRect)box;
+- (GlkWinGridView *) viewForGridWindow:(GlkWindow *)win frame:(CGRect)box;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;
 - (CGSize) interWindowSpacing;
 - (CGRect) adjustFrame:(CGRect)rect;
