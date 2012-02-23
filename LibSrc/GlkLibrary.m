@@ -11,6 +11,7 @@
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#import "IosGlkLibDelegate.h"
 #import "GlkUtilities.h"
 #import "Geometry.h"
 #import "StyleSet.h"
@@ -18,7 +19,6 @@
 
 @implementation GlkLibrary
 
-@synthesize gameid;
 @synthesize glkdelegate;
 @synthesize windows;
 @synthesize streams;
@@ -54,9 +54,7 @@ static GlkLibrary *singleton = nil;
 		dispatch_unregister_obj = nil;
 		dispatch_register_arr = nil;
 		dispatch_unregister_arr = nil;
-		
-		self.gameid = @"GameID"; //###
-		
+				
 		self.vmexited = NO;
 		self.windows = [NSMutableArray arrayWithCapacity:8];
 		self.streams = [NSMutableArray arrayWithCapacity:8];
@@ -76,7 +74,6 @@ static GlkLibrary *singleton = nil;
 	NSLog(@"GlkLibrary dealloc %x", (unsigned int)self);
 	if (singleton == self)
 		singleton = nil;
-	self.gameid = nil;
 	self.glkdelegate = nil;
 	self.windows = nil;
 	self.streams = nil;
@@ -94,6 +91,17 @@ static GlkLibrary *singleton = nil;
 		localcalendar = nil;
 	}
 	[super dealloc];
+}
+
+/* If this app is an interpreter which handles many games, we need a way to keep their save files separate. We must return a string which is unique per game. (It's supplied by the delegate object.)
+ 
+	If this app runs a single game, we don't care about this, so we always return "GameID".
+ */
+- (NSString *) gameId {
+	NSString *gameid = [glkdelegate gameId];
+	if (gameid)
+		return gameid;
+	return @"GameID";
 }
 
 /* Every Glk object (windows, streams, etc) needs a hashable tag. (The objects themselves don't make good hash keys.) The easiest solution is to pass out unique NSNumbers. 

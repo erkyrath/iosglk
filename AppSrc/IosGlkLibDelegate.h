@@ -14,6 +14,7 @@
 
 @protocol IosGlkLibDelegate <NSObject>
 
+- (NSString *) gameId;
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindow *)win frame:(CGRect)box;
 - (GlkWinGridView *) viewForGridWindow:(GlkWindow *)win frame:(CGRect)box;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;

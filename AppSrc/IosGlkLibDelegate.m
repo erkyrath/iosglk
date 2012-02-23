@@ -20,6 +20,10 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return _DefaultGlkLibDelegate_singleton;
 }
 
+- (NSString *) gameId {
+	return nil;
+}
+
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindow *)win frame:(CGRect)box {
 	return nil;
 }

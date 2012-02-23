@@ -13,7 +13,6 @@
 @protocol IosGlkLibDelegate;
 
 @interface GlkLibrary : NSObject {
-	NSString *gameid;
 	id <IosGlkLibDelegate> glkdelegate;
 	
 	NSMutableArray *windows; /* GlkWindow objects */
@@ -39,7 +38,6 @@
 	void (*dispatch_unregister_arr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock);
 }
 
-@property (nonatomic, retain) NSString *gameid;
 @property (nonatomic, retain) id <IosGlkLibDelegate> glkdelegate;
 @property (nonatomic, retain) NSMutableArray *windows;
 @property (nonatomic, retain) NSMutableArray *streams;
@@ -61,6 +59,7 @@
 + (GlkLibrary *) singleton;
 + (void) strictWarning:(NSString *)msg;
 
+- (NSString *) gameId;
 - (NSNumber *) generateTag;
 - (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)box;
 - (GlkWindow *) windowForTag:(NSNumber *)tag;
