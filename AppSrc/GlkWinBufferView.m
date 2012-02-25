@@ -109,7 +109,7 @@
 */
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
 	CGRect box = [textview placeForInputField];
-	NSLog(@"WBV: input field goes to %@", StringFromRect(box));
+	//NSLog(@"WBV: input field goes to %@", StringFromRect(box));
 	
 	field.frame = CGRectMake(0, 0, box.size.width, box.size.height);
 	holder.contentSize = box.size;

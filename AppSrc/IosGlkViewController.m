@@ -25,6 +25,7 @@
 
 - (void) dealloc {
 	NSLog(@"IosGlkViewController dealloc %x", (unsigned int)self);
+	self.frameview = nil;
 	[super dealloc];
 }
 
@@ -45,13 +46,17 @@
 }
 
 - (void) viewDidUnload {
-	// Release any retained subviews of the main view.
-	// ### drop the frameview
+	NSLog(@"viewDidUnload");
+	self.frameview = nil;
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
 	[frameview removePopMenuAnimated:NO];
+}
+
+- (void) viewDidLoad {
+	NSLog(@"viewDidLoad");
 }
 
 - (void) buildPopMenu:(PopMenuView *)menuview {

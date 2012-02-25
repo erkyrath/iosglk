@@ -198,7 +198,7 @@
 	}
 	
 	/* Now trash all the VisualLinesViews. We'll create new ones at the next layout call. */
-	NSLog(@"### removing all linesviews (for update)");
+	//NSLog(@"### removing all linesviews (for update)");
 	//### Or only trash the ones that have been invalidated?
 	[self uncacheLayoutAndVLines:NO];
 }
@@ -232,7 +232,7 @@
 		NSLog(@"STV: width has changed! now %.01f (wrap %.01f)", totalwidth, wrapwidth);
 		
 		/* Trash all laid-out lines and VisualLinesViews. */
-		NSLog(@"### removing all linesviews (for width change)");
+		//NSLog(@"### removing all linesviews (for width change)");
 		[self uncacheLayoutAndVLines:YES];
 	}
 	
@@ -370,7 +370,7 @@
 	if (inputholder) {
 		CGRect rect = [self placeForInputField];
 		if (!CGRectEqualToRect(inputholder.frame, rect)) {
-			NSLog(@"STV: input field shifts to %@", StringFromRect(rect));
+			//NSLog(@"STV: input field shifts to %@", StringFromRect(rect));
 			inputfield.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
 			inputholder.contentSize = rect.size;
 			inputholder.frame = rect;
