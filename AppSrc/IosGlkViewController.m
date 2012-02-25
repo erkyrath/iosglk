@@ -12,6 +12,7 @@
 #import "GlkFileTypes.h"
 #import "GlkFileSelectViewController.h"
 #import "PopMenuView.h"
+#import "GlkLibrary.h"
 #import "GlkUtilities.h"
 
 @implementation IosGlkViewController
@@ -46,7 +47,7 @@
 }
 
 - (void) viewDidUnload {
-	NSLog(@"viewDidUnload");
+	//NSLog(@"viewDidUnload");
 	self.frameview = nil;
 }
 
@@ -56,7 +57,10 @@
 }
 
 - (void) viewDidLoad {
-	NSLog(@"viewDidLoad");
+	IosGlkAppDelegate *appdelegate = [IosGlkAppDelegate singleton];
+	//NSLog(@"viewDidLoad (library is %x)", (unsigned int)(appdelegate.library));
+	if (appdelegate.library)
+		[frameview requestLibraryState:appdelegate.glkapp];
 }
 
 - (void) buildPopMenu:(PopMenuView *)menuview {

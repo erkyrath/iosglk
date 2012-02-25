@@ -122,7 +122,7 @@ static GlkLibrary *singleton = nil;
 	BOOL rearrange = NO;
 	
 	if (boxref) {
-		/* The screen sized changed. */
+		/* The screen size changed. */
 		CGRect box = *boxref;
 		if (!CGRectEqualToRect(box, bounds)) {
 			bounds = box;

@@ -17,6 +17,7 @@
 	NSAutoreleasePool *looppool; /* not locked; only touched by the VM thread. */
 	NSTimeInterval lastwaittime; /* not locked; only touched by VM thread internals. */
 	
+	BOOL pendingupdaterequest; /* the frameview (UI thread) wants an update on library state */
 	BOOL pendingtimerevent;
 	BOOL pendingmetricchange; /* the fonts or font sizes have just changed */
 	BOOL pendingsizechange; /* the frame rectangle has just changed (to pendingsize) */
@@ -32,6 +33,7 @@
 
 - (void) launchAppThread;
 - (void) appThreadMain:(id)rock;
+- (void) requestViewUpdate;
 - (void) setFrameSize:(CGRect)box;
 - (void) noteMetricsChanged;
 - (void) selectEvent:(event_t *)event special:(id)special;

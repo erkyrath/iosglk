@@ -8,6 +8,7 @@
 #import "InputMenuView.h"
 
 @class GlkLibrary;
+@class GlkAppWrapper;
 @class GlkWindowView;
 @class GlkTagString;
 @class PopMenuView;
@@ -39,6 +40,7 @@
 @property (nonatomic, retain) PopMenuView *menuview;
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag;
+- (void) requestLibraryState:(GlkAppWrapper *)glkapp;
 - (void) updateFromLibraryState:(GlkLibrary *)library;
 - (void) updateWindowStyles;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;

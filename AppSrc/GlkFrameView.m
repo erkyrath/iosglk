@@ -178,9 +178,14 @@
 	}
 }
 
+- (void) requestLibraryState:(GlkAppWrapper *)glkapp {
+	NSLog(@"requestLibraryState");
+	[glkapp requestViewUpdate];
+}
+
 /* This tells all the window views to get up to date with the new output in their data (GlkWindow) objects. If window views have to be created or destroyed (because GlkWindows have opened or closed), this does that too.
 
-	Called from selectEvent in the app wrapper class.
+	Called from selectEvent in the app wrapper class. This queries the GlkLibrary data structures. (It should be safe to do that, because the VM thread is now waiting for input, and it won't get any until we've updated our windows with new input fields and such.)
 */
 - (void) updateFromLibraryState:(GlkLibrary *)library {
 	NSLog(@"updateFromLibraryState: %@", StringFromRect(library.bounds));

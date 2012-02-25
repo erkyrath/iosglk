@@ -43,6 +43,9 @@ static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 	[self.window addSubview:rootviewc.view];
 	[self.window makeKeyAndVisible];
 
+	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
+	[glkviewc view];
+	
 	NSLog(@"AppDelegate loaded root view controller %x, glkviewc %x", (unsigned int)rootviewc, (unsigned int)glkviewc);
 
 	self.library = [[[GlkLibrary alloc] init] autorelease];
@@ -52,9 +55,6 @@ static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 		library.glkdelegate = glkviewc.glkdelegate;
 	else
 		library.glkdelegate = [DefaultGlkLibDelegate singleton];
-	
-	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
-	[glkviewc view];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
 											 selector:@selector(keyboardWillBeShown:)

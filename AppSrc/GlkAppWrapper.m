@@ -111,7 +111,6 @@ static GlkAppWrapper *singleton = nil;
 	looppool = [[NSAutoreleasePool alloc] init];
 		
 	GlkLibrary *library = [GlkLibrary singleton];
-	GlkFrameView *frameview = [IosGlkViewController singleton].frameview;
 	
 	if (event && special) 
 		[NSException raise:@"GlkException" format:@"selectEvent called with both event and special arguments"];
@@ -134,14 +133,20 @@ static GlkAppWrapper *singleton = nil;
 		iowait_special = nil;
 		iowait_evptr = nil;
 	}
+	pendingupdaterequest = YES;
 	pendingtimerevent = NO;
 	iowait = YES;
 	
-	/* These main-thread calls may not get in gear until we've settled into our iowait loop. */
-	[frameview performSelectorOnMainThread:@selector(updateFromLibraryState:)
-		withObject:library waitUntilDone:NO];
-	
 	while (self.iowait) {
+		if (pendingupdaterequest) {
+			pendingupdaterequest = NO;
+			/* If there is no frameview now, we skip this. When the frameview comes along, it will call requestViewUpdate and we'll get back to it. */
+			GlkFrameView *frameview = [IosGlkViewController singleton].frameview;
+			if (frameview) {
+				[frameview performSelectorOnMainThread:@selector(updateFromLibraryState:) withObject:library waitUntilDone:NO];
+			}
+		}
+		
 		if (event && (pendingsizechange || pendingmetricchange)) {
 			/* This could be set while we're waiting, or it could have been set already when we entered selectEvent. Note that we won't get in here if this is a special event request (because event will be null). */
 			BOOL metricschanged = pendingmetricchange;
@@ -183,6 +188,17 @@ static GlkAppWrapper *singleton = nil;
 		pendingtimerevent = NO;
 		event->type = evtype_Timer;
 	}
+	[iowaitcond unlock];
+}
+
+/* The UI wants an update (updateFromLibraryState) call.
+ 
+	This is called from the main thread. It synchronizes with the VM thread.
+ */
+- (void) requestViewUpdate {
+	[iowaitcond lock];
+	pendingupdaterequest = YES;
+	[iowaitcond signal];
 	[iowaitcond unlock];
 }
 
