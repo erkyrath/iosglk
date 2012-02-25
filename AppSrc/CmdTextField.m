@@ -115,7 +115,7 @@
 			if (prefix && prefix.length > 0 && ![prefix hasSuffix:@" "])
 				cmd = [@" " stringByAppendingString:cmd];
 			NSString *suffix = [self textInRange:[self textRangeFromPosition:selection.end toPosition:self.endOfDocument]];
-			if (suffix && suffix.length > 0 && ![suffix hasPrefix:@" "])
+			if (!(suffix && suffix.length > 0 && [suffix hasPrefix:@" "]))
 				cmd = [cmd stringByAppendingString:@" "];
 			[self replaceRange:selection withText:cmd];
 			return;
@@ -125,6 +125,7 @@
 	// Fallback -- old iOS, or we couldn't get the selection, or whatever. Just append the text.
 	if (oldcmd.length > 0 && ![oldcmd hasSuffix:@" "])
 		cmd = [@" " stringByAppendingString:cmd];
+	cmd = [cmd stringByAppendingString:@" "];
 	self.text = [oldcmd stringByAppendingString:cmd];
 }
 
