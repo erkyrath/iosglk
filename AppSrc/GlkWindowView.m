@@ -10,6 +10,7 @@
 */
 
 #import "GlkWindowView.h"
+#import "IosGlkViewController.h"
 #import "GlkFrameView.h"
 #import "GlkWinBufferView.h"
 #import "GlkWinGridView.h"
@@ -181,7 +182,8 @@
 		return;
 	}
 	
-	[self.superviewAsFrameView addToCommandHistory:text];
+	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
+	[glkviewc addToCommandHistory:text];
 	
 	/* buflen might be shorter than the text string, either because the buffer is short or utf16 crunching. */
 	int buflen = [win acceptLineInput:text];
@@ -199,10 +201,11 @@
 	if (self.superviewAsFrameView.menuview)
 		return;
 	
+	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 	GlkFrameView *frameview = self.superviewAsFrameView;
 	CGRect rect = [inputfield rightViewRectForBounds:inputfield.bounds];
 	rect = [frameview convertRect:rect fromView:inputfield];
-	InputMenuView *menuview = [[[InputMenuView alloc] initWithFrame:frameview.bounds buttonFrame:rect view:self history:frameview.commandhistory] autorelease];
+	InputMenuView *menuview = [[[InputMenuView alloc] initWithFrame:frameview.bounds buttonFrame:rect view:self history:glkviewc.commandhistory] autorelease];
 	[frameview postPopMenu:menuview];	
 }
 

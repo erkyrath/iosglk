@@ -27,14 +27,11 @@
 #import "GlkUtilTypes.h"
 #import "GlkUtilities.h"
 
-#define MAX_HISTORY_LENGTH (12)
-
 @implementation GlkFrameView
 
 @synthesize windowviews;
 @synthesize wingeometries;
 @synthesize rootwintag;
-@synthesize commandhistory;
 @synthesize menuview;
 
 - (id) initWithCoder:(NSCoder *)decoder
@@ -48,7 +45,6 @@
 		rootwintag = nil;
 		
 		cachedGlkBox = CGRectNull;
-		self.commandhistory = [NSMutableArray arrayWithCapacity:MAX_HISTORY_LENGTH];
 		
 		inputmenumode = inputmenu_Palette;
 	}
@@ -60,7 +56,6 @@
 	self.windowviews = nil;
 	self.wingeometries = nil;
 	self.rootwintag = nil;
-	self.commandhistory = nil;
 	self.menuview = nil;
 	[super dealloc];
 }
@@ -293,34 +288,6 @@
 		return;
 	
 	tagstring.str = [NSString stringWithString:text];
-}
-
-//### move this to the GlkLibrary? Or the IosGlkVC?
-- (void) addToCommandHistory:(NSString *)str {
-	NSArray *arr = [str componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	if (arr.count == 0)
-		return;
-	NSMutableArray *arr2 = [NSMutableArray arrayWithCapacity:arr.count];
-	for (NSString *substr in arr) {
-		if (substr.length)
-			[arr2 addObject:substr];
-	}
-	if (!arr2.count)
-		return;
-	str = [arr2 componentsJoinedByString:@" "];
-	//str = str.lowercaseString;
-	
-	if (str.length < 2)
-		return;
-	
-	[commandhistory removeObject:str];
-	[commandhistory addObject:str];
-	if (commandhistory.count > MAX_HISTORY_LENGTH) {
-		NSRange range;
-		range.location = 0;
-		range.length = commandhistory.count - MAX_HISTORY_LENGTH;
-		[commandhistory removeObjectsInRange:range];
-	}
 }
 
 - (void) postPopMenu:(PopMenuView *)menu {

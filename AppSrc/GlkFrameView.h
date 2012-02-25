@@ -25,9 +25,6 @@
 	NSMutableDictionary *wingeometries;
 	NSNumber *rootwintag;
 	
-	/* Strings typed into input lines (across all windows) */
-	NSMutableArray *commandhistory;
-
 	PopMenuView *menuview;
 	InputMenuMode inputmenumode;
 }
@@ -36,7 +33,6 @@
 @property (nonatomic, retain) NSMutableDictionary *wingeometries;
 @property (nonatomic) CGRect keyboardBox;
 @property (nonatomic, retain) NSNumber *rootwintag;
-@property (nonatomic, retain) NSMutableArray *commandhistory;
 @property (nonatomic, retain) PopMenuView *menuview;
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag;
@@ -45,7 +41,6 @@
 - (void) updateWindowStyles;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
-- (void) addToCommandHistory:(NSString *)str;
 - (void) postPopMenu:(PopMenuView *)menuview;
 - (void) removePopMenuAnimated:(BOOL)animated;
 

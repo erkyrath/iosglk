@@ -13,10 +13,15 @@
 @interface IosGlkViewController : UIViewController {
 	id <IosGlkLibDelegate> glkdelegate;
 	GlkFrameView *frameview;
+
+	/* Strings typed into input lines (across all windows) */
+	NSMutableArray *commandhistory;	
 }
 
 @property (nonatomic, assign) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
 @property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
+
+@property (nonatomic, retain) NSMutableArray *commandhistory;	
 
 + (IosGlkViewController *) singleton;
 
@@ -29,6 +34,7 @@
 
 - (void) buildPopMenu:(PopMenuView *)menuview;
 - (IBAction) toggleKeyboard;
+- (void) addToCommandHistory:(NSString *)str;
 
 @end
 

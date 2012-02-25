@@ -15,10 +15,13 @@
 #import "GlkLibrary.h"
 #import "GlkUtilities.h"
 
+#define MAX_HISTORY_LENGTH (12)
+
 @implementation IosGlkViewController
 
 @synthesize glkdelegate;
 @synthesize frameview;
+@synthesize commandhistory;
 
 + (IosGlkViewController *) singleton {
 	return [IosGlkAppDelegate singleton].glkviewc;
@@ -27,11 +30,14 @@
 - (void) dealloc {
 	NSLog(@"IosGlkViewController dealloc %x", (unsigned int)self);
 	self.frameview = nil;
+	self.commandhistory = nil;
 	[super dealloc];
 }
 
 - (void) didFinishLaunching {
 	/* Subclasses may override this */
+
+	self.commandhistory = [NSMutableArray arrayWithCapacity:MAX_HISTORY_LENGTH];
 }
 
 - (void) becameInactive {
@@ -160,6 +166,33 @@
 	}
 
 	[NSException raise:@"GlkException" format:@"tried to raise unknown modal request"];
+}
+
+- (void) addToCommandHistory:(NSString *)str {
+	NSArray *arr = [str componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	if (arr.count == 0)
+		return;
+	NSMutableArray *arr2 = [NSMutableArray arrayWithCapacity:arr.count];
+	for (NSString *substr in arr) {
+		if (substr.length)
+			[arr2 addObject:substr];
+	}
+	if (!arr2.count)
+		return;
+	str = [arr2 componentsJoinedByString:@" "];
+	//str = str.lowercaseString;
+	
+	if (str.length < 2)
+		return;
+	
+	[commandhistory removeObject:str];
+	[commandhistory addObject:str];
+	if (commandhistory.count > MAX_HISTORY_LENGTH) {
+		NSRange range;
+		range.location = 0;
+		range.length = commandhistory.count - MAX_HISTORY_LENGTH;
+		[commandhistory removeObjectsInRange:range];
+	}
 }
 
 - (void) didReceiveMemoryWarning {
