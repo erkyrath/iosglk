@@ -25,7 +25,6 @@
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
-		NSLog(@"### original frame is %@", StringFromRect(box));
 		lastLayoutBounds = CGRectNull;
 		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:styleset] autorelease];
 		//textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -69,7 +68,6 @@
 	CGRect rect = moreview.frameview.frame;
 	rect.origin.x = lastLayoutBounds.size.width - rect.size.width - 4;
 	rect.origin.y = lastLayoutBounds.size.height - rect.size.height - 4;
-	NSLog(@"### and the moreview is %@", StringFromRect(rect));
 	moreview.frame = rect;
 	
 	textview.frame = lastLayoutBounds;
