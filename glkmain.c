@@ -275,6 +275,9 @@ void glk_main() {
 				glk_request_char_event_uni(mainwin);
 				continue;
 			}
+			if (!strcmp(inbuf, "clear")) {
+				glk_window_clear(mainwin);
+			}
 			glk_put_char('>');
 			glk_request_line_event(mainwin, inbuf, 32, 0);
 			//glk_request_line_event_uni(mainwin, uinbuf, 32, 0);
