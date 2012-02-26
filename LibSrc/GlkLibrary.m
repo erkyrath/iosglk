@@ -174,6 +174,7 @@ static GlkLibrary *singleton = nil;
 }
 
 - (void) dirtyAllData {
+	geometrychanged = YES;
 	for (GlkWindow *win in windows) {
 		[win dirtyAllData];
 	}
