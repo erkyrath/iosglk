@@ -8,6 +8,7 @@
 
 @class GlkFrameView;
 @class PopMenuView;
+@class MoreBoxView;
 @protocol IosGlkLibDelegate;
 
 @interface IosGlkViewController : UIViewController {
@@ -33,6 +34,7 @@
 - (void) displayModalRequest:(id)special;
 
 - (void) buildPopMenu:(PopMenuView *)menuview;
+- (void) buildMoreView:(MoreBoxView *)moreview;
 - (IBAction) toggleKeyboard;
 - (void) addToCommandHistory:(NSString *)str;
 

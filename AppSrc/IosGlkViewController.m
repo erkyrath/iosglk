@@ -11,6 +11,7 @@
 #import "GlkUtilTypes.h"
 #import "GlkFileTypes.h"
 #import "GlkFileSelectViewController.h"
+#import "MoreBoxView.h"
 #import "PopMenuView.h"
 #import "GlkLibrary.h"
 #import "GlkUtilities.h"
@@ -71,6 +72,10 @@
 
 - (void) buildPopMenu:(PopMenuView *)menuview {
 	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:menuview options:nil];
+}
+
+- (void) buildMoreView:(MoreBoxView *)moreview {
+	[[NSBundle mainBundle] loadNibNamed:@"MoreBoxView" owner:moreview options:nil];
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {

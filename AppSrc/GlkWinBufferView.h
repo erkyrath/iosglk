@@ -8,17 +8,18 @@
 #import "GlkWindowView.h"
 
 @class StyledTextView;
+@class MoreBoxView;
 
 @interface GlkWinBufferView : GlkWindowView <UIScrollViewDelegate> {
 	StyledTextView *textview;
-	UIView *moreview;
+	MoreBoxView *moreview;
 	
 	CGRect lastLayoutBounds;
 	BOOL nowcontentscrolling;
 }
 
 @property (nonatomic, retain) StyledTextView *textview;
-@property (nonatomic, retain) UIView *moreview;
+@property (nonatomic, retain) MoreBoxView *moreview;
 @property (nonatomic) BOOL nowcontentscrolling;
 
 - (BOOL) pageDownOnInput;

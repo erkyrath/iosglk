@@ -5,12 +5,14 @@
 */
 
 #import "GlkWinBufferView.h"
+#import "IosGlkViewController.h"
 #import "GlkWindow.h"
 #import "GlkLibrary.h"
 #import "GlkUtilTypes.h"
 
 #import "CmdTextField.h"
 #import "StyledTextView.h"
+#import "MoreBoxView.h"
 #import "StyleSet.h"
 #import "GlkUtilities.h"
 
@@ -23,16 +25,22 @@
 - (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
+		NSLog(@"### original frame is %@", StringFromRect(box));
 		lastLayoutBounds = CGRectNull;
 		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:styleset] autorelease];
 		//textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		textview.delegate = self;
 		[self addSubview:textview];
 		
-		CGRect rect = CGRectMake(box.size.width-32, box.size.height-32, 32, 32);
-		self.moreview = [[[UIView alloc] initWithFrame:rect] autorelease];
-		moreview.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-		moreview.backgroundColor = [UIColor redColor];
+		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
+		
+		self.moreview = [[[MoreBoxView alloc] initWithFrame:CGRectZero] autorelease];
+		[glkviewc buildMoreView:moreview];
+		CGRect rect = moreview.frameview.frame;
+		rect.origin.x = box.size.width - rect.size.width - 4;
+		rect.origin.y = box.size.height - rect.size.height - 4;
+		moreview.frame = rect;
+		[moreview addSubview:moreview.frameview];
 		moreview.userInteractionEnabled = NO;
 		moreview.hidden = YES;
 		[self addSubview:moreview];		
@@ -58,7 +66,13 @@
 	lastLayoutBounds = self.bounds;
 	NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
 	
-	textview.frame = self.bounds;
+	CGRect rect = moreview.frameview.frame;
+	rect.origin.x = lastLayoutBounds.size.width - rect.size.width - 4;
+	rect.origin.y = lastLayoutBounds.size.height - rect.size.height - 4;
+	NSLog(@"### and the moreview is %@", StringFromRect(rect));
+	moreview.frame = rect;
+	
+	textview.frame = lastLayoutBounds;
 	[textview setNeedsLayout];
 }
 
