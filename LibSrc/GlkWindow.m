@@ -193,6 +193,12 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return NO;
 }
 
+/* Mark all the window's data as dirty, so that the windowview will fetch it all properly.
+ */
+- (void) dirtyAllData {
+	/* Subclasses will override this. */
+}
+
 /* When a stram is closed, we call this to detach it from any windows who have it as their echostream.
 */
 + (void) unEchoStream:(strid_t)str {
@@ -507,6 +513,14 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return YES;
 }
 
+- (void) dirtyAllData {
+	linesdirtyfrom = 0;
+	if (lines.count) {
+		GlkStyledLine *firstln = [lines objectAtIndex:0];
+		linesdirtyfrom = firstln.index;
+	}
+}
+
 - (void) clearWindow {
 	[lines removeAllObjects];
 	linesdirtyfrom = 0;
@@ -579,6 +593,12 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 
 - (BOOL) supportsInput {
 	return YES;
+}
+
+- (void) dirtyAllData {
+	for (GlkGridLine *ln in lines) {
+		ln.dirty = YES;
+	}
 }
 
 - (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos {

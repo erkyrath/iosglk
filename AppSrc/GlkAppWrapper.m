@@ -134,12 +134,18 @@ static GlkAppWrapper *singleton = nil;
 		iowait_evptr = nil;
 	}
 	pendingupdaterequest = YES;
+	pendingupdatefromtop = NO;
 	pendingtimerevent = NO;
 	iowait = YES;
 	
 	while (self.iowait) {
 		if (pendingupdaterequest) {
 			pendingupdaterequest = NO;
+			if (pendingupdatefromtop) {
+				pendingupdatefromtop = NO;
+				NSLog(@"dirtying all library data for brand-new frameview!");
+				[library dirtyAllData];
+			}
 			/* If there is no frameview now, we skip this. When the frameview comes along, it will call requestViewUpdate and we'll get back to it. */
 			GlkFrameView *frameview = [IosGlkViewController singleton].frameview;
 			if (frameview) {
@@ -198,6 +204,7 @@ static GlkAppWrapper *singleton = nil;
 - (void) requestViewUpdate {
 	[iowaitcond lock];
 	pendingupdaterequest = YES;
+	pendingupdatefromtop = YES;
 	[iowaitcond signal];
 	[iowaitcond unlock];
 }

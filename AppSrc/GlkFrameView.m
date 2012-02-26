@@ -174,6 +174,8 @@
 	}
 }
 
+/* This is invoked when the frameview is reloaded. (Although not at startup time, because that load is manual.) We request a special out-of-sequence state update, with the special flag that means "we have no idea what's dirty, just feed us the lot".
+ */
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp {
 	NSLog(@"requestLibraryState");
 	[glkapp requestViewUpdate];

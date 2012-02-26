@@ -63,5 +63,6 @@
 - (NSNumber *) generateTag;
 - (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)box;
 - (GlkWindow *) windowForTag:(NSNumber *)tag;
+- (void) dirtyAllData;
 
 @end

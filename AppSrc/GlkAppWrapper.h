@@ -18,6 +18,7 @@
 	NSTimeInterval lastwaittime; /* not locked; only touched by VM thread internals. */
 	
 	BOOL pendingupdaterequest; /* the frameview (UI thread) wants an update on library state */
+	BOOL pendingupdatefromtop; /* the frameview has lost its memory, and needs an update "from the top" (all data, dirty or not) */
 	BOOL pendingtimerevent;
 	BOOL pendingmetricchange; /* the fonts or font sizes have just changed */
 	BOOL pendingsizechange; /* the frame rectangle has just changed (to pendingsize) */

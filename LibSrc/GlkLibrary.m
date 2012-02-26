@@ -173,6 +173,12 @@ static GlkLibrary *singleton = nil;
 	return nil;
 }
 
+- (void) dirtyAllData {
+	for (GlkWindow *win in windows) {
+		[win dirtyAllData];
+	}
+}
+
 /* Return a UTC Gregorian calendar object, allocating it if necessary.
 */
 - (NSCalendar *) utccalendar {
