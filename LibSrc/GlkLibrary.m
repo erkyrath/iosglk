@@ -28,6 +28,7 @@
 @synthesize currentstr;
 @synthesize bounds;
 @synthesize geometrychanged;
+@synthesize everythingchanged;
 @synthesize specialrequest;
 @synthesize filemanager;
 @synthesize dispatch_register_obj;
@@ -62,6 +63,7 @@ static GlkLibrary *singleton = nil;
 		self.rootwin = nil;
 		self.currentstr = nil;
 		geometrychanged = YES;
+		everythingchanged = NO; /* not true at startup, only on refresh */
 		
 		self.specialrequest = nil;
 		self.filemanager = [[[NSFileManager alloc] init] autorelease];
@@ -174,6 +176,7 @@ static GlkLibrary *singleton = nil;
 }
 
 - (void) dirtyAllData {
+	everythingchanged = YES;
 	geometrychanged = YES;
 	for (GlkWindow *win in windows) {
 		[win dirtyAllData];

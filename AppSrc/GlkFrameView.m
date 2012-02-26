@@ -268,6 +268,8 @@
 		[winv updateFromWindowInputs];
 	}
 	
+	library.everythingchanged = NO;
+	
 	/* And now, if there's a special prompt going on, fill the screen with it. */
 	if (library.specialrequest)
 		[[IosGlkAppDelegate singleton].glkviewc displayModalRequest:library.specialrequest];

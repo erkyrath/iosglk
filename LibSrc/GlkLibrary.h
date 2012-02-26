@@ -24,6 +24,7 @@
 	GlkStream *currentstr;
 	CGRect bounds;
 	BOOL geometrychanged;
+	BOOL everythingchanged;
 	
 	id specialrequest;
 	
@@ -47,6 +48,7 @@
 @property (nonatomic, retain) GlkStream *currentstr;
 @property (nonatomic, readonly) CGRect bounds;
 @property (nonatomic) BOOL geometrychanged;
+@property (nonatomic) BOOL everythingchanged;
 @property (nonatomic, retain) NSFileManager *filemanager;
 @property (nonatomic, readonly) NSCalendar *utccalendar;
 @property (nonatomic, readonly) NSCalendar *localcalendar;

@@ -29,6 +29,7 @@
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
 		self.linesviews = [NSMutableArray arrayWithCapacity:32];
 		wasclear = YES;
+		wasrefresh = NO;
 
 		totalheight = self.bounds.size.height;
 		totalwidth = self.bounds.size.width;
@@ -165,12 +166,20 @@
 
 /* Import the given lines (as taken from the GlkWindowBuffer).
  */
-- (void) updateWithLines:(NSArray *)uplines dirtyFrom:(int)linesdirtyfrom clearCount:(int)newclearcount {
-	NSLog(@"STV: updating, got %d lines", uplines.count);
+- (void) updateWithLines:(NSArray *)uplines dirtyFrom:(int)linesdirtyfrom clearCount:(int)newclearcount refresh:(BOOL)refresh {
+	NSLog(@"STV: updating, got %d lines %s", uplines.count, ((clearcount != newclearcount)?"(clear-bump)":""));
 	newcontent = YES;
 	
-	if (clearcount != newclearcount) {
-		/* The update contains a page-clear. */
+	if (refresh) {
+		/* We're refreshing old content. That means the player has seen it. */
+		NSLog(@"STV: ...I believe this is a refresh, not really a clear-bump.");
+		clearcount = newclearcount;
+		[vlines removeAllObjects];
+		endvlineseen = 0;
+		wasrefresh = YES;
+	}
+	else if (clearcount != newclearcount) {
+		/* The update contains a page-clear. The player has not seen this stuff. */
 		clearcount = newclearcount;
 		[vlines removeAllObjects];
 		endvlineseen = 0;
@@ -223,55 +232,6 @@
 	[self uncacheLayoutAndVLines:NO];
 }
 
-/* Add the given lines (as taken from the GlkWindowBuffer) to the contents of the view. 
-*/
-/*### logic:
- newcontent = YES;
- If the new data does ClearPage: clear lines and vlines; endvlineseen=0; wasclear=YES.
- If the new data replaces our last line, drop last vlines that match its index; cap endvlineseen if it exceeds vlines.count.
- Always, [self uncacheLayoutAndVLines:NO].
- ###*/
-#if 0 //###
-- (void) updateWithLines:(NSArray *)addlines {
-	NSLog(@"STV: updating, adding %d lines", addlines.count);
-	newcontent = YES;
-	
-	/* First, add the data to the raw (unformatted) lines array. This may include clear operations, although hopefully only one per invocation. */
-	for (GlkStyledLine *sln in addlines) {
-		if (sln.status == linestat_ClearPage) {
-			[lines removeAllObjects];
-			[vlines removeAllObjects];
-			endvlineseen = 0;
-			wasclear = YES;
-			/* A ClearPage line can contain text as well, so we continue. */
-		}
-		
-		if (sln.status == linestat_Continue && lines.count > 0) {
-			GlkStyledLine *prevln = [lines lastObject];
-			[prevln.arr addObjectsFromArray:sln.arr];
-			/* The vlines corresponding to this line are no longer valid. Remove them. */
-			int prevlnindex = lines.count-1;
-			while (vlines.count > 0) {
-				GlkVisualLine *vln = [vlines lastObject];
-				if (vln.linenum < prevlnindex)
-					break;
-				[vlines removeLastObject];
-			}
-			if (endvlineseen > vlines.count)
-				endvlineseen = vlines.count;
-		}
-		else {
-			[lines addObject:sln];
-		}
-	}
-	
-	/* Now trash all the VisualLinesViews. We'll create new ones at the next layout call. */
-	//NSLog(@"### removing all linesviews (for update)");
-	//### Or only trash the ones that have been invalidated?
-	[self uncacheLayoutAndVLines:NO];
-}
-#endif //###
-
 - (void) uncacheLayoutAndVLines:(BOOL)andvlines {
 	if (andvlines) {
 		[vlines removeAllObjects];
@@ -321,7 +281,14 @@
 	 
 		Special case: if there are no vlines at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. (If there are vlines, we always extend that range both ways.) 
 	 */
-	BOOL frombottom = (vlines.count == 0 && !wasclear && self.scrollPercentage > 0.5);
+	BOOL frombottom = NO;
+	if (vlines.count == 0) {
+		frombottom = (!wasclear && self.scrollPercentage > 0.5);
+		if (wasrefresh)
+			frombottom = YES;
+	}
+	if (frombottom)
+		NSLog(@"### frombottom case!");
 	
 	CGFloat bottom = styleset.margins.top;
 	int endlaid = firstsline;
@@ -394,7 +361,9 @@
 	CGFloat contentheight = self.totalHeight;
 	CGSize oldcontentsize = self.contentSize;
 	CGFloat vshift = upextension + heightchangeoffset;
-	if (wasclear)
+	if (wasrefresh)
+		vshift = (contentheight-oldcontentsize.height)-self.contentOffset.y;
+	else if (wasclear)
 		vshift = -self.contentOffset.y;
 	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width || vshift != 0) {
 		if (vshift != 0) {
@@ -552,6 +521,7 @@
 		}
 		newcontent = NO;
 		wasclear = NO;
+		wasrefresh = NO;
 	}
 }
 

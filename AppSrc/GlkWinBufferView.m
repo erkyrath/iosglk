@@ -6,6 +6,7 @@
 
 #import "GlkWinBufferView.h"
 #import "GlkWindow.h"
+#import "GlkLibrary.h"
 #import "GlkUtilTypes.h"
 
 #import "CmdTextField.h"
@@ -82,7 +83,7 @@
 	if (bufwin.linesdirtyfrom >= dirtyto)
 		return;
 	
-	[textview updateWithLines:bufwin.lines dirtyFrom:bufwin.linesdirtyfrom clearCount:bufwin.clearcount];
+	[textview updateWithLines:bufwin.lines dirtyFrom:bufwin.linesdirtyfrom clearCount:bufwin.clearcount refresh:bufwin.library.everythingchanged];
 	[textview setNeedsDisplay];
 	
 	bufwin.linesdirtyfrom = dirtyto;
