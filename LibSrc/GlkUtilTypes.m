@@ -14,22 +14,33 @@
 /* GlkStyledLine: Represents a line of text. It's just an array of GlkStyledStrings, with an additional optional flag saying "This starts a new line" or "This starts a new page." (Consider either to be a newline at the *beginning* of the GlkStyledLine, possibly with page-breaking behavior.)
 */
 
+@synthesize index;
 @synthesize status;
 @synthesize arr;
 
-- (id) initWithStatus:(GlkStyledLineStatus) initstatus {
+- (id) initWithIndex:(int)indexval {
+	return [self initWithIndex:indexval status:linestat_Continue];
+}
+
+- (id) initWithIndex:(int)indexval status:(GlkStyledLineStatus) statusval {
 	self = [super init];
 	
 	if (self) {
-		status = initstatus;
+		index = indexval;
+		status = statusval;
 		self.arr = [NSMutableArray arrayWithCapacity:16];
 	}
 	
 	return self;
 }
 
-- (id) init {
-	return [self initWithStatus:linestat_Continue];
+/* Standard copy method. Returns a retained object which is a (shallow) copy. */
+- (id) copyWithZone:(NSZone *)zone {
+	GlkStyledLine *copy = [[GlkStyledLine allocWithZone:zone] init];
+	copy.index = index;
+	copy.status = status;
+	copy.arr = arr;
+	return copy;
 }
 
 - (void) dealloc {

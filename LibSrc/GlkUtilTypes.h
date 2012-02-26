@@ -16,14 +16,17 @@ typedef enum GlkStyledLineStatus_enum {
 } GlkStyledLineStatus;
 
 @interface GlkStyledLine : NSObject {
+	int index; /* index in the window's lines array (but not necessarily zero-based) */
 	GlkStyledLineStatus status;
 	NSMutableArray *arr; /* array of GlkStyledString */
 }
 
+@property (nonatomic) int index;
 @property (nonatomic) GlkStyledLineStatus status;
 @property (nonatomic, retain) NSMutableArray *arr;
 
-- (id) initWithStatus:(GlkStyledLineStatus) status;
+- (id) initWithIndex:(int)index;
+- (id) initWithIndex:(int)index status:(GlkStyledLineStatus) status;
 
 @end
 

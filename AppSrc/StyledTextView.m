@@ -16,7 +16,7 @@
 
 @implementation StyledTextView
 
-@synthesize lines;
+@synthesize slines;
 @synthesize vlines;
 @synthesize linesviews;
 @synthesize styleset;
@@ -24,7 +24,8 @@
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval {
 	self = [super initWithFrame:frame];
 	if (self) {
-		self.lines = [NSMutableArray arrayWithCapacity:32];
+		firstsline = 0;
+		self.slines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
 		self.linesviews = [NSMutableArray arrayWithCapacity:32];
 		wasclear = YES;
@@ -43,7 +44,7 @@
 }
 
 - (void) dealloc {
-	self.lines = nil;
+	self.slines = nil;
 	self.vlines = nil;
 	self.linesviews = nil;
 	self.styleset = nil;
@@ -141,7 +142,7 @@
 		return box;
 	}
 	
-	if (self.lastLaidOutLine < self.lines.count) {
+	if (self.lastLaidOutLine < firstsline+self.slines.count) {
 		box.origin.x = styleset.margins.left;
 		box.size.width = totalwidth - styleset.margintotal.width;
 		box.origin.y = self.totalHeight;
@@ -162,8 +163,75 @@
 	return box;
 }
 
+/* Import the given lines (as taken from the GlkWindowBuffer).
+ */
+- (void) updateWithLines:(NSArray *)uplines dirtyFrom:(int)linesdirtyfrom clearCount:(int)newclearcount {
+	NSLog(@"STV: updating, got %d lines", uplines.count);
+	newcontent = YES;
+	
+	if (clearcount != newclearcount) {
+		/* The update contains a page-clear. */
+		clearcount = newclearcount;
+		[vlines removeAllObjects];
+		endvlineseen = 0;
+		wasclear = YES;
+	}
+
+	[slines removeAllObjects];
+	firstsline = 0;
+	if (uplines.count) {
+		GlkStyledLine *firstsln = [uplines objectAtIndex:0];
+		firstsline = firstsln.index;
+		for (GlkStyledLine *sln in uplines) {
+			[slines addObject:[[sln copy] autorelease]];
+		}
+	}
+
+	/* Some lines may have been trimmed from the beginning. If so, throw away vlines at the beginning. */
+	int trimcount = 0;
+	for (GlkVisualLine *vln in vlines) {
+		if (vln.linenum >= firstsline)
+			break;
+		trimcount++;
+	}
+	if (trimcount > 0) {
+		endvlineseen -= trimcount;
+		if (endvlineseen < 0)
+			endvlineseen = 0;
+		NSRange range;
+		range.location = 0;
+		range.length = trimcount;
+		[vlines removeObjectsInRange:range];
+		for (GlkVisualLine *vln in vlines) {
+			vln.vlinenum -= trimcount;
+		}
+	}
+	
+	/* If any of the update lines replace known ones, we may have to throw away vlines at the end. */
+	while (vlines.count > 0) {
+		GlkVisualLine *vln = [vlines lastObject];
+		if (vln.linenum < linesdirtyfrom)
+			break;
+		[vlines removeLastObject];
+	}
+	if (endvlineseen > vlines.count)
+		endvlineseen = vlines.count;
+
+	/* Now trash all the VisualLinesViews. We'll create new ones at the next layout call. */
+	//NSLog(@"### removing all linesviews (for update)");
+	//### Or only trash the ones that have been invalidated?
+	[self uncacheLayoutAndVLines:NO];
+}
+
 /* Add the given lines (as taken from the GlkWindowBuffer) to the contents of the view. 
 */
+/*### logic:
+ newcontent = YES;
+ If the new data does ClearPage: clear lines and vlines; endvlineseen=0; wasclear=YES.
+ If the new data replaces our last line, drop last vlines that match its index; cap endvlineseen if it exceeds vlines.count.
+ Always, [self uncacheLayoutAndVLines:NO].
+ ###*/
+#if 0 //###
 - (void) updateWithLines:(NSArray *)addlines {
 	NSLog(@"STV: updating, adding %d lines", addlines.count);
 	newcontent = YES;
@@ -202,6 +270,7 @@
 	//### Or only trash the ones that have been invalidated?
 	[self uncacheLayoutAndVLines:NO];
 }
+#endif //###
 
 - (void) uncacheLayoutAndVLines:(BOOL)andvlines {
 	if (andvlines) {
@@ -255,7 +324,7 @@
 	BOOL frombottom = (vlines.count == 0 && !wasclear && self.scrollPercentage > 0.5);
 	
 	CGFloat bottom = styleset.margins.top;
-	int endlaid = 0;
+	int endlaid = firstsline;
 	if (vlines.count > 0) {
 		GlkVisualLine *vln = [vlines lastObject];
 		bottom = vln.bottom;
@@ -274,7 +343,7 @@
 			newcount++;
 		}
 		[vlines addObjectsFromArray:newlines];
-		NSLog(@"STV: appended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
+		NSLog(@"STV: appended %d vlines; lines are laid to %d (of %d to %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, firstsline, firstsline+slines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
 	
 	/* Extend vlines up, similarly. */
@@ -282,7 +351,7 @@
 	CGFloat upextension = 0;
 	
 	CGFloat top = visbottom;
-	int startlaid = lines.count;
+	int startlaid = firstsline+slines.count;
 	if (vlines.count > 0) {
 		GlkVisualLine *vln = [vlines objectAtIndex:0];
 		top = vln.ypos;
@@ -318,7 +387,7 @@
 
 		NSRange range = {0,0};
 		[vlines replaceObjectsInRange:range withObjectsFromArray:newlines];
-		NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, lines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
+		NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d to %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, firstsline, firstsline+slines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
 	
 	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. If the screen started out clear, scroll straight to the top regardless */
@@ -421,7 +490,7 @@
 		bottom = newbottom;
 	}
 	
-	/* Similarly, adjust the top of linesviews up or down. */
+	/* Similarly, adjust the top of linesviews up or down. (startlaid now counts vlines.) */
 	
 	if (!vlines.count) {
 		startlaid = 0;
@@ -486,14 +555,6 @@
 	}
 }
 
-//###
-- (void) debugDisplay {
-	CGRect visbounds = self.bounds;
-	CGSize contentsize = self.contentSize;
-	CGFloat scrolltobottom = contentsize.height - visbounds.size.height;
-	NSLog(@"DEBUG: STV is at %.1f of %.1f (contentheight %.1f - visheight %.1f)", self.contentOffset.y, scrolltobottom, contentsize.height, visbounds.size.height);
-}
-
 /* Page to the bottom, if necessary. Returns YES if this occurred, NO if we were already there.
  */
 - (BOOL) pageToBottom {
@@ -532,7 +593,7 @@
 			scrollto = scrolltobottom;
 		NSLog(@"STV: pageDown one page: %.1f", scrollto);
 	}
-	else if (vlines.count && self.lastLaidOutLine < lines.count) {
+	else if (vlines.count && self.lastLaidOutLine < firstsline+slines.count) {
 		GlkVisualLine *vln = [vlines lastObject];
 		scrollto = vln.ypos;
 		if (scrollto > scrolltobottom)
@@ -581,12 +642,12 @@
 	int loopincrement;
 	if (forward) {
 		loopincrement = 1;
-		if (startline >= lines.count)
+		if (startline >= firstsline+slines.count)
 			return nil;
 	}
 	else {
 		loopincrement = -1;
-		if (startline < 0)
+		if (startline < firstsline)
 			return nil;
 	}
 	
@@ -599,15 +660,15 @@
 	
 	for (int snum = startline; ypos < ymax; snum += loopincrement) {
 		if (forward) {
-			if (snum >= lines.count)
+			if (snum >= firstsline+slines.count)
 				break;
 		}
 		else {
-			if (snum < 0)
+			if (snum < firstsline)
 				break;
 		}
 		
-		GlkStyledLine *sln = [lines objectAtIndex:snum];
+		GlkStyledLine *sln = [slines objectAtIndex:snum-firstsline];
 		int vlineforthis = 0;
 		
 		int spannum = -1;
@@ -725,7 +786,7 @@
 		}
 	}
 		
-	NSLog(@"STV: laid out %d vislines, final ypos %.1f (first line %d of %d)", result.count, ypos, startline, lines.count);
+	NSLog(@"STV: laid out %d vislines, final ypos %.1f (first line %d of %d)", result.count, ypos, startline, slines.count);
 	return result;
 }
 

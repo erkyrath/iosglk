@@ -72,15 +72,20 @@
 - (void) updateFromWindowState {
 	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
 	
-	NSMutableArray *updates = bufwin.updatetext;
-	if (updates.count == 0) {
-		return;
+	int dirtyto = 0;
+	if (bufwin.lines.count) {
+		GlkStyledLine *sln = [bufwin.lines lastObject];
+		dirtyto = sln.index+1;
 	}
 	
-	[textview updateWithLines:updates];
-	[bufwin.updatetext removeAllObjects];
+	NSLog(@"WBV: updateFromWindowState: %d lines (dirty %d to %d)", bufwin.lines.count, bufwin.linesdirtyfrom, dirtyto);
+	if (bufwin.linesdirtyfrom >= dirtyto)
+		return;
 	
+	[textview updateWithLines:bufwin.lines dirtyFrom:bufwin.linesdirtyfrom clearCount:bufwin.clearcount];
 	[textview setNeedsDisplay];
+	
+	bufwin.linesdirtyfrom = dirtyto;
 }
 
 /* This is invoked whenever the user types something. If we're at a "more" prompt, it pages down once, and returns YES. Otherwise, it pages all the way to the bottom and returns NO.

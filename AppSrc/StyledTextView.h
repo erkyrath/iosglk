@@ -17,9 +17,11 @@
 
 	StyleSet *styleset;
 	
-	NSMutableArray *lines; /* Array of GlkStyledLine -- lines (paragraphs) of text */
+	int clearcount;
+	int firstsline; /* index of the first sline (or 0 if slines is empty) */
+	NSMutableArray *slines; /* Array of GlkStyledLine -- lines (paragraphs) of text */
 	NSMutableArray *vlines; /* Array of GlkVisualLine -- the wrapped lines with positional info */
-	/* The range of vlines is always a subset (or equal to) the range of lines. There may be many vlines per line. */
+	/* The textual range of vlines is always a subset (or equal to) the range of lines. There may be many vlines per line. */
 	NSMutableArray *linesviews; /* Array of VisualLinesView -- stripes of vlines. There may be many vlines of linesview. */
 	
 	BOOL newcontent; /* True if new text has been added recently. This is cleared by the subsequent layoutSubviews. */
@@ -32,7 +34,7 @@
 	int tapnumber;
 }
 
-@property (nonatomic, retain) NSMutableArray *lines;
+@property (nonatomic, retain) NSMutableArray *slines;
 @property (nonatomic, retain) NSMutableArray *vlines;
 @property (nonatomic, retain) NSMutableArray *linesviews;
 @property (nonatomic, retain) StyleSet *styleset;
@@ -42,7 +44,7 @@
 - (CGFloat) totalHeight;
 - (BOOL) moreToSee;
 - (GlkVisualLine *) lineAtPos:(CGFloat)ypos;
-- (void) updateWithLines:(NSArray *)addlines;
+- (void) updateWithLines:(NSArray *)uplines dirtyFrom:(int)linesdirtyfrom clearCount:(int)newclearcount;
 - (void) uncacheLayoutAndVLines:(BOOL)andvlines;
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax;
 - (void) sanityCheck;

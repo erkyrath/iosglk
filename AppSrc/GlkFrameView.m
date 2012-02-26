@@ -68,6 +68,7 @@
 	return keyboardBox;
 }
 
+//### move keyboardBox to the viewc? (So that it's not lost if the frameview is dropped)
 - (void) setKeyboardBox:(CGRect)val {
 	keyboardBox = val;
 	//NSLog(@"### setKeyboardHeight calling setNeedsLayout");

@@ -89,7 +89,7 @@
 		if (jx < lines.count && !wasdirty)
 			continue;
 		
-		GlkStyledLine *sln = [[GlkStyledLine alloc] init];
+		GlkStyledLine *sln = [[GlkStyledLine alloc] initWithIndex:jx];
 		if (jx < lines.count)
 			[lines replaceObjectAtIndex:jx withObject:sln];
 		else

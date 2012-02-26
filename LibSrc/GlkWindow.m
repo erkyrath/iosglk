@@ -400,20 +400,27 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 @implementation GlkWindowBuffer
 /* GlkWindowBuffer: a textbuffer window. */
 
-@synthesize updatetext;
+#define TRIM_LINES_MAX (50)
+#define TRIM_LINES_MIN (40)
+
+@synthesize clearcount;
+@synthesize linesdirtyfrom;
+@synthesize lines;
 
 - (id) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super initWithType:wintype rock:winrock];
 	
 	if (self) {
-		self.updatetext = [NSMutableArray arrayWithCapacity:32];
+		clearcount = 1; // contents start out clear
+		linesdirtyfrom = 0;
+		self.lines = [NSMutableArray arrayWithCapacity:32];
 	}
 	
 	return self;
 }
 
 - (void) dealloc {
-	self.updatetext = nil;
+	self.lines = nil;
 	[super dealloc];
 }
 
@@ -454,14 +461,22 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 - (void) putString:(NSString *)str {
 	NSArray *linearr = [str componentsSeparatedByCharactersInSet:_GlkWindow_newlineCharSet];
 	BOOL isfirst = YES;
+	
+	int linestart = 0;
+	if (lines.count) {
+		GlkStyledLine *firstln = [lines objectAtIndex:0];
+		linestart = firstln.index;
+	}
+	
 	for (NSString *ln in linearr) {
 		if (isfirst) {
+			/* The first line is always a paragraph continuation. (Perhaps an empty one.) */
 			isfirst = NO;
 		}
 		else {
-			/* The very first line was a paragraph continuation, but this is a succeeding line, so it's the start of a new paragraph. */
-			GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithStatus:linestat_NewLine] autorelease];
-			[updatetext addObject:sln];
+			/* This is a succeeding line, so it's the start of a new paragraph. */
+			GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithIndex:linestart+lines.count status:linestat_NewLine] autorelease];
+			[lines addObject:sln];
 		}
 		
 		if (ln.length == 0) {
@@ -469,11 +484,13 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 			continue;
 		}
 		
-		GlkStyledLine *lastsln = [updatetext lastObject];
+		GlkStyledLine *lastsln = [lines lastObject];
 		if (!lastsln) {
-			lastsln = [[[GlkStyledLine alloc] initWithStatus:linestat_Continue] autorelease];
-			[updatetext addObject:lastsln];
+			lastsln = [[[GlkStyledLine alloc] initWithIndex:linestart+lines.count status:linestat_Continue] autorelease];
+			[lines addObject:lastsln];
 		}
+		if (linesdirtyfrom > lastsln.index)
+			linesdirtyfrom = lastsln.index;
 		
 		GlkStyledString *laststr = [lastsln.arr lastObject];
 		if (laststr && laststr.style == style) {
@@ -491,10 +508,12 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (void) clearWindow {
-	[updatetext removeAllObjects];
+	[lines removeAllObjects];
+	linesdirtyfrom = 0;
+	clearcount++;
 	
-	GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithStatus:linestat_ClearPage] autorelease];
-	[updatetext addObject:sln];
+	GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithIndex:0 status:linestat_ClearPage] autorelease];
+	[lines addObject:sln];
 }
 
 @end

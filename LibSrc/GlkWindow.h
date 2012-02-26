@@ -86,10 +86,14 @@
 
 
 @interface GlkWindowBuffer : GlkWindow {
-	NSMutableArray *updatetext; /* array of GlkStyledLine (accumulated lines for the next update only) */
+	int clearcount; /* incremented whenever the buffer is cleared */
+	int linesdirtyfrom; /* index of first new (or changed) line */
+	NSMutableArray *lines; /* array of GlkStyledLine */
 }
 
-@property (nonatomic, retain) NSMutableArray *updatetext;
+@property (nonatomic) int clearcount;
+@property (nonatomic) int linesdirtyfrom;
+@property (nonatomic, retain) NSMutableArray *lines;
 
 - (void) putString:(NSString *)str;
 
