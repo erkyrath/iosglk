@@ -5,6 +5,7 @@
 */
 
 #import "GlkWinBufferView.h"
+#import "IosGlkAppDelegate.h"
 #import "IosGlkViewController.h"
 #import "GlkWindow.h"
 #import "GlkLibrary.h"
@@ -118,7 +119,27 @@
 		return;
 	
 	morewaiting = flag;
-	moreview.hidden = !flag;
+	if (flag) {
+		if ([IosGlkAppDelegate animblocksavailable]) {
+			moreview.alpha = 0;
+			moreview.hidden = NO;
+			[UIView animateWithDuration:0.2 
+							 animations:^{ moreview.alpha = 1; } ];
+		}
+		else {
+			moreview.hidden = NO;
+		}
+	}
+	else {
+		if ([IosGlkAppDelegate animblocksavailable]) {
+			[UIView animateWithDuration:0.2 
+							 animations:^{ moreview.alpha = 0; }
+							 completion:^(BOOL finished) { moreview.hidden = YES; } ];
+		}
+		else {
+			moreview.hidden = YES;
+		}
+	}
 	
 	nowcontentscrolling = NO;
 }
