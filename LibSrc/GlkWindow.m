@@ -837,7 +837,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		ch2 = child1;
 	}
 
-	NSLog(@"#### library-side rearrange: split heights are %.1f, %.1f", box1.size.height, box2.size.height);
 	[ch1 windowRearrange:box1];
 	[ch2 windowRearrange:box2];
 }

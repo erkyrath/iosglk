@@ -401,7 +401,7 @@ static GlkAppWrapper *singleton = nil;
 
 + (GlkEventState *) lineEvent:(NSString *)line inWindow:(NSNumber *)tag {
 	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
-	event.type = evtype_CharInput;
+	event.type = evtype_LineInput;
 	event.tag = tag;
 	event.line = line;
 	return event;
