@@ -7,8 +7,9 @@
 #import "GlkWinBufferView.h"
 #import "IosGlkAppDelegate.h"
 #import "IosGlkViewController.h"
-#import "GlkWindow.h"
 #import "GlkLibrary.h"
+#import "GlkWindowState.h"
+#import "GlkLibraryState.h"
 #import "GlkUtilTypes.h"
 
 #import "CmdTextField.h"
@@ -23,7 +24,7 @@
 @synthesize moreview;
 @synthesize nowcontentscrolling;
 
-- (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
+- (id) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		lastLayoutBounds = CGRectNull;
@@ -84,22 +85,14 @@
 }
 
 - (void) updateFromWindowState {
-	GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
+	GlkWindowBufferState *bufwin = (GlkWindowBufferState *)winstate;
 	
-	int dirtyto = 0;
-	if (bufwin.lines.count) {
-		GlkStyledLine *sln = [bufwin.lines lastObject];
-		dirtyto = sln.index+1;
-	}
-	
-	NSLog(@"WBV: updateFromWindowState: %d lines (dirty %d to %d)", bufwin.lines.count, bufwin.linesdirtyfrom, dirtyto);
-	if (bufwin.linesdirtyfrom >= dirtyto)
+	NSLog(@"WBV: updateFromWindowState: %d lines (dirty %d to %d)", bufwin.lines.count, bufwin.linesdirtyfrom, bufwin.linesdirtyto);
+	if (bufwin.linesdirtyfrom >= bufwin.linesdirtyto)
 		return;
 	
 	[textview updateWithLines:bufwin.lines dirtyFrom:bufwin.linesdirtyfrom clearCount:bufwin.clearcount refresh:bufwin.library.everythingchanged];
 	[textview setNeedsDisplay];
-	
-	bufwin.linesdirtyfrom = dirtyto;
 }
 
 /* This is invoked whenever the user types something. If we're at a "more" prompt, it pages down once, and returns YES. Otherwise, it pages all the way to the bottom and returns NO.

@@ -9,6 +9,7 @@
 @class GlkFrameView;
 @class PopMenuView;
 @class MoreBoxView;
+@class GlkLibraryState;
 @protocol IosGlkLibDelegate;
 
 @interface IosGlkViewController : UIViewController {
@@ -23,6 +24,7 @@
 @property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
 
 @property (nonatomic, retain) NSMutableArray *commandhistory;	
+@property (nonatomic, readonly) BOOL debug_updating_library;
 
 + (IosGlkViewController *) singleton;
 
@@ -30,6 +32,8 @@
 - (void) becameInactive;
 - (void) becameActive;
 - (void) enteredBackground;
+- (void) updateFromLibraryState:(GlkLibraryState *)library;
+
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;
 

@@ -13,7 +13,7 @@
 #import "GlkFileSelectViewController.h"
 #import "MoreBoxView.h"
 #import "PopMenuView.h"
-#import "GlkLibrary.h"
+#import "GlkLibraryState.h"
 #import "GlkUtilities.h"
 
 #define MAX_HISTORY_LENGTH (12)
@@ -23,6 +23,7 @@
 @synthesize glkdelegate;
 @synthesize frameview;
 @synthesize commandhistory;
+@synthesize debug_updating_library;
 
 + (IosGlkViewController *) singleton {
 	return [IosGlkAppDelegate singleton].glkviewc;
@@ -68,6 +69,13 @@
 	//NSLog(@"viewDidLoad (library is %x)", (unsigned int)(appdelegate.library));
 	if (appdelegate.library)
 		[frameview requestLibraryState:appdelegate.glkapp];
+}
+
+/* Invoked in the UI thread, from the VM thread, which will block until this returns. See comment on GlkFrameView.updateFromLibraryState.
+ */
+- (void) updateFromLibraryState:(GlkLibraryState *)library {
+	if (frameview)
+		[frameview updateFromLibraryState:library];
 }
 
 - (void) buildPopMenu:(PopMenuView *)menuview {

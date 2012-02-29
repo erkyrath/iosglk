@@ -17,6 +17,7 @@
 
 #import "GlkAppWrapper.h"
 #import "GlkLibrary.h"
+#import "GlkWindow.h"
 #import "IosGlkViewController.h"
 #import "GlkFrameView.h"
 #import "GlkFileTypes.h"
@@ -29,6 +30,7 @@
 
 @synthesize iowait;
 @synthesize iowaitcond;
+@synthesize eventfromui;
 @synthesize timerinterval;
 
 static GlkAppWrapper *singleton = nil;
@@ -46,6 +48,7 @@ static GlkAppWrapper *singleton = nil;
 		singleton = self;
 		
 		iowait = NO;
+		eventfromui = nil;
 		iowait_evptr = nil;
 		iowait_special = nil;
 		pendingtimerevent = NO;
@@ -63,6 +66,7 @@ static GlkAppWrapper *singleton = nil;
 	if (singleton == self)
 		singleton = nil;
 	self.timerinterval = nil;
+	self.eventfromui = nil;
 	[super dealloc];
 }
 
@@ -81,6 +85,7 @@ static GlkAppWrapper *singleton = nil;
 
 	[iowaitcond lock];
 	iowait = NO;
+	self.eventfromui = nil;
 	pendingmetricchange = NO;
 	pendingsizechange = NO;
 	pendingtimerevent = NO;
@@ -146,11 +151,9 @@ static GlkAppWrapper *singleton = nil;
 				NSLog(@"dirtying all library data for brand-new frameview!");
 				[library dirtyAllData];
 			}
-			/* If there is no frameview now, we skip this. When the frameview comes along, it will call requestViewUpdate and we'll get back to it. */
-			GlkFrameView *frameview = [IosGlkViewController singleton].frameview;
-			if (frameview) {
-				[frameview performSelectorOnMainThread:@selector(updateFromLibraryState:) withObject:library waitUntilDone:NO];
-			}
+			/* It's possible there's no frameview right now. If not, the call will be a no-op. When the frameview comes along, it will call requestViewUpdate and we'll get back to it. */
+			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
+			[glkviewc performSelectorOnMainThread:@selector(updateFromLibraryState:) withObject:[library cloneState] waitUntilDone:NO];
 		}
 		
 		if (event && (pendingsizechange || pendingmetricchange)) {
@@ -176,6 +179,42 @@ static GlkAppWrapper *singleton = nil;
 		}
 		
 		[iowaitcond wait];
+		GlkEventState *gotevent = nil;
+		if (eventfromui) {
+			gotevent = [[eventfromui retain] autorelease];
+			self.eventfromui = nil;
+		}
+		if (gotevent && event) {
+			/* An event has arrived! If it is acceptable, set the event fields and turn off iowait. */
+			GlkWindow *win = [library windowForTag:gotevent.tag]; // will be nil if there's no tag
+			glui32 ch;
+			int len;
+			switch (gotevent.type) {
+				case evtype_CharInput:
+					ch = gotevent.ch;
+					if (win && [win acceptCharInput:&ch]) {
+						event->type = evtype_CharInput;
+						event->win = win;
+						event->val1 = ch;
+						event->val2 = 0;
+						iowait = NO;
+					}
+					break;
+				case evtype_LineInput:
+					if (win) {
+						len = [win acceptLineInput:gotevent.line];
+						/* len might be shorter than the text string, either because the buffer is short or utf16 crunching. */
+						if (len >= 0) {
+							event->type = evtype_LineInput;
+							event->win = win;
+							event->val1 = len;
+							event->val2 = 0;
+							iowait = NO;
+						}
+					}
+					break;
+			}
+		}
 	}
 	
 	lastwaittime = [NSDate timeIntervalSinceReferenceDate];
@@ -269,30 +308,28 @@ static GlkAppWrapper *singleton = nil;
 	return result;
 }
 
-/* The UI calls this to report an input event. 
+/* The UI calls this to report an input event.
+ 
 	This is called from the main thread. It synchronizes with the VM thread. 
 */
-- (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2 {
+- (void) acceptEvent:(GlkEventState *)event {
+	[event retain];
 	[iowaitcond lock];
 	
 	if (!self.iowait || !iowait_evptr) {
 		/* The VM thread is working, or else it's waiting for a file selection. Either way, events not accepted right now. However, we'll set a flag in case someone comes along and polls for it. */
-		if (type == evtype_Timer)
+		if (event.type == evtype_Timer)
 			pendingtimerevent = YES;
 		//### size change event too?
 		[iowaitcond unlock];
 		return;
 	}
 	
-	event_t *event = iowait_evptr;
-	iowait_evptr = NULL;
-	event->type = type;
-	event->win = win;
-	event->val1 = val1;
-	event->val2 = val2;
-	iowait = NO;
+	/* We'll want to check, inside the VM thread, to make sure the event is really acceptable. So we don't turn off iowait just yet. */
+	self.eventfromui = event;
 	[iowaitcond signal];
 	[iowaitcond unlock];
+	[event release];
 }
 
 /* The UI calls this to report that file selection is complete. The chosen pathname (or nil, if cancelled) is in the prompt object that was originally passed out.
@@ -341,8 +378,46 @@ static GlkAppWrapper *singleton = nil;
 		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:[timerinterval doubleValue]];
 	}
 	
-	[self acceptEventType:evtype_Timer window:nil val1:0 val2:0];
+	[self acceptEvent:[GlkEventState timerEvent]];
 }
 
 
 @end
+
+@implementation GlkEventState
+
+@synthesize type;
+@synthesize ch;
+@synthesize line;
+@synthesize tag;
+
++ (GlkEventState *) charEvent:(glui32)ch inWindow:(NSNumber *)tag {
+	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
+	event.type = evtype_CharInput;
+	event.tag = tag;
+	event.ch = ch;
+	return event;
+}
+
++ (GlkEventState *) lineEvent:(NSString *)line inWindow:(NSNumber *)tag {
+	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
+	event.type = evtype_CharInput;
+	event.tag = tag;
+	event.line = line;
+	return event;
+}
+
++ (GlkEventState *) timerEvent {
+	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
+	event.type = evtype_Timer;
+	return event;
+}
+
+- (void) dealloc {
+	self.line = nil;
+	self.tag = nil;
+	[super dealloc];
+}
+
+@end
+

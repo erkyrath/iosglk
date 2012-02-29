@@ -5,7 +5,7 @@
  */
 
 #import "IosGlkLibDelegate.h"
-#import "GlkWindow.h"
+#import "GlkWindowState.h"
 #import "GlkWinBufferView.h"
 #import "GlkWinGridView.h"
 #import "StyleSet.h"
@@ -24,11 +24,11 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return nil;
 }
 
-- (GlkWinBufferView *) viewForBufferWindow:(GlkWindow *)win frame:(CGRect)box {
+- (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box {
 	return nil;
 }
 
-- (GlkWinGridView *) viewForGridWindow:(GlkWindow *)win frame:(CGRect)box {
+- (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box {
 	return nil;
 }
 

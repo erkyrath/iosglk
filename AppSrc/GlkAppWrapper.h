@@ -7,10 +7,13 @@
 #import <Foundation/Foundation.h>
 #include "glk.h"
 
+@class GlkEventState;
+
 @interface GlkAppWrapper : NSObject {
 	NSCondition *iowaitcond; /* must hold this lock to touch any of the fields below, unless otherwise noted. */
 	
 	BOOL iowait; /* true when waiting for an event; becomes false when one arrives. */
+	GlkEventState *eventfromui; /* a prospective event coming in from the UI. */
 	event_t *iowait_evptr; /* the place to stuff the event data when it arrives. */
 	id iowait_special; /* ditto, for special event requests. (A container type, currently GlkFileRefPrompt.) */
 	NSThread *thread; /* not locked; does not change through the run cycle. */
@@ -28,6 +31,7 @@
 
 @property (nonatomic, retain) NSCondition *iowaitcond;
 @property (nonatomic) BOOL iowait;
+@property (nonatomic, retain) GlkEventState *eventfromui;
 @property (nonatomic, retain) NSNumber *timerinterval;
 
 + (GlkAppWrapper *) singleton;
@@ -39,7 +43,7 @@
 - (void) noteMetricsChanged;
 - (void) selectEvent:(event_t *)event special:(id)special;
 - (void) selectPollEvent:(event_t *)event;
-- (void) acceptEventType:(glui32)type window:(GlkWindow *)win val1:(glui32)val1 val2:(glui32)val2;
+- (void) acceptEvent:(GlkEventState *)event;
 - (void) acceptEventFileSelect;
 - (BOOL) acceptingEvent;
 - (BOOL) acceptingEventFileSelect;
@@ -48,3 +52,23 @@
 - (void) fireTimer:(id)dummy;
 
 @end
+
+
+@interface GlkEventState : NSObject {
+	glui32 type;
+	glui32 ch;
+	NSString *line;
+	NSNumber *tag;
+}
+
+@property (nonatomic) glui32 type;
+@property (nonatomic) glui32 ch;
+@property (nonatomic, retain) NSString *line;
+@property (nonatomic, retain) NSNumber *tag;
+
++ (GlkEventState *) charEvent:(glui32)ch inWindow:(NSNumber *)tag;
++ (GlkEventState *) lineEvent:(NSString *)line inWindow:(NSNumber *)tag;
++ (GlkEventState *) timerEvent;
+
+@end
+

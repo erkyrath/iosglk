@@ -10,6 +10,7 @@
 
 @class GlkWindow;
 @class GlkStream;
+@class GlkLibraryState;
 @protocol IosGlkLibDelegate;
 
 @interface GlkLibrary : NSObject {
@@ -66,5 +67,7 @@
 - (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)box;
 - (GlkWindow *) windowForTag:(NSNumber *)tag;
 - (void) dirtyAllData;
+
+- (GlkLibraryState *) cloneState;
 
 @end

@@ -13,6 +13,7 @@
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#import "GlkWindowState.h"
 #import "IosGlkLibDelegate.h"
 #import "GlkAppWrapper.h"
 #import "GlkStream.h"
@@ -197,6 +198,18 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
  */
 - (void) dirtyAllData {
 	/* Subclasses will override this. */
+}
+
+- (GlkWindowState *) cloneState {
+	GlkWindowState *state = [GlkWindowState windowStateWithType:type rock:rock];
+	// state.library will be set later
+	state.tag = tag;
+	state.styleset = styleset;
+	state.input_request_id = input_request_id;
+	state.char_request = char_request;
+	state.line_request = line_request;
+	state.bbox = bbox;
+	return state;
 }
 
 /* When a stram is closed, we call this to detach it from any windows who have it as their echostream.
@@ -430,6 +443,33 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	[super dealloc];
 }
 
+- (GlkWindowState *) cloneState {
+	GlkWindowBufferState *state = (GlkWindowBufferState *)[super cloneState];
+	
+	int dirtyto = 0;
+	if (lines.count) {
+		GlkStyledLine *sln = [lines lastObject];
+		dirtyto = sln.index+1;
+	}
+	
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:lines.count];
+	for (GlkStyledLine *sln in lines) {
+		GlkStyledLine *newsln = [sln copy];
+		[arr addObject:newsln];
+		[newsln release];
+	}
+	state.lines = arr;
+	
+	state.clearcount = clearcount;
+	state.linesdirtyfrom = linesdirtyfrom;
+	state.linesdirtyto = dirtyto;
+	state.line_request_initial = line_request_initial;
+	
+	linesdirtyfrom = dirtyto;
+
+	return state;
+}
+
 - (void) windowRearrange:(CGRect)box {
 	bbox = box;
 	//### count on-screen lines, maybe
@@ -560,6 +600,48 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 - (void) dealloc {
 	self.lines = nil;
 	[super dealloc];
+}
+
+- (GlkWindowState *) cloneState {
+	GlkWindowGridState *state = (GlkWindowGridState *)[super cloneState];
+	
+	state.width = width;
+	state.height = height;
+	state.curx = curx;
+	state.cury = cury;
+	
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:lines.count];
+
+	for (int jx=0; jx<lines.count; jx++) {
+		GlkGridLine *ln = [lines objectAtIndex:jx];
+		if (!ln.dirty)
+			continue;
+		ln.dirty = NO;
+		
+		GlkStyledLine *sln = [[GlkStyledLine alloc] initWithIndex:jx]; // release soon
+		[arr addObject:sln];
+		[sln release];
+		
+		NSMutableArray *arr = sln.arr;
+		glui32 cursty;
+		int ix = 0;
+		while (ix < ln.width) {
+			int pos = ix;
+			cursty = ln.styles[pos];
+			while (ix < ln.width && ln.styles[ix] == cursty)
+				ix++;
+			NSString *str = [[NSString alloc] initWithBytes:&ln.chars[pos] length:(ix-pos)*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding]; // release soon
+			GlkStyledString *span = [[GlkStyledString alloc] initWithText:str style:cursty]; // release soon
+			span.pos = pos;
+			[arr addObject:span];
+			[span release];
+			[str release];
+		}
+	}
+	
+	state.lines = arr;
+	
+	return state;
 }
 
 - (void) windowRearrange:(CGRect)box {
@@ -696,6 +778,13 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	[super dealloc];
 }
 
+- (GlkWindowState *) cloneState {
+	GlkWindowPairState *state = (GlkWindowPairState *)[super cloneState];
+	/* Clone the geometry object, since it's not immutable */
+	state.geometry = [[geometry copy] autorelease];
+	return state;
+}
+
 - (GlkWindow *) child1 {
 	return child1;
 }
@@ -748,6 +837,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		ch2 = child1;
 	}
 
+	NSLog(@"#### library-side rearrange: split heights are %.1f, %.1f", box1.size.height, box2.size.height);
 	[ch1 windowRearrange:box1];
 	[ch2 windowRearrange:box2];
 }

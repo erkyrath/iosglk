@@ -109,6 +109,7 @@
 				split = (size * keystyleset.charbox.width + keystyleset.margintotal.width);
 		}
 		split = ceilf(split);
+		NSLog(@"### computeDivision: size %d, char height %.1f -> split %.1f", size, keystyleset.charbox.width, split);
 	}
 	else {
 		/* default behavior for unknown division method */

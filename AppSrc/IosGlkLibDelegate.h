@@ -10,13 +10,13 @@
 @class StyleSet;
 @class GlkWinBufferView;
 @class GlkWinGridView;
-@class GlkWindow;
+@class GlkWindowState;
 
 @protocol IosGlkLibDelegate <NSObject>
 
 - (NSString *) gameId;
-- (GlkWinBufferView *) viewForBufferWindow:(GlkWindow *)win frame:(CGRect)box;
-- (GlkWinGridView *) viewForGridWindow:(GlkWindow *)win frame:(CGRect)box;
+- (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box;
+- (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;
 - (CGSize) interWindowSpacing;
 - (CGRect) adjustFrame:(CGRect)rect;

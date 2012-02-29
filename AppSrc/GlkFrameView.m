@@ -20,8 +20,8 @@
 #import "PopMenuView.h"
 #import "InputMenuView.h"
 #import "GlkAppWrapper.h"
-#import "GlkLibrary.h"
-#import "GlkWindow.h"
+#import "GlkLibraryState.h"
+#import "GlkWindowState.h"
 #import "Geometry.h"
 #import "StyleSet.h"
 #import "GlkUtilTypes.h"
@@ -29,6 +29,7 @@
 
 @implementation GlkFrameView
 
+@synthesize librarystate;
 @synthesize windowviews;
 @synthesize wingeometries;
 @synthesize rootwintag;
@@ -53,6 +54,7 @@
 
 - (void) dealloc {
 	NSLog(@"GlkFrameView dealloc %x", (unsigned int)self);
+	self.librarystate = nil;
 	self.windowviews = nil;
 	self.wingeometries = nil;
 	self.rootwintag = nil;
@@ -83,14 +85,16 @@
 	[self setNeedsLayout];
 	for (NSNumber *tag in windowviews) {
 		GlkWindowView *winv = [windowviews objectForKey:tag];
-		winv.styleset = [StyleSet buildForWindowType:winv.win.type rock:winv.win.rock];
+		StyleSet *styleset = [StyleSet buildForWindowType:winv.winstate.type rock:winv.winstate.rock];
+		winv.winstate.styleset = styleset;
+		winv.styleset = styleset;
 		[winv uncacheLayoutAndStyles];
 	}
 	
 	cachedGlkBox = CGRectNull;
 	
-	//### skip for color-only changes?
 	/* Now tell the VM thread. */
+	//#### must include a flag to tell the real GlkWindows to re-styleset!
 	[[GlkAppWrapper singleton] noteMetricsChanged];
 }
 
@@ -124,8 +128,10 @@
 
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
+		NSLog(@"### root window exists; layout performing windowViewRearrange");
 		[UIView beginAnimations:@"windowViewRearrange" context:nil];
 		[UIView setAnimationDuration:0.0];
+		/* This calls setNeedsLayout for all windows. */
 		[self windowViewRearrange:rootwintag rect:box];
 		[UIView commitAnimations];
 	}
@@ -135,8 +141,6 @@
 }
 
 /* Set all the window view sizes, based on their cached geometry information. Note that this does not touch the GlkLibrary structures at all -- that could be under modification by the VM thread.
-
-	(Small exception: this code looks at the Geometry objects, which are shared with GlkLibrary. That's okay because Geometry objects are immutable.)
 */
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box {
 	GlkWindowView *winv = [windowviews objectForKey:tag];
@@ -149,7 +153,6 @@
 		[NSException raise:@"GlkException" format:@"neither view and geometry for same window"];
 	
 	if (winv) {
-		//NSLog(@"### setting frame for winview %@", winv);
 		winv.frame = box;
 		[winv setNeedsLayout];
 	}
@@ -182,18 +185,22 @@
 }
 
 /* This tells all the window views to get up to date with the new output in their data (GlkWindow) objects. If window views have to be created or destroyed (because GlkWindows have opened or closed), this does that too.
+ 
+	Really, all the data is cloned -- we're getting a GlkLibraryState and a bunch of GlkWindowState objects. So we don't have to worry about colliding with the VM thread's work-in-progress.
 
-	Called from selectEvent in the app wrapper class. This queries the GlkLibrary data structures. (It should be safe to do that, because the VM thread is now waiting for input, and it won't get any until we've updated our windows with new input fields and such.)
+	This is called from the glkviewc, but that's just a wrapper. The call originates from selectEvent in the app wrapper class.
 */
-- (void) updateFromLibraryState:(GlkLibrary *)library {
-	NSLog(@"updateFromLibraryState: %@", StringFromRect(library.bounds));
+- (void) updateFromLibraryState:(GlkLibraryState *)library {
+	NSLog(@"updateFromLibraryState");
 	
 	if (!library)
 		[NSException raise:@"GlkException" format:@"updateFromLibraryState: no library"];
 	
+	self.librarystate = library;
+	
 	/* Build a list of windowviews which need to be closed. */
 	NSMutableDictionary *closed = [NSMutableDictionary dictionaryWithDictionary:windowviews];
-	for (GlkWindow *win in library.windows) {
+	for (GlkWindowState *win in library.windows) {
 		[closed removeObjectForKey:win.tag];
 	}
 
@@ -203,16 +210,16 @@
 		[winv removeFromSuperview];
 		winv.inputfield = nil; /* detach this now */
 		winv.inputholder = nil;
-		//### probably should detach all subviews
 		[windowviews removeObjectForKey:tag];
 	}
 	
 	closed = nil;
 	
 	/* If there are any new windows, create windowviews for them. */
-	for (GlkWindow *win in library.windows) {
+	for (GlkWindowState *win in library.windows) {
 		if (win.type != wintype_Pair && ![windowviews objectForKey:win.tag]) {
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
+			NSLog(@"### creating new winview, box %@", StringFromRect(win.bbox));
 			GlkWindowView *winv = nil;
 			switch (win.type) {
 				case wintype_TextBuffer:
@@ -238,16 +245,12 @@
 	/* If the window geometry has changed (windows created, deleted, or arrangement-set) then rebuild the geometry cache. */
 	if (library.geometrychanged) {
 		//NSLog(@"Recaching window geometries");
-		library.geometrychanged = NO;
-		if (library.rootwin)
-			self.rootwintag = library.rootwin.tag;
-		else
-			self.rootwintag = nil;
+		self.rootwintag = library.rootwintag;
 		[wingeometries removeAllObjects];
-		for (GlkWindowPair *win in library.windows) {
+		for (GlkWindowState *win in library.windows) {
 			if (win.type == wintype_Pair) {
-				Geometry *geom = [[win.geometry copy] autorelease];
-				[wingeometries setObject:geom forKey:win.tag];
+				GlkWindowPairState *pairwin = (GlkWindowPairState *)win;
+				[wingeometries setObject:pairwin.geometry forKey:win.tag];
 			}
 		}
 	}
@@ -262,13 +265,16 @@
 	*/
 
 	/* Now go through all the window views, and tell them to update to match their windows. */
+	for (GlkWindowState *win in library.windows) {
+		GlkWindowView *winv = [windowviews objectForKey:win.tag];
+		if (winv)
+			winv.winstate = win;
+	}
 	for (NSNumber *tag in windowviews) {
 		GlkWindowView *winv = [windowviews objectForKey:tag];
 		[winv updateFromWindowState];
 		[winv updateFromWindowInputs];
 	}
-	
-	library.everythingchanged = NO;
 	
 	/* And now, if there's a special prompt going on, fill the screen with it. */
 	if (library.specialrequest)

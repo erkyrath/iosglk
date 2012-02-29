@@ -7,13 +7,13 @@
 #import <UIKit/UIKit.h>
 #include "glk.h"
 
-@class GlkWindow;
+@class GlkWindowState;
 @class GlkFrameView;
 @class CmdTextField;
 @class StyleSet;
 
 @interface GlkWindowView : UIView <UITextFieldDelegate> {
-	GlkWindow *win;
+	GlkWindowState *winstate; /* a clone of the most recent window state */
 	StyleSet *styleset; /* the same as the window's, unless the player is changing things */
 	
 	CmdTextField *inputfield; /* if input is happening (but not necessarily a subview of this view) */
@@ -24,13 +24,13 @@
 	BOOL morewaiting; /* only used for buffer windows */
 }
 
-@property (nonatomic, retain) GlkWindow *win;
+@property (nonatomic, retain) GlkWindowState *winstate;
 @property (nonatomic, retain) StyleSet *styleset;
 @property (nonatomic, retain) CmdTextField *inputfield;
 @property (nonatomic, retain) UIScrollView *inputholder;
 @property (nonatomic) BOOL morewaiting;
 
-- (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box;
+- (id) initWithWindow:(GlkWindowState *)winstate frame:(CGRect)box;
 - (GlkFrameView *) superviewAsFrameView;
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;

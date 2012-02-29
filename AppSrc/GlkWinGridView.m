@@ -5,7 +5,7 @@
 */
 
 #import "GlkWinGridView.h"
-#import "GlkWindow.h"
+#import "GlkWindowState.h"
 #import "GlkAppWrapper.h"
 #import "StyleSet.h"
 #import "CmdTextField.h"
@@ -17,7 +17,7 @@
 
 @synthesize lines;
 
-- (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
+- (id) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box {
 	self = [super initWithWindow:winref frame:box];
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:8];
@@ -78,42 +78,18 @@
 }
 
 - (void) updateFromWindowState {
-	GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
+	GlkWindowGridState *gridwin = (GlkWindowGridState *)winstate;
 	BOOL anychanges = NO;
 	
-	int height = gridwin.height;
-	for (int jx=0; jx<gridwin.lines.count; jx++) {
-		GlkGridLine *ln = [gridwin.lines objectAtIndex:jx];
-		BOOL wasdirty = ln.dirty;
-		ln.dirty = NO;
-		if (jx < lines.count && !wasdirty)
-			continue;
-		
-		GlkStyledLine *sln = [[GlkStyledLine alloc] initWithIndex:jx];
-		if (jx < lines.count)
-			[lines replaceObjectAtIndex:jx withObject:sln];
+	for (GlkStyledLine *sln in gridwin.lines) {
+		if (sln.index < lines.count)
+			[lines replaceObjectAtIndex:sln.index withObject:sln];
 		else
 			[lines addObject:sln];
-		[sln release];
 		anychanges = YES;
-		
-		NSMutableArray *arr = sln.arr;
-		glui32 cursty;
-		int ix = 0;
-		while (ix < ln.width) {
-			int pos = ix;
-			cursty = ln.styles[pos];
-			while (ix < ln.width && ln.styles[ix] == cursty)
-				ix++;
-			NSString *str = [[NSString alloc] initWithBytes:&ln.chars[pos] length:(ix-pos)*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
-			GlkStyledString *span = [[GlkStyledString alloc] initWithText:str style:cursty];
-			span.pos = pos;
-			[arr addObject:span];
-			[span release];
-			[str release];
-		}
 	}
 	
+	int height = gridwin.height;
 	while (lines.count > height) {
 		[lines removeLastObject];
 		anychanges = YES;
@@ -126,7 +102,7 @@
 }
 
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
-	GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
+	GlkWindowGridState *gridwin = (GlkWindowGridState *)winstate;
 	
 	CGSize charbox = styleset.charbox;
 	CGRect box;

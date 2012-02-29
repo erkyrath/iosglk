@@ -11,6 +11,7 @@
 @class GlkLibrary;
 @class GlkStream;
 @class GlkWindowPair;
+@class GlkWindowState;
 @class StyleSet;
 @class Geometry;
 
@@ -70,6 +71,7 @@
 - (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref;
 - (BOOL) supportsInput;
 - (void) dirtyAllData;
+- (GlkWindowState *) cloneState;
 
 + (void) unEchoStream:(strid_t)str;
 - (void) putBuffer:(char *)buf len:(glui32)len;

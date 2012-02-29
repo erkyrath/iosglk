@@ -10,6 +10,7 @@
 #import "GlkWindowView.h"
 #import "GlkFrameView.h"
 #import "GlkWindow.h"
+#import "GlkWindowState.h"
 #import "StyleSet.h"
 #import "GlkUtilities.h"
 
@@ -35,7 +36,7 @@
 
 
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleval {
-	GlkWindow *win = winv.win;
+	GlkWindowState *win = winv.winstate;
 	self.wintag = win.tag;
 	
 	self.delegate = winv;

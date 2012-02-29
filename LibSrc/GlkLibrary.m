@@ -11,6 +11,8 @@
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#import "GlkLibraryState.h"
+#import "GlkWindowState.h"
 #import "IosGlkLibDelegate.h"
 #import "GlkUtilities.h"
 #import "Geometry.h"
@@ -181,6 +183,32 @@ static GlkLibrary *singleton = nil;
 	for (GlkWindow *win in windows) {
 		[win dirtyAllData];
 	}
+}
+
+- (GlkLibraryState *) cloneState {
+	GlkLibraryState *state = [[[GlkLibraryState alloc] init] autorelease];
+	
+	state.vmexited = vmexited;
+	if (rootwin)
+		state.rootwintag = rootwin.tag;
+	
+	/* This is not an immutable object, but only the UI will touch it until the event is complete, and then only the VM will touch it. Cope. */
+	state.specialrequest = specialrequest;
+	
+	NSMutableArray *winstates = [NSMutableArray arrayWithCapacity:windows.count];
+	for (GlkWindow *win in windows) {
+		GlkWindowState *winstate = [win cloneState];
+		winstate.library = state;
+		[winstates addObject:winstate];
+	}
+	state.windows = winstates;
+	
+	state.geometrychanged = geometrychanged;
+	geometrychanged = NO;
+	state.everythingchanged = everythingchanged;
+	everythingchanged = NO;
+	
+	return state;
 }
 
 /* Return a UTC Gregorian calendar object, allocating it if necessary.

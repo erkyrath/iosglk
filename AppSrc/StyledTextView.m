@@ -191,9 +191,7 @@
 	if (uplines.count) {
 		GlkStyledLine *firstsln = [uplines objectAtIndex:0];
 		firstsline = firstsln.index;
-		for (GlkStyledLine *sln in uplines) {
-			[slines addObject:[[sln copy] autorelease]];
-		}
+		[slines addObjectsFromArray:uplines];
 	}
 
 	/* Some lines may have been trimmed from the beginning. If so, throw away vlines at the beginning. */

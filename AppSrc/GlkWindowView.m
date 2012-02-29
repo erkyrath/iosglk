@@ -15,7 +15,8 @@
 #import "GlkWinBufferView.h"
 #import "GlkWinGridView.h"
 #import "GlkLibrary.h"
-#import "GlkWindow.h"
+#import "GlkLibraryState.h"
+#import "GlkWindowState.h"
 #import "GlkAppWrapper.h"
 #import "GlkUtilities.h"
 #import "CmdTextField.h"
@@ -24,17 +25,17 @@
 
 @implementation GlkWindowView
 
-@synthesize win;
+@synthesize winstate;
 @synthesize styleset;
 @synthesize inputfield;
 @synthesize inputholder;
 @synthesize morewaiting;
 
-- (id) initWithWindow:(GlkWindow *)winref frame:(CGRect)box {
+- (id) initWithWindow:(GlkWindowState *)winstateref frame:(CGRect)box {
 	self = [super initWithFrame:box];
 	if (self) {
-		self.win = winref;
-		self.styleset = win.styleset;
+		self.winstate = winstateref;
+		self.styleset = winstate.styleset;
 		input_request_id = 0;
 	}
 	return self;
@@ -45,7 +46,7 @@
 	self.inputfield = nil;
 	self.inputholder = nil;
 	self.styleset = nil;
-	self.win = nil;
+	self.winstate = nil;
 	[super dealloc];
 }
 
@@ -53,7 +54,9 @@
 	return (GlkFrameView *)self.superview;
 }
 
-/* The windowview subclasses will override this. */
+/* Read data from the GlkWindow object, and update the view.
+ 
+	The windowview subclasses will override this. */
 - (void) updateFromWindowState {
 	[NSException raise:@"GlkException" format:@"updateFromWindowState not implemented"];
 }
@@ -69,8 +72,10 @@
 }
 
 
+/* Read data from the GlkWindow object, and update the input field.
+ */
 - (void) updateFromWindowInputs {
-	BOOL wants_input = (win.char_request || win.line_request) && (!win.library.vmexited);
+	BOOL wants_input = (winstate.char_request || winstate.line_request) && (!winstate.library.vmexited);
 	
 	/* The logic here will make more sense if you remember that any *change* in input request -- including a change from char to line input -- will be accompanied by a change in input_request_id. 
 	
@@ -100,10 +105,10 @@
 			input_request_id = 0;
 		}
 		
-		if (input_request_id != win.input_request_id) {
+		if (input_request_id != winstate.input_request_id) {
 			/* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. */
-			input_request_id = win.input_request_id;
-			input_single_char = win.char_request;
+			input_request_id = winstate.input_request_id;
+			input_single_char = winstate.char_request;
 			
 			[inputfield setUpForWindow:self singleChar:input_single_char];
 			
@@ -113,6 +118,9 @@
 	}
 }
 
+/* Decide where to place the input field.
+ 
+ The windowview subclasses will override this. */
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
 	[NSException raise:@"GlkException" format:@"placeInputField not implemented"];
 }
@@ -139,8 +147,8 @@
 		if (str.length) {
 			/* We should crunch utf16 characters here. */
 			glui32 ch = [str characterAtIndex:(str.length-1)];
-			if ([win acceptCharInput:&ch])
-				[[GlkAppWrapper singleton] acceptEventType:evtype_CharInput window:win val1:ch val2:0];
+			if (winstate.char_request)
+				[[GlkAppWrapper singleton] acceptEvent:[GlkEventState charEvent:ch inWindow:winstate.tag]];
 		}
 		return NO;
 	}
@@ -161,8 +169,8 @@
 	
 	if (input_single_char) {
 		glui32 ch = '\n';
-		if ([win acceptCharInput:&ch])
-			[[GlkAppWrapper singleton] acceptEventType:evtype_CharInput window:win val1:ch val2:0];
+		if (winstate.char_request)
+			[[GlkAppWrapper singleton] acceptEvent:[GlkEventState charEvent:ch inWindow:winstate.tag]];
 		return NO;
 	}
 
@@ -185,14 +193,12 @@
 	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 	[glkviewc addToCommandHistory:text];
 	
-	/* buflen might be shorter than the text string, either because the buffer is short or utf16 crunching. */
-	int buflen = [win acceptLineInput:text];
-	if (buflen < 0) {
+	if (!winstate.line_request) {
 		/* This window isn't accepting input. Oh well. */
 		return; 
 	}
 	
-	[[GlkAppWrapper singleton] acceptEventType:evtype_LineInput window:win val1:buflen val2:0];
+	[[GlkAppWrapper singleton] acceptEvent:[GlkEventState lineEvent:text inWindow:winstate.tag]];
 }
 
 - (void) postInputMenu {
