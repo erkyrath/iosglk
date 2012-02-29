@@ -77,9 +77,9 @@
 	[self setNeedsLayout];
 }
 
-/* Force all the windows to pick up new stylesets, and then force all the windowviews to notice that fact.
+/* Force all the windows to pick up new stylesets, and force all the windowviews to notice that fact.
  
-	This leaves the windowview stylesets detached from the window stylesets, which is irritating, but not a real problem (since stylesets are immutable).
+	(Nitpickers will notice that it really happens the other way around! We update the views, and then notify the VM thread to update the windows.)
  */
 - (void) updateWindowStyles {
 	[self setNeedsLayout];
@@ -93,8 +93,7 @@
 	
 	cachedGlkBox = CGRectNull;
 	
-	/* Now tell the VM thread. */
-	//#### must include a flag to tell the real GlkWindows to re-styleset!
+	/* Now tell the VM thread to grab new stylesets, too. */
 	[[GlkAppWrapper singleton] noteMetricsChanged];
 }
 
@@ -128,7 +127,7 @@
 
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
-		NSLog(@"### root window exists; layout performing windowViewRearrange");
+		//NSLog(@"### root window exists; layout performing windowViewRearrange");
 		[UIView beginAnimations:@"windowViewRearrange" context:nil];
 		[UIView setAnimationDuration:0.0];
 		/* This calls setNeedsLayout for all windows. */
@@ -223,7 +222,7 @@
 	for (GlkWindowState *win in library.windows) {
 		if (win.type != wintype_Pair && ![windowviews objectForKey:win.tag]) {
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
-			NSLog(@"### creating new winview, box %@", StringFromRect(win.bbox));
+			//NSLog(@"### creating new winview, box %@", StringFromRect(win.bbox));
 			GlkWindowView *winv = nil;
 			switch (win.type) {
 				case wintype_TextBuffer:
@@ -248,7 +247,7 @@
 	
 	/* If the window geometry has changed (windows created, deleted, or arrangement-set) then rebuild the geometry cache. */
 	if (library.geometrychanged) {
-		NSLog(@"Recaching window geometries");
+		//NSLog(@"Recaching window geometries");
 		self.rootwintag = library.rootwintag;
 		[wingeometries removeAllObjects];
 		for (GlkWindowState *win in library.windows) {
@@ -261,7 +260,7 @@
 	
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
-		NSLog(@"### root window exists; update performing windowViewRearrange");
+		//NSLog(@"### root window exists; update performing windowViewRearrange");
 		[UIView beginAnimations:@"windowViewRearrange" context:nil];
 		[UIView setAnimationDuration:0.0];
 		/* This calls setNeedsLayout for all windows. */

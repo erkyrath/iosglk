@@ -286,7 +286,7 @@
 			frombottom = YES;
 	}
 	if (frombottom)
-		NSLog(@"### frombottom case!");
+		NSLog(@"### frombottom case! (wasclear %d, wasrefresh %d)", wasclear, wasrefresh);
 	
 	CGFloat bottom = styleset.margins.top;
 	int endlaid = firstsline;
@@ -366,8 +366,13 @@
 	if (oldcontentsize.height != contentheight || oldcontentsize.width != visbounds.size.width || vshift != 0) {
 		if (vshift != 0) {
 			CGPoint offset = self.contentOffset;
-			NSLog(@"STV: up-extension %.1f, height-change %.1f; adjusting contentOffset by %.1f (from %.1f to %.1f)", upextension, heightchangeoffset, vshift, offset.y, offset.y+vshift);
+			//NSLog(@"STV: up-extension %.1f, height-change %.1f; adjusting contentOffset by %.1f (from %.1f to %.1f)", upextension, heightchangeoffset, vshift, offset.y, offset.y+vshift);
 			offset.y += vshift;
+			if (oldcontentsize.height == contentheight) {
+				/* This is conditional because iOS does some adjustment when the contentSize changes (below). With that adjustment, we don't need this offset limitation -- in fact, it breaks some cases. Without that adjustment, we do need it. */
+				if (offset.y > oldcontentsize.height - visbounds.size.height)
+					offset.y = oldcontentsize.height - visbounds.size.height;
+			}
 			if (offset.y < 0)
 				offset.y = 0;
 			self.contentOffset = offset;
@@ -375,7 +380,7 @@
 
 		CGSize newsize = CGSizeMake(visbounds.size.width, contentheight);
 		if (!CGSizeEqualToSize(oldcontentsize, newsize)) {
-			//NSLog(@"STV: contentSize now %.1f,%.1f", visbounds.size.width, contentheight);
+			//NSLog(@"STV: contentSize now %@ (was %@)", StringFromSize(newsize), StringFromSize(oldcontentsize));
 			self.contentSize = newsize;
 		}
 		

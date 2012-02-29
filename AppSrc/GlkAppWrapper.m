@@ -161,7 +161,6 @@ static GlkAppWrapper *singleton = nil;
 			BOOL metricschanged = pendingmetricchange;
 			CGRect *boxref = nil;
 			if (pendingsizechange) {
-				NSLog(@"### VM thread received size update: %@", StringFromRect(pendingsize));
 				boxref = &pendingsize;
 			}
 			pendingsizechange = NO;
@@ -262,7 +261,7 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond unlock];
 }
 
-/* The UI's fonts or font sizes have changed. Again, all the UI windowviews have already done this; we need to apply the changes to the VM windows. (It matters because, for example, a GlkGridWindow might now be a different number of characters across.
+/* The UI's fonts or font sizes have changed. Again, all the UI windowviews have already done this; we need to apply the changes to the VM windows. (It matters because, for example, a GlkGridWindow might now be a different number of characters across.) This involves telling the VM windows to grab newly-computed stylesets.
  
 	This is called from the main thread. It synchronizes with the VM thread. If the VM thread is blocked, it will wake up briefly to handle the size change (and maybe begin a evtype_Arrange event). If the VM thread is running, it will get back to the size change at the next glk_select() time. */
 - (void) noteMetricsChanged {

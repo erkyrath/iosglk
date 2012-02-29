@@ -19,6 +19,10 @@
 @synthesize margins;
 @synthesize margintotal;
 
+/* Generate a styleset appropriate to the given window (as identified by window type and rock). The glkdelegate handles this.
+ 
+	Pedantically, we should note that this is invoked from both the VM and UI threads.
+ */
 + (StyleSet *) buildForWindowType:(glui32)wintype rock:(glui32)rock {
 	GlkLibrary *library = [GlkLibrary singleton];
 	

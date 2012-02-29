@@ -32,6 +32,8 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return nil;
 }
 
+/* This is invoked from both the VM and UI threads.
+ */
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock {
 	if (wintype == wintype_TextGrid) {
 		styles.margins = UIEdgeInsetsMake(4, 6, 4, 6);
@@ -61,6 +63,8 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	}
 }
 
+/* This is invoked from both the VM and UI threads.
+ */
 - (CGSize) interWindowSpacing {
 	return CGSizeMake(4, 4);
 }
