@@ -160,8 +160,10 @@ static GlkAppWrapper *singleton = nil;
 			/* This could be set while we're waiting, or it could have been set already when we entered selectEvent. Note that we won't get in here if this is a special event request (because event will be null). */
 			BOOL metricschanged = pendingmetricchange;
 			CGRect *boxref = nil;
-			if (pendingsizechange)
+			if (pendingsizechange) {
+				NSLog(@"### VM thread received size update: %@", StringFromRect(pendingsize));
 				boxref = &pendingsize;
+			}
 			pendingsizechange = NO;
 			pendingmetricchange = NO;
 			

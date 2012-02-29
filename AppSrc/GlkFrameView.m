@@ -141,6 +141,8 @@
 }
 
 /* Set all the window view sizes, based on their cached geometry information. Note that this does not touch the GlkLibrary structures at all -- that could be under modification by the VM thread.
+ 
+	Calls setNeedsLayout for any window which changes size.
 */
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box {
 	GlkWindowView *winv = [windowviews objectForKey:tag];
@@ -153,8 +155,10 @@
 		[NSException raise:@"GlkException" format:@"neither view and geometry for same window"];
 	
 	if (winv) {
-		winv.frame = box;
-		[winv setNeedsLayout];
+		if (!CGRectEqualToRect(winv.frame, box)) {
+			winv.frame = box;
+			[winv setNeedsLayout];
+		}
 	}
 	else {
 		CGRect box1;
@@ -244,7 +248,7 @@
 	
 	/* If the window geometry has changed (windows created, deleted, or arrangement-set) then rebuild the geometry cache. */
 	if (library.geometrychanged) {
-		//NSLog(@"Recaching window geometries");
+		NSLog(@"Recaching window geometries");
 		self.rootwintag = library.rootwintag;
 		[wingeometries removeAllObjects];
 		for (GlkWindowState *win in library.windows) {
@@ -253,6 +257,16 @@
 				[wingeometries setObject:pairwin.geometry forKey:win.tag];
 			}
 		}
+	}
+	
+	if (rootwintag) {
+		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
+		NSLog(@"### root window exists; update performing windowViewRearrange");
+		[UIView beginAnimations:@"windowViewRearrange" context:nil];
+		[UIView setAnimationDuration:0.0];
+		/* This calls setNeedsLayout for all windows. */
+		[self windowViewRearrange:rootwintag rect:cachedGlkBox];
+		[UIView commitAnimations];
 	}
 	
 	/*

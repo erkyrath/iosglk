@@ -375,7 +375,7 @@
 
 		CGSize newsize = CGSizeMake(visbounds.size.width, contentheight);
 		if (!CGSizeEqualToSize(oldcontentsize, newsize)) {
-			NSLog(@"STV: contentSize now %.1f,%.1f", visbounds.size.width, contentheight);
+			//NSLog(@"STV: contentSize now %.1f,%.1f", visbounds.size.width, contentheight);
 			self.contentSize = newsize;
 		}
 		
