@@ -9,6 +9,7 @@
 #import "CmdTextField.h"
 #import "GlkUtilTypes.h"
 #import "StyleSet.h"
+#import "TextSelectView.h"
 #import "GlkUtilities.h"
 
 #define LAYOUT_HEADROOM (1000)
@@ -20,6 +21,7 @@
 @synthesize vlines;
 @synthesize linesviews;
 @synthesize styleset;
+@synthesize selectionview;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval {
 	self = [super initWithFrame:frame];
@@ -35,9 +37,13 @@
 		totalwidth = self.bounds.size.width;
 
 		self.alwaysBounceVertical = YES;
+		self.canCancelContentTouches = YES;
 		self.contentSize = self.bounds.size;
 		
 		[self acceptStyleset:stylesval];
+		
+		selectvstart = -1;
+		selectvend = -1;
 		
 		taplastat = 0; // the past
 	}
@@ -49,6 +55,7 @@
 	self.vlines = nil;
 	self.linesviews = nil;
 	self.styleset = nil;
+	self.selectionview = nil;
 	[super dealloc];
 }
 
@@ -231,6 +238,9 @@
 }
 
 - (void) uncacheLayoutAndVLines:(BOOL)andvlines {
+	[self clearTouchTracking];
+	[self clearSelection];
+
 	if (andvlines) {
 		[vlines removeAllObjects];
 		endvlineseen = 0;
@@ -512,8 +522,8 @@
 	#ifdef DEBUG
 	/* This verifies that I haven't screwed up the consistency of the lines, vlines, linesviews arrays. */
 	[self sanityCheck]; //###
-	
 	#endif // DEBUG
+	
 	if (newcontent) {
 		NSLog(@"STV: new content time! (wasclear %d)", wasclear);
 		if (wasclear) {
@@ -825,10 +835,93 @@
 	#endif // DEBUG
 }
 
+- (void) clearTouchTracking {
+	taptracking = NO;
+	tapseldragging = NO;
+	taplastat = 0; // the past
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
+}
+
+- (BOOL) anySelection {
+	return (selectvstart >= 0 && selectvend >= 0);
+}
+
+- (void) setSelectionStart:(int)firstvln end:(int)endvln {
+	if (selectvstart == firstvln && selectvend == endvln)
+		return;
+
+	NSAssert(firstvln >= 0 && firstvln < vlines.count && endvln > firstvln && endvln <= vlines.count, @"setSelectionStart out of bounds");
+	selectvstart = firstvln;
+	selectvend = endvln;
+	
+	CGRect rect = self.bounds; // for x and width
+	GlkVisualLine *vln = [vlines objectAtIndex:firstvln];
+	rect.origin.y = vln.ypos;
+	vln = [vlines objectAtIndex:endvln-1];
+	rect.size.height = vln.bottom - rect.origin.y;
+	
+	if (!selectionview) {
+		self.selectionview = [[[TextSelectView alloc] initWithFrame:CGRectZero] autorelease];
+		[self addSubview:selectionview];
+	}
+	
+	[selectionview setArea:rect];
+}
+
+- (void) clearSelection {
+	if (!self.anySelection)
+		return;
+	selectvstart = -1;
+	selectvend = -1;
+	
+	if (selectionview) {
+		[selectionview removeFromSuperview];
+		self.selectionview = nil;
+	}
+}
+
+- (void) selectParagraphAt:(CGPoint)loc {
+	GlkVisualLine *vln = [self lineAtPos:loc.y];
+	if (!vln) {
+		[self clearSelection];
+		return;
+	}
+	
+	int slinenum = vln.linenum;
+	
+	int firstvln = vln.vlinenum;
+	int endvln = firstvln+1;
+	while (firstvln > 0) {
+		vln = [vlines objectAtIndex:firstvln-1];
+		if (vln.linenum != slinenum)
+			break;
+		firstvln--;
+	}
+	while (endvln < vlines.count) {
+		vln = [vlines objectAtIndex:endvln];
+		if (vln.linenum != slinenum)
+			break;
+		endvln++;
+	}
+	
+	[self setSelectionStart:firstvln end:endvln];
+}
+
+- (BOOL) touchesShouldCancelInContentView:(UIView *)view {
+	if (taptracking && tapseldragging)
+		return NO;
+	return YES;
+}
+
+- (void) switchToTextSelection {
+	tapseldragging = YES;
+	[self selectParagraphAt:taploc];
+}
+
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	//NSLog(@"STV: Touch began (%d)", event.allTouches.count);
 	if (event.allTouches.count > 1) {
-		taptracking = NO;
+		[self clearTouchTracking];
 		return;
 	}
 	
@@ -838,40 +931,57 @@
 	
 	taptracking = YES;
 	taplastat = now;
-	UITouch *touch = [[event touchesForView:self] anyObject];
+	UITouch *touch = [[event allTouches] anyObject];
 	taploc = [touch locationInView:self];
 	
-	//### start timer for select-loupe popup
+	// start timer for switching into text-select mode
+	[self performSelector:@selector(switchToTextSelection) withObject:nil afterDelay:0.5];
 }
 
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (!taptracking)
 		return;
 	
-	//NSLog(@"STV: Touch moved (%d)", event.allTouches.count);
-	UITouch *touch = [[event touchesForView:self] anyObject];
+	UITouch *touch = [[event allTouches] anyObject];
 	CGPoint loc = [touch locationInView:self];
 	
-	if (DistancePoints(loc, taploc) > 20) {
-		//NSLog(@"STV: Touch moved too far");
-		taptracking = NO;
-		taplastat = 0; // the past
-		return;
+	if (tapseldragging) {
+		/* Text selection */
+		[self selectParagraphAt:loc];
+	}
+	else {
+		/* Double-tap detection */
+		if (DistancePoints(loc, taploc) > 20) {
+			//NSLog(@"STV: Touch moved too far");
+			[self clearTouchTracking];
+			return;
+		}
 	}
 }
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	//NSLog(@"STV: Touch ended");
 	if (!taptracking)
 		return;
 	
-	//NSLog(@"STV: Touch ended");
-	taptracking = NO;
+	BOOL wasseldragging = tapseldragging;
 	
+	taptracking = NO;
+	tapseldragging = NO;
+	// leave taplastat intact
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
+	
+	if (wasseldragging) {
+		/* Text selection */
+		return;
+	}
+	
+	[self clearSelection];
+
 	NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
 	if (now - taplastat > 0.75) {
 		//NSLog(@"STV: Touch took too long");
-		taptracking = NO;
-		taplastat = 0; // the past
+		[self clearTouchTracking];
 		return;		
 	}
 	
@@ -941,9 +1051,8 @@
 }
 
 - (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-	//NSLog(@"STV: Touch cancelled");
-	taptracking = NO;
-	taplastat = 0; // the past
+	NSLog(@"STV: Touch cancelled");
+	[self clearTouchTracking];
 }
 
 - (void) labelFlingEnd:(NSString *)animid finished:(NSNumber *)finished context:(void *)context {
@@ -972,7 +1081,7 @@
 		
 		self.backgroundColor = styleset.backgroundcolor;
 		//self.backgroundColor = [UIColor colorWithRed:(random()%127+128)/256.0 green:(random()%127+128)/256.0 blue:1 alpha:1]; //###
-		self.userInteractionEnabled = NO;
+		self.userInteractionEnabled = YES;
 		
 		if (vlines.count > 0) {
 			GlkVisualLine *vln = [vlines objectAtIndex:0];

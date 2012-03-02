@@ -9,6 +9,7 @@
 
 @class StyleSet;
 @class GlkVisualLine;
+@class TextSelectView;
 
 @interface StyledTextView : UIScrollView {
 	CGFloat totalheight; /* vertical space available */
@@ -29,7 +30,12 @@
 	BOOL wasrefresh; /* True if the new content is really not new, but the textview is new and hasn't seen it before. */
 	int endvlineseen; /* End of the range of vlines that are known to have been seen. (Or, the index of the first unseen vline.) If this is equal to vlines.count, the whole page is seen. */
 	
+	int selectvstart; /* index of the first selected vline (or -1 if no selection) */
+	int selectvend; /* index of the last selected vline + 1 */
+	TextSelectView *selectionview;
+	
 	BOOL taptracking;
+	BOOL tapseldragging;
 	CGPoint taploc;
 	NSTimeInterval taplastat;
 	int tapnumber;
@@ -39,6 +45,7 @@
 @property (nonatomic, retain) NSMutableArray *vlines;
 @property (nonatomic, retain) NSMutableArray *linesviews;
 @property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic, retain) TextSelectView *selectionview;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
 - (void) acceptStyleset:(StyleSet *)stylesval;
@@ -52,6 +59,8 @@
 - (CGRect) placeForInputField;
 - (BOOL) pageDown;
 - (BOOL) pageToBottom;
+- (void) clearTouchTracking;
+- (void) clearSelection;
 
 @end
 
