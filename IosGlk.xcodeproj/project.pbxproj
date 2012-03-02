@@ -16,6 +16,10 @@
 		DF19DDC914E87CC4007DCB29 /* IosGlkLibDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */; };
 		DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */; };
 		DF79782412F3ACFC00E8F5FF /* glkmain.c in Sources */ = {isa = PBXBuildFile; fileRef = DF79782312F3ACFC00E8F5FF /* glkmain.c */; };
+		DF98665814FEE5FA0057E1E2 /* MoreBoxView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF98665714FEE5FA0057E1E2 /* MoreBoxView.xib */; };
+		DF98665D14FEE6100057E1E2 /* GlkLibraryState.m in Sources */ = {isa = PBXBuildFile; fileRef = DF98665A14FEE6100057E1E2 /* GlkLibraryState.m */; };
+		DF98665E14FEE6100057E1E2 /* GlkWindowState.m in Sources */ = {isa = PBXBuildFile; fileRef = DF98665C14FEE6100057E1E2 /* GlkWindowState.m */; };
+		DF98666114FEE6270057E1E2 /* MoreBoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = DF98666014FEE6270057E1E2 /* MoreBoxView.m */; };
 		DF9D1A5F14E60DAF006A6749 /* CmdTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */; };
 		DF9D1A6214E6DC91006A6749 /* InputMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = DF9D1A6114E6DC90006A6749 /* InputMenuView.m */; };
 		DF9D1A6414E6E27C006A6749 /* HistoryMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF9D1A6314E6E27C006A6749 /* HistoryMenuView.xib */; };
@@ -71,6 +75,13 @@
 		DF79782312F3ACFC00E8F5FF /* glkmain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glkmain.c; sourceTree = "<group>"; };
 		DF97CDDD1365EE39005D2536 /* gi_dispa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_dispa.h; sourceTree = "<group>"; };
 		DF97CDDE1365EE39005D2536 /* glk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glk.h; sourceTree = "<group>"; };
+		DF98665714FEE5FA0057E1E2 /* MoreBoxView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MoreBoxView.xib; sourceTree = "<group>"; };
+		DF98665914FEE6100057E1E2 /* GlkLibraryState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkLibraryState.h; sourceTree = "<group>"; };
+		DF98665A14FEE6100057E1E2 /* GlkLibraryState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkLibraryState.m; sourceTree = "<group>"; };
+		DF98665B14FEE6100057E1E2 /* GlkWindowState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkWindowState.h; sourceTree = "<group>"; };
+		DF98665C14FEE6100057E1E2 /* GlkWindowState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkWindowState.m; sourceTree = "<group>"; };
+		DF98665F14FEE6270057E1E2 /* MoreBoxView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreBoxView.h; sourceTree = "<group>"; };
+		DF98666014FEE6270057E1E2 /* MoreBoxView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreBoxView.m; sourceTree = "<group>"; };
 		DF9D1A5D14E60DAF006A6749 /* CmdTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CmdTextField.h; sourceTree = "<group>"; };
 		DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CmdTextField.m; sourceTree = "<group>"; };
 		DF9D1A6014E6DC90006A6749 /* InputMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputMenuView.h; sourceTree = "<group>"; };
@@ -189,6 +200,7 @@
 				2899E5210DE3E06400AC0155 /* IosGlkViewController.xib */,
 				DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */,
 				DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */,
+				DF98665714FEE5FA0057E1E2 /* MoreBoxView.xib */,
 				DFBB4DF114F5E1210041016A /* PopBoxView.xib */,
 				DF9D1A6314E6E27C006A6749 /* HistoryMenuView.xib */,
 				DF9D1A6514E71D6E006A6749 /* PaletteMenuView.xib */,
@@ -230,6 +242,10 @@
 				DFED7A881365F0FC00FBAFFB /* GlkStream.m */,
 				DFED7A811365F0FC00FBAFFB /* GlkFileRef.h */,
 				DFED7A821365F0FC00FBAFFB /* GlkFileRef.m */,
+				DF98665914FEE6100057E1E2 /* GlkLibraryState.h */,
+				DF98665A14FEE6100057E1E2 /* GlkLibraryState.m */,
+				DF98665B14FEE6100057E1E2 /* GlkWindowState.h */,
+				DF98665C14FEE6100057E1E2 /* GlkWindowState.m */,
 				DFED7A7F1365F0FC00FBAFFB /* Geometry.h */,
 				DFED7A801365F0FC00FBAFFB /* Geometry.m */,
 				DFED7A8D1365F0FC00FBAFFB /* StyleSet.h */,
@@ -267,6 +283,8 @@
 				DFED7AAB1365F18E00FBAFFB /* RelDateFormatter.m */,
 				DF9D1A5D14E60DAF006A6749 /* CmdTextField.h */,
 				DF9D1A5E14E60DAF006A6749 /* CmdTextField.m */,
+				DF98665F14FEE6270057E1E2 /* MoreBoxView.h */,
+				DF98666014FEE6270057E1E2 /* MoreBoxView.m */,
 				DFBB4DEE14F5DAC90041016A /* PopMenuView.h */,
 				DFBB4DEF14F5DAC90041016A /* PopMenuView.m */,
 				DF9D1A6014E6DC90006A6749 /* InputMenuView.h */,
@@ -354,6 +372,7 @@
 				DF9D1A6414E6E27C006A6749 /* HistoryMenuView.xib in Resources */,
 				DF9D1A6614E71D6E006A6749 /* PaletteMenuView.xib in Resources */,
 				DFBB4DF214F5E1210041016A /* PopBoxView.xib in Resources */,
+				DF98665814FEE5FA0057E1E2 /* MoreBoxView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +419,9 @@
 				DF9D1A6214E6DC91006A6749 /* InputMenuView.m in Sources */,
 				DF19DDC914E87CC4007DCB29 /* IosGlkLibDelegate.m in Sources */,
 				DFBB4DF014F5DAC90041016A /* PopMenuView.m in Sources */,
+				DF98665D14FEE6100057E1E2 /* GlkLibraryState.m in Sources */,
+				DF98665E14FEE6100057E1E2 /* GlkWindowState.m in Sources */,
+				DF98666114FEE6270057E1E2 /* MoreBoxView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
