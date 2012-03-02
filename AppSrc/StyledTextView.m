@@ -22,6 +22,7 @@
 @synthesize linesviews;
 @synthesize styleset;
 @synthesize selectionview;
+@synthesize selectionarea;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval {
 	self = [super initWithFrame:frame];
@@ -536,6 +537,9 @@
 		wasclear = NO;
 		wasrefresh = NO;
 	}
+
+	if (!self.dragging && !self.decelerating)
+		[self showSelectionMenu];
 }
 
 /* Page to the bottom, if necessary. Returns YES if this occurred, NO if we were already there.
@@ -835,6 +839,26 @@
 	#endif // DEBUG
 }
 
+- (BOOL) canBecomeFirstResponder {
+	return YES;
+}
+
+- (BOOL) resignFirstResponder {
+	[self clearSelection];
+	return YES;
+}
+
+/*
+- (BOOL) canPerformAction:(SEL)action withSender:(id)sender {
+	return [super canPerformAction:action withSender:sender];
+} */
+
+- (void) copy:(id)sender {
+	NSLog(@"### copy command!");
+	/* Keep the menu up after the copy command */
+	[UIMenuController sharedMenuController].menuVisible = YES;
+}
+
 - (void) clearTouchTracking {
 	taptracking = NO;
 	tapseldragging = NO;
@@ -844,6 +868,19 @@
 
 - (BOOL) anySelection {
 	return (selectvstart >= 0 && selectvend >= 0);
+}
+
+- (void) showSelectionMenu {
+	if (!self.anySelection)
+		return;
+	
+	if (![self isFirstResponder])
+		return;
+	
+	UIMenuController *menucon = [UIMenuController sharedMenuController];
+	[menucon setTargetRect:selectionarea inView:self];
+	if (!menucon.menuVisible)
+		[menucon setMenuVisible:YES animated:YES];
 }
 
 - (void) setSelectionStart:(int)firstvln end:(int)endvln {
@@ -859,13 +896,14 @@
 	rect.origin.y = vln.ypos;
 	vln = [vlines objectAtIndex:endvln-1];
 	rect.size.height = vln.bottom - rect.origin.y;
+	selectionarea = rect;
 	
 	if (!selectionview) {
 		self.selectionview = [[[TextSelectView alloc] initWithFrame:CGRectZero] autorelease];
 		[self addSubview:selectionview];
 	}
 	
-	[selectionview setArea:rect];
+	[selectionview setArea:selectionarea];
 }
 
 - (void) clearSelection {
@@ -873,11 +911,16 @@
 		return;
 	selectvstart = -1;
 	selectvend = -1;
+	selectionarea = CGRectNull;
 	
 	if (selectionview) {
 		[selectionview removeFromSuperview];
 		self.selectionview = nil;
 	}
+
+	UIMenuController *menucon = [UIMenuController sharedMenuController];
+	if (menucon.menuVisible)
+		[menucon setMenuVisible:NO animated:YES];
 }
 
 - (void) selectParagraphAt:(CGPoint)loc {
@@ -973,6 +1016,8 @@
 	
 	if (wasseldragging) {
 		/* Text selection */
+		[self becomeFirstResponder];
+		[self showSelectionMenu];
 		return;
 	}
 	

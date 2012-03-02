@@ -17,6 +17,8 @@
 	if (self) {
 		area = CGRectZero;
 		
+		self.userInteractionEnabled = NO;
+		
 		self.shadeview = [[[UIView alloc] initWithFrame:area] autorelease];
 		shadeview.backgroundColor = [UIColor colorWithRed:0.35 green:0.5 blue:1 alpha:0.33];
 		shadeview.opaque = NO;

@@ -32,6 +32,7 @@
 	
 	int selectvstart; /* index of the first selected vline (or -1 if no selection) */
 	int selectvend; /* index of the last selected vline + 1 */
+	CGRect selectionarea; /* only meaningful if a selection exists */
 	TextSelectView *selectionview;
 	
 	BOOL taptracking;
@@ -46,6 +47,7 @@
 @property (nonatomic, retain) NSMutableArray *linesviews;
 @property (nonatomic, retain) StyleSet *styleset;
 @property (nonatomic, retain) TextSelectView *selectionview;
+@property (nonatomic, readonly) CGRect selectionarea;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
 - (void) acceptStyleset:(StyleSet *)stylesval;
@@ -60,7 +62,9 @@
 - (BOOL) pageDown;
 - (BOOL) pageToBottom;
 - (void) clearTouchTracking;
+- (BOOL) anySelection;
 - (void) clearSelection;
+- (void) showSelectionMenu;
 
 @end
 

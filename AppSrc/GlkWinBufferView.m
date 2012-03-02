@@ -155,7 +155,20 @@
 - (void) scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
 	if (nowcontentscrolling && textview.moreToSee)
 		[self setMoreFlag:YES];
+	if (textview.anySelection)
+		[textview showSelectionMenu];
 }
 
+- (void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+	if (!decelerate) {
+		if (textview.anySelection)
+			[textview showSelectionMenu];
+	}
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+	if (textview.anySelection)
+		[textview showSelectionMenu];
+}
 
 @end
