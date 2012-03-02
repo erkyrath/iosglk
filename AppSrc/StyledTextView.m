@@ -854,9 +854,28 @@
 } */
 
 - (void) copy:(id)sender {
-	NSLog(@"### copy command!");
 	/* Keep the menu up after the copy command */
 	[UIMenuController sharedMenuController].menuVisible = YES;
+	
+	if (!self.anySelection)
+		return;
+	
+	GlkVisualLine *vln = [vlines objectAtIndex:selectvstart];
+	int firstln = vln.linenum;
+	vln = [vlines objectAtIndex:selectvend-1];
+	int lastln = vln.linenum;
+	
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:lastln-firstln+1];
+	for (int ix=firstln; ix<=lastln; ix++) {
+		GlkStyledLine *sln = [slines objectAtIndex:ix];
+		for (GlkStyledString *str in sln.arr) {
+			[arr addObject:str.str];
+		}
+		[arr addObject:@"\n"];
+	}
+	
+	NSString *str = [arr componentsJoinedByString:@""];
+	[UIPasteboard generalPasteboard].string = str;
 }
 
 - (void) clearTouchTracking {
@@ -867,7 +886,7 @@
 }
 
 - (BOOL) anySelection {
-	return (selectvstart >= 0 && selectvend >= 0);
+	return (selectvstart >= 0 && selectvend >= 0 && selectvstart < selectvend);
 }
 
 - (void) showSelectionMenu {
