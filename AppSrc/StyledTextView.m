@@ -14,7 +14,7 @@
 
 #define LAYOUT_HEADROOM (1000)
 #define STRIPE_WIDTH (100)
-#define HANDLE_RADIUS (20)
+#define HANDLE_RADIUS (25)
 
 @implementation StyledTextView
 
