@@ -9,6 +9,8 @@
 @interface TextSelectView : UIView {
 	UIView *shadeview;
 	UIView *outlineview;
+	UIImageView *tophandleview;
+	UIImageView *bottomhandleview;
 	
 	CGRect area;
 	CGRect outline;
@@ -17,6 +19,8 @@
 
 @property (nonatomic, retain) UIView *shadeview;
 @property (nonatomic, retain) UIView *outlineview;
+@property (nonatomic, retain) UIImageView *tophandleview;
+@property (nonatomic, retain) UIImageView *bottomhandleview;
 
 - (void) setArea:(CGRect)box;
 - (void) setOutline:(CGRect)box animated:(BOOL)animated;

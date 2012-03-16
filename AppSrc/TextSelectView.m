@@ -10,6 +10,9 @@
 
 @synthesize shadeview;
 @synthesize outlineview;
+@synthesize tophandleview;
+@synthesize bottomhandleview;
+
 
 - (id) initWithFrame:(CGRect)frame
 {
@@ -30,6 +33,15 @@
 		self.outlineview = [[[TextOutlineView alloc] initWithFrame:area] autorelease];
 		outlineview.alpha = 0;
 		[self addSubview:outlineview];
+		
+		UIImage *img = [UIImage imageNamed:@"selecthandle"];
+		self.tophandleview = [[[UIImageView alloc] initWithImage:img] autorelease];
+		tophandleview.hidden = YES;
+		self.bottomhandleview = [[[UIImageView alloc] initWithImage:img] autorelease];
+		bottomhandleview.hidden = YES;
+
+		[self addSubview:tophandleview];
+		[self addSubview:bottomhandleview];
 	}
 	return self;
 }
@@ -37,12 +49,18 @@
 - (void) dealloc {
 	self.shadeview = nil;
 	self.outlineview = nil;
+	self.tophandleview = nil;
+	self.bottomhandleview = nil;
 	[super dealloc];
 }
 
 - (void) setArea:(CGRect)box {
 	area = box;
 	shadeview.frame = area;
+	
+	CGFloat xpos = area.origin.x + floorf(0.5*area.size.width);
+	tophandleview.center = CGPointMake(xpos, area.origin.y);
+	bottomhandleview.center = CGPointMake(xpos, area.origin.y+area.size.height);
 }
 
 - (void) setOutline:(CGRect)box animated:(BOOL)animated {
@@ -63,13 +81,14 @@
 	}
 
 	outlinevisible = YES;
+	
+	tophandleview.hidden = YES;
+	bottomhandleview.hidden = YES;
 }
 
 - (void) hideOutlineAnimated:(BOOL)animated {
 	if (!outlinevisible) 
 		return;
-	
-	outlinevisible = NO;
 	
 	if (!animated) {
 		outlineview.alpha = 0;
@@ -80,6 +99,11 @@
 		outlineview.alpha = 0;
 		[UIView commitAnimations];
 	}
+	
+	outlinevisible = NO;
+	
+	tophandleview.hidden = NO;
+	bottomhandleview.hidden = NO;
 }
 
 @end
