@@ -15,6 +15,8 @@
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		DF19DDC914E87CC4007DCB29 /* IosGlkLibDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */; };
 		DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */; };
+		DF70A15B1513EDA600B109A2 /* selecthandle.png in Resources */ = {isa = PBXBuildFile; fileRef = DF70A1591513EDA600B109A2 /* selecthandle.png */; };
+		DF70A15C1513EDA600B109A2 /* selecthandle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */; };
 		DF79782412F3ACFC00E8F5FF /* glkmain.c in Sources */ = {isa = PBXBuildFile; fileRef = DF79782312F3ACFC00E8F5FF /* glkmain.c */; };
 		DF98665814FEE5FA0057E1E2 /* MoreBoxView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF98665714FEE5FA0057E1E2 /* MoreBoxView.xib */; };
 		DF98665D14FEE6100057E1E2 /* GlkLibraryState.m in Sources */ = {isa = PBXBuildFile; fileRef = DF98665A14FEE6100057E1E2 /* GlkLibraryState.m */; };
@@ -72,6 +74,8 @@
 		DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IosGlkLibDelegate.m; sourceTree = "<group>"; };
 		DF2280A413692516000AF225 /* iosglk_startup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iosglk_startup.h; sourceTree = "<group>"; };
 		DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDateTimeLayer.m; sourceTree = "<group>"; };
+		DF70A1591513EDA600B109A2 /* selecthandle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = selecthandle.png; sourceTree = "<group>"; };
+		DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selecthandle@2x.png"; sourceTree = "<group>"; };
 		DF79782312F3ACFC00E8F5FF /* glkmain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glkmain.c; sourceTree = "<group>"; };
 		DF97CDDD1365EE39005D2536 /* gi_dispa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_dispa.h; sourceTree = "<group>"; };
 		DF97CDDE1365EE39005D2536 /* glk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glk.h; sourceTree = "<group>"; };
@@ -176,6 +180,7 @@
 				DFED7AC71365F1C700FBAFFB /* LayerSrc */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
+				DF70A1581513ED8F00B109A2 /* Media */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
@@ -216,6 +221,15 @@
 				288765A40DF7441C002DB57D /* CoreGraphics.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DF70A1581513ED8F00B109A2 /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				DF70A1591513EDA600B109A2 /* selecthandle.png */,
+				DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */,
+			);
+			path = Media;
 			sourceTree = "<group>";
 		};
 		DF97CDA01365EBF2005D2536 /* GenSrc */ = {
@@ -373,6 +387,8 @@
 				DF9D1A6614E71D6E006A6749 /* PaletteMenuView.xib in Resources */,
 				DFBB4DF214F5E1210041016A /* PopBoxView.xib in Resources */,
 				DF98665814FEE5FA0057E1E2 /* MoreBoxView.xib in Resources */,
+				DF70A15B1513EDA600B109A2 /* selecthandle.png in Resources */,
+				DF70A15C1513EDA600B109A2 /* selecthandle@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
