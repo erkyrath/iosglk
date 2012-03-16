@@ -14,6 +14,7 @@
 
 #define LAYOUT_HEADROOM (1000)
 #define STRIPE_WIDTH (100)
+#define HANDLE_RADIUS (20)
 
 @implementation StyledTextView
 
@@ -880,7 +881,7 @@
 
 - (void) clearTouchTracking {
 	taptracking = NO;
-	tapseldragging = NO;
+	tapseldragging = SelDrag_none;
 	taplastat = 0; // the past
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
 }
@@ -974,6 +975,45 @@
 	[selectionview setOutline:selectionarea animated:YES];
 }
 
+- (void) selectMoveEdgeAt:(CGPoint)loc mode:(SelDragMode)mode {
+	GlkVisualLine *vln = [self lineAtPos:loc.y];
+	if (!vln) {
+		return;
+	}
+	
+	int firstvln = selectvstart;
+	int endvln = selectvend;
+	
+	CGRect rect = selectionarea;
+	CGFloat ytop = rect.origin.y;
+	CGFloat ybottom = rect.origin.y+rect.size.height;
+
+	if (mode == SelDrag_topedge) {
+		firstvln = vln.vlinenum;
+		if (firstvln > endvln-1)
+			firstvln = endvln-1;
+		
+		ytop = loc.y;
+		if (ytop > ybottom-4)
+			ytop = ybottom-4;
+	}
+	else {
+		endvln = vln.vlinenum+1;
+		if (endvln < firstvln+1)
+			endvln = firstvln+1;
+		
+		ybottom = loc.y;
+		if (ybottom < ytop+4)
+			ybottom = ytop+4;
+	}
+	
+	rect.origin.y = ytop;
+	rect.size.height = ybottom-ytop;
+	
+	[self setSelectionStart:firstvln end:endvln];
+	[selectionview setOutline:rect animated:YES];
+}
+
 - (BOOL) touchesShouldCancelInContentView:(UIView *)view {
 	if (taptracking && tapseldragging)
 		return NO;
@@ -981,7 +1021,7 @@
 }
 
 - (void) switchToTextSelection {
-	tapseldragging = YES;
+	tapseldragging = SelDrag_paragraph;
 	[self selectParagraphAt:taploc];
 }
 
@@ -1001,7 +1041,24 @@
 	UITouch *touch = [[event allTouches] anyObject];
 	taploc = [touch locationInView:self];
 	
-	// start timer for switching into text-select mode
+	if (self.anySelection) {
+		/* If the tap is on the upper or lower handle, go with that mode. */
+		CGFloat xcenter = selectionarea.origin.x + 0.5*selectionarea.size.width;
+		if (taploc.x > xcenter-HANDLE_RADIUS && taploc.x < xcenter+HANDLE_RADIUS) {
+			CGFloat ypos = selectionarea.origin.y;
+			if (taploc.y > ypos-HANDLE_RADIUS && taploc.y < ypos+HANDLE_RADIUS)
+				tapseldragging = SelDrag_topedge;
+			ypos = selectionarea.origin.y + selectionarea.size.height;
+			if (taploc.y > ypos-HANDLE_RADIUS && taploc.y < ypos+HANDLE_RADIUS)
+				tapseldragging = SelDrag_bottomedge;
+			if (tapseldragging) {
+				[selectionview setOutline:selectionarea animated:YES];
+				return;
+			}
+		}
+	}
+	
+	/* Normal tap-tracking mode. But we start the timer for switching into paragraph-select mode. */
 	[self performSelector:@selector(switchToTextSelection) withObject:nil afterDelay:0.5];
 }
 
@@ -1014,7 +1071,12 @@
 	
 	if (tapseldragging) {
 		/* Text selection */
-		[self selectParagraphAt:loc];
+		if (tapseldragging == SelDrag_topedge || tapseldragging == SelDrag_bottomedge) {
+			[self selectMoveEdgeAt:loc mode:tapseldragging];
+		}
+		else {
+			[self selectParagraphAt:loc];
+		}
 	}
 	else {
 		/* Double-tap detection */
@@ -1031,10 +1093,10 @@
 	if (!taptracking)
 		return;
 	
-	BOOL wasseldragging = tapseldragging;
+	BOOL wasseldragging = (tapseldragging != SelDrag_none);
 	
 	taptracking = NO;
-	tapseldragging = NO;
+	tapseldragging = SelDrag_none;
 	// leave taplastat intact
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
 	
