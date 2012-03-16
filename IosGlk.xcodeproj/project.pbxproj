@@ -17,6 +17,7 @@
 		DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */; };
 		DF70A15B1513EDA600B109A2 /* selecthandle.png in Resources */ = {isa = PBXBuildFile; fileRef = DF70A1591513EDA600B109A2 /* selecthandle.png */; };
 		DF70A15C1513EDA600B109A2 /* selecthandle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */; };
+		DF70A15F1513F4F800B109A2 /* TextSelectView.m in Sources */ = {isa = PBXBuildFile; fileRef = DF70A15E1513F4F800B109A2 /* TextSelectView.m */; };
 		DF79782412F3ACFC00E8F5FF /* glkmain.c in Sources */ = {isa = PBXBuildFile; fileRef = DF79782312F3ACFC00E8F5FF /* glkmain.c */; };
 		DF98665814FEE5FA0057E1E2 /* MoreBoxView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF98665714FEE5FA0057E1E2 /* MoreBoxView.xib */; };
 		DF98665D14FEE6100057E1E2 /* GlkLibraryState.m in Sources */ = {isa = PBXBuildFile; fileRef = DF98665A14FEE6100057E1E2 /* GlkLibraryState.m */; };
@@ -76,6 +77,8 @@
 		DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDateTimeLayer.m; sourceTree = "<group>"; };
 		DF70A1591513EDA600B109A2 /* selecthandle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = selecthandle.png; sourceTree = "<group>"; };
 		DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selecthandle@2x.png"; sourceTree = "<group>"; };
+		DF70A15D1513F4F800B109A2 /* TextSelectView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextSelectView.h; sourceTree = "<group>"; };
+		DF70A15E1513F4F800B109A2 /* TextSelectView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextSelectView.m; sourceTree = "<group>"; };
 		DF79782312F3ACFC00E8F5FF /* glkmain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glkmain.c; sourceTree = "<group>"; };
 		DF97CDDD1365EE39005D2536 /* gi_dispa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gi_dispa.h; sourceTree = "<group>"; };
 		DF97CDDE1365EE39005D2536 /* glk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glk.h; sourceTree = "<group>"; };
@@ -305,6 +308,8 @@
 				DF9D1A6114E6DC90006A6749 /* InputMenuView.m */,
 				DFED7AAC1365F18E00FBAFFB /* StyledTextView.h */,
 				DFED7AAD1365F18E00FBAFFB /* StyledTextView.m */,
+				DF70A15D1513F4F800B109A2 /* TextSelectView.h */,
+				DF70A15E1513F4F800B109A2 /* TextSelectView.m */,
 			);
 			path = AppSrc;
 			sourceTree = "<group>";
@@ -438,6 +443,7 @@
 				DF98665D14FEE6100057E1E2 /* GlkLibraryState.m in Sources */,
 				DF98665E14FEE6100057E1E2 /* GlkWindowState.m in Sources */,
 				DF98666114FEE6270057E1E2 /* MoreBoxView.m in Sources */,
+				DF70A15F1513F4F800B109A2 /* TextSelectView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
