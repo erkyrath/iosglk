@@ -860,19 +860,20 @@
 	
 	if (!self.anySelection)
 		return;
-	
-	GlkVisualLine *vln = [vlines objectAtIndex:selectvstart];
-	int firstln = vln.linenum;
-	vln = [vlines objectAtIndex:selectvend-1];
-	int lastln = vln.linenum;
-	
-	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:lastln-firstln+1];
-	for (int ix=firstln; ix<=lastln; ix++) {
-		GlkStyledLine *sln = [slines objectAtIndex:ix];
-		for (GlkStyledString *str in sln.arr) {
-			[arr addObject:str.str];
+
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:2*(selectvend-selectvstart+1)];
+	int lastln = -1;
+
+	for (int ix=selectvstart; ix<selectvend; ix++) {
+		GlkVisualLine *vln = [vlines objectAtIndex:ix];
+		if (lastln != -1) {
+			if (lastln != vln.linenum)
+				[arr addObject:@"\n"];
+			else
+				[arr addObject:@" "];
 		}
-		[arr addObject:@"\n"];
+		lastln = vln.linenum;
+		[arr addObject:vln.concatLine];
 	}
 	
 	NSString *str = [arr componentsJoinedByString:@""];
