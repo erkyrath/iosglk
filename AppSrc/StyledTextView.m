@@ -14,6 +14,7 @@
 
 #define LAYOUT_HEADROOM (1000)
 #define STRIPE_WIDTH (100)
+#define HANDLE_RADIUS (20)
 
 @implementation StyledTextView
 
@@ -859,19 +860,20 @@
 	
 	if (!self.anySelection)
 		return;
-	
-	GlkVisualLine *vln = [vlines objectAtIndex:selectvstart];
-	int firstln = vln.linenum;
-	vln = [vlines objectAtIndex:selectvend-1];
-	int lastln = vln.linenum;
-	
-	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:lastln-firstln+1];
-	for (int ix=firstln; ix<=lastln; ix++) {
-		GlkStyledLine *sln = [slines objectAtIndex:ix];
-		for (GlkStyledString *str in sln.arr) {
-			[arr addObject:str.str];
+
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:2*(selectvend-selectvstart+1)];
+	int lastln = -1;
+
+	for (int ix=selectvstart; ix<selectvend; ix++) {
+		GlkVisualLine *vln = [vlines objectAtIndex:ix];
+		if (lastln != -1) {
+			if (lastln != vln.linenum)
+				[arr addObject:@"\n"];
+			else
+				[arr addObject:@" "];
 		}
-		[arr addObject:@"\n"];
+		lastln = vln.linenum;
+		[arr addObject:vln.concatLine];
 	}
 	
 	NSString *str = [arr componentsJoinedByString:@""];
@@ -880,7 +882,7 @@
 
 - (void) clearTouchTracking {
 	taptracking = NO;
-	tapseldragging = NO;
+	tapseldragging = SelDrag_none;
 	taplastat = 0; // the past
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
 }
@@ -920,6 +922,10 @@
 	if (!selectionview) {
 		self.selectionview = [[[TextSelectView alloc] initWithFrame:CGRectZero] autorelease];
 		[self addSubview:selectionview];
+		
+		rect.origin = RectCenter(selectionarea);
+		rect.size = CGSizeMake(1,1);
+		[selectionview setOutline:CGRectInset(rect, -5, -5) animated:NO];
 	}
 	
 	[selectionview setArea:selectionarea];
@@ -967,6 +973,46 @@
 	}
 	
 	[self setSelectionStart:firstvln end:endvln];
+	[selectionview setOutline:selectionarea animated:YES];
+}
+
+- (void) selectMoveEdgeAt:(CGPoint)loc mode:(SelDragMode)mode {
+	GlkVisualLine *vln = [self lineAtPos:loc.y];
+	if (!vln) {
+		return;
+	}
+	
+	int firstvln = selectvstart;
+	int endvln = selectvend;
+	
+	CGRect rect = selectionarea;
+	CGFloat ytop = rect.origin.y;
+	CGFloat ybottom = rect.origin.y+rect.size.height;
+
+	if (mode == SelDrag_topedge) {
+		firstvln = vln.vlinenum;
+		if (firstvln > endvln-1)
+			firstvln = endvln-1;
+		
+		ytop = loc.y;
+		if (ytop > ybottom-4)
+			ytop = ybottom-4;
+	}
+	else {
+		endvln = vln.vlinenum+1;
+		if (endvln < firstvln+1)
+			endvln = firstvln+1;
+		
+		ybottom = loc.y;
+		if (ybottom < ytop+4)
+			ybottom = ytop+4;
+	}
+	
+	rect.origin.y = ytop;
+	rect.size.height = ybottom-ytop;
+	
+	[self setSelectionStart:firstvln end:endvln];
+	[selectionview setOutline:rect animated:YES];
 }
 
 - (BOOL) touchesShouldCancelInContentView:(UIView *)view {
@@ -976,7 +1022,7 @@
 }
 
 - (void) switchToTextSelection {
-	tapseldragging = YES;
+	tapseldragging = SelDrag_paragraph;
 	[self selectParagraphAt:taploc];
 }
 
@@ -996,7 +1042,24 @@
 	UITouch *touch = [[event allTouches] anyObject];
 	taploc = [touch locationInView:self];
 	
-	// start timer for switching into text-select mode
+	if (self.anySelection) {
+		/* If the tap is on the upper or lower handle, go with that mode. */
+		CGFloat xcenter = selectionarea.origin.x + 0.5*selectionarea.size.width;
+		if (taploc.x > xcenter-HANDLE_RADIUS && taploc.x < xcenter+HANDLE_RADIUS) {
+			CGFloat ypos = selectionarea.origin.y;
+			if (taploc.y > ypos-HANDLE_RADIUS && taploc.y < ypos+HANDLE_RADIUS)
+				tapseldragging = SelDrag_topedge;
+			ypos = selectionarea.origin.y + selectionarea.size.height;
+			if (taploc.y > ypos-HANDLE_RADIUS && taploc.y < ypos+HANDLE_RADIUS)
+				tapseldragging = SelDrag_bottomedge;
+			if (tapseldragging) {
+				[selectionview setOutline:selectionarea animated:YES];
+				return;
+			}
+		}
+	}
+	
+	/* Normal tap-tracking mode. But we start the timer for switching into paragraph-select mode. */
 	[self performSelector:@selector(switchToTextSelection) withObject:nil afterDelay:0.5];
 }
 
@@ -1009,7 +1072,12 @@
 	
 	if (tapseldragging) {
 		/* Text selection */
-		[self selectParagraphAt:loc];
+		if (tapseldragging == SelDrag_topedge || tapseldragging == SelDrag_bottomedge) {
+			[self selectMoveEdgeAt:loc mode:tapseldragging];
+		}
+		else {
+			[self selectParagraphAt:loc];
+		}
 	}
 	else {
 		/* Double-tap detection */
@@ -1026,15 +1094,16 @@
 	if (!taptracking)
 		return;
 	
-	BOOL wasseldragging = tapseldragging;
+	BOOL wasseldragging = (tapseldragging != SelDrag_none);
 	
 	taptracking = NO;
-	tapseldragging = NO;
+	tapseldragging = SelDrag_none;
 	// leave taplastat intact
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
 	
 	if (wasseldragging) {
 		/* Text selection */
+		[selectionview hideOutlineAnimated:YES];
 		[self becomeFirstResponder];
 		[self showSelectionMenu];
 		return;

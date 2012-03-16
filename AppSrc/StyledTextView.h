@@ -7,6 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum SelDragMode_enum {
+	SelDrag_none = 0,
+	SelDrag_paragraph = 1,
+	SelDrag_topedge = 2,
+	SelDrag_bottomedge = 3,
+} SelDragMode;
+
 @class StyleSet;
 @class GlkVisualLine;
 @class TextSelectView;
@@ -36,7 +43,7 @@
 	TextSelectView *selectionview;
 	
 	BOOL taptracking;
-	BOOL tapseldragging;
+	SelDragMode tapseldragging;
 	CGPoint taploc;
 	NSTimeInterval taplastat;
 	int tapnumber;
