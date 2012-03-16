@@ -11,11 +11,21 @@
 	UIView *outlineview;
 	
 	CGRect area;
+	CGRect outline;
+	BOOL outlinevisible;
 }
 
 @property (nonatomic, retain) UIView *shadeview;
 @property (nonatomic, retain) UIView *outlineview;
 
 - (void) setArea:(CGRect)box;
+- (void) setOutline:(CGRect)box animated:(BOOL)animated;
+- (void) hideOutlineAnimated:(BOOL)animated;
+
+@end
+
+
+@interface TextOutlineView : UIView {
+}
 
 @end

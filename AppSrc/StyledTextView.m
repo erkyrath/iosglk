@@ -920,6 +920,10 @@
 	if (!selectionview) {
 		self.selectionview = [[[TextSelectView alloc] initWithFrame:CGRectZero] autorelease];
 		[self addSubview:selectionview];
+		
+		rect.origin = RectCenter(selectionarea);
+		rect.size = CGSizeMake(1,1);
+		[selectionview setOutline:CGRectInset(rect, -5, -5) animated:NO];
 	}
 	
 	[selectionview setArea:selectionarea];
@@ -967,6 +971,7 @@
 	}
 	
 	[self setSelectionStart:firstvln end:endvln];
+	[selectionview setOutline:selectionarea animated:YES];
 }
 
 - (BOOL) touchesShouldCancelInContentView:(UIView *)view {
@@ -1035,6 +1040,7 @@
 	
 	if (wasseldragging) {
 		/* Text selection */
+		[selectionview hideOutlineAnimated:YES];
 		[self becomeFirstResponder];
 		[self showSelectionMenu];
 		return;
