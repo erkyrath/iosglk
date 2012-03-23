@@ -211,6 +211,7 @@
 		trimcount++;
 	}
 	if (trimcount > 0) {
+		NSLog(@"STV: trimming %d vlines from top; firstsline now %d", trimcount, firstsline);
 		endvlineseen -= trimcount;
 		if (endvlineseen < 0)
 			endvlineseen = 0;
@@ -218,8 +219,17 @@
 		range.location = 0;
 		range.length = trimcount;
 		[vlines removeObjectsInRange:range];
+		CGFloat yshift = 0;
+		if (vlines.count) {
+			GlkVisualLine *vln = [vlines objectAtIndex:0];
+			yshift = vln.ypos - styleset.margins.top;
+			CGPoint offset = self.contentOffset;
+			offset.y -= yshift;
+			self.contentOffset = offset;
+		}
 		for (GlkVisualLine *vln in vlines) {
 			vln.vlinenum -= trimcount;
+			vln.ypos -= yshift;
 		}
 	}
 	
@@ -235,7 +245,6 @@
 
 	/* Now trash all the VisualLinesViews. We'll create new ones at the next layout call. */
 	//NSLog(@"### removing all linesviews (for update)");
-	//### Or only trash the ones that have been invalidated?
 	[self uncacheLayoutAndVLines:NO];
 }
 

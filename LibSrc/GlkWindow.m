@@ -419,8 +419,8 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 @implementation GlkWindowBuffer
 /* GlkWindowBuffer: a textbuffer window. */
 
-#define TRIM_LINES_MAX (50)
-#define TRIM_LINES_MIN (40)
+#define TRIM_LINES_MAX (200)
+#define TRIM_LINES_MIN (100)
 
 @synthesize clearcount;
 @synthesize linesdirtyfrom;
@@ -446,6 +446,17 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 - (GlkWindowState *) cloneState {
 	GlkWindowBufferState *state = (GlkWindowBufferState *)[super cloneState];
 	
+	/* First, trim lines from the top if linesdirtyfrom is too large. We use linesdirtyfrom as the measure because that's the number of lines the player has seen -- at least, the number that have been cloned off to the view previously. (We also measure lines.count, for double-safety.) */
+	
+	if (linesdirtyfrom >= TRIM_LINES_MAX && lines.count >= TRIM_LINES_MAX) {
+		NSRange range;
+		range.location = 0;
+		range.length = TRIM_LINES_MAX - TRIM_LINES_MIN;
+		[lines removeObjectsInRange:range];
+		
+		linesdirtyfrom -= range.length;
+	}
+
 	int dirtyto = 0;
 	if (lines.count) {
 		GlkStyledLine *sln = [lines lastObject];
