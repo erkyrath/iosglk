@@ -24,7 +24,7 @@
 @property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
 
 @property (nonatomic, retain) NSMutableArray *commandhistory;	
-@property (nonatomic, readonly) BOOL debug_updating_library;
+@property (nonatomic) CGRect keyboardbox;
 
 + (IosGlkViewController *) singleton;
 
@@ -36,6 +36,8 @@
 
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;
+- (void) keyboardWillBeShown:(NSNotification*)notification;
+- (void) keyboardWillBeHidden:(NSNotification*)notification;
 
 - (void) buildPopMenu:(PopMenuView *)menuview;
 - (void) buildMoreView:(MoreBoxView *)moreview;

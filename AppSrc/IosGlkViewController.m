@@ -23,7 +23,7 @@
 @synthesize glkdelegate;
 @synthesize frameview;
 @synthesize commandhistory;
-@synthesize debug_updating_library;
+@synthesize keyboardbox;
 
 + (IosGlkViewController *) singleton {
 	return [IosGlkAppDelegate singleton].glkviewc;
@@ -55,7 +55,7 @@
 }
 
 - (void) viewDidUnload {
-	//NSLog(@"viewDidUnload");
+	NSLog(@"viewDidUnload");
 	self.frameview = nil;
 }
 
@@ -66,7 +66,7 @@
 
 - (void) viewDidLoad {
 	IosGlkAppDelegate *appdelegate = [IosGlkAppDelegate singleton];
-	//NSLog(@"viewDidLoad (library is %x)", (unsigned int)(appdelegate.library));
+	NSLog(@"viewDidLoad (library is %x)", (unsigned int)(appdelegate.library));
 	if (appdelegate.library)
 		[frameview requestLibraryState:appdelegate.glkapp];
 }
@@ -91,32 +91,38 @@
 	CGRect rect = CGRectZero;
 	/* UIKeyboardFrameEndUserInfoKey is only available in iOS 3.2 or later. Note the funny idiom for testing the presence of a weak-linked symbol. */
 	if (&UIKeyboardFrameEndUserInfoKey) {
+		UIWindow *window = [IosGlkAppDelegate singleton].window;
 		rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-		rect = [self.view.window convertRect:rect fromWindow:nil];
-		rect = [self.view convertRect:rect fromView:self.view.window];
+		rect = [window convertRect:rect fromWindow:nil];
 	}
 	else {
 		/* iOS 3.1.3... */
 		rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
-		rect.origin.x = 0;
-		rect.origin.y = self.view.bounds.size.height - rect.size.height;
+		CGPoint center = [[info objectForKey:UIKeyboardCenterEndUserInfoKey] CGPointValue];
+		rect.origin.x = center.x - 0.5*rect.size.width;
+		rect.origin.y = center.y - 0.5*rect.size.height;
 	}
-	NSLog(@"Keyboard will be shown, box %@ (root view coords)", StringFromRect(rect));
+	NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
 	
-	/* This rect is in root view coordinates. */
+	/* This rect is in window coordinates. */
+	keyboardbox = rect;
 	
-	[[self frameview] setKeyboardBox:rect];
+	if (frameview)
+		[frameview setNeedsLayout];
 }
 
 - (void) keyboardWillBeHidden:(NSNotification*)notification {
 	NSLog(@"Keyboard will be hidden");
-	[frameview setKeyboardBox:CGRectZero];
+	keyboardbox = CGRectZero;
+	
+	if (frameview)
+		[frameview setNeedsLayout];
 }
 
 - (void) hideKeyboard {
 	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
 		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
-			NSLog(@"Hiding keyboard for %@", winv);
+			//NSLog(@"Hiding keyboard for %@", winv);
 			[winv.inputfield resignFirstResponder];
 			break;
 		}
@@ -128,7 +134,7 @@
 	
 	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
 		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
-			NSLog(@"Hiding keyboard for %@", winv);
+			//NSLog(@"Hiding keyboard for %@", winv);
 			[winv.inputfield resignFirstResponder];
 			break;
 		}
@@ -137,7 +143,7 @@
 	}
 	
 	if (firstinputview) {
-		NSLog(@"Reshowing keyboard for %@", firstinputview);
+		//NSLog(@"Reshowing keyboard for %@", firstinputview);
 		[firstinputview.inputfield becomeFirstResponder];
 	}
 }

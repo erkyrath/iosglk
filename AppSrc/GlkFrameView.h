@@ -17,8 +17,6 @@
 	/* A clone of the library's state, as of the last updateFromLibraryState call. */
 	GlkLibraryState *librarystate;
 	
-	/* How much of the view bounds to reserve for the keyboard. */
-	CGRect keyboardBox;
 	/* The current size of the bounds minus keyboard. */
 	CGRect cachedGlkBox;
 	
@@ -35,7 +33,6 @@
 @property (nonatomic, retain) GlkLibraryState *librarystate;
 @property (nonatomic, retain) NSMutableDictionary *windowviews;
 @property (nonatomic, retain) NSMutableDictionary *wingeometries;
-@property (nonatomic) CGRect keyboardBox;
 @property (nonatomic, retain) NSNumber *rootwintag;
 @property (nonatomic, retain) PopMenuView *menuview;
 

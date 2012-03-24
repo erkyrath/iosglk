@@ -40,7 +40,6 @@
 	self = [super initWithCoder:decoder];
 	if (self) {
 		NSLog(@"GlkFrameView allocated");
-		keyboardBox = CGRectZero;
 		self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 		self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
 		rootwintag = nil;
@@ -66,17 +65,6 @@
 	return [windowviews objectForKey:tag];
 }
 
-- (CGRect) keyboardBox {
-	return keyboardBox;
-}
-
-//### move keyboardBox to the viewc? (So that it's not lost if the frameview is dropped)
-- (void) setKeyboardBox:(CGRect)val {
-	keyboardBox = val;
-	//NSLog(@"### setKeyboardHeight calling setNeedsLayout");
-	[self setNeedsLayout];
-}
-
 /* Force all the windows to pick up new stylesets, and force all the windowviews to notice that fact.
  
 	(Nitpickers will notice that it really happens the other way around! We update the views, and then notify the VM thread to update the windows.)
@@ -98,7 +86,9 @@
 }
 
 - (void) layoutSubviews {
-	NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardBox.size));
+	CGRect keyboardbox = [IosGlkViewController singleton].keyboardbox;
+	
+	NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardbox.size));
 	
 	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 	
@@ -108,9 +98,9 @@
 	if (glkviewc.glkdelegate)
 		box = [glkviewc.glkdelegate adjustFrame:box];
 	
-	if (keyboardBox.size.width > 0 && keyboardBox.size.height > 0) {
+	if (keyboardbox.size.width > 0 && keyboardbox.size.height > 0) {
 		CGFloat bottom = box.origin.y + box.size.height;
-		CGRect rect = [self convertRect:keyboardBox fromView:glkviewc.view];
+		CGRect rect = [self convertRect:keyboardbox fromView:nil];
 		if (rect.origin.y < bottom) {
 			bottom = rect.origin.y;
 			box.size.height = bottom - box.origin.y;
