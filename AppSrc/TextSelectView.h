@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define HANDLE_RADIUS (25)
+
 @interface TextSelectView : UIView {
 	UIView *shadeview;
 	UIView *outlineview;

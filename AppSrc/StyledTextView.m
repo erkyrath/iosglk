@@ -14,7 +14,6 @@
 
 #define LAYOUT_HEADROOM (1000)
 #define STRIPE_WIDTH (100)
-#define HANDLE_RADIUS (25)
 
 @implementation StyledTextView
 
@@ -858,11 +857,6 @@
 	return YES;
 }
 
-/*
-- (BOOL) canPerformAction:(SEL)action withSender:(id)sender {
-	return [super canPerformAction:action withSender:sender];
-} */
-
 - (void) copy:(id)sender {
 	/* Keep the menu up after the copy command */
 	[UIMenuController sharedMenuController].menuVisible = YES;
@@ -1193,7 +1187,7 @@
 }
 
 - (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-	NSLog(@"STV: Touch cancelled");
+	//NSLog(@"STV: Touch cancelled");
 	[self clearTouchTracking];
 }
 
