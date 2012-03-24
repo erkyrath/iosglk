@@ -19,14 +19,18 @@ typedef enum GlkStyledLineStatus_enum {
 	int index; /* index in the window's lines array (but not necessarily zero-based) */
 	GlkStyledLineStatus status;
 	NSMutableArray *arr; /* array of GlkStyledString */
+
+	NSString *concatline; /* the line contents, smushed together with no style information (cached value) */
 }
 
 @property (nonatomic) int index;
 @property (nonatomic) GlkStyledLineStatus status;
 @property (nonatomic, retain) NSMutableArray *arr;
+@property (nonatomic, retain) NSString *concatline;
 
 - (id) initWithIndex:(int)index;
 - (id) initWithIndex:(int)index status:(GlkStyledLineStatus) status;
+- (NSString *) concatLine;
 
 @end
 

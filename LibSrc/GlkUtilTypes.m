@@ -17,6 +17,7 @@
 @synthesize index;
 @synthesize status;
 @synthesize arr;
+@synthesize concatline;
 
 - (id) initWithIndex:(int)indexval {
 	return [self initWithIndex:indexval status:linestat_Continue];
@@ -45,7 +46,19 @@
 
 - (void) dealloc {
 	self.arr = nil;
+	self.concatline = nil;
 	[super dealloc];
+}
+
+- (NSString *) concatLine {
+	if (!concatline) {
+		NSMutableString *tmpstr = [NSMutableString stringWithCapacity:80];
+		for (GlkStyledString *sstr in arr) {
+			[tmpstr appendString:sstr.str];
+		}
+		self.concatline = [NSString stringWithString:tmpstr];
+	}
+	return concatline;
 }
 
 @end
