@@ -39,6 +39,11 @@
 	rect.origin.y = line.ypos;
 	rect.size.height = line.height;
 	
+	if (line.vlinenum == view.vlines.count-1 && view.inputholder) {
+		// shorten the line to miss the text field
+		rect.size.width = line.right - line.xstart;
+	}
+	
 	// Convert the rect from StyledTextView coordinates to screen coordinates.
 	return [view.window convertRect:[view convertRect:rect toView:nil] toWindow:nil];
 }

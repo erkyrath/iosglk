@@ -17,6 +17,7 @@ typedef enum SelDragMode_enum {
 @class StyleSet;
 @class GlkVisualLine;
 @class TextSelectView;
+@class CmdTextField;
 
 @interface StyledTextView : UIScrollView {
 	CGFloat totalheight; /* vertical space available */
@@ -57,6 +58,8 @@ typedef enum SelDragMode_enum {
 @property (nonatomic, readonly) CGRect selectionarea;
 
 - (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
+- (UIScrollView *) inputholder;
+- (CmdTextField *) inputfield;
 - (void) acceptStyleset:(StyleSet *)stylesval;
 - (CGFloat) totalHeight;
 - (BOOL) moreToSee;

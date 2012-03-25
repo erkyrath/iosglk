@@ -65,6 +65,14 @@
 	return (GlkWinBufferView *)self.superview;
 }
 
+- (UIScrollView *) inputholder {
+	return ((GlkWinBufferView *)self.superview).inputholder;
+}
+
+- (CmdTextField *) inputfield {
+	return ((GlkWinBufferView *)self.superview).inputfield;
+}
+
 - (void) acceptStyleset:(StyleSet *)stylesval {
 	self.styleset = stylesval;
 	wrapwidth = totalwidth - styleset.margintotal.width;
@@ -427,8 +435,8 @@
 	}
 
 	/* If there is a textfield, push it to the new vline bottom. */
-	CmdTextField *inputfield = self.superviewAsBufferView.inputfield;
-	UIScrollView *inputholder = self.superviewAsBufferView.inputholder;
+	CmdTextField *inputfield = self.inputfield;
+	UIScrollView *inputholder = self.inputholder;
 	if (inputholder) {
 		CGRect rect = [self placeForInputField];
 		if (!CGRectEqualToRect(inputholder.frame, rect)) {
@@ -1205,15 +1213,14 @@
 - (NSInteger) accessibilityElementCount {
 	/* Every vline is an accessibility element. If an input field exists, that's one too, at the end of the list. */
 	int count = vlines.count;
-	UIScrollView *inputholder = self.superviewAsBufferView.inputholder;
-	if (inputholder)
+	if (self.inputholder)
 		count++;
 	return count;
 }
 
 - (id) accessibilityElementAtIndex:(NSInteger)index {
 	if (index == vlines.count) {
-		UIScrollView *inputholder = self.superviewAsBufferView.inputholder;
+		UIScrollView *inputholder = self.inputholder;
 		if (inputholder)
 			return inputholder;
 	}
@@ -1229,7 +1236,7 @@
 	if (!element)
 		return NSNotFound;
 	
-	if (element == self.superviewAsBufferView.inputholder)
+	if (element == self.inputholder)
 		return vlines.count;
 	
 	if (![element isKindOfClass:[GlkAccVisualLine class]])
