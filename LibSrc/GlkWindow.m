@@ -621,6 +621,16 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	state.curx = curx;
 	state.cury = cury;
 	
+	/* Canonicalize a little */
+	if (state.curx >= width) {
+		state.curx = 0;
+		state.cury++;
+		if (state.cury >= height) {
+			state.curx = width-1;
+			state.cury = height-1;
+		}
+	}
+	
 	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:lines.count];
 
 	for (int jx=0; jx<lines.count; jx++) {

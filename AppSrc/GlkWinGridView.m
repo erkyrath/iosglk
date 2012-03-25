@@ -10,6 +10,7 @@
 #import "StyleSet.h"
 #import "CmdTextField.h"
 #import "TextSelectView.h"
+#import "GlkAccessTypes.h"
 #import "GlkUtilTypes.h"
 #import "GlkUtilities.h"
 
@@ -404,6 +405,48 @@
 	[self clearTouchTracking];
 }
 
+- (BOOL) isAccessibilityElement {
+	/* A UIAccessibilityContainer is never an element itself. */
+	return NO;
+}
+
+- (NSInteger) accessibilityElementCount {
+	/* Every line is an accessibility element. If an input field exists, it replaces one of the lines. */
+	int count = lines.count;
+	return count;
+}
+
+- (id) accessibilityElementAtIndex:(NSInteger)index {
+	if (index >= lines.count)
+		return nil;
+
+	GlkWindowGridState *gridwin = (GlkWindowGridState *)winstate;
+	if (self.inputholder && index == gridwin.cury)
+		return self.inputholder;
+
+	GlkStyledLine *vln = [lines objectAtIndex:index];
+	return [vln accessElementInContainer:self];
+}
+
+- (NSInteger) indexOfAccessibilityElement:(id)element {
+	if (!element)
+		return NSNotFound;
+
+	if (element == self.inputholder) {
+		GlkWindowGridState *gridwin = (GlkWindowGridState *)winstate;
+		return gridwin.cury;
+	}
+
+	if (![element isKindOfClass:[GlkAccStyledLine class]])
+		return NSNotFound;
+	GlkAccStyledLine *el = (GlkAccStyledLine *)element;
+	if (!el.line)
+		return NSNotFound;
+	int index = el.line.index;
+	if (index < 0 || index >= lines.count)
+		return NSNotFound;
+	return index;
+}
 
 @end
 
