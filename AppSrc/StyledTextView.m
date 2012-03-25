@@ -8,6 +8,7 @@
 #import "GlkWinBufferView.h"
 #import "CmdTextField.h"
 #import "GlkUtilTypes.h"
+#import "GlkAccessTypes.h"
 #import "StyleSet.h"
 #import "TextSelectView.h"
 #import "GlkUtilities.h"
@@ -1194,6 +1195,35 @@
 - (void) labelFlingEnd:(NSString *)animid finished:(NSNumber *)finished context:(void *)context {
 	UILabel *label = (UILabel *)context;
 	[label removeFromSuperview];
+}
+
+- (BOOL) isAccessibilityElement {
+	/* A UIAccessibilityContainer is never an element itself. */
+	return NO;
+}
+
+- (NSInteger) accessibilityElementCount {
+	/* Every vline is an accessibility element. */
+	return vlines.count;
+}
+
+- (id) accessibilityElementAtIndex:(NSInteger)index {
+	if (index >= vlines.count)
+		return nil;
+	GlkVisualLine *vln = [vlines objectAtIndex:index];
+	return [vln accessElementInContainer:self];
+}
+
+- (NSInteger) indexOfAccessibilityElement:(id)element {
+	if (!element || ![element isKindOfClass:[GlkAccVisualLine class]])
+		return NSNotFound;
+	GlkAccVisualLine *el = (GlkAccVisualLine *)element;
+	if (!el.line)
+		return NSNotFound;
+	int index = el.line.vlinenum;
+	if (index < 0 || index >= vlines.count)
+		return NSNotFound;
+	return index;
 }
 
 @end

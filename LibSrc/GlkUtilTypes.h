@@ -8,6 +8,8 @@
 #include "glk.h"
 
 @class StyleSet;
+@class StyledTextView;
+@class GlkAccVisualLine;
 
 typedef enum GlkStyledLineStatus_enum {
 	linestat_Continue=0,
@@ -65,6 +67,8 @@ typedef enum GlkStyledLineStatus_enum {
 	NSString *concatline; /* the line contents, smushed together with no style information (cached value) */
 	CGFloat *letterpos; /* array of letter positions (nth value is the left position of letter n, etc; last value is the right position of the last character). Length is concatline.length+1. (cached, malloced array of floats) */
 	CGFloat right; /* Right edge of rendered text (cached value; -1 if not yet computed) */
+	
+	GlkAccVisualLine *accessel; /* the accessibility element (cached, or nil) */
 }
 
 @property (nonatomic) int vlinenum;
@@ -76,6 +80,7 @@ typedef enum GlkStyledLineStatus_enum {
 @property (nonatomic, retain) NSString *concatline;
 @property (nonatomic) CGFloat *letterpos;
 @property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic, retain) GlkAccVisualLine *accessel;
 
 - (id) initWithStrings:(NSArray *)strings styles:(StyleSet *)styles;
 - (CGFloat) bottom;
@@ -83,6 +88,7 @@ typedef enum GlkStyledLineStatus_enum {
 - (NSString *) concatLine;
 - (NSString *) wordAtPos:(CGFloat)xpos;
 - (NSString *) wordAtPos:(CGFloat)xpos inBox:(CGRect *)boxref;
+- (GlkAccVisualLine *) accessElementInContainer:(StyledTextView *)container;
 
 @end
 

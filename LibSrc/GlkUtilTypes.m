@@ -8,6 +8,7 @@
 */
 
 #import "GlkUtilTypes.h"
+#import "GlkAccessTypes.h"
 #import "StyleSet.h"
 
 @implementation GlkStyledLine
@@ -124,6 +125,7 @@
 @synthesize xstart;
 @synthesize vlinenum;
 @synthesize linenum;
+@synthesize accessel;
 
 - (id) initWithStrings:(NSArray *)strings styles:(StyleSet *)styles {
 	self = [super init];
@@ -141,6 +143,10 @@
 - (void) dealloc {
 	self.arr = nil;
 	self.concatline = nil;
+	if (accessel) {
+		accessel.line = nil; /* clear the weak parent link */
+		self.accessel = nil;
+	}
 	self.styleset = nil;
 	if (letterpos) {
 		free(letterpos);
@@ -257,6 +263,14 @@
 	range.length = wdend - wdstart;
 	return [line substringWithRange:range];
 }
+
+- (GlkAccVisualLine *) accessElementInContainer:(StyledTextView *)container {
+	if (!accessel) {
+		self.accessel = [GlkAccVisualLine buildForLine:self container:container];
+	}
+	return accessel;
+}
+
 
 @end
 
