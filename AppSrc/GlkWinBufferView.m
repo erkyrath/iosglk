@@ -137,7 +137,7 @@
 	nowcontentscrolling = NO;
 }
 
-/* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview (if necessary), and move it to the right place.
+/* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview of the textview (if necessary), and move it to the right place.
 */
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
 	CGRect box = [textview placeForInputField];

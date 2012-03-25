@@ -1203,19 +1203,36 @@
 }
 
 - (NSInteger) accessibilityElementCount {
-	/* Every vline is an accessibility element. */
-	return vlines.count;
+	/* Every vline is an accessibility element. If an input field exists, that's one too, at the end of the list. */
+	int count = vlines.count;
+	UIScrollView *inputholder = self.superviewAsBufferView.inputholder;
+	if (inputholder)
+		count++;
+	return count;
 }
 
 - (id) accessibilityElementAtIndex:(NSInteger)index {
+	if (index == vlines.count) {
+		UIScrollView *inputholder = self.superviewAsBufferView.inputholder;
+		if (inputholder)
+			return inputholder;
+	}
+	
 	if (index >= vlines.count)
 		return nil;
+	
 	GlkVisualLine *vln = [vlines objectAtIndex:index];
 	return [vln accessElementInContainer:self];
 }
 
 - (NSInteger) indexOfAccessibilityElement:(id)element {
-	if (!element || ![element isKindOfClass:[GlkAccVisualLine class]])
+	if (!element)
+		return NSNotFound;
+	
+	if (element == self.superviewAsBufferView.inputholder)
+		return vlines.count;
+	
+	if (![element isKindOfClass:[GlkAccVisualLine class]])
 		return NSNotFound;
 	GlkAccVisualLine *el = (GlkAccVisualLine *)element;
 	if (!el.line)
