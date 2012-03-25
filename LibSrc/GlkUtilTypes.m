@@ -12,13 +12,16 @@
 #import "StyleSet.h"
 
 @implementation GlkStyledLine
-/* GlkStyledLine: Represents a line of text. It's just an array of GlkStyledStrings, with an additional optional flag saying "This starts a new line" or "This starts a new page." (Consider either to be a newline at the *beginning* of the GlkStyledLine, possibly with page-breaking behavior.)
+/* GlkStyledLine: Represents a line of text. (Used in a few different places.)
+ 
+	It's just an array of GlkStyledStrings, with an additional optional flag saying "This starts a new line" or "This starts a new page." (Consider either to be a newline at the *beginning* of the GlkStyledLine, possibly with page-breaking behavior.)
 */
 
 @synthesize index;
 @synthesize status;
 @synthesize arr;
 @synthesize concatline;
+@synthesize accessel;
 
 - (id) initWithIndex:(int)indexval {
 	return [self initWithIndex:indexval status:linestat_Continue];
@@ -48,6 +51,10 @@
 - (void) dealloc {
 	self.arr = nil;
 	self.concatline = nil;
+	if (accessel) {
+		accessel.line = nil; /* clear the weak parent link */
+		self.accessel = nil;
+	}
 	[super dealloc];
 }
 
@@ -60,6 +67,13 @@
 		self.concatline = [NSString stringWithString:tmpstr];
 	}
 	return concatline;
+}
+
+- (GlkAccStyledLine *) accessElementInContainer:(GlkWinGridView *)container {
+	if (!accessel) {
+		self.accessel = [GlkAccStyledLine buildForLine:self container:container];
+	}
+	return accessel;
 }
 
 @end
@@ -115,6 +129,7 @@
 
 
 @implementation GlkVisualLine
+/* GlkVisualLine: A laid-out line in a text buffer view. */
 
 @synthesize styleset;
 @synthesize arr;
@@ -276,6 +291,7 @@
 
 
 @implementation GlkVisualString
+/* GlkVisualString: A single string, with a single style. */
 
 @synthesize str;
 @synthesize style;
@@ -300,7 +316,9 @@
 
 
 @implementation GlkGridLine
-/* GlkGridLine: Represents one line of a text grid. This contains nasty C arrays, because they're easier. */
+/* GlkGridLine: Represents one line of a text grid. (This is used in the GlkWindowGrid object, not in the view.) 
+ 
+	This contains nasty C arrays, because they're easier. */
 
 @synthesize dirty;
 @synthesize chars;

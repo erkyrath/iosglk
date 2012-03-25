@@ -7,6 +7,13 @@
 #import <UIKit/UIKit.h>
 #include "glk.h"
 
+typedef enum SelDragMode_enum {
+	SelDrag_none = 0,
+	SelDrag_paragraph = 1,
+	SelDrag_topedge = 2,
+	SelDrag_bottomedge = 3,
+} SelDragMode;
+
 @class GlkWindowState;
 @class GlkFrameView;
 @class CmdTextField;

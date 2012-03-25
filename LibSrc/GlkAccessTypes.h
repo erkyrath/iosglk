@@ -6,7 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+@class GlkWinGridView;
 @class StyledTextView;
+@class GlkStyledLine;
 @class GlkVisualLine;
 
 @interface GlkAccVisualLine : UIAccessibilityElement {
@@ -16,5 +18,17 @@
 @property (nonatomic, assign) GlkVisualLine *line;
 
 + (GlkAccVisualLine *) buildForLine:(GlkVisualLine *)vln container:(StyledTextView *)container;
+
+@end
+
+
+
+@interface GlkAccStyledLine : UIAccessibilityElement {
+	GlkStyledLine *line; /* weak parent link -- unretained */
+}
+
+@property (nonatomic, assign) GlkStyledLine *line;
+
++ (GlkAccStyledLine *) buildForLine:(GlkStyledLine *)vln container:(GlkWinGridView *)container;
 
 @end

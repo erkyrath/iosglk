@@ -8,8 +8,10 @@
 #include "glk.h"
 
 @class StyleSet;
+@class GlkWinGridView;
 @class StyledTextView;
 @class GlkAccVisualLine;
+@class GlkAccStyledLine;
 
 typedef enum GlkStyledLineStatus_enum {
 	linestat_Continue=0,
@@ -23,16 +25,20 @@ typedef enum GlkStyledLineStatus_enum {
 	NSMutableArray *arr; /* array of GlkStyledString */
 
 	NSString *concatline; /* the line contents, smushed together with no style information (cached value) */
+
+	GlkAccStyledLine *accessel; /* the accessibility element (cached, or nil) */
 }
 
 @property (nonatomic) int index;
 @property (nonatomic) GlkStyledLineStatus status;
 @property (nonatomic, retain) NSMutableArray *arr;
 @property (nonatomic, retain) NSString *concatline;
+@property (nonatomic, retain) GlkAccStyledLine *accessel;
 
 - (id) initWithIndex:(int)index;
 - (id) initWithIndex:(int)index status:(GlkStyledLineStatus) status;
 - (NSString *) concatLine;
+- (GlkAccStyledLine *) accessElementInContainer:(GlkWinGridView *)container;
 
 @end
 

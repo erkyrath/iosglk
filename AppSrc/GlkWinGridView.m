@@ -240,7 +240,7 @@
 	[selectionview setOutline:selectionarea animated:YES];
 }
 
-- (void) selectMoveEdgeAt:(CGPoint)loc mode:(GSelDragMode)mode {
+- (void) selectMoveEdgeAt:(CGPoint)loc mode:(SelDragMode)mode {
 	CGSize charbox = styleset.charbox;
 	CGFloat marginoffsety = styleset.margins.top;
 	

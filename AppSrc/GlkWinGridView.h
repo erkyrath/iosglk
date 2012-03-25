@@ -7,13 +7,6 @@
 #import <UIKit/UIKit.h>
 #import "GlkWindowView.h"
 
-typedef enum GSelDragMode_enum {
-	SelDrag_none = 0,
-	SelDrag_paragraph = 1,
-	SelDrag_topedge = 2,
-	SelDrag_bottomedge = 3,
-} GSelDragMode;
-
 @class TextSelectView;
 
 @interface GlkWinGridView : GlkWindowView {
@@ -25,7 +18,7 @@ typedef enum GSelDragMode_enum {
 	TextSelectView *selectionview;
 	
 	BOOL taptracking;
-	GSelDragMode tapseldragging;
+	SelDragMode tapseldragging;
 	CGPoint taploc;
 	NSTimeInterval taplastat;
 	int tapnumber;

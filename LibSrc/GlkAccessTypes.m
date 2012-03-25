@@ -7,6 +7,8 @@
 #import "GlkAccessTypes.h"
 #import "GlkUtilTypes.h"
 #import "StyledTextView.h"
+#import "GlkWinGridView.h"
+#import "StyleSet.h"
 
 @implementation GlkAccVisualLine
 
@@ -45,6 +47,48 @@
 	}
 	
 	// Convert the rect from StyledTextView coordinates to screen coordinates.
+	return [view.window convertRect:[view convertRect:rect toView:nil] toWindow:nil];
+}
+
+@end
+
+
+@implementation GlkAccStyledLine
+
+@synthesize line;
+
++ (GlkAccStyledLine *) buildForLine:(GlkStyledLine *)vln container:(GlkWinGridView *)container {
+	GlkAccStyledLine *el = [[[GlkAccStyledLine alloc] initWithAccessibilityContainer:container] autorelease];
+	el.line = vln;
+	el.isAccessibilityElement = YES;
+	el.accessibilityTraits = UIAccessibilityTraitStaticText;
+	return el;
+}
+
+- (NSString *) accessibilityLabel {
+	if (!line)
+		return @"Missing line"; //###localize
+	NSString *res = line.concatLine;
+	if (res.length == 0)
+		return @"Blank line"; //###localize
+	return res;
+}
+
+- (CGRect) accessibilityFrame {
+	GlkWinGridView *view = (GlkWinGridView *)self.accessibilityContainer;
+	
+	if (!line || !view)
+		return CGRectZero;
+
+	CGSize charbox = view.styleset.charbox;
+	
+	CGRect rect = view.bounds; // for the left and right limits
+	rect.origin.y = view.styleset.margins.top + line.index * charbox.height;
+	rect.size.height = charbox.height;
+	
+	//### if view.inputholder exists, avoid overlapping it!
+	
+	// Convert the rect from GlkWinGridView coordinates to screen coordinates.
 	return [view.window convertRect:[view convertRect:rect toView:nil] toWindow:nil];
 }
 
