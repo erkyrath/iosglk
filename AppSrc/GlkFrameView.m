@@ -279,6 +279,31 @@
 		[winv updateFromWindowInputs];
 	}
 	
+	/* Slightly awkward, but mostly right: if voiceover is on, speak the most recent buffer window update. */
+	if (UIAccessibilityIsVoiceOverRunning()) {
+		for (GlkWindowState *win in library.windows) {
+			if ([win isKindOfClass:[GlkWindowBufferState class]]) {
+				GlkWindowBufferState *bufwin = (GlkWindowBufferState *)win;
+				NSArray *lines = bufwin.lines;
+				if (lines && lines.count && bufwin.linesdirtyto > bufwin.linesdirtyfrom) {
+					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
+					for (int ix=bufwin.linesdirtyfrom; ix<bufwin.linesdirtyto; ix++) {
+						GlkStyledLine *vln = [lines objectAtIndex:ix];
+						NSString *str = vln.concatLine;
+						if (str.length)
+							[arr addObject:vln.concatLine];
+					}
+					if (arr.count) {
+						NSString *speakbuffer = [arr componentsJoinedByString:@"\n"];
+						//NSLog(@"### speak: %@", speakbuffer);
+						UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, speakbuffer);
+						break;
+					}
+				}
+			}
+		}
+	}
+	
 	/* And now, if there's a special prompt going on, fill the screen with it. */
 	if (library.specialrequest)
 		[[IosGlkAppDelegate singleton].glkviewc displayModalRequest:library.specialrequest];
