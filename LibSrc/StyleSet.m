@@ -73,7 +73,7 @@
 			variants.normal = [UIFont fontWithName:@"HoeflerText-Regular" size:size];
 			if (!variants.normal)
 				continue;
-			variants.bold = [UIFont fontWithName:@"HoeflerText-Bold" size:size];
+			variants.bold = [UIFont fontWithName:@"HoeflerText-Black" size:size];
 			variants.italic = [UIFont fontWithName:@"HoeflerText-Italic" size:size];
 			break;
 		}
