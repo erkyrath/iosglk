@@ -1,6 +1,3 @@
-//
-//  PopBoxView.m
-//  IosFizmo
 /* PopMenuView.m: Base class for on-screen pop-up menus
  for IosGlk, the iOS implementation of the Glk API.
  Designed by Andrew Plotkin <erkyrath@eblong.com>
@@ -16,6 +13,7 @@
 
 @synthesize frameview;
 @synthesize content;
+@synthesize faderview;
 @synthesize framemargins;
 @synthesize buttonrect;
 @synthesize belowbutton;
@@ -33,6 +31,7 @@
 - (void) dealloc {
 	self.frameview = nil;
 	self.content = nil;
+	self.faderview = nil;
 	[super dealloc];
 }
 
