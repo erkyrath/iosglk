@@ -50,7 +50,7 @@
 	for (NSString *family = first; family; family = va_arg(arglist, NSString *)) {
 		
 		/* Some special cases first! */
-		if ([family isEqualToString:@"Times New Roman"]) {
+		if ([family isEqualToString:@"Times"] || [family isEqualToString:@"Times New Roman"]) {
 			variants.normal = [UIFont fontWithName:@"TimesNewRomanPSMT" size:size];
 			if (!variants.normal)
 				continue;
