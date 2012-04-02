@@ -37,7 +37,7 @@
 }
 
 - (void) didFinishLaunching {
-	/* Subclasses may override this */
+	/* Subclasses may override this (but should be sure to call [super didFinishLaunching]) */
 
 	self.commandhistory = [NSMutableArray arrayWithCapacity:MAX_HISTORY_LENGTH];
 }
