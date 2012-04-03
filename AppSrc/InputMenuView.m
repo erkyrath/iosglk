@@ -133,6 +133,15 @@
 }
 
 - (void) setUpFromHistory:(NSArray *)history {
+	/* The iPhone only has room for 6 items. On the iPad we allow more. */
+	int maxlen = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 6 : 12;
+	if (history.count > maxlen) {
+		NSRange range;
+		range.location = history.count - maxlen;
+		range.length = maxlen;
+		history = [history subarrayWithRange:range];
+	}
+	
 	[baselabel removeFromSuperview];
 	if (self.labels) {
 		for (UILabel *label in labels)
