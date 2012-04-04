@@ -155,7 +155,11 @@
 	self.labels = [NSMutableArray arrayWithCapacity:history.count];
 	for (NSString *str in history) {
 		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		label.font = baselabel.font;
+		label.textColor = baselabel.textColor;
 		label.backgroundColor = nil;
+		label.shadowColor = baselabel.shadowColor;
+		label.shadowOffset = baselabel.shadowOffset;
 		label.opaque = NO;
 		label.text = str;
 		[labels addObject:label];
