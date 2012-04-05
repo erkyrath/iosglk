@@ -769,7 +769,7 @@
 						<reference key="IBUIFont" ref="496262176"/>
 					</object>
 				</array>
-				<string key="NSFrameSize">{252, 117}</string>
+				<string key="NSFrameSize">{260, 117}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView"/>
@@ -1146,12 +1146,17 @@
 					<string key="superclassName">UIView</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="content">UIView</string>
+						<string key="decor">UIView</string>
 						<string key="faderview">UIView</string>
 						<string key="frameview">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="content">
 							<string key="name">content</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="decor">
+							<string key="name">decor</string>
 							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="faderview">

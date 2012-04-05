@@ -47,6 +47,14 @@
 	if (curmode != inputmenu_History && curmode != inputmenu_Palette)
 		curmode = inputmenu_Palette;
 	
+	UIImage *img;
+	img = [historybutton backgroundImageForState:UIControlStateSelected];
+	img = [img stretchableImageWithLeftCapWidth:img.size.width/2 topCapHeight:img.size.height/2];
+	[historybutton setBackgroundImage:img forState:UIControlStateSelected];
+	[historybutton setBackgroundImage:img forState:UIControlStateSelected|UIControlStateHighlighted];
+	[palettebutton setBackgroundImage:img forState:UIControlStateSelected];
+	[palettebutton setBackgroundImage:img forState:UIControlStateSelected|UIControlStateHighlighted];
+	
 	[self setMode:curmode];
 }
 
@@ -54,6 +62,9 @@
 	if (mode == modeval)
 		return;
 	mode = modeval;
+	
+	historybutton.selected = (mode == inputmenu_History);
+	palettebutton.selected = (mode == inputmenu_Palette);
 	
 	if (mode == inputmenu_History) {
 		if (!historymenu) {
@@ -137,7 +148,7 @@
 }
 
 - (void) setUpFromHistory:(NSArray *)history {
-	/* The iPhone only has room for 6 items. On the iPad we allow more. */
+	/* The iPhone only has room for a few items. On the iPad we allow more. */
 	int maxlen = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 6 : 12;
 	if (history.count > maxlen) {
 		NSRange range;
@@ -153,6 +164,12 @@
 	}
 	
 	selection = -1;
+	disabled = NO;
+	
+	if (history.count == 0) {
+		disabled = YES;
+		history = [NSArray arrayWithObject:@"(you haven’t done much yet)"]; //###localize
+	}
 
 	CGRect rect = labelbox;
 
@@ -160,7 +177,10 @@
 	for (NSString *str in history) {
 		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
 		label.font = baselabel.font;
-		label.textColor = baselabel.textColor;
+		if (!disabled)
+			label.textColor = baselabel.textColor;
+		else
+			label.textColor = [UIColor colorWithWhite:0.5 alpha:1];
 		label.backgroundColor = nil;
 		label.shadowColor = baselabel.shadowColor;
 		label.shadowOffset = baselabel.shadowOffset;
@@ -198,6 +218,8 @@
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	if (disabled)
+		return;
 	UITouch *touch = [[event touchesForView:self] anyObject];
 	CGPoint loc = [touch locationInView:self];
 	int val = floorf((loc.y - labelbox.origin.y) / labelheight);
@@ -205,6 +227,8 @@
 }
 
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	if (disabled)
+		return;
 	UITouch *touch = [[event touchesForView:self] anyObject];
 	CGPoint loc = [touch locationInView:self];
 	int val = floorf((loc.y - labelbox.origin.y) / labelheight);
@@ -212,6 +236,8 @@
 }
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	if (disabled)
+		return;
 	if (selection >= 0 && selection < labels.count) {
 		UILabel *label = [labels objectAtIndex:selection];
 		if (menuview && menuview.superview) {

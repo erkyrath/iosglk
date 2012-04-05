@@ -51,6 +51,7 @@ typedef enum InputMenuMode_enum {
 	CGFloat labelheight;
 	CGFloat extraheight;
 	
+	BOOL disabled;
 	int selection;
 }
 
