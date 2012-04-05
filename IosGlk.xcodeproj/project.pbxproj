@@ -14,6 +14,9 @@
 		2899E5220DE3E06400AC0155 /* IosGlkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E5210DE3E06400AC0155 /* IosGlkViewController.xib */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		DF19DDC914E87CC4007DCB29 /* IosGlkLibDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */; };
+		DF41DA6F152E09F4000B5D00 /* button-tab-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */; };
+		DF41DA70152E09F4000B5D00 /* button-tab-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */; };
+		DF41DA72152E09FE000B5D00 /* InputMenuDecor.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA71152E09FE000B5D00 /* InputMenuDecor.xib */; };
 		DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */; };
 		DF70A15B1513EDA600B109A2 /* selecthandle.png in Resources */ = {isa = PBXBuildFile; fileRef = DF70A1591513EDA600B109A2 /* selecthandle.png */; };
 		DF70A15C1513EDA600B109A2 /* selecthandle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */; };
@@ -31,6 +34,10 @@
 		DFBB4DF014F5DAC90041016A /* PopMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBB4DEF14F5DAC90041016A /* PopMenuView.m */; };
 		DFBB4DF214F5E1210041016A /* PopBoxView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFBB4DF114F5E1210041016A /* PopBoxView.xib */; };
 		DFC0AF581355552000CD1F5D /* GlkFileSelectLoad.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */; };
+		DFC755E415295333009F4137 /* GlkAccessTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = DFC755E315295333009F4137 /* GlkAccessTypes.m */; };
+		DFC755E8152953A1009F4137 /* background-popbox.png in Resources */ = {isa = PBXBuildFile; fileRef = DFC755E5152953A1009F4137 /* background-popbox.png */; };
+		DFC755E9152953A1009F4137 /* background-popbox@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFC755E6152953A1009F4137 /* background-popbox@2x.png */; };
+		DFC755EA152953A1009F4137 /* fader-popbox.png in Resources */ = {isa = PBXBuildFile; fileRef = DFC755E7152953A1009F4137 /* fader-popbox.png */; };
 		DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */; };
 		DFCE593E13690D0100EACA86 /* GlkDispatchLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */; };
 		DFE9EA34136607AC00DD5F53 /* gi_dispa.c in Sources */ = {isa = PBXBuildFile; fileRef = DFE9EA33136607AC00DD5F53 /* gi_dispa.c */; };
@@ -74,6 +81,9 @@
 		8D1107310486CEB800E47090 /* IosGlk-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "IosGlk-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IosGlkLibDelegate.m; sourceTree = "<group>"; };
 		DF2280A413692516000AF225 /* iosglk_startup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iosglk_startup.h; sourceTree = "<group>"; };
+		DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-tab-sel.png"; sourceTree = "<group>"; };
+		DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-tab-sel@2x.png"; sourceTree = "<group>"; };
+		DF41DA71152E09FE000B5D00 /* InputMenuDecor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputMenuDecor.xib; sourceTree = "<group>"; };
 		DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDateTimeLayer.m; sourceTree = "<group>"; };
 		DF70A1591513EDA600B109A2 /* selecthandle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = selecthandle.png; sourceTree = "<group>"; };
 		DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selecthandle@2x.png"; sourceTree = "<group>"; };
@@ -101,6 +111,11 @@
 		DFBB4DEF14F5DAC90041016A /* PopMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopMenuView.m; sourceTree = "<group>"; };
 		DFBB4DF114F5E1210041016A /* PopBoxView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PopBoxView.xib; sourceTree = "<group>"; };
 		DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GlkFileSelectLoad.xib; sourceTree = "<group>"; };
+		DFC755E215295333009F4137 /* GlkAccessTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlkAccessTypes.h; sourceTree = "<group>"; };
+		DFC755E315295333009F4137 /* GlkAccessTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkAccessTypes.m; sourceTree = "<group>"; };
+		DFC755E5152953A1009F4137 /* background-popbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background-popbox.png"; sourceTree = "<group>"; };
+		DFC755E6152953A1009F4137 /* background-popbox@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background-popbox@2x.png"; sourceTree = "<group>"; };
+		DFC755E7152953A1009F4137 /* fader-popbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fader-popbox.png"; sourceTree = "<group>"; };
 		DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkBlorbLayer.m; sourceTree = "<group>"; };
 		DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDispatchLayer.m; sourceTree = "<group>"; };
 		DFE9EA33136607AC00DD5F53 /* gi_dispa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gi_dispa.c; sourceTree = "<group>"; };
@@ -210,6 +225,7 @@
 				DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */,
 				DF98665714FEE5FA0057E1E2 /* MoreBoxView.xib */,
 				DFBB4DF114F5E1210041016A /* PopBoxView.xib */,
+				DF41DA71152E09FE000B5D00 /* InputMenuDecor.xib */,
 				DF9D1A6314E6E27C006A6749 /* HistoryMenuView.xib */,
 				DF9D1A6514E71D6E006A6749 /* PaletteMenuView.xib */,
 			);
@@ -229,6 +245,11 @@
 		DF70A1581513ED8F00B109A2 /* Media */ = {
 			isa = PBXGroup;
 			children = (
+				DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */,
+				DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */,
+				DFC755E5152953A1009F4137 /* background-popbox.png */,
+				DFC755E6152953A1009F4137 /* background-popbox@2x.png */,
+				DFC755E7152953A1009F4137 /* fader-popbox.png */,
 				DF70A1591513EDA600B109A2 /* selecthandle.png */,
 				DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */,
 			);
@@ -269,6 +290,8 @@
 				DFED7A8E1365F0FC00FBAFFB /* StyleSet.m */,
 				DFED7A831365F0FC00FBAFFB /* GlkFileTypes.h */,
 				DFED7A841365F0FC00FBAFFB /* GlkFileTypes.m */,
+				DFC755E215295333009F4137 /* GlkAccessTypes.h */,
+				DFC755E315295333009F4137 /* GlkAccessTypes.m */,
 				DFED7A891365F0FC00FBAFFB /* GlkUtilTypes.h */,
 				DFED7A8A1365F0FC00FBAFFB /* GlkUtilTypes.m */,
 			);
@@ -394,6 +417,12 @@
 				DF98665814FEE5FA0057E1E2 /* MoreBoxView.xib in Resources */,
 				DF70A15B1513EDA600B109A2 /* selecthandle.png in Resources */,
 				DF70A15C1513EDA600B109A2 /* selecthandle@2x.png in Resources */,
+				DFC755E8152953A1009F4137 /* background-popbox.png in Resources */,
+				DFC755E9152953A1009F4137 /* background-popbox@2x.png in Resources */,
+				DFC755EA152953A1009F4137 /* fader-popbox.png in Resources */,
+				DF41DA6F152E09F4000B5D00 /* button-tab-sel.png in Resources */,
+				DF41DA70152E09F4000B5D00 /* button-tab-sel@2x.png in Resources */,
+				DF41DA72152E09FE000B5D00 /* InputMenuDecor.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +473,7 @@
 				DF98665E14FEE6100057E1E2 /* GlkWindowState.m in Sources */,
 				DF98666114FEE6270057E1E2 /* MoreBoxView.m in Sources */,
 				DF70A15F1513F4F800B109A2 /* TextSelectView.m in Sources */,
+				DFC755E415295333009F4137 /* GlkAccessTypes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
