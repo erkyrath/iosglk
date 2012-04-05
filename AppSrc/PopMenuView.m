@@ -13,6 +13,7 @@
 
 @synthesize frameview;
 @synthesize content;
+@synthesize decor;
 @synthesize faderview;
 @synthesize framemargins;
 @synthesize buttonrect;
@@ -31,12 +32,17 @@
 - (void) dealloc {
 	self.frameview = nil;
 	self.content = nil;
+	self.decor = nil;
 	self.faderview = nil;
 	[super dealloc];
 }
 
 - (GlkFrameView *) superviewAsFrameView {
 	return (GlkFrameView *)self.superview;
+}
+
+- (NSString *) bottomDecorNib {
+	return nil;
 }
 
 - (void) loadContent {

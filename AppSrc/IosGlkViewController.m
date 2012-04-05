@@ -78,14 +78,6 @@
 		[frameview updateFromLibraryState:library];
 }
 
-- (void) buildPopMenu:(PopMenuView *)menuview {
-	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:menuview options:nil];
-}
-
-- (void) buildMoreView:(MoreBoxView *)moreview {
-	[[NSBundle mainBundle] loadNibNamed:@"MoreBoxView" owner:moreview options:nil];
-}
-
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
 	CGRect rect = CGRectZero;

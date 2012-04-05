@@ -39,8 +39,6 @@
 - (void) keyboardWillBeShown:(NSNotification*)notification;
 - (void) keyboardWillBeHidden:(NSNotification*)notification;
 
-- (void) buildPopMenu:(PopMenuView *)menuview;
-- (void) buildMoreView:(MoreBoxView *)moreview;
 - (IBAction) toggleKeyboard;
 - (void) addToCommandHistory:(NSString *)str;
 

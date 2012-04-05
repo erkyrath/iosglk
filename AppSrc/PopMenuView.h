@@ -11,6 +11,7 @@
 @interface PopMenuView : UIView {
 	UIView *frameview;
 	UIView *content;
+	UIView *decor;
 	UIView *faderview;
 	UIEdgeInsets framemargins; /* The distance around the content view on all sides */
 	CGRect buttonrect; /* The bounds of the button that launched this menu */
@@ -19,6 +20,7 @@
 
 @property (nonatomic, retain) IBOutlet UIView *frameview;
 @property (nonatomic, retain) IBOutlet UIView *content;
+@property (nonatomic, retain) IBOutlet UIView *decor;
 @property (nonatomic, retain) IBOutlet UIView *faderview;
 @property (nonatomic) UIEdgeInsets framemargins;
 @property (nonatomic, readonly) CGRect buttonrect;
@@ -26,6 +28,7 @@
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below;
 - (GlkFrameView *) superviewAsFrameView;
+- (NSString *) bottomDecorNib;
 - (void) loadContent;
 - (void) resizeContentTo:(CGSize)size animated:(BOOL)animated;
 

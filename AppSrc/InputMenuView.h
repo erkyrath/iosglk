@@ -21,21 +21,23 @@ typedef enum InputMenuMode_enum {
 	GlkWindowView *winview;
 	HistoryMenuView *historymenu;
 	PaletteMenuView *palettemenu;
-	UIButton *flipbutton;
 	
 	InputMenuMode mode;
 	NSArray *history;
 }
 
 @property (nonatomic, retain) GlkWindowView *winview;
+@property (nonatomic, retain) IBOutlet UIButton *historybutton;
+@property (nonatomic, retain) IBOutlet UIButton *palettebutton;
 @property (nonatomic, retain) IBOutlet HistoryMenuView *historymenu;
 @property (nonatomic, retain) IBOutlet PaletteMenuView *palettemenu;
-@property (nonatomic, retain) UIButton *flipbutton;
 @property (nonatomic, retain) NSArray *history;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winview history:(NSArray *)historylist;
 - (void) setMode:(InputMenuMode)mode;
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu;
+- (IBAction) handlePaletteButton:(id)sender;
+- (IBAction) handleHistoryButton:(id)sender;
 
 @end
 

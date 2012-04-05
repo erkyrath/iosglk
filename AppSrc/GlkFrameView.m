@@ -335,7 +335,25 @@
 	}
 	
 	self.menuview = menu;
-	[[IosGlkAppDelegate singleton].glkviewc buildPopMenu:menuview];
+	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:menuview options:nil];
+	
+	NSString *decorname = menu.bottomDecorNib;
+	if (decorname) {
+		[[NSBundle mainBundle] loadNibNamed:decorname owner:menuview options:nil];
+		CGRect menubox = menuview.frameview.bounds;
+		CGRect decorbox = menuview.decor.bounds;
+		CGRect contentbox = menuview.content.frame;
+		contentbox.size.height -= decorbox.size.height;
+		menuview.content.frame = contentbox;
+		decorbox.origin.y = menubox.origin.y + menubox.size.height - decorbox.size.height;
+		decorbox.origin.x = menubox.origin.x;
+		decorbox.size.width = menubox.size.width;
+		menuview.decor.frame = decorbox;
+		if (menuview.faderview)
+			[menuview.frameview insertSubview:menuview.decor belowSubview:menuview.faderview];
+		else
+			[menuview.frameview addSubview:menuview.decor];
+	}
 
 	menuview.framemargins = UIEdgeInsetsRectDiff(menuview.frameview.frame, menuview.content.frame);
 	[menuview loadContent];

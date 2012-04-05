@@ -33,10 +33,8 @@
 		textview.delegate = self;
 		[self addSubview:textview];
 		
-		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
-		
 		self.moreview = [[[MoreBoxView alloc] initWithFrame:CGRectZero] autorelease];
-		[glkviewc buildMoreView:moreview];
+		[[NSBundle mainBundle] loadNibNamed:@"MoreBoxView" owner:moreview options:nil];
 		CGRect rect = moreview.frameview.frame;
 		rect.origin.x = box.size.width - rect.size.width - 4;
 		rect.origin.y = box.size.height - rect.size.height - 4;

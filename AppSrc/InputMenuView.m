@@ -13,9 +13,10 @@
 @implementation InputMenuView
 
 @synthesize winview;
+@synthesize historybutton;
+@synthesize palettebutton;
 @synthesize historymenu;
 @synthesize palettemenu;
-@synthesize flipbutton;
 @synthesize history;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winval history:(NSArray *)historylist {
@@ -24,11 +25,6 @@
 		mode = inputmenu_None;
 		self.winview = winval;
 		self.history = [NSArray arrayWithArray:historylist];
-		
-		self.flipbutton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-		flipbutton.frame = buttonrect;
-		[self addSubview:flipbutton];
-		[flipbutton addTarget:self action:@selector(handleFlipButton:) forControlEvents:UIControlEventTouchUpInside];
 	}
 	return self;
 }
@@ -37,9 +33,12 @@
 	self.winview = nil;
 	self.historymenu = nil;
 	self.palettemenu = nil;
-	self.flipbutton = nil;
 	self.history = nil;
 	[super dealloc];
+}
+
+- (NSString *) bottomDecorNib {
+	return @"InputMenuDecor";
 }
 
 - (void) loadContent {
@@ -90,13 +89,18 @@
 	}
 }
 
-- (void) handleFlipButton:(id)sender {
-	InputMenuMode newmode = (mode==inputmenu_History)?inputmenu_Palette:inputmenu_History;
-	
+- (void) handlePaletteButton:(id)sender {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	[defaults setInteger:newmode forKey:@"InputMenuMode"];
+	[defaults setInteger:inputmenu_Palette forKey:@"InputMenuMode"];
 
-	[self setMode:newmode];
+	[self setMode:inputmenu_Palette];
+}
+
+- (void) handleHistoryButton:(id)sender {
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	[defaults setInteger:inputmenu_History forKey:@"InputMenuMode"];
+	
+	[self setMode:inputmenu_History];
 }
 
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu {
