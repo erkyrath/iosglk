@@ -300,6 +300,7 @@ static GlkLibrary *singleton = nil;
 
 - (GlkLibraryState *) cloneState {
 	GlkLibraryState *state = [[[GlkLibraryState alloc] init] autorelease];
+	[self sanityCheck];
 	
 	state.vmexited = vmexited;
 	if (rootwin)
@@ -322,6 +323,82 @@ static GlkLibrary *singleton = nil;
 	everythingchanged = NO;
 	
 	return state;
+}
+
+- (void) sanityCheck {
+	#ifdef DEBUG
+	
+	if (rootwin && !windows.count)
+		NSLog(@"SANITY: root window but no listed windows");
+	if (!rootwin && windows.count)
+		NSLog(@"SANITY: no root window but listed windows");
+	if (rootwin && [windows indexOfObject:rootwin] == NSNotFound)
+		NSLog(@"SANITY: root window not listed");
+	
+	if (currentstr && [streams indexOfObject:currentstr] == NSNotFound)
+		NSLog(@"SANITY: current stream not listed");
+
+	for (GlkWindow *win in windows) {
+		if (!win.type)
+			NSLog(@"SANITY: window lacks type");
+			
+		if (!win.parent) {
+			if (win != rootwin)
+				NSLog(@"SANITY: window has no parent but is not rootwin");
+		}
+		else {
+			if (win.parenttag != win.parent.tag)
+				NSLog(@"SANITY: window parent tag mismatch");
+			if (win.parent.type != wintype_Pair)
+				NSLog(@"SANITY: window parent is not pair");
+		}
+		if (!win.stream)
+			NSLog(@"SANITY: window lacks stream");
+		if (win.stream.tag != win.streamtag)
+			NSLog(@"SANITY: window stream tag mismatch");
+		if (win.echostream.tag != win.echostreamtag)
+			NSLog(@"SANITY: window echo stream tag mismatch");
+		
+		if (win.type != wintype_Pair && !win.styleset) 
+			NSLog(@"SANITY: non-pair window lacks styleset");
+		
+		switch (win.type) {
+			case wintype_Pair: {
+				GlkWindowPair *pairwin = (GlkWindowPair *)win;
+				if (!pairwin.child1)
+					NSLog(@"SANITY: pair win has no child1");
+				if (!pairwin.child2)
+					NSLog(@"SANITY: pair win has no child2");
+				if (!pairwin.geometry)
+					NSLog(@"SANITY: pair win has no geometry");
+				if (pairwin.child1.tag != pairwin.geometry.child1tag)
+					NSLog(@"SANITY: pair child1 tag mismatch");
+				if (pairwin.child2.tag != pairwin.geometry.child2tag)
+					NSLog(@"SANITY: pair child2 tag mismatch");
+				if (pairwin.styleset)
+					NSLog(@"SANITY: pair window has styleset");
+				if (pairwin.keydamage)
+					NSLog(@"SANITY: pair window has leftover keydamage");
+			}
+			break;
+				
+			case wintype_TextBuffer: {
+				GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
+				if (!bufwin.lines)
+					NSLog(@"SANITY: buffer window has no lines");
+			}
+			break;
+				
+			case wintype_TextGrid: {
+				GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
+				if (!gridwin.lines)
+					NSLog(@"SANITY: grid window has no lines");
+			}
+			break;
+		}
+	}
+	
+	#endif // DEBUG
 }
 
 /* Return a UTC Gregorian calendar object, allocating it if necessary.
