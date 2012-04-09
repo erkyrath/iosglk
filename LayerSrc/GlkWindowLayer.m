@@ -78,8 +78,11 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 win
 		pairwin.child2 = newwin;
 
 		splitwin.parent = pairwin;
+		splitwin.parenttag = pairwin.tag;
 		newwin.parent = pairwin;
+		newwin.parenttag = pairwin.tag;
 		pairwin.parent = oldparent;
+		pairwin.parenttag = oldparent.tag;
 
 		if (oldparent) {
 			GlkWindowPair *parentwin = (GlkWindowPair *)oldparent;
@@ -145,6 +148,7 @@ void glk_window_close(winid_t win, stream_result_t *result)
 		if (!grandparwin) {
 			library.rootwin = sibwin;
 			sibwin.parent = nil;
+			sibwin.parenttag = nil;
 		}
 		else {
 			if (grandparwin.child1 == pairwin)
@@ -152,6 +156,7 @@ void glk_window_close(winid_t win, stream_result_t *result)
 			else
 				grandparwin.child2 = sibwin;
 			sibwin.parent = grandparwin;
+			sibwin.parenttag = grandparwin.tag;
 		}
 
 		/* Begin closation */
@@ -433,6 +438,7 @@ void glk_window_set_echo_stream(winid_t win, strid_t str)
 	}
 
 	win.echostream = str;
+	win.echostreamtag = str.tag;
 }
 
 void glk_set_window(winid_t win)

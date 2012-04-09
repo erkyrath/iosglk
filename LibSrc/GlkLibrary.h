@@ -66,6 +66,7 @@
 - (NSNumber *) generateTag;
 - (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)box;
 - (GlkWindow *) windowForTag:(NSNumber *)tag;
+- (GlkStream *) streamForTag:(NSNumber *)tag;
 - (void) dirtyAllData;
 
 - (GlkLibraryState *) cloneState;

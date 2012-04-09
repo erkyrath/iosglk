@@ -125,8 +125,16 @@ static GlkLibrary *singleton = nil;
 		if (tag > tagCounter)
 			tagCounter = tag;
 	}
+
+	for (GlkWindow *win in windows) {
+		win.parent = (GlkWindowPair *)[self windowForTag:win.parenttag];
+		win.stream = [self streamForTag:win.streamtag];
+		if (win.echostreamtag)
+			win.echostream = [self streamForTag:win.echostreamtag];
+		
+		//### patch up geometry.keystylesets! and pair.child1/2!
+	}
 	
-	//### patch up geometry.keystylesets!
 	
 	//### glkdelegate?
 	//### dispatch_register_obj, et cetera...? (maybe these already work, because of the setting-up in gidispatch_set_object_registry()?)

@@ -30,6 +30,7 @@
 @synthesize type;
 @synthesize rock;
 @synthesize parent;
+@synthesize parenttag;
 @synthesize line_request_initial;
 @synthesize input_request_id;
 @synthesize char_request;
@@ -37,7 +38,9 @@
 @synthesize echo_line_input;
 @synthesize style;
 @synthesize stream;
+@synthesize streamtag;
 @synthesize echostream;
+@synthesize echostreamtag;
 @synthesize styleset;
 @synthesize bbox;
 
@@ -87,6 +90,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		rock = winrock;
 		
 		parent = nil;
+		parenttag = nil;
 		input_request_id = 0;
 		line_request_initial = nil;
 		line_buffer = nil;
@@ -100,7 +104,9 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		style = style_Normal;
 		
 		self.stream = [[[GlkStreamWindow alloc] initWithWindow:self] autorelease];
+		self.streamtag = self.stream.tag;
 		self.echostream = nil;
+		self.echostreamtag = nil;
 		
 		styleset = nil;
 		[library.windows addObject:self];
@@ -109,6 +115,43 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 			disprock = (*library.dispatch_register_obj)(self, gidisp_Class_Window);
 	}
 	
+	return self;
+}
+
+- (id) initWithCoder:(NSCoder *)decoder {
+	self.tag = [decoder decodeObjectForKey:@"tag"];
+	inlibrary = YES;
+	// self.library will be set later
+	
+	type = [decoder decodeInt32ForKey:@"type"];
+	rock = [decoder decodeInt32ForKey:@"rock"];
+	//### disprock?
+
+	self.parenttag = [decoder decodeObjectForKey:@"parenttag"];
+	// parent will be set later
+	
+	input_request_id = [decoder decodeIntForKey:@"input_request_id"];
+	
+	char_request = [decoder decodeBoolForKey:@"char_request"];
+	line_request = [decoder decodeBoolForKey:@"line_request"];
+	char_request_uni = [decoder decodeBoolForKey:@"char_request_uni"];
+	line_request_uni = [decoder decodeBoolForKey:@"line_request_uni"];
+
+	//### all other input information!
+	
+	self.line_request_initial = [decoder decodeObjectForKey:@"line_request_initial"];
+	pending_echo_line_input = [decoder decodeBoolForKey:@"pending_echo_line_input"];
+	echo_line_input = [decoder decodeBoolForKey:@"echo_line_input"];
+	style = [decoder decodeInt32ForKey:@"style"];
+
+	self.streamtag = [decoder decodeObjectForKey:@"streamtag"];
+	// streamtag will be set later
+	self.echostreamtag = [decoder decodeObjectForKey:@"echostreamtag"];
+	// echostreamtag will be set later
+
+	bbox = [decoder decodeCGRectForKey:@"bbox"];
+	//### styleset? -- the usual path goes through GlkLibrary.singleton.glkdelegate, blah
+
 	return self;
 }
 
@@ -127,13 +170,45 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	self.line_request_initial = nil;
 	
 	self.stream = nil;
+	self.streamtag = nil;
 	self.echostream = nil;
+	self.echostreamtag = nil;
 	self.parent = nil;
+	self.parenttag = nil;
 	
 	self.styleset = nil;
 	self.library = nil;
 
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[encoder encodeObject:tag forKey:@"tag"];
+	
+	[encoder encodeInt32:type forKey:@"type"];
+	[encoder encodeInt32:rock forKey:@"rock"];
+	//### disprock?
+	
+	[encoder encodeObject:parenttag forKey:@"parenttag"];
+
+	[encoder encodeInt:input_request_id forKey:@"input_request_id"];
+
+	[encoder encodeBool:char_request forKey:@"char_request"];
+	[encoder encodeBool:line_request forKey:@"line_request"];
+	[encoder encodeBool:char_request_uni forKey:@"char_request_uni"];
+	[encoder encodeBool:line_request_uni forKey:@"line_request_uni"];
+
+	//### all other input information!
+
+	[encoder encodeObject:line_request_initial forKey:@"line_request_initial"];
+	[encoder encodeBool:pending_echo_line_input forKey:@"pending_echo_line_input"];
+	[encoder encodeBool:echo_line_input forKey:@"echo_line_input"];
+	[encoder encodeBool:style forKey:@"style"];
+
+	[encoder encodeObject:streamtag forKey:@"streamtag"];
+	[encoder encodeObject:echostreamtag forKey:@"echostreamtag"];
+
+	[encoder encodeCGRect:bbox forKey:@"bbox"];
 }
 
 /* Close a window, and perhaps its subwindows too. 
@@ -173,9 +248,12 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	if (stream) {
 		[stream streamDelete];
 		self.stream = nil;
+		self.streamtag = nil;
 	}
 	self.echostream = nil;
+	self.echostreamtag = nil;
 	self.parent = nil;
+	self.parenttag = nil;
 	
 	if (![library.windows containsObject:self])
 		[NSException raise:@"GlkException" format:@"GlkWindow was not in library windows list"];
@@ -217,8 +295,10 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 + (void) unEchoStream:(strid_t)str {
 	GlkLibrary *library = [GlkLibrary singleton];
 	for (GlkWindow *win in library.windows) {
-		if (win.echostream == str)
+		if (win.echostream == str) {
 			win.echostream = nil;
+			win.echostreamtag = nil;
+		}
 	}
 }
 
@@ -438,9 +518,29 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	self = [super initWithCoder:decoder];
+	
+	if (self) {
+		clearcount = [decoder decodeIntForKey:@"clearcount"];
+		self.lines = [decoder decodeObjectForKey:@"lines"];
+		[self dirtyAllData];
+	}
+	
+	return self;
+}
+
 - (void) dealloc {
 	self.lines = nil;
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[super encodeWithCoder:encoder];
+	
+	[encoder encodeInt:clearcount forKey:@"clearcount"];
+	[encoder encodeObject:lines forKey:@"lines"];
+	// linesdirtyfrom is always 0 at deserialize time
 }
 
 - (GlkWindowState *) cloneState {
@@ -608,9 +708,35 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	self = [super initWithCoder:decoder];
+	
+	if (self) {
+		width = [decoder decodeIntForKey:@"width"];
+		height = [decoder decodeIntForKey:@"height"];
+		self.lines = [decoder decodeObjectForKey:@"lines"];
+		curx = [decoder decodeIntForKey:@"curx"];
+		cury = [decoder decodeIntForKey:@"cury"];
+		
+		[self dirtyAllData];
+	}
+	
+	return self;
+}
+
 - (void) dealloc {
 	self.lines = nil;
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[super encodeWithCoder:encoder];
+	
+	[encoder encodeInt:width forKey:@"width"];
+	[encoder encodeInt:height forKey:@"height"];
+	[encoder encodeObject:lines forKey:@"lines"];
+	[encoder encodeInt:curx forKey:@"curx"];
+	[encoder encodeInt:cury forKey:@"cury"];
 }
 
 - (GlkWindowState *) cloneState {
@@ -792,11 +918,30 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	self = [super initWithCoder:decoder];
+	
+	if (self) {
+		self.geometry = [decoder decodeObjectForKey:@"geometry"];
+		// child1 and child2 will be set from the geometry.
+		// keydamage is false outside of a close call.
+	}
+	
+	return self;
+}
+
 - (void) dealloc {
 	self.geometry = nil;
 	self.child1 = nil;
 	self.child2 = nil;
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[super encodeWithCoder:encoder];
+	
+	[encoder encodeObject:geometry forKey:@"geometry"];
+	// child1 and child2 tags are serialized from inside the geometry.
 }
 
 - (GlkWindowState *) cloneState {

@@ -25,6 +25,7 @@
 	glui32 rock;
 	
 	GlkWindowPair *parent;
+	NSNumber *parenttag;
 	int input_request_id;
 	void *line_buffer;
 	gidispatch_rock_t inarrayrock;
@@ -40,7 +41,9 @@
 	glui32 style;
 	
 	GlkStream *stream;
+	NSNumber *streamtag;
 	GlkStream *echostream;
+	NSNumber *echostreamtag;
 	
 	StyleSet *styleset;
 	CGRect bbox;
@@ -52,6 +55,7 @@
 @property (nonatomic, readonly) glui32 type;
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, retain) GlkWindowPair *parent;
+@property (nonatomic, retain) NSNumber *parenttag;
 @property (nonatomic, retain) NSString *line_request_initial;
 @property (nonatomic, readonly) int input_request_id;
 @property (nonatomic, readonly) BOOL char_request;
@@ -59,7 +63,9 @@
 @property (nonatomic) BOOL echo_line_input;
 @property (nonatomic) glui32 style;
 @property (nonatomic, retain) GlkStream *stream;
+@property (nonatomic, retain) NSNumber *streamtag;
 @property (nonatomic, retain) GlkStream *echostream;
+@property (nonatomic, retain) NSNumber *echostreamtag;
 @property (nonatomic, retain) StyleSet *styleset;
 @property (nonatomic, readonly) CGRect bbox;
 
