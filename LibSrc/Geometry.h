@@ -27,7 +27,7 @@
 @property (nonatomic) glui32 division;
 @property (nonatomic) BOOL hasborder;
 @property (nonatomic, retain) NSNumber *keytag;
-@property (nonatomic, retain) StyleSet *keystyleset;
+@property (nonatomic, retain) StyleSet *keystyleset; // not serialized; styleset of key window
 @property (nonatomic) glui32 size;
 @property (nonatomic) BOOL vertical;
 @property (nonatomic) BOOL backward;

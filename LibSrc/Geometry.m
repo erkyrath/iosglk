@@ -43,6 +43,21 @@
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	dir = [decoder decodeInt32ForKey:@"dir"];
+	division = [decoder decodeInt32ForKey:@"division"];
+	hasborder = [decoder decodeBoolForKey:@"hasborder"];
+				 
+	self.keytag = [decoder decodeObjectForKey:@"keytag"];
+	// self.keystyleset will have to be filled in later, once all the windows are loaded
+
+	size = [decoder decodeInt32ForKey:@"size"];
+	child1tag = [decoder decodeObjectForKey:@"child1tag"];
+	child2tag = [decoder decodeObjectForKey:@"child2tag"];
+	
+	return self;
+}
+
 - (void) dealloc {
 	self.keytag = nil;
 	self.keystyleset = nil;
@@ -65,10 +80,25 @@
 	return copy;
 }
 
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[encoder encodeInt32:dir forKey:@"dir"];
+	[encoder encodeInt32:division forKey:@"division"];
+	[encoder encodeBool:hasborder forKey:@"hasborder"];
+	
+	[encoder encodeObject:keytag forKey:@"keytag"];
+	// skip keystyleset
+	
+	[encoder encodeInt32:size forKey:@"size"];
+	[encoder encodeObject:child1tag forKey:@"child1tag"];
+	[encoder encodeObject:child2tag forKey:@"child2tag"];
+}
+
+/* getter method */
 - (glui32) dir {
 	return dir;
 }
 
+/* setter method -- setting dir automatically sets vertical and backward. */
 - (void) setDir:(glui32)val {
 	dir = val;
 	

@@ -11,6 +11,8 @@
 
 #import "GlkLibrary.h"
 #import "GlkWindow.h"
+#import "GlkStream.h"
+#import "GlkFileRef.h"
 #import "GlkLibraryState.h"
 #import "GlkWindowState.h"
 #import "IosGlkLibDelegate.h"
@@ -20,6 +22,8 @@
 #include "glk.h"
 
 @implementation GlkLibrary
+
+#define SERIAL_VERSION (1)
 
 @synthesize glkdelegate;
 @synthesize windows;
@@ -74,6 +78,59 @@ static GlkLibrary *singleton = nil;
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	int version = [decoder decodeIntForKey:@"version"];
+	if (version <= 0 || version > SERIAL_VERSION)
+		return nil;
+	
+	/* If the vm has exited, don't save the state! */
+	vmexited = NO;
+	
+	bounds = [decoder decodeCGRectForKey:@"bounds"];
+	geometrychanged = YES;
+	everythingchanged = YES;
+	
+	self.windows = [decoder decodeObjectForKey:@"windows"];
+	self.streams = [decoder decodeObjectForKey:@"streams"];
+	self.filerefs = [decoder decodeObjectForKey:@"filerefs"];
+	
+	//### specialrequest: this really ought to be nil, right?
+
+	self.filemanager = [[[NSFileManager alloc] init] autorelease];
+	// skip the calendar fields, they're allocated as-needed
+
+	NSNumber *rootwintag = [decoder decodeObjectForKey:@"rootwintag"];
+	NSNumber *currentstrtag = [decoder decodeObjectForKey:@"currentstrtag"];
+	
+	tagCounter = 0;
+	for (GlkWindow *win in windows) {
+		glui32 tag = win.tag.intValue;
+		if (tag > tagCounter)
+			tagCounter = tag;
+		if (rootwintag && [win.tag isEqualToNumber:rootwintag])
+			self.rootwin = win;
+	}
+	for (GlkStream *str in streams) {
+		glui32 tag = str.tag.intValue;
+		if (tag > tagCounter)
+			tagCounter = tag;
+		if (currentstrtag && [str.tag isEqualToNumber:currentstrtag])
+			self.currentstr = str;
+	}
+	for (GlkFileRef *fref in filerefs) {
+		glui32 tag = fref.tag.intValue;
+		if (tag > tagCounter)
+			tagCounter = tag;
+	}
+	
+	//### patch up geometry.keystylesets!
+	
+	//### glkdelegate?
+	//### dispatch_register_obj, et cetera...? (maybe these already work, because of the setting-up in gidispatch_set_object_registry()?)
+	
+	return self;
+}
+
 - (void) dealloc {
 	NSLog(@"GlkLibrary dealloc %x", (unsigned int)self);
 	if (singleton == self)
@@ -95,6 +152,23 @@ static GlkLibrary *singleton = nil;
 		localcalendar = nil;
 	}
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[encoder encodeInt:SERIAL_VERSION forKey:@"version"];
+	
+	[encoder encodeCGRect:bounds forKey:@"bounds"];
+	
+	[encoder encodeObject:windows forKey:@"windows"];
+	[encoder encodeObject:streams forKey:@"streams"];
+	[encoder encodeObject:filerefs forKey:@"filerefs"];
+
+	//### specialrequest: this really ought to be nil, right? fail if not
+
+	if (rootwin)
+		[encoder encodeObject:rootwin.tag forKey:@"rootwintag"];
+	if (currentstr)
+		[encoder encodeObject:currentstr.tag forKey:@"currentstrtag"];
 }
 
 /* If this app is an interpreter which handles many games, we need a way to keep their save files separate. We must return a string which is unique per game. (It's supplied by the delegate object.)
