@@ -69,6 +69,7 @@
 - (GlkStream *) streamForTag:(NSNumber *)tag;
 - (void) dirtyAllData;
 
+- (void) sanityCheck;
 - (GlkLibraryState *) cloneState;
 
 @end

@@ -262,6 +262,22 @@ static GlkLibrary *singleton = nil;
 	return nil;
 }
 
+/* Locate the stream matching a given tag. (Or nil, if no stream matches or the tag is nil.) This isn't efficient, but it's not heavily used.
+ */
+- (GlkStream *) streamForTag:(NSNumber *)tag {
+	if (!tag)
+		return nil;
+	
+	for (GlkStream *str in streams) {
+		if ([str.tag isEqualToNumber:tag])
+			return str;
+	}
+	
+	return nil;
+}
+
+/* Mark all the window data as "changed", so that the next update clones everything. (We call this when the window views need to discard all of their knowledge of the displayed state.
+ */
 - (void) dirtyAllData {
 	everythingchanged = YES;
 	geometrychanged = YES;
