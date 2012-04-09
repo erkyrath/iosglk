@@ -49,6 +49,25 @@
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	self.tag = [decoder decodeObjectForKey:@"tag"];
+	inlibrary = YES;
+	// self.library will be set later
+	
+	type = [decoder decodeInt32ForKey:@"type"];
+	rock = [decoder decodeInt32ForKey:@"rock"];
+	//### disprock?
+
+	unicode = [decoder decodeBoolForKey:@"unicode"];
+
+	readcount = [decoder decodeInt32ForKey:@"readcount"];
+	writecount = [decoder decodeInt32ForKey:@"writecount"];
+	readable = [decoder decodeBoolForKey:@"readable"];
+	writable = [decoder decodeBoolForKey:@"writable"];
+
+	return self;
+}
+
 - (void) dealloc {
 	NSLog(@"GlkStream dealloc %x", (unsigned int)self);
 	
@@ -66,6 +85,21 @@
 	[super dealloc];
 }
 
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[encoder encodeObject:tag forKey:@"tag"];
+	
+	[encoder encodeInt32:type forKey:@"type"];
+	[encoder encodeInt32:rock forKey:@"rock"];
+	//### disprock?
+	
+	[encoder encodeBool:unicode forKey:@"unicode"];
+
+	[encoder encodeInt32:readcount forKey:@"readcount"];
+	[encoder encodeInt32:writecount forKey:@"writecount"];
+	[encoder encodeBool:readable forKey:@"readable"];
+	[encoder encodeBool:writable forKey:@"writable"];
+};
+	
 - (void) streamDelete {
 	/* We don't want this object to evaporate in the middle of this method. */
 	[[self retain] autorelease];
@@ -156,12 +190,25 @@
 @implementation GlkStreamWindow
 
 @synthesize win;
+@synthesize wintag;
 
 - (id) initWithWindow:(GlkWindow *)winref {
 	self = [super initWithType:strtype_Window readable:NO writable:YES rock:0];
 	
 	if (self) {
 		self.win = winref;
+		self.wintag = winref.tag;
+	}
+	
+	return self;
+}
+
+- (id) initWithCoder:(NSCoder *)decoder {
+	self = [super initWithCoder:decoder];
+	
+	if (self) {
+		self.wintag = [decoder decodeObjectForKey:@"wintag"];
+		// win will be set later.
 	}
 	
 	return self;
@@ -169,11 +216,20 @@
 
 - (void) dealloc {
 	self.win = nil;
+	self.wintag = nil;
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[super encodeWithCoder:encoder];
+	
+	if (win)
+		[encoder encodeObject:win.tag forKey:@"wintag"];
 }
 
 - (void) streamDelete {
 	self.win = nil;
+	self.wintag = nil;
 	[super streamDelete];
 }
 
@@ -281,6 +337,22 @@
 	}
 	
 	return self;
+}
+
+- (id) initWithCoder:(NSCoder *)decoder {
+	self = [super initWithCoder:decoder];
+	
+	if (self) {
+		//### set up all the array stuff!
+	}
+	
+	return self;
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[super encodeWithCoder:encoder];
+	
+	//### set up all the array stuff!
 }
 
 - (void) streamDelete {
@@ -655,25 +727,28 @@
 */
 
 @synthesize handle;
+@synthesize pathname;
 @synthesize readbuffer;
 @synthesize writebuffer;
 
 /* This constructor is used by the regular Glk glk_stream_open_file() call.
 */
-- (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode fileref:(GlkFileRef *)fref {
-	self = [self initWithMode:fmode rock:rockval unicode:isunicode textmode:fref.textmode dirname:fref.dirname pathname:fref.pathname];
+- (id) initWithMode:(glui32)fmodeval rock:(glui32)rockval unicode:(BOOL)isunicode fileref:(GlkFileRef *)fref {
+	self = [self initWithMode:fmodeval rock:rockval unicode:isunicode textmode:fref.textmode dirname:fref.dirname pathname:fref.pathname];
 	return self;
 }
 
 /* This constructor is used by iosglk_startup_code(), in iosstart.m.
 */
-- (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname {
-	BOOL isreadable = (fmode == filemode_Read || fmode == filemode_ReadWrite);
-	BOOL iswritable = (fmode != filemode_Read);
+- (id) initWithMode:(glui32)fmodeval rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)path {
+	BOOL isreadable = (fmodeval == filemode_Read || fmodeval == filemode_ReadWrite);
+	BOOL iswritable = (fmodeval != filemode_Read);
 
 	self = [super initWithType:strtype_File readable:isreadable writable:iswritable rock:rockval];
 	
 	if (self) {
+		fmode = fmodeval;
+		
 		/* Set up the buffering. */
 		maxbuffersize = 512;
 		readbuffer = nil;
@@ -685,6 +760,7 @@
 		bufferdirtyend = 0;
 		
 		/* Set the easy fields. */
+		self.pathname = path;
 		unicode = isunicode;
 		textmode = istextmode;
 		
@@ -733,17 +809,47 @@
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	self = [super initWithCoder:decoder];
+	
+	if (self) {
+		self.pathname = [decoder decodeObjectForKey:@"pathname"];
+		fmode = [decoder decodeInt32ForKey:@"fmode"];
+		textmode = [decoder decodeBoolForKey:@"textmode"];
+		maxbuffersize = [decoder decodeIntForKey:@"maxbuffersize"];
+		
+		//### set up all the array stuff!
+	}
+	
+	return self;
+}
+
 - (void) dealloc {
 	self.handle = nil;
+	self.pathname = nil;
 	self.readbuffer = nil;
 	self.writebuffer = nil;
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[super encodeWithCoder:encoder];
+	
+	[self flush];
+	
+	[encoder encodeObject:pathname forKey:@"pathname"];
+	[encoder encodeInt32:fmode forKey:@"fmode"];
+	[encoder encodeBool:textmode forKey:@"textmode"];
+	[encoder encodeInt:maxbuffersize forKey:@"maxbuffersize"];
+	
+	//### set up all the array stuff!
 }
 
 - (void) streamDelete {
 	[self flush];
 	[handle closeFile];
 	self.handle = nil;
+	self.pathname = nil;
 	[super streamDelete];
 }
 

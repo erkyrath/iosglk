@@ -135,6 +135,18 @@ static GlkLibrary *singleton = nil;
 		//### patch up geometry.keystylesets! and pair.child1/2!
 	}
 	
+	for (GlkStream *str in streams) {
+		switch (str.type) {
+			case strtype_Window: {
+				GlkStreamWindow *winstr = (GlkStreamWindow *)str;
+				if (winstr.wintag)
+					winstr.win = [self windowForTag:winstr.wintag];
+			}
+			break;
+			default:
+				break;
+		}
+	}
 	
 	//### glkdelegate?
 	//### dispatch_register_obj, et cetera...? (maybe these already work, because of the setting-up in gidispatch_set_object_registry()?)

@@ -61,9 +61,11 @@ typedef enum GlkStreamType_enum {
 
 @interface GlkStreamWindow : GlkStream {
 	GlkWindow *win;
+	NSNumber *wintag;
 }
 
 @property (nonatomic, retain) GlkWindow *win;
+@property (nonatomic, retain) NSNumber *wintag;
 
 - (id) initWithWindow:(GlkWindow *)win;
 
@@ -90,6 +92,8 @@ typedef enum GlkStreamType_enum {
 
 @interface GlkStreamFile : GlkStream {
 	NSFileHandle *handle;
+	NSString *pathname; // only needed for serialization
+	glui32 fmode;
 	BOOL textmode;
 	
 	int maxbuffersize; // how much data to buffer at a time (ideally)
@@ -104,6 +108,7 @@ typedef enum GlkStreamType_enum {
 }
 
 @property (nonatomic, retain) NSFileHandle *handle;
+@property (nonatomic, retain) NSString *pathname;
 @property (nonatomic, retain) NSData *readbuffer;
 @property (nonatomic, retain) NSMutableData *writebuffer;
 
