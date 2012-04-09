@@ -104,6 +104,7 @@ static GlkLibrary *singleton = nil;
 	
 	tagCounter = 0;
 	for (GlkWindow *win in windows) {
+		win.library = self;
 		glui32 tag = win.tag.intValue;
 		if (tag > tagCounter)
 			tagCounter = tag;
@@ -111,6 +112,7 @@ static GlkLibrary *singleton = nil;
 			self.rootwin = win;
 	}
 	for (GlkStream *str in streams) {
+		str.library = self;
 		glui32 tag = str.tag.intValue;
 		if (tag > tagCounter)
 			tagCounter = tag;
@@ -118,6 +120,7 @@ static GlkLibrary *singleton = nil;
 			self.currentstr = str;
 	}
 	for (GlkFileRef *fref in filerefs) {
+		fref.library = self;
 		glui32 tag = fref.tag.intValue;
 		if (tag > tagCounter)
 			tagCounter = tag;

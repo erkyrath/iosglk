@@ -54,7 +54,6 @@
 }
 
 
-
 - (id) initWithBase:(NSString *)basedirval filename:(NSString *)filenameval type:(glui32)usage rock:(glui32)frefrock {
 	self = [super init];
 	
@@ -83,6 +82,24 @@
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	self.tag = [decoder decodeObjectForKey:@"tag"];
+	inlibrary = YES;
+	// self.library will be set later
+
+	rock = [decoder decodeInt32ForKey:@"rock"];
+	//### disprock?
+	
+	self.filename = [decoder decodeObjectForKey:@"filename"];
+	self.basedir = [decoder decodeObjectForKey:@"basedir"];
+	self.dirname = [decoder decodeObjectForKey:@"dirname"];
+	self.pathname = [decoder decodeObjectForKey:@"pathname"];
+	filetype = [decoder decodeInt32ForKey:@"filetype"];
+	textmode = [decoder decodeBoolForKey:@"textmode"];
+	
+	return self;
+}
+
 - (void) dealloc {
 	NSLog(@"GlkFileRef dealloc %x", (unsigned int)self);
 	
@@ -101,6 +118,21 @@
 	self.library = nil;
 
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[encoder encodeObject:tag forKey:@"tag"];
+	
+	[encoder encodeInt32:rock forKey:@"rock"];
+	//### disprock?
+	
+	[encoder encodeObject:filename forKey:@"filename"];
+	[encoder encodeObject:basedir forKey:@"basedir"];
+	[encoder encodeObject:dirname forKey:@"dirname"];
+	[encoder encodeObject:pathname forKey:@"pathname"];
+
+	[encoder encodeInt32:filetype forKey:@"filetype"];
+	[encoder encodeBool:textmode forKey:@"textmode"];
 }
 
 - (void) filerefDelete {
