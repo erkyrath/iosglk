@@ -440,6 +440,11 @@ static GlkLibrary *singleton = nil;
 		}
 	}
 	
+	for (GlkFileRef *fref in filerefs) {
+		if (!fref.pathname)
+			NSLog(@"SANITY: fileref has no pathname");
+	}
+	
 	#endif // DEBUG
 }
 
