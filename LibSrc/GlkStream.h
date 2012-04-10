@@ -39,6 +39,8 @@ typedef enum GlkStreamType_enum {
 @property (nonatomic, readonly) GlkStreamType type;
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, readonly) BOOL unicode;
+@property (nonatomic, readonly) BOOL readable;
+@property (nonatomic, readonly) BOOL writable;
 
 - (id) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock;
 - (void) streamDelete;
@@ -84,6 +86,10 @@ typedef enum GlkStreamType_enum {
 	glui32 buflen;
 	gidispatch_rock_t arrayrock;
 }
+
+@property (nonatomic, readonly) glui32 buflen;
+@property (nonatomic, readonly) unsigned char *buf;
+@property (nonatomic, readonly) glui32 *ubuf;
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)buf len:(glui32)buflen;
 - (id) initUniWithMode:(glui32)fmode rock:(glui32)rockval buf:(glui32 *)ubufval len:(glui32)ubuflenval;

@@ -22,6 +22,8 @@
 @synthesize type;
 @synthesize rock;
 @synthesize unicode;
+@synthesize readable;
+@synthesize writable;
 
 - (id) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock {
 	self = [super init];
@@ -284,6 +286,10 @@
 
 
 @implementation GlkStreamMemory
+
+@synthesize buflen;
+@synthesize buf;
+@synthesize ubuf;
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)bufval len:(glui32)buflenval {
 	BOOL isreadable = (fmode != filemode_Write);

@@ -70,6 +70,15 @@ NSString *StringFromDumbEncoding(NSString *str) {
 	return [[[NSString alloc] initWithData:outdata encoding:NSUTF8StringEncoding] autorelease];
 }
 
+/* Return whether the two numbers are numerically equal, or both nil. */
+BOOL NumberMatch(NSNumber *num1, NSNumber *num2) {
+	if (!num1 && !num2)
+		return YES;
+	if (!num1 || !num2)
+		return NO;
+	return [num1 isEqualToNumber:num2];
+}
+
 /* Return a string showing the size and origin of a rectangle. (For debugging.) */
 NSString *StringFromRect(CGRect rect) {
 	return [NSString stringWithFormat:@"%.1fx%.1f at %.1f,%.1f", 

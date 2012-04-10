@@ -347,16 +347,18 @@ static GlkLibrary *singleton = nil;
 				NSLog(@"SANITY: window has no parent but is not rootwin");
 		}
 		else {
-			if (win.parenttag != win.parent.tag)
+			if (!NumberMatch(win.parenttag, win.parent.tag))
 				NSLog(@"SANITY: window parent tag mismatch");
 			if (win.parent.type != wintype_Pair)
 				NSLog(@"SANITY: window parent is not pair");
 		}
 		if (!win.stream)
 			NSLog(@"SANITY: window lacks stream");
-		if (win.stream.tag != win.streamtag)
+		if (!NumberMatch(win.stream.tag, win.streamtag))
 			NSLog(@"SANITY: window stream tag mismatch");
-		if (win.echostream.tag != win.echostreamtag)
+		if (win.stream.type != strtype_Window)
+			NSLog(@"SANITY: window stream is wrong type");
+		if (!NumberMatch(win.echostream.tag, win.echostreamtag))
 			NSLog(@"SANITY: window echo stream tag mismatch");
 		
 		if (win.type != wintype_Pair && !win.styleset) 
@@ -371,9 +373,9 @@ static GlkLibrary *singleton = nil;
 					NSLog(@"SANITY: pair win has no child2");
 				if (!pairwin.geometry)
 					NSLog(@"SANITY: pair win has no geometry");
-				if (pairwin.child1.tag != pairwin.geometry.child1tag)
+				if (!NumberMatch(pairwin.child1.tag, pairwin.geometry.child1tag))
 					NSLog(@"SANITY: pair child1 tag mismatch");
-				if (pairwin.child2.tag != pairwin.geometry.child2tag)
+				if (!NumberMatch(pairwin.child2.tag, pairwin.geometry.child2tag))
 					NSLog(@"SANITY: pair child2 tag mismatch");
 				if (pairwin.styleset)
 					NSLog(@"SANITY: pair window has styleset");
@@ -395,6 +397,46 @@ static GlkLibrary *singleton = nil;
 					NSLog(@"SANITY: grid window has no lines");
 			}
 			break;
+		}
+	}
+	
+	for (GlkStream *str in streams) {
+		if (!str.type)
+			NSLog(@"SANITY: stream lacks type");
+		if (!(str.readable || str.writable))
+			NSLog(@"SANITY: stream should be readable or writable");
+		
+		switch (str.type) {
+			case strtype_Window: {
+				GlkStreamWindow *winstr = (GlkStreamWindow *)str;
+				if (!NumberMatch(winstr.win.tag, winstr.wintag))
+					NSLog(@"SANITY: window stream tag mismatch");
+				if (winstr.win.stream != winstr)
+					NSLog(@"SANITY: window stream does not match stream of window");
+			}
+			break;
+				
+			case strtype_File: {
+				GlkStreamFile *filestr = (GlkStreamFile *)str;
+				if (!filestr.pathname)
+					NSLog(@"SANITY: file stream lacks pathname");
+			}
+			break;
+				
+			case strtype_Memory: {
+				GlkStreamMemory *memstr = (GlkStreamMemory *)str;
+				// Remember, the buffer may be nil as long as the length limit is zero
+				if (memstr.unicode && memstr.buf)
+					NSLog(@"SANITY: memory stream is unicode, but has buf");
+				if (!memstr.unicode && memstr.ubuf)
+					NSLog(@"SANITY: memory stream is not unicode, but has ubuf");
+				if (!memstr.buf && !memstr.ubuf && memstr.buflen)
+					NSLog(@"SANITY: memory stream has no buffer, but positive buflen");
+			}
+			break;
+				
+			default:
+				break;
 		}
 	}
 	
