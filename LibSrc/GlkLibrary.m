@@ -96,6 +96,7 @@ static GlkLibrary *singleton = nil;
 	self.streams = [decoder decodeObjectForKey:@"streams"];
 	self.filerefs = [decoder decodeObjectForKey:@"filerefs"];
 	
+	// will be zero if no timerinterval was saved
 	timerinterval = [decoder decodeInt32ForKey:@"timerinterval"];
 	
 	//### specialrequest: this really ought to be nil, right?
@@ -190,7 +191,8 @@ static GlkLibrary *singleton = nil;
 	[encoder encodeObject:streams forKey:@"streams"];
 	[encoder encodeObject:filerefs forKey:@"filerefs"];
 
-	[encoder encodeInt32:timerinterval forKey:@"timerinterval"];
+	if (timerinterval)
+		[encoder encodeInt32:timerinterval forKey:@"timerinterval"];
 
 	//### specialrequest: this really ought to be nil, right? fail if not
 
