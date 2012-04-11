@@ -32,6 +32,7 @@
 @synthesize vmexited;
 @synthesize rootwin;
 @synthesize currentstr;
+@synthesize timerinterval;
 @synthesize bounds;
 @synthesize geometrychanged;
 @synthesize everythingchanged;
@@ -68,6 +69,7 @@ static GlkLibrary *singleton = nil;
 		self.filerefs = [NSMutableArray arrayWithCapacity:8];
 		self.rootwin = nil;
 		self.currentstr = nil;
+		timerinterval = 0;
 		geometrychanged = YES;
 		everythingchanged = NO; /* not true at startup, only on refresh */
 		
@@ -93,6 +95,8 @@ static GlkLibrary *singleton = nil;
 	self.windows = [decoder decodeObjectForKey:@"windows"];
 	self.streams = [decoder decodeObjectForKey:@"streams"];
 	self.filerefs = [decoder decodeObjectForKey:@"filerefs"];
+	
+	timerinterval = [decoder decodeInt32ForKey:@"timerinterval"];
 	
 	//### specialrequest: this really ought to be nil, right?
 
@@ -185,6 +189,8 @@ static GlkLibrary *singleton = nil;
 	[encoder encodeObject:windows forKey:@"windows"];
 	[encoder encodeObject:streams forKey:@"streams"];
 	[encoder encodeObject:filerefs forKey:@"filerefs"];
+
+	[encoder encodeInt32:timerinterval forKey:@"timerinterval"];
 
 	//### specialrequest: this really ought to be nil, right? fail if not
 

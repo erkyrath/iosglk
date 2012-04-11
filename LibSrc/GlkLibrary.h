@@ -23,6 +23,7 @@
 	BOOL vmexited;
 	GlkWindow *rootwin;
 	GlkStream *currentstr;
+	glui32 timerinterval; // milliseconds
 	CGRect bounds;
 	BOOL geometrychanged;
 	BOOL everythingchanged;
@@ -47,6 +48,7 @@
 @property (nonatomic) BOOL vmexited;
 @property (nonatomic, retain) GlkWindow *rootwin;
 @property (nonatomic, retain) GlkStream *currentstr;
+@property (nonatomic) glui32 timerinterval;
 @property (nonatomic, readonly) CGRect bounds;
 @property (nonatomic) BOOL geometrychanged;
 @property (nonatomic) BOOL everythingchanged;

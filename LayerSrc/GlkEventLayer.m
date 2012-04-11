@@ -38,6 +38,9 @@ void glk_select_poll(event_t *event) {
 }
 
 void glk_request_timer_events(glui32 millisecs) {
+	GlkLibrary *library = [GlkLibrary singleton];
+	library.timerinterval = millisecs;
+	
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
 	NSNumber *interval = nil;
 	if (millisecs) {
