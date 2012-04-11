@@ -369,6 +369,36 @@
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	dirty = YES; // when loaded, all dirty
+	width = [decoder decodeIntForKey:@"width"];
+	maxwidth = [decoder decodeIntForKey:@"maxwidth"];
+
+	chars = (glui32 *)malloc(maxwidth * sizeof(glui32));
+	styles = (glui32 *)malloc(maxwidth * sizeof(glui32));
+	for (int ix=0; ix<maxwidth; ix++) {
+		chars[ix] = ' ';
+		styles[ix] = style_Normal;
+	}
+	
+	NSUInteger len;
+	uint8_t *tmpchars = (uint8_t *)[decoder decodeBytesForKey:@"chars" returnedLength:&len];
+	if (tmpchars) {
+		if (len > maxwidth * sizeof(glui32))
+			len = maxwidth * sizeof(glui32);
+		memcpy(chars, tmpchars, len);
+	}
+
+	uint8_t *tmpstyles = (uint8_t *)[decoder decodeBytesForKey:@"styles" returnedLength:&len];
+	if (tmpstyles) {
+		if (len > maxwidth * sizeof(glui32))
+			len = maxwidth * sizeof(glui32);
+		memcpy(styles, tmpstyles, len);
+	}
+
+	return self;
+}
+
 - (void) dealloc {
 	if (chars) {
 		free(chars);
@@ -381,6 +411,14 @@
 	[super dealloc];
 }
 
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[encoder encodeInt:width forKey:@"width"];
+	[encoder encodeInt:maxwidth forKey:@"maxwidth"];
+	if (chars)
+		[encoder encodeBytes:(const uint8_t *)chars length:(maxwidth * sizeof(glui32)) forKey:@"chars"];
+	if (styles)
+		[encoder encodeBytes:(const uint8_t *)styles length:(maxwidth * sizeof(glui32)) forKey:@"styles"];
+}
 
 - (int) width {
 	return width;

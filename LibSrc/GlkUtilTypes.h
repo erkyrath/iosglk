@@ -115,8 +115,8 @@ typedef enum GlkStyledLineStatus_enum {
 @interface GlkGridLine : NSObject {
 	BOOL dirty;
 	int width;
-	glui32 *chars;
-	glui32 *styles;
+	glui32 *chars; // malloced array (size maxwidth)
+	glui32 *styles; // malloced array (size maxwidth)
 	int maxwidth;
 }
 
