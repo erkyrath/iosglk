@@ -40,6 +40,12 @@
 	/* Subclasses may override this (but should be sure to call [super didFinishLaunching]) */
 
 	self.commandhistory = [NSMutableArray arrayWithCapacity:MAX_HISTORY_LENGTH];
+	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	NSArray *arr = [defaults arrayForKey:@"CommandHistory"];
+	if (arr) {
+		[commandhistory addObjectsFromArray:arr];
+	}
 }
 
 - (void) becameInactive {
@@ -193,7 +199,8 @@
 	str = [arr2 componentsJoinedByString:@" "];
 	//str = str.lowercaseString;
 	
-	if (str.length < 2)
+	// for this test, should really measure the string's length excluding closing punctuation and spaces
+	if (str.length <= 2)
 		return;
 	
 	[commandhistory removeObject:str];
@@ -204,6 +211,9 @@
 		range.length = commandhistory.count - MAX_HISTORY_LENGTH;
 		[commandhistory removeObjectsInRange:range];
 	}
+	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	[defaults setObject:commandhistory forKey:@"CommandHistory"];
 }
 
 - (void) didReceiveMemoryWarning {
