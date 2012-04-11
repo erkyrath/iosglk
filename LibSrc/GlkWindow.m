@@ -541,6 +541,8 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	[encoder encodeInt:clearcount forKey:@"clearcount"];
 	[encoder encodeObject:lines forKey:@"lines"];
 	// linesdirtyfrom is always 0 at deserialize time
+	
+	//### should we cap the number of lines written out?
 }
 
 - (GlkWindowState *) cloneState {

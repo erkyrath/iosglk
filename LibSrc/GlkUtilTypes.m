@@ -39,7 +39,14 @@
 	return self;
 }
 
-/* Standard copy method. Returns a retained object which is a (shallow) copy. */
+- (id) initWithCoder:(NSCoder *)decoder {
+	index = [decoder decodeIntForKey:@"index"];
+	status = [decoder decodeIntForKey:@"status"];
+	self.arr = [decoder decodeObjectForKey:@"arr"];
+	return self;
+}
+
+/* Standard copy method. Returns a retained object which is a (shallow) copy. (Skip the cached elements.) */
 - (id) copyWithZone:(NSZone *)zone {
 	GlkStyledLine *copy = [[GlkStyledLine allocWithZone:zone] init];
 	copy.index = index;
@@ -56,6 +63,12 @@
 		self.accessel = nil;
 	}
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	[encoder encodeInt:index forKey:@"index"];
+	[encoder encodeInt:status forKey:@"status"];
+	[encoder encodeObject:arr forKey:@"arr"];
 }
 
 - (NSString *) concatLine {
@@ -105,9 +118,25 @@
 	return self;
 }
 
+- (id) initWithCoder:(NSCoder *)decoder {
+	self.str = [decoder decodeObjectForKey:@"str"];
+	style = [decoder decodeInt32ForKey:@"style"];
+	pos = [decoder decodeIntForKey:@"pos"];
+	ismutable = NO;
+	return self;
+}
+
 - (void) dealloc {
 	self.str = nil;
 	[super dealloc];
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+	if (ismutable)
+		[self freeze];
+	[encoder encodeObject:str forKey:@"str"];
+	[encoder encodeInt32:style forKey:@"style"];
+	[encoder encodeInt:pos forKey:@"pos"];
 }
 
 - (void) appendString:(NSString *)newstr {
