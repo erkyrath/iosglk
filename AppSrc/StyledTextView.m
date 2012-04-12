@@ -5,6 +5,7 @@
 */
 
 #import "StyledTextView.h"
+#import "IosGlkViewController.h"
 #import "GlkWinBufferView.h"
 #import "CmdTextField.h"
 #import "GlkUtilTypes.h"
@@ -1114,7 +1115,7 @@
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
 	
 	if (wasseldragging) {
-		/* Text selection */
+		/* Text selection. We become the first responder (not the input field, but the text view itself). */
 		[selectionview hideOutlineAnimated:YES];
 		[self becomeFirstResponder];
 		[self showSelectionMenu];
@@ -1141,10 +1142,11 @@
 		return;
 	}
 	
-	GlkWinBufferView *winv = [self superviewAsBufferView];
+	IosGlkViewController *viewc = [IosGlkViewController singleton];
+	GlkWindowView *winv = viewc.preferredInputWindow;
 	
-	/* If there is no input line, ignore single-tap. On double-tap, scroll to bottom. */
-	if (!winv.inputfield) {
+	/* If there is no input line (anywhere), ignore single-tap. On double-tap, scroll to bottom. */
+	if (!winv || !winv.inputfield) {
 		if (tapnumber >= 2) {
 			tapnumber = 0;
 			[self pageToBottom];

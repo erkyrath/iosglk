@@ -22,6 +22,7 @@
 
 @synthesize glkdelegate;
 @synthesize frameview;
+@synthesize prefinputwintag;
 @synthesize commandhistory;
 @synthesize keyboardbox;
 
@@ -33,6 +34,7 @@
 	NSLog(@"IosGlkViewController dealloc %x", (unsigned int)self);
 	self.frameview = nil;
 	self.commandhistory = nil;
+	self.prefinputwintag = nil;
 	[super dealloc];
 }
 
@@ -117,6 +119,39 @@
 		[frameview setNeedsLayout];
 }
 
+- (void) preferInputWindow:(NSNumber *)tag {
+	self.prefinputwintag = tag;
+}
+
+/* This returns (in order of preference) the window which currently has the input focus; the inputting window which last had the input focus; any inputting window. If no window is waiting for input at all, return nil.
+ */
+- (GlkWindowView *) preferredInputWindow {
+	GlkWindowView *prefinputview = nil;
+	GlkWindowView *firstinputview = nil;
+	NSMutableDictionary *windowviews = frameview.windowviews;
+	
+	for (NSNumber *tag in windowviews) {
+		GlkWindowView *winv = [windowviews objectForKey:tag];
+		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
+			return winv;
+		}
+		
+		if (winv.inputfield) {
+			if (!firstinputview)
+				firstinputview = winv;
+			if (NumberMatch(tag, prefinputwintag))
+				prefinputview = winv;
+		}
+	}
+	
+	if (prefinputview)
+		return prefinputview;
+	else if (firstinputview)
+		return firstinputview;
+	else
+		return nil;
+}
+
 - (void) hideKeyboard {
 	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
 		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
@@ -128,21 +163,17 @@
 }
 
 - (IBAction) toggleKeyboard {
-	GlkWindowView *firstinputview = nil;
+	GlkWindowView *winv = self.preferredInputWindow;
+	if (!winv || !winv.inputfield)
+		return;
 	
-	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
-		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
-			//NSLog(@"Hiding keyboard for %@", winv);
-			[winv.inputfield resignFirstResponder];
-			break;
-		}
-		if (winv.inputfield && !firstinputview)
-			firstinputview = winv;
+	if ([winv.inputfield isFirstResponder]) {
+		//NSLog(@"Hiding keyboard for %@", winv);
+		[winv.inputfield resignFirstResponder];
 	}
-	
-	if (firstinputview) {
+	else {
 		//NSLog(@"Reshowing keyboard for %@", firstinputview);
-		[firstinputview.inputfield becomeFirstResponder];
+		[winv.inputfield becomeFirstResponder];
 	}
 }
 

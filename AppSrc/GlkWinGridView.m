@@ -5,6 +5,7 @@
 */
 
 #import "GlkWinGridView.h"
+#import "IosGlkViewController.h"
 #import "GlkWindowState.h"
 #import "GlkAppWrapper.h"
 #import "StyleSet.h"
@@ -382,18 +383,22 @@
 	tapnumber++;
 	taplastat = now;
 	//NSLog(@"### tap %d!", tapnumber);
-	
-	/* If there is no input line, ignore single-tap and double-tap. */
-	if (!self.inputfield) {
+
+	IosGlkViewController *viewc = [IosGlkViewController singleton];
+	GlkWindowView *winv = viewc.preferredInputWindow;
+
+	/* If there is no input line (anywhere), ignore single-tap and double-tap. */
+	if (!winv || !winv.inputfield) {
 		tapnumber = 0;
 		return;
 	}
 	
 	/* Otherwise, single-tap focuses the input line. */
+	//### should really fling on double-tap
 	if (tapnumber == 1) {
-		if (![self.inputfield isFirstResponder]) {
+		if (![winv.inputfield isFirstResponder]) {
 			tapnumber = 0;
-			[self.inputfield becomeFirstResponder];
+			[winv.inputfield becomeFirstResponder];
 		}
 	}
 	else {

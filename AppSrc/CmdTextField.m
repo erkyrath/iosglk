@@ -34,6 +34,24 @@
 	[super dealloc];
 }
 
+- (BOOL) becomeFirstResponder {
+	BOOL res = [super becomeFirstResponder];
+	if (!res)
+		return NO;
+	
+	[[IosGlkViewController singleton] preferInputWindow:wintag];
+	return YES;
+}
+
+/*
+- (BOOL) resignFirstResponder {
+	BOOL res = [super resignFirstResponder];
+	if (!res)
+		return NO;
+	
+	return YES;
+}
+ */
 
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleval {
 	GlkWindowState *win = winv.winstate;

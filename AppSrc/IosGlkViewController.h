@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 @class GlkFrameView;
+@class GlkWindowView;
 @class PopMenuView;
 @class MoreBoxView;
 @class GlkLibraryState;
@@ -15,6 +16,9 @@
 @interface IosGlkViewController : UIViewController {
 	id <IosGlkLibDelegate> glkdelegate;
 	GlkFrameView *frameview;
+	
+	/* Tag for the window which most recently had input focus */
+	NSNumber *prefinputwintag;
 
 	/* Strings typed into input lines (across all windows) */
 	NSMutableArray *commandhistory;	
@@ -22,6 +26,8 @@
 
 @property (nonatomic, assign) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
 @property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
+
+@property (nonatomic, retain) NSNumber *prefinputwintag;
 
 @property (nonatomic, retain) NSMutableArray *commandhistory;	
 @property (nonatomic) CGRect keyboardbox;
@@ -34,6 +40,8 @@
 - (void) enteredBackground;
 - (void) updateFromLibraryState:(GlkLibraryState *)library;
 
+- (void) preferInputWindow:(NSNumber *)tag;
+- (GlkWindowView *) preferredInputWindow;
 - (void) hideKeyboard;
 - (void) displayModalRequest:(id)special;
 - (void) keyboardWillBeShown:(NSNotification*)notification;
