@@ -122,6 +122,7 @@ typedef enum GlkStreamType_enum {
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname;
 
 - (void) flush;
+- (void) closeInternal;
 - (int) readByte;
 - (glui32) readBytes:(void **)byteref len:(glui32)len;
 - (void) writeByte:(char)ch;

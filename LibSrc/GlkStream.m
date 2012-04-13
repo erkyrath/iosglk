@@ -824,7 +824,7 @@
 		textmode = [decoder decodeBoolForKey:@"textmode"];
 		maxbuffersize = [decoder decodeIntForKey:@"maxbuffersize"];
 		
-		//### set up all the array stuff!
+		//### set up all the array stuff?
 	}
 	
 	return self;
@@ -848,14 +848,20 @@
 	[encoder encodeBool:textmode forKey:@"textmode"];
 	[encoder encodeInt:maxbuffersize forKey:@"maxbuffersize"];
 	
-	//### set up all the array stuff!
+	//### set up all the array stuff?
 }
 
-- (void) streamDelete {
+/* This is separated out because it also gets called from GlkLibrary.updateFromLibrary. 
+ */
+- (void) closeInternal {
 	[self flush];
 	[handle closeFile];
 	self.handle = nil;
 	self.pathname = nil;
+}
+
+- (void) streamDelete {
+	[self closeInternal];
 	[super streamDelete];
 }
 
