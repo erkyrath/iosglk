@@ -150,7 +150,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	// echostreamtag will be set later
 
 	bbox = [decoder decodeCGRectForKey:@"bbox"];
-	//### styleset? -- the usual path goes through GlkLibrary.singleton.glkdelegate, blah
+	// styleset is not deserialized.
 
 	return self;
 }
@@ -203,7 +203,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	[encoder encodeObject:line_request_initial forKey:@"line_request_initial"];
 	[encoder encodeBool:pending_echo_line_input forKey:@"pending_echo_line_input"];
 	[encoder encodeBool:echo_line_input forKey:@"echo_line_input"];
-	[encoder encodeBool:style forKey:@"style"];
+	[encoder encodeInt32:style forKey:@"style"];
 
 	[encoder encodeObject:streamtag forKey:@"streamtag"];
 	[encoder encodeObject:echostreamtag forKey:@"echostreamtag"];

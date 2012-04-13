@@ -45,7 +45,7 @@
 	GlkStream *echostream;
 	NSNumber *echostreamtag;
 	
-	StyleSet *styleset;
+	StyleSet *styleset; // not serialized
 	CGRect bbox;
 }
 
