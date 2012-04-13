@@ -38,6 +38,7 @@
 @synthesize everythingchanged;
 @synthesize specialrequest;
 @synthesize filemanager;
+@synthesize tagCounter;
 @synthesize dispatch_register_obj;
 @synthesize dispatch_unregister_obj;
 @synthesize dispatch_register_arr;
@@ -81,6 +82,9 @@ static GlkLibrary *singleton = nil;
 }
 
 - (id) initWithCoder:(NSCoder *)decoder {
+	/* It is important to remember that a GlkLibrary which is deserialized through this function will *not* be installed straight into service. Instead, it will be imported into the *real* library via the updateFromLibrary method. This frees us from some consistency-check hassle.
+	 */
+	
 	int version = [decoder decodeIntForKey:@"version"];
 	if (version <= 0 || version > SERIAL_VERSION)
 		return nil;
@@ -101,8 +105,7 @@ static GlkLibrary *singleton = nil;
 	
 	//### specialrequest: this really ought to be nil, right?
 
-	self.filemanager = [[[NSFileManager alloc] init] autorelease];
-	// skip the calendar fields, they're allocated as-needed
+	// skip the calendar and filemanager fields; they're not needed
 
 	NSNumber *rootwintag = [decoder decodeObjectForKey:@"rootwintag"];
 	NSNumber *currentstrtag = [decoder decodeObjectForKey:@"currentstrtag"];
@@ -137,7 +140,14 @@ static GlkLibrary *singleton = nil;
 		if (win.echostreamtag)
 			win.echostream = [self streamForTag:win.echostreamtag];
 		
-		//### patch up geometry.keystylesets! and pair.child1/2!
+		if (win.type == wintype_Pair) {
+			GlkWindowPair *pairwin = (GlkWindowPair *)win;
+			pairwin.child1 = [self windowForTag:pairwin.geometry.child1tag];
+			pairwin.child2 = [self windowForTag:pairwin.geometry.child2tag];
+		}
+		else if (win.type == wintype_TextGrid || win.type == wintype_TextBuffer) {
+			win.styleset = [StyleSet buildForWindowType:win.type rock:win.rock];
+		}
 	}
 	
 	for (GlkStream *str in streams) {
@@ -153,8 +163,7 @@ static GlkLibrary *singleton = nil;
 		}
 	}
 	
-	//### glkdelegate?
-	//### dispatch_register_obj, et cetera...? (maybe these already work, because of the setting-up in gidispatch_set_object_registry()?)
+	// We don't worry about glkdelegate or the dispatch hooks. (Because this will only be used through updateFromLibrary). Similarly, none of the windows need stylesets yet, and none of the file streams are really open.
 	
 	return self;
 }
@@ -306,6 +315,12 @@ static GlkLibrary *singleton = nil;
 	}
 }
 
+/* Clone the library display state for a UI update. (This doesn't produce a GlkLibrary object; rather, it builds a subset which contains only what the UI cares about.)
+ 
+	Despite the name "clone", this returns an autoreleased object, not a retained one.
+ 
+	This runs in the VM thread; the cloned GlkLibraryState is then thrown across to the UI thread, which owns it thereafter.
+ */
 - (GlkLibraryState *) cloneState {
 	GlkLibraryState *state = [[[GlkLibraryState alloc] init] autorelease];
 	[self sanityCheck];
@@ -331,6 +346,55 @@ static GlkLibrary *singleton = nil;
 	everythingchanged = NO;
 	
 	return state;
+}
+
+/* Import one library's state into this one, replacing the current state.
+ 
+	This is used only during an autorestore (out-of-band restore), where the entire library state (as well as the game state) is being deserialized. One might imagine that it would be easier to just say "IosGlkAppDelegate.library = otherlib", and maybe it is, but I don't want to worry about setup issues (like getting all the dispatch hooks set right). This is more self-contained, and it's not like we don't have to iterate through things and do extra setup anyhow.
+ 
+	This destroys otherlib in the process of reading it. Don't try to use otherlib for anything afterwards.
+ */
+- (void) updateFromLibrary:(GlkLibrary *)otherlib {
+	/* First close all current file streams. We're going in under the library interface, so we don't use the glk_stream_close() interface. This leaves the library in an inconsistent state (half-closed stream objects), but we're about to replace all that anyway. */
+	for (GlkStream *str in streams) {
+		if (str.type == strtype_File) {
+			GlkStreamFile *filestr = (GlkStreamFile *)str;
+			[filestr closeInternal];
+		}
+	}
+	
+	//### dispatch registry? array registry?
+	
+	vmexited = otherlib.vmexited;
+	
+	self.rootwin = otherlib.rootwin;
+	self.currentstr = otherlib.currentstr;
+	self.specialrequest = otherlib.specialrequest;
+	self.timerinterval = otherlib.timerinterval;
+	
+	tagCounter = otherlib.tagCounter;
+	
+	self.windows = otherlib.windows;
+	self.streams = otherlib.streams;
+	self.filerefs = otherlib.filerefs;
+	
+	//### dispatch registry? array registry?
+	//### go through windows, create stylesets. Also patch up geometry.keystylesets in pairwins!
+	//### go through file streams, open file handles. memory streams, set up pointers. (These require delving into the interpreter.)
+	
+	/* Ensure that the UI thread has begun or stopped the timer callback, as appropriate. */ 
+	glk_request_timer_events(timerinterval);
+
+	// We should now have a complete, consistent GlkLibrary state.
+	[self sanityCheck];
+	[self dirtyAllData];
+
+	// Let's be really clear about destroying otherlib.
+	otherlib.rootwin = nil;
+	otherlib.currentstr = nil;
+	otherlib.windows = nil;
+	otherlib.streams = nil;
+	otherlib.filerefs = nil;
 }
 
 - (void) sanityCheck {
@@ -428,6 +492,8 @@ static GlkLibrary *singleton = nil;
 				GlkStreamFile *filestr = (GlkStreamFile *)str;
 				if (!filestr.pathname)
 					NSLog(@"SANITY: file stream lacks pathname");
+				if (!filestr.handle)
+					NSLog(@"SANITY: file stream lacks file handle");
 			}
 			break;
 				

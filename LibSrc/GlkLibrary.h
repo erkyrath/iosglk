@@ -55,6 +55,7 @@
 @property (nonatomic, retain) NSFileManager *filemanager;
 @property (nonatomic, readonly) NSCalendar *utccalendar;
 @property (nonatomic, readonly) NSCalendar *localcalendar;
+@property (nonatomic, readonly) NSInteger tagCounter;
 @property (nonatomic, retain) id specialrequest;
 @property (nonatomic) gidispatch_rock_t (*dispatch_register_obj)(void *obj, glui32 objclass);
 @property (nonatomic) void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
@@ -73,5 +74,6 @@
 
 - (void) sanityCheck;
 - (GlkLibraryState *) cloneState;
+- (void) updateFromLibrary:(GlkLibrary *)otherlib;
 
 @end
