@@ -736,6 +736,7 @@
 @synthesize pathname;
 @synthesize readbuffer;
 @synthesize writebuffer;
+@synthesize offsetinfile;
 
 /* This constructor is used by the regular Glk glk_stream_open_file() call.
 */
@@ -824,7 +825,18 @@
 		textmode = [decoder decodeBoolForKey:@"textmode"];
 		maxbuffersize = [decoder decodeIntForKey:@"maxbuffersize"];
 		
-		//### set up all the array stuff?
+		offsetinfile = [decoder decodeInt64ForKey:@"offsetinfile"];
+		
+		// start out with an empty buffer
+		readbuffer = nil;
+		writebuffer = nil;
+		bufferpos = 0;
+		buffermark = 0;
+		buffertruepos = 0;
+		bufferdirtystart = maxbuffersize;
+		bufferdirtyend = 0;
+		
+		// but we don't open the file itself at this time
 	}
 	
 	return self;
@@ -848,7 +860,9 @@
 	[encoder encodeBool:textmode forKey:@"textmode"];
 	[encoder encodeInt:maxbuffersize forKey:@"maxbuffersize"];
 	
-	//### set up all the array stuff?
+	[encoder encodeInt64:[handle offsetInFile] forKey:@"offsetinfile"];
+
+	// skip the buffer fields, since we flushed it.
 }
 
 /* This is separated out because it also gets called from GlkLibrary.updateFromLibrary. 

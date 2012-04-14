@@ -111,12 +111,15 @@ typedef enum GlkStreamType_enum {
 	int buffertruepos; // offset within the buffer where the filehandle's mark sits
 	int bufferdirtystart; // buffersize if nothing dirty
 	int bufferdirtyend; // 0 if nothing dirty
+	
+	unsigned long long offsetinfile; // only used during deserialization; zero normally
 }
 
 @property (nonatomic, retain) NSFileHandle *handle;
 @property (nonatomic, retain) NSString *pathname;
 @property (nonatomic, retain) NSData *readbuffer;
 @property (nonatomic, retain) NSMutableData *writebuffer;
+@property (nonatomic) unsigned long long offsetinfile;
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)unicode fileref:(GlkFileRef *)fref;
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname;

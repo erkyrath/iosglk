@@ -145,9 +145,6 @@ static GlkLibrary *singleton = nil;
 			pairwin.child1 = [self windowForTag:pairwin.geometry.child1tag];
 			pairwin.child2 = [self windowForTag:pairwin.geometry.child2tag];
 		}
-		else if (win.type == wintype_TextGrid || win.type == wintype_TextBuffer) {
-			win.styleset = [StyleSet buildForWindowType:win.type rock:win.rock];
-		}
 	}
 	
 	for (GlkStream *str in streams) {
@@ -380,9 +377,26 @@ static GlkLibrary *singleton = nil;
 	self.filerefs = otherlib.filerefs;
 	
 	//### dispatch registry? array registry?
-	//### go through windows, create stylesets. Also patch up geometry.keystylesets in pairwins!
-	//### go through file streams, open file handles. memory streams, set up pointers. (These require delving into the interpreter.)
+
+	for (GlkWindow *win in windows) {
+		if (win.type == wintype_TextGrid || win.type == wintype_TextBuffer) {
+			win.styleset = [StyleSet buildForWindowType:win.type rock:win.rock];
+		}
+	}
+	for (GlkWindow *win in windows) {
+		if (win.type == wintype_Pair) {
+			GlkWindowPair *pairwin = (GlkWindowPair *)win;
+			GlkWindow *keywin = [self windowForTag:pairwin.geometry.keytag];
+			if (keywin) {
+				pairwin.geometry.keystyleset = keywin.styleset;
+			}
+		}
+	}
 	
+	for (GlkStream *str in streams) {
+		//### go through file streams, open file handles. memory streams, set up pointers. (These require delving into the interpreter.)
+	}
+		
 	/* Ensure that the UI thread has begun or stopped the timer callback, as appropriate. */ 
 	glk_request_timer_events(timerinterval);
 
