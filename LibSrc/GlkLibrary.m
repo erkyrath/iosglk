@@ -192,6 +192,7 @@ static GlkLibrary *singleton = nil;
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
+	NSLog(@"### GlkLibrary: encoding with %d windows, %d streams, %d filerefs", windows.count, streams.count, filerefs.count);
 	[encoder encodeInt:SERIAL_VERSION forKey:@"version"];
 	
 	[encoder encodeCGRect:bounds forKey:@"bounds"];
