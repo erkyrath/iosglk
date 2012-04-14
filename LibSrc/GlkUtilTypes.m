@@ -67,7 +67,8 @@
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[encoder encodeInt:index forKey:@"index"];
-	[encoder encodeInt:status forKey:@"status"];
+	if (status)
+		[encoder encodeInt:status forKey:@"status"];
 	[encoder encodeObject:arr forKey:@"arr"];
 }
 
@@ -135,8 +136,10 @@
 	if (ismutable)
 		[self freeze];
 	[encoder encodeObject:str forKey:@"str"];
-	[encoder encodeInt32:style forKey:@"style"];
-	[encoder encodeInt:pos forKey:@"pos"];
+	if (style != 0)
+		[encoder encodeInt32:style forKey:@"style"];
+	if (pos != 0)
+		[encoder encodeInt:pos forKey:@"pos"];
 }
 
 - (void) appendString:(NSString *)newstr {
