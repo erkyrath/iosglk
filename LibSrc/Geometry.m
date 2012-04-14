@@ -44,7 +44,7 @@
 }
 
 - (id) initWithCoder:(NSCoder *)decoder {
-	dir = [decoder decodeInt32ForKey:@"dir"];
+	self.dir = [decoder decodeInt32ForKey:@"dir"]; // use setter to set vertical and backward too
 	division = [decoder decodeInt32ForKey:@"division"];
 	hasborder = [decoder decodeBoolForKey:@"hasborder"];
 				 
