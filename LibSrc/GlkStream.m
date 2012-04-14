@@ -865,6 +865,35 @@
 	// skip the buffer fields, since we flushed it.
 }
 
+/* Open the file handle after a deserialize, and seek to the appropriate point. Called from GlkLibrary.updateFromLibrary. 
+ 
+	We don't try to create the file (or the directory) here -- if the file doesn't exist, we give up. If this returns failure, handle remains nil and the caller should close the stream.
+ */
+- (BOOL) reopenInternal {
+	NSFileHandle *newhandle = nil;
+	switch (fmode) {
+		case filemode_Read:
+			newhandle = [NSFileHandle fileHandleForReadingAtPath:pathname];
+			break;
+		case filemode_Write:
+			newhandle = [NSFileHandle fileHandleForWritingAtPath:pathname];
+			break;
+		case filemode_ReadWrite:
+		case filemode_WriteAppend:
+			newhandle = [NSFileHandle fileHandleForUpdatingAtPath:pathname];
+			break;
+	}
+	
+	if (!newhandle)
+		return NO;
+	
+	self.handle = newhandle;
+	[handle seekToFileOffset:offsetinfile];
+	offsetinfile = 0;
+	
+	return YES;
+}
+
 /* This is separated out because it also gets called from GlkLibrary.updateFromLibrary. 
  */
 - (void) closeInternal {

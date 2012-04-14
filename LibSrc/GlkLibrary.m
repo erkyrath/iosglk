@@ -393,8 +393,22 @@ static GlkLibrary *singleton = nil;
 		}
 	}
 	
+	NSMutableArray *failedstreams = [NSMutableArray arrayWithCapacity:4];
 	for (GlkStream *str in streams) {
-		//### go through file streams, open file handles. memory streams, set up pointers. (These require delving into the interpreter.)
+		if (str.type == strtype_File) {
+			GlkStreamFile *filestr = (GlkStreamFile *)str;
+			BOOL res = [filestr reopenInternal];
+			if (!res)
+				[failedstreams addObject:str];
+		}
+		else if (str.type == strtype_Memory) {
+			//### memory streams, set up pointers. (These require delving into the interpreter.)
+		}
+	}
+	
+	for (GlkStream *str in failedstreams) {
+		NSLog(@"### stream %@ failed to reopen; closing it", str);
+		glk_stream_close(str, nil);
 	}
 		
 	/* Ensure that the UI thread has begun or stopped the timer callback, as appropriate. */ 

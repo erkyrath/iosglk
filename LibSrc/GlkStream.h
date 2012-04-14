@@ -112,7 +112,7 @@ typedef enum GlkStreamType_enum {
 	int bufferdirtystart; // buffersize if nothing dirty
 	int bufferdirtyend; // 0 if nothing dirty
 	
-	unsigned long long offsetinfile; // only used during deserialization; zero normally
+	unsigned long long offsetinfile; // (in bytes) only used during deserialization; zero normally
 }
 
 @property (nonatomic, retain) NSFileHandle *handle;
@@ -125,6 +125,7 @@ typedef enum GlkStreamType_enum {
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname;
 
 - (void) flush;
+- (BOOL) reopenInternal;
 - (void) closeInternal;
 - (int) readByte;
 - (glui32) readBytes:(void **)byteref len:(glui32)len;
