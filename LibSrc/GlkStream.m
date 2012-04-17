@@ -894,17 +894,11 @@
 	return YES;
 }
 
-/* This is separated out because it also gets called from GlkLibrary.updateFromLibrary. 
- */
-- (void) closeInternal {
+- (void) streamDelete {
 	[self flush];
 	[handle closeFile];
 	self.handle = nil;
 	self.pathname = nil;
-}
-
-- (void) streamDelete {
-	[self closeInternal];
 	[super streamDelete];
 }
 

@@ -353,15 +353,21 @@ static GlkLibrary *singleton = nil;
 	This destroys otherlib in the process of reading it. Don't try to use otherlib for anything afterwards.
  */
 - (void) updateFromLibrary:(GlkLibrary *)otherlib {
-	/* First close all current file streams. We're going in under the library interface, so we don't use the glk_stream_close() interface. This leaves the library in an inconsistent state (half-closed stream objects), but we're about to replace all that anyway. */
-	for (GlkStream *str in streams) {
-		if (str.type == strtype_File) {
-			GlkStreamFile *filestr = (GlkStreamFile *)str;
-			[filestr closeInternal];
-		}
+	/* First close all the windows and streams and filerefs. (It only really matters for streams, which need to be flushed, but it's cleaner to close everything.) */
+	if (rootwin) {
+		// This takes care of all the windows
+		glk_window_close(rootwin, NULL);
+	}
+	while (streams.count) {
+		GlkStream *str = [streams objectAtIndex:0];
+		glk_stream_close(str, NULL);
+	}
+	while (filerefs.count) {
+		GlkFileRef *fref = [filerefs objectAtIndex:0];
+		glk_fileref_destroy(fref);
 	}
 	
-	//### dispatch registry? array registry?
+	NSAssert(windows.count == 0 && streams.count == 0 && filerefs.count == 0, @"updateFromLibrary: unclosed objects remain!");
 	
 	vmexited = otherlib.vmexited;
 	
