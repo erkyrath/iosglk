@@ -378,9 +378,18 @@ static GlkLibrary *singleton = nil;
 	
 	tagCounter = otherlib.tagCounter;
 	
-	self.windows = otherlib.windows;
-	self.streams = otherlib.streams;
-	self.filerefs = otherlib.filerefs;
+	for (GlkWindow *win in otherlib.windows) {
+		win.library = self;
+		[windows addObject:win];
+	}
+	for (GlkStream *str in otherlib.streams) {
+		str.library = self;
+		[streams addObject:str];
+	}
+	for (GlkFileRef *fref in otherlib.filerefs) {
+		fref.library = self;
+		[filerefs addObject:fref];
+	}
 	
 	//### dispatch registry? array registry?
 
