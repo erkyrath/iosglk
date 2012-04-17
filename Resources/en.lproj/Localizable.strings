@@ -6,4 +6,5 @@
 
 "label.missing-line" = "Missing line";
 "label.blank-line" = "Blank line";
+"label.no-history" = "(You haven’t done much yet)";
 

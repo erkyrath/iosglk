@@ -170,7 +170,7 @@
 	
 	if (history.count == 0) {
 		disabled = YES;
-		history = [NSArray arrayWithObject:@"(you haven’t done much yet)"]; //###localize
+		history = [NSArray arrayWithObject:NSLocalizedString(@"label.no-history", nil)];
 	}
 
 	CGRect rect = labelbox;
