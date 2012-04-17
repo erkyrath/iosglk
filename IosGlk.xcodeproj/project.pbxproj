@@ -38,6 +38,7 @@
 		DFC755E8152953A1009F4137 /* background-popbox.png in Resources */ = {isa = PBXBuildFile; fileRef = DFC755E5152953A1009F4137 /* background-popbox.png */; };
 		DFC755E9152953A1009F4137 /* background-popbox@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFC755E6152953A1009F4137 /* background-popbox@2x.png */; };
 		DFC755EA152953A1009F4137 /* fader-popbox.png in Resources */ = {isa = PBXBuildFile; fileRef = DFC755E7152953A1009F4137 /* fader-popbox.png */; };
+		DFCB15E1153E21E600936D28 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DFCB15DF153E21E600936D28 /* Localizable.strings */; };
 		DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */; };
 		DFCE593E13690D0100EACA86 /* GlkDispatchLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */; };
 		DFE9EA34136607AC00DD5F53 /* gi_dispa.c in Sources */ = {isa = PBXBuildFile; fileRef = DFE9EA33136607AC00DD5F53 /* gi_dispa.c */; };
@@ -116,6 +117,7 @@
 		DFC755E5152953A1009F4137 /* background-popbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background-popbox.png"; sourceTree = "<group>"; };
 		DFC755E6152953A1009F4137 /* background-popbox@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background-popbox@2x.png"; sourceTree = "<group>"; };
 		DFC755E7152953A1009F4137 /* fader-popbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fader-popbox.png"; sourceTree = "<group>"; };
+		DFCB15E0153E21E600936D28 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkBlorbLayer.m; sourceTree = "<group>"; };
 		DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDispatchLayer.m; sourceTree = "<group>"; };
 		DFE9EA33136607AC00DD5F53 /* gi_dispa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gi_dispa.c; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				DF41DA71152E09FE000B5D00 /* InputMenuDecor.xib */,
 				DF9D1A6314E6E27C006A6749 /* HistoryMenuView.xib */,
 				DF9D1A6514E71D6E006A6749 /* PaletteMenuView.xib */,
+				DFCB15DF153E21E600936D28 /* Localizable.strings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -392,6 +395,7 @@
 				Japanese,
 				French,
 				German,
+				en,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -423,6 +427,7 @@
 				DF41DA6F152E09F4000B5D00 /* button-tab-sel.png in Resources */,
 				DF41DA70152E09F4000B5D00 /* button-tab-sel@2x.png in Resources */,
 				DF41DA72152E09FE000B5D00 /* InputMenuDecor.xib in Resources */,
+				DFCB15E1153E21E600936D28 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -478,6 +483,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		DFCB15DF153E21E600936D28 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DFCB15E0153E21E600936D28 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
