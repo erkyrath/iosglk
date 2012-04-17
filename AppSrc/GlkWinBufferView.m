@@ -63,7 +63,7 @@
 		return;
 	}
 	lastLayoutBounds = self.bounds;
-	NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
+	//NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
 	
 	CGRect rect = moreview.frameview.frame;
 	rect.origin.x = lastLayoutBounds.size.width - rect.size.width - 4;
@@ -85,7 +85,7 @@
 - (void) updateFromWindowState {
 	GlkWindowBufferState *bufwin = (GlkWindowBufferState *)winstate;
 	
-	NSLog(@"WBV: updateFromWindowState: %d lines (dirty %d to %d)", bufwin.lines.count, bufwin.linesdirtyfrom, bufwin.linesdirtyto);
+	//NSLog(@"WBV: updateFromWindowState: %d lines (dirty %d to %d)", bufwin.lines.count, bufwin.linesdirtyfrom, bufwin.linesdirtyto);
 	if (bufwin.linesdirtyfrom >= bufwin.linesdirtyto)
 		return;
 	

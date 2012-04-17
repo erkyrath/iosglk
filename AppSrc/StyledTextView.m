@@ -185,7 +185,7 @@
 /* Import the given lines (as taken from the GlkWindowBuffer).
  */
 - (void) updateWithLines:(NSArray *)uplines dirtyFrom:(int)linesdirtyfrom clearCount:(int)newclearcount refresh:(BOOL)refresh {
-	NSLog(@"STV: updating, got %d lines %s", uplines.count, ((clearcount != newclearcount)?"(clear-bump)":""));
+	//NSLog(@"STV: updating, got %d lines %s", uplines.count, ((clearcount != newclearcount)?"(clear-bump)":""));
 	newcontent = YES;
 	
 	if (refresh) {
@@ -315,8 +315,10 @@
 		if (wasrefresh)
 			frombottom = YES;
 	}
+	/*
 	if (frombottom)
 		NSLog(@"### frombottom case! (wasclear %d, wasrefresh %d)", wasclear, wasrefresh);
+	*/
 	
 	CGFloat bottom = styleset.margins.top;
 	int endlaid = firstsline;
@@ -338,7 +340,7 @@
 			newcount++;
 		}
 		[vlines addObjectsFromArray:newlines];
-		NSLog(@"STV: appended %d vlines; lines are laid to %d (of %d to %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, firstsline, firstsline+slines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
+		//NSLog(@"STV: appended %d vlines; lines are laid to %d (of %d to %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, firstsline, firstsline+slines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
 	
 	/* Extend vlines up, similarly. */
@@ -382,7 +384,7 @@
 
 		NSRange range = {0,0};
 		[vlines replaceObjectsInRange:range withObjectsFromArray:newlines];
-		NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d to %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, firstsline, firstsline+slines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
+		//NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d to %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, firstsline, firstsline+slines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
 	
 	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. If the screen started out clear, scroll straight to the top regardless */
@@ -545,7 +547,7 @@
 	#endif // DEBUG
 	
 	if (newcontent) {
-		NSLog(@"STV: new content time! (wasclear %d)", wasclear);
+		//NSLog(@"STV: new content time! (wasclear %d)", wasclear);
 		if (wasclear) {
 			[self.superviewAsBufferView setMoreFlag:self.moreToSee];
 		}
@@ -583,7 +585,7 @@
 	CGFloat scrolltobottom = MAX(0, contentsize.height - visbounds.size.height);
 	CGFloat scrollto;
 	
-	NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
+	//NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
 	
 	if (vlines.count && endvlineseen < vlines.count) {
 		int topline = endvlineseen;
@@ -597,18 +599,18 @@
 		}
 		if (scrollto > scrolltobottom)
 			scrollto = scrolltobottom;
-		NSLog(@"STV: pageDown one page: %.1f", scrollto);
+		//NSLog(@"STV: pageDown one page: %.1f", scrollto);
 	}
 	else if (vlines.count && self.lastLaidOutLine < firstsline+slines.count) {
 		GlkVisualLine *vln = [vlines lastObject];
 		scrollto = vln.ypos;
 		if (scrollto > scrolltobottom)
 			scrollto = scrolltobottom;
-		NSLog(@"STV: pageDown one page (unlaid case): %.1f", scrollto);
+		//NSLog(@"STV: pageDown one page (unlaid case): %.1f", scrollto);
 	}
 	else {
 		scrollto = scrolltobottom;
-		NSLog(@"STV: pageDown to bottom: %.1f", scrollto);
+		//NSLog(@"STV: pageDown to bottom: %.1f", scrollto);
 	}
 	
 	self.superviewAsBufferView.nowcontentscrolling = YES;
@@ -792,7 +794,7 @@
 		}
 	}
 		
-	NSLog(@"STV: laid out %d vislines, final ypos %.1f (first line %d of %d)", result.count, ypos, startline, slines.count);
+	//NSLog(@"STV: laid out %d vislines, final ypos %.1f (first line %d of %d)", result.count, ypos, startline, slines.count);
 	return result;
 }
 
