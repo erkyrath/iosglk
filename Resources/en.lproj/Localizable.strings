@@ -4,3 +4,6 @@
  http://eblong.com/zarf/glk/
  */
 
+"label.missing-line" = "Missing line";
+"label.blank-line" = "Blank line";
+

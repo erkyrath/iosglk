@@ -24,10 +24,10 @@
 
 - (NSString *) accessibilityLabel {
 	if (!line)
-		return @"Missing line"; //###localize
+		return NSLocalizedString(@"label.missing-line", nil);
 	NSString *res = line.concatLine;
 	if (res.length == 0)
-		return @"Blank line"; //###localize
+		return NSLocalizedString(@"label.blank-line", nil);
 	return res;
 }
 
@@ -67,10 +67,10 @@
 
 - (NSString *) accessibilityLabel {
 	if (!line)
-		return @"Missing line"; //###localize
+		return NSLocalizedString(@"label.missing-line", nil);
 	NSString *res = line.concatLine;
 	if (res.length == 0)
-		return @"Blank line"; //###localize
+		return NSLocalizedString(@"label.blank-line", nil);
 	return res;
 }
 
