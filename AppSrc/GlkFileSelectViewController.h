@@ -15,6 +15,8 @@
 	
 	BOOL isload;
 	GlkFileRefPrompt *prompt;
+	NSString *usekey;
+	int defaultcounter;
 	NSMutableArray *filelist; // array of GlkFileThumb
 	NSDateFormatter *dateformatter;
 }
@@ -22,6 +24,7 @@
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet UITextField *textfield;
 @property (nonatomic, retain) GlkFileRefPrompt *prompt;
+@property (nonatomic, retain) NSString *usekey;
 @property (nonatomic, retain) NSMutableArray *filelist;
 @property (nonatomic, retain) NSDateFormatter *dateformatter;
 

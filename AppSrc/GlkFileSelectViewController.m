@@ -19,6 +19,7 @@
 @synthesize tableView;
 @synthesize textfield;
 @synthesize prompt;
+@synthesize usekey;
 @synthesize filelist;
 @synthesize dateformatter;
 
@@ -30,6 +31,21 @@
 		self.dateformatter = [[[RelDateFormatter alloc] init] autorelease];
 		[dateformatter setDateStyle:NSDateFormatterMediumStyle];
 		[dateformatter setTimeStyle:NSDateFormatterShortStyle];
+		
+		switch (prompt.usage & fileusage_TypeMask) {
+			case fileusage_SavedGame:
+				self.usekey = @"use.save";
+				break;
+			case fileusage_Transcript:
+				self.usekey = @"use.transcript";
+				break;
+			case fileusage_InputRecord:
+				self.usekey = @"use.input";
+				break;
+			case fileusage_Data:
+			default:
+				self.usekey = @"use.data";
+		}
 	}
 	return self;
 }
@@ -46,21 +62,35 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self
 		selector:@selector(keyboardWillBeHidden:)
 		name:UIKeyboardWillHideNotification object:nil];
-		
-	//### localize and customize
+	
 	if (isload) {
 		if (textfield)
 			[NSException raise:@"GlkException" format:@"textfield in read-mode file selection"];
-		self.navigationItem.title = @"Load";
+		self.navigationItem.title = NSLocalizedString([usekey stringByAppendingString:@".readtitle"], nil);
 	}
 	else {
 		if (!textfield)
 			[NSException raise:@"GlkException" format:@"no textfield in write-mode file selection"];
-		self.navigationItem.title = @"Save";
-		//### Add default-entry-thing "Saved game". Include the number, come to think of it.
+		
+		NSString *placeholder = NSLocalizedString([usekey stringByAppendingString:@".placeholder"], nil);
+		for (int ix=1; YES; ix++) {
+			NSString *label = placeholder;
+			if (ix >= 2)
+				label = [NSString stringWithFormat:@"%@ %d", label, ix];
+			NSString *filename = StringToDumbEncoding(label);
+			NSString *pathname = [prompt.dirname stringByAppendingPathComponent:filename];
+			if (![[NSFileManager defaultManager] fileExistsAtPath:pathname]) {
+				placeholder = label;
+				defaultcounter = ix;
+				break;
+			}
+		}
+		
+		self.navigationItem.title = NSLocalizedString([usekey stringByAppendingString:@".writetitle"], nil);
+		textfield.placeholder = placeholder;
 		CGRect rect = CGRectMake(0, 0, tableView.frame.size.width, 32);
 		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
-		label.text = @"Previously saved games:";
+		label.text = NSLocalizedString([usekey stringByAppendingString:@".listlabel"], nil);
 		label.textAlignment = UITextAlignmentCenter;
 		label.textColor = [UIColor lightGrayColor];
 		tableView.tableHeaderView = label;
@@ -111,6 +141,7 @@
 
 - (void) dealloc {
 	self.prompt = nil;
+	self.usekey = nil;
 	self.filelist = nil;
 	self.dateformatter = nil;
 	[super dealloc];
@@ -120,7 +151,7 @@
 	GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
 	thumb.isfake = YES;
 	thumb.modtime = [NSDate date];
-	thumb.label = @"No saved games"; //### localize and customize
+	thumb.label = NSLocalizedString([usekey stringByAppendingString:@".nofiles"], nil);
 	[filelist insertObject:thumb atIndex:0];
 }
 
@@ -297,17 +328,9 @@
 	
 	if (label.length == 0) {
 		/* Textfield is empty. Pick a "Saved game" filename which is not already in use. */
-		//### localize this string
-		for (int ix=0; YES; ix++) {
-			if (!ix)
-				label = @"Saved game";
-			else
-				label = [NSString stringWithFormat:@"Saved game %d", ix];
-			NSString *filename = StringToDumbEncoding(label);
-			NSString *pathname = [prompt.dirname stringByAppendingPathComponent:filename];
-			if (![[NSFileManager defaultManager] fileExistsAtPath:pathname])
-				break;
-		}
+		label = NSLocalizedString([usekey stringByAppendingString:@".placeholder"], nil);
+		if (defaultcounter >= 2)
+			label = [NSString stringWithFormat:@"%@ %d", label, defaultcounter];
 	}
 	
 	prompt.filename = StringToDumbEncoding(label);

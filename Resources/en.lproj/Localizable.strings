@@ -8,3 +8,26 @@
 "label.blank-line" = "Blank line";
 "label.no-history" = "(You haven’t done much yet)";
 
+"use.save.readtitle" = "Load Game";
+"use.save.writetitle" = "Save Game";
+"use.save.placeholder" = "Saved game";
+"use.save.listlabel" = "Previously saved games:";
+"use.save.nofiles" = "No saved games";
+
+"use.transcript.readtitle" = "Find Transcript";
+"use.transcript.writetitle" = "Write Transcript";
+"use.transcript.placeholder" = "Transcript";
+"use.transcript.listlabel" = "Existing transcripts:";
+"use.transcript.nofiles" = "No transcripts";
+
+"use.input.readtitle" = "Find Record";
+"use.input.writetitle" = "Write Record";
+"use.input.placeholder" = "Command Record";
+"use.input.listlabel" = "Existing records:";
+"use.input.nofiles" = "No command records";
+
+"use.data.readtitle" = "Read Data";
+"use.data.writetitle" = "Write Data";
+"use.data.placeholder" = "Data file";
+"use.data.listlabel" = "Existing data files:";
+"use.data.nofiles" = "No data files";
