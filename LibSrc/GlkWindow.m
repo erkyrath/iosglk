@@ -89,8 +89,8 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		type = wintype;
 		rock = winrock;
 		
-		parent = nil;
-		parenttag = nil;
+		self.parent = nil;
+		self.parenttag = nil;
 		input_request_id = 0;
 		line_request_initial = nil;
 		line_buffer = nil;
@@ -108,7 +108,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		self.echostream = nil;
 		self.echostreamtag = nil;
 		
-		styleset = nil;
+		self.styleset = nil;
 		[library.windows addObject:self];
 		
 		if (library.dispatch_register_obj)
