@@ -336,9 +336,9 @@
 	prompt.filename = StringToDumbEncoding(label);
 	prompt.pathname = [prompt.dirname stringByAppendingPathComponent:prompt.filename];
 	
-	if ([[NSFileManager defaultManager] fileExistsAtPath:prompt.pathname]) {
-		NSString *str = [NSString stringWithFormat:@"Replace the saved game \"%@\"?", label];
-		UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Replace" otherButtonTitles:nil] autorelease];
+	if (prompt.fmode != filemode_WriteAppend && [[NSFileManager defaultManager] fileExistsAtPath:prompt.pathname]) {
+		NSString *str = [NSString stringWithFormat:NSLocalizedString([usekey stringByAppendingString:@".replacequery"], nil), label];
+		UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:NSLocalizedString(@"button.replace", nil) otherButtonTitles:nil] autorelease];
 		[sheet showInView:textfield];
 		return;
 	}
