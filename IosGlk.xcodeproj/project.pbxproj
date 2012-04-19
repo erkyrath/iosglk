@@ -39,6 +39,13 @@
 		DFC755E9152953A1009F4137 /* background-popbox@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFC755E6152953A1009F4137 /* background-popbox@2x.png */; };
 		DFC755EA152953A1009F4137 /* fader-popbox.png in Resources */ = {isa = PBXBuildFile; fileRef = DFC755E7152953A1009F4137 /* fader-popbox.png */; };
 		DFCB15E1153E21E600936D28 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DFCB15DF153E21E600936D28 /* Localizable.strings */; };
+		DFCB160B153FAD5E00936D28 /* button-input-back.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1605153FAD5E00936D28 /* button-input-back.png */; };
+		DFCB160C153FAD5E00936D28 /* button-input-back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1606153FAD5E00936D28 /* button-input-back@2x.png */; };
+		DFCB160D153FAD5E00936D28 /* button-input-clear.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1607153FAD5E00936D28 /* button-input-clear.png */; };
+		DFCB160E153FAD5E00936D28 /* button-input-clear@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1608153FAD5E00936D28 /* button-input-clear@2x.png */; };
+		DFCB160F153FAD5E00936D28 /* button-input-menu.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1609153FAD5E00936D28 /* button-input-menu.png */; };
+		DFCB1610153FAD5E00936D28 /* button-input-menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCB160A153FAD5E00936D28 /* button-input-menu@2x.png */; };
+		DFCB1614153FAD9400936D28 /* TextFieldRightView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1613153FAD9400936D28 /* TextFieldRightView.xib */; };
 		DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */; };
 		DFCE593E13690D0100EACA86 /* GlkDispatchLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */; };
 		DFE9EA34136607AC00DD5F53 /* gi_dispa.c in Sources */ = {isa = PBXBuildFile; fileRef = DFE9EA33136607AC00DD5F53 /* gi_dispa.c */; };
@@ -118,6 +125,13 @@
 		DFC755E6152953A1009F4137 /* background-popbox@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background-popbox@2x.png"; sourceTree = "<group>"; };
 		DFC755E7152953A1009F4137 /* fader-popbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fader-popbox.png"; sourceTree = "<group>"; };
 		DFCB15E0153E21E600936D28 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DFCB1605153FAD5E00936D28 /* button-input-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-input-back.png"; sourceTree = "<group>"; };
+		DFCB1606153FAD5E00936D28 /* button-input-back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-input-back@2x.png"; sourceTree = "<group>"; };
+		DFCB1607153FAD5E00936D28 /* button-input-clear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-input-clear.png"; sourceTree = "<group>"; };
+		DFCB1608153FAD5E00936D28 /* button-input-clear@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-input-clear@2x.png"; sourceTree = "<group>"; };
+		DFCB1609153FAD5E00936D28 /* button-input-menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-input-menu.png"; sourceTree = "<group>"; };
+		DFCB160A153FAD5E00936D28 /* button-input-menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-input-menu@2x.png"; sourceTree = "<group>"; };
+		DFCB1613153FAD9400936D28 /* TextFieldRightView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextFieldRightView.xib; sourceTree = "<group>"; };
 		DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkBlorbLayer.m; sourceTree = "<group>"; };
 		DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDispatchLayer.m; sourceTree = "<group>"; };
 		DFE9EA33136607AC00DD5F53 /* gi_dispa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gi_dispa.c; sourceTree = "<group>"; };
@@ -227,6 +241,7 @@
 				DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */,
 				DF98665714FEE5FA0057E1E2 /* MoreBoxView.xib */,
 				DFBB4DF114F5E1210041016A /* PopBoxView.xib */,
+				DFCB1613153FAD9400936D28 /* TextFieldRightView.xib */,
 				DF41DA71152E09FE000B5D00 /* InputMenuDecor.xib */,
 				DF9D1A6314E6E27C006A6749 /* HistoryMenuView.xib */,
 				DF9D1A6514E71D6E006A6749 /* PaletteMenuView.xib */,
@@ -250,6 +265,12 @@
 			children = (
 				DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */,
 				DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */,
+				DFCB1605153FAD5E00936D28 /* button-input-back.png */,
+				DFCB1606153FAD5E00936D28 /* button-input-back@2x.png */,
+				DFCB1607153FAD5E00936D28 /* button-input-clear.png */,
+				DFCB1608153FAD5E00936D28 /* button-input-clear@2x.png */,
+				DFCB1609153FAD5E00936D28 /* button-input-menu.png */,
+				DFCB160A153FAD5E00936D28 /* button-input-menu@2x.png */,
 				DFC755E5152953A1009F4137 /* background-popbox.png */,
 				DFC755E6152953A1009F4137 /* background-popbox@2x.png */,
 				DFC755E7152953A1009F4137 /* fader-popbox.png */,
@@ -428,6 +449,13 @@
 				DF41DA70152E09F4000B5D00 /* button-tab-sel@2x.png in Resources */,
 				DF41DA72152E09FE000B5D00 /* InputMenuDecor.xib in Resources */,
 				DFCB15E1153E21E600936D28 /* Localizable.strings in Resources */,
+				DFCB160B153FAD5E00936D28 /* button-input-back.png in Resources */,
+				DFCB160C153FAD5E00936D28 /* button-input-back@2x.png in Resources */,
+				DFCB160D153FAD5E00936D28 /* button-input-clear.png in Resources */,
+				DFCB160E153FAD5E00936D28 /* button-input-clear@2x.png in Resources */,
+				DFCB160F153FAD5E00936D28 /* button-input-menu.png in Resources */,
+				DFCB1610153FAD5E00936D28 /* button-input-menu@2x.png in Resources */,
+				DFCB1614153FAD9400936D28 /* TextFieldRightView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
