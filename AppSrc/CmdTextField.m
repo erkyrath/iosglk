@@ -41,19 +41,19 @@
 	if (!res)
 		return NO;
 	
+	rightsideview.hidden = NO;
 	[[IosGlkViewController singleton] preferInputWindow:wintag];
 	return YES;
 }
 
-/*
 - (BOOL) resignFirstResponder {
 	BOOL res = [super resignFirstResponder];
 	if (!res)
 		return NO;
 	
+	rightsideview.hidden = YES;
 	return YES;
 }
- */
 
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleval {
 	GlkWindowState *win = winv.winstate;
@@ -81,6 +81,7 @@
 		img = [clearbutton backgroundImageForState:UIControlStateNormal];
 		img = [img stretchableImageWithLeftCapWidth:img.size.width/2 topCapHeight:img.size.height/2];
 		[clearbutton setBackgroundImage:img forState:UIControlStateNormal];
+		rightsideview.hidden = ![self isFirstResponder];
 		
 		//self.clearButtonMode = UITextFieldViewModeWhileEditing;
 		self.rightViewMode = UITextFieldViewModeAlways;
