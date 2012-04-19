@@ -47,9 +47,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
-						<int key="IBUIButtonType">1</int>
-						<string key="IBUINormalTitle">X</string>
-						<object class="NSColor" key="IBUIHighlightedTitleColor" id="459406904">
+						<object class="NSColor" key="IBUIHighlightedTitleColor" id="623065345">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
 						</object>
@@ -61,15 +59,23 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
 						</object>
+						<object class="NSCustomResource" key="IBUINormalImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">button-input-clear.png</string>
+						</object>
 						<object class="NSCustomResource" key="IBUISelectedBackgroundImage" id="728774252">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">button-tab-sel.png</string>
 						</object>
-						<object class="IBUIFontDescription" key="IBUIFontDescription" id="40617943">
+						<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="175814288">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">button-input-back.png</string>
+						</object>
+						<object class="IBUIFontDescription" key="IBUIFontDescription" id="888546427">
 							<int key="type">2</int>
 							<double key="pointSize">14</double>
 						</object>
-						<object class="NSFont" key="IBUIFont" id="527021499">
+						<object class="NSFont" key="IBUIFont" id="100659403">
 							<string key="NSName">Helvetica-Bold</string>
 							<double key="NSSize">14</double>
 							<int key="NSfFlags">16</int>
@@ -81,23 +87,25 @@
 						<string key="NSFrame">{{48, 0}, {48, 25}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
-						<int key="IBUIButtonType">1</int>
-						<string key="IBUINormalTitle">^^</string>
-						<reference key="IBUIHighlightedTitleColor" ref="459406904"/>
+						<reference key="IBUIHighlightedTitleColor" ref="623065345"/>
 						<object class="NSColor" key="IBUINormalTitleColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MC4xOTYwNzg0MzE0IDAuMzA5ODAzOTIxNiAwLjUyMTU2ODYyNzUAA</bytes>
 						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="896087377"/>
+						<object class="NSCustomResource" key="IBUINormalImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">button-input-menu.png</string>
+						</object>
 						<reference key="IBUISelectedBackgroundImage" ref="728774252"/>
-						<reference key="IBUIFontDescription" ref="40617943"/>
-						<reference key="IBUIFont" ref="527021499"/>
+						<reference key="IBUINormalBackgroundImage" ref="175814288"/>
+						<reference key="IBUIFontDescription" ref="888546427"/>
+						<reference key="IBUIFont" ref="100659403"/>
 					</object>
 				</array>
 				<string key="NSFrameSize">{96, 25}</string>
@@ -267,10 +275,12 @@
 		</object>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
-		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NS.key.0">button-tab-sel.png</string>
-			<string key="NS.object.0">{50, 25}</string>
-		</object>
+		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
+			<string key="button-input-back.png">{14, 14}</string>
+			<string key="button-input-clear.png">{14, 14}</string>
+			<string key="button-input-menu.png">{14, 14}</string>
+			<string key="button-tab-sel.png">{50, 25}</string>
+		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>
 </archive>

@@ -74,6 +74,14 @@
 	}
 	else {
 		[[NSBundle mainBundle] loadNibNamed:@"TextFieldRightView" owner:self options:nil];
+		UIImage *img;
+		img = [menubutton backgroundImageForState:UIControlStateNormal];
+		img = [img stretchableImageWithLeftCapWidth:img.size.width/2 topCapHeight:img.size.height/2];
+		[menubutton setBackgroundImage:img forState:UIControlStateNormal];
+		img = [clearbutton backgroundImageForState:UIControlStateNormal];
+		img = [img stretchableImageWithLeftCapWidth:img.size.width/2 topCapHeight:img.size.height/2];
+		[clearbutton setBackgroundImage:img forState:UIControlStateNormal];
+		
 		//self.clearButtonMode = UITextFieldViewModeWhileEditing;
 		self.rightViewMode = UITextFieldViewModeAlways;
 		self.rightView = self.rightsideview;
@@ -113,7 +121,7 @@
 - (void) handleClearButton:(id)sender {
 	if (singlechar)
 		return;
-	NSLog(@"### clearbutton");
+	self.text = @"";
 }
 
 - (void) handleMenuButton:(id)sender {
