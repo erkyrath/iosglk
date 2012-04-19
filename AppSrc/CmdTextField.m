@@ -16,19 +16,21 @@
 
 @implementation CmdTextField
 
+@synthesize rightsideview;
+@synthesize clearbutton;
 @synthesize menubutton;
 @synthesize wintag;
 
 - (id) initWithFrame:(CGRect)frame {
 	self = [super initWithFrame:frame];
 	if (self) {
-		self.menubutton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-		[menubutton addTarget:self action:@selector(handleMenuButton:) forControlEvents:UIControlEventTouchUpInside];
 	}
 	return self;
 }
 
 - (void) dealloc {
+	self.rightsideview = nil;
+	self.clearbutton = nil;
 	self.menubutton = nil;
 	self.wintag = nil;
 	[super dealloc];
@@ -65,14 +67,16 @@
 	self.autocapitalizationType = UITextAutocapitalizationTypeNone;
 	self.keyboardType = UIKeyboardTypeASCIICapable;
 	
-	//self.clearButtonMode = UITextFieldViewModeWhileEditing;
 	if (singlechar) {
+		//self.clearButtonMode = UITextFieldViewModeNever;
 		self.rightViewMode = UITextFieldViewModeNever;
 		self.rightView = nil;
 	}
 	else {
-		self.rightViewMode = UITextFieldViewModeWhileEditing;
-		self.rightView = self.menubutton;
+		[[NSBundle mainBundle] loadNibNamed:@"TextFieldRightView" owner:self options:nil];
+		//self.clearButtonMode = UITextFieldViewModeWhileEditing;
+		self.rightViewMode = UITextFieldViewModeAlways;
+		self.rightView = self.rightsideview;
 	}
 
 	if (win.line_request && win.line_request_initial)
@@ -103,7 +107,13 @@
 }
 
 - (CGRect) rightViewRectForBounds:(CGRect)bounds {
-	return CGRectMake(bounds.size.width-48, 0, 48, bounds.size.height);
+	return CGRectMake(bounds.size.width-96, 0, 96, bounds.size.height);
+}
+
+- (void) handleClearButton:(id)sender {
+	if (singlechar)
+		return;
+	NSLog(@"### clearbutton");
 }
 
 - (void) handleMenuButton:(id)sender {
