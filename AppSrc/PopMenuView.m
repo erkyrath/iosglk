@@ -77,6 +77,9 @@
 	}
 }
 
+- (void) willRemove {
+}
+
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	[self.superviewAsFrameView removePopMenuAnimated:YES];
 }

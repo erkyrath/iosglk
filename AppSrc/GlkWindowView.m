@@ -208,7 +208,10 @@
 		return;
 	if (self.superviewAsFrameView.menuview)
 		return;
-	
+
+	if (inputfield && inputfield.menubutton)
+		inputfield.menubutton.selected = YES;
+
 	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 	GlkFrameView *frameview = self.superviewAsFrameView;
 	CGRect rect = [inputfield rightViewRectForBounds:inputfield.bounds];

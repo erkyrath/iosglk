@@ -374,6 +374,8 @@
 	if (!menuview)
 		return;
 	
+	[menuview willRemove];
+	
 	if (animated && [IosGlkAppDelegate animblocksavailable]) {
 		UIView *oldview = menuview;
 		[UIView animateWithDuration:0.25 

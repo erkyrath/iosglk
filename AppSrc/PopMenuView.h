@@ -31,5 +31,6 @@
 - (NSString *) bottomDecorNib;
 - (void) loadContent;
 - (void) resizeContentTo:(CGSize)size animated:(BOOL)animated;
+- (void) willRemove;
 
 @end

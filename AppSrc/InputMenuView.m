@@ -126,6 +126,11 @@
 		[self.superviewAsFrameView removePopMenuAnimated:YES];
 }
 
+- (void) willRemove {
+	if (winview && winview.inputfield && winview.inputfield.menubutton)
+		winview.inputfield.menubutton.selected = NO;
+}
+
 @end
 
 
