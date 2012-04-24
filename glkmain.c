@@ -29,6 +29,11 @@ void glk_main() {
 	statwin = glk_window_open(mainwin, winmethod_Above+winmethod_Fixed, 1, wintype_TextGrid, 222);
 	
 	glk_set_window(mainwin);
+	glk_put_string("Welcome to...\n");
+	glk_set_style(style_Header);
+	glk_put_string("The IosGlk Sample App\n");
+	glk_set_style(style_Normal);
+	glk_put_string("\nThis is not an IF program; it's just a shell which demonstrates some simple window behavior.\n\n");
 	glk_put_char('>');
 	
 	glk_request_line_event(mainwin, inbuf, 128, 0);
@@ -75,7 +80,7 @@ void glk_main() {
 				glk_window_clear(mainwin);
 			}
 			glk_put_char('>');
-			glk_request_line_event(mainwin, inbuf, 32, 0);
+			glk_request_line_event(mainwin, inbuf, 128, 0);
 			continue;
 		}
 		
@@ -86,7 +91,7 @@ void glk_main() {
 			glk_put_char_uni(ev.val1);
 			glk_put_string("'.\n");
 			glk_put_char('>');
-			glk_request_char_event_uni(mainwin);
+			glk_request_line_event(mainwin, inbuf, 128, 0);
 			continue;
 		}
 		
@@ -95,8 +100,7 @@ void glk_main() {
 			glk_set_window(mainwin);
 			glk_put_string("Timer interrupt!\n");
 			glk_put_char('>');
-			inbuf[0] = 'x'; inbuf[1] = 'y'; inbuf[2] = 'z';
-			glk_request_line_event(mainwin, inbuf, 32, 3);
+			glk_request_line_event(mainwin, inbuf, 128, 0);
 			continue;
 		}
 	}
