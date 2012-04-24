@@ -15,14 +15,10 @@
 
 void glk_exit()
 {
-	/* This does not exit the process -- that would be totally un-iPhone-y. Instead, we call selectEvent in a way that will never return. */
-	GlkLibrary *library = [GlkLibrary singleton];
-	library.vmexited = YES;
+	/* This does not exit the process -- that would be totally un-iPhone-y. Instead, we throw an exception that will take us out of glk_main(). Of course, if we're not *in* glk_main(), this will crash the app. So don't do that. */
 	NSLog(@"glk_exit()!");
 	
-	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
-	library.specialrequest = [NSNull null];
-	[appwrap selectEvent:nil special:library.specialrequest];
+	[GlkExitException raise:@"GlkExitException" format:@"glk_exit() called normally"];
 }
 
 glui32 glk_gestalt(glui32 id, glui32 val)

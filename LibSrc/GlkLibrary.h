@@ -77,3 +77,10 @@
 - (void) updateFromLibrary:(GlkLibrary *)otherlib;
 
 @end
+
+
+@interface GlkExitException : NSException {
+}
+@end
+
+

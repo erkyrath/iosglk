@@ -595,3 +595,8 @@ static GlkLibrary *singleton = nil;
 
 @end
 
+
+
+@implementation GlkExitException
+@end
+

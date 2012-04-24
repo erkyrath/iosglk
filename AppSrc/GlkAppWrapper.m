@@ -93,11 +93,18 @@ static GlkAppWrapper *singleton = nil;
 	
 	iosglk_startup_code();
 	
-	lastwaittime = [NSDate timeIntervalSinceReferenceDate];
-	glk_main();
+	@try {
+		lastwaittime = [NSDate timeIntervalSinceReferenceDate];
+		glk_main();
+	} @catch (GlkExitException *ce) {
+		NSLog(@"VM thread caught glk_exit exception");
+	}
 	
-	/* This doesn't return. So the looppool cleanup below is irrelevant, really. */
-	glk_exit();
+	/* We call selectEvent in a way that will never return. ### unless... */
+	GlkLibrary *library = [GlkLibrary singleton];
+	library.vmexited = YES;
+	library.specialrequest = [NSNull null];
+	[self selectEvent:nil special:library.specialrequest];
 
 	[looppool drain]; // releases it
 	looppool = nil;
