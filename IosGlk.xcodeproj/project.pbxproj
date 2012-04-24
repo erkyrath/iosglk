@@ -18,6 +18,8 @@
 		DF188B6B154711C200CC6929 /* HistoryMenuView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF188B69154711C200CC6929 /* HistoryMenuView~ipad.xib */; };
 		DF188B6C154711C200CC6929 /* PaletteMenuView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF188B6A154711C200CC6929 /* PaletteMenuView~ipad.xib */; };
 		DF188B6F154711CE00CC6929 /* InputMenuDecor~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF188B6D154711CE00CC6929 /* InputMenuDecor~ipad.xib */; };
+		DF188B79154753F300CC6929 /* GameOverView.m in Sources */ = {isa = PBXBuildFile; fileRef = DF188B78154753F300CC6929 /* GameOverView.m */; };
+		DF188B7C154757AB00CC6929 /* GameOverView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF188B7E154757AB00CC6929 /* GameOverView.xib */; };
 		DF19DDC914E87CC4007DCB29 /* IosGlkLibDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */; };
 		DF41DA6F152E09F4000B5D00 /* button-tab-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */; };
 		DF41DA70152E09F4000B5D00 /* button-tab-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */; };
@@ -97,6 +99,9 @@
 		DF188B69154711C200CC6929 /* HistoryMenuView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "HistoryMenuView~ipad.xib"; sourceTree = "<group>"; };
 		DF188B6A154711C200CC6929 /* PaletteMenuView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PaletteMenuView~ipad.xib"; sourceTree = "<group>"; };
 		DF188B6E154711CE00CC6929 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = "en.lproj/InputMenuDecor~ipad.xib"; sourceTree = "<group>"; };
+		DF188B77154753F300CC6929 /* GameOverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOverView.h; sourceTree = "<group>"; };
+		DF188B78154753F300CC6929 /* GameOverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameOverView.m; sourceTree = "<group>"; };
+		DF188B7D154757AB00CC6929 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/GameOverView.xib; sourceTree = "<group>"; };
 		DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IosGlkLibDelegate.m; sourceTree = "<group>"; };
 		DF2280A413692516000AF225 /* iosglk_startup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iosglk_startup.h; sourceTree = "<group>"; };
 		DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-tab-sel.png"; sourceTree = "<group>"; };
@@ -258,6 +263,7 @@
 				DF188B69154711C200CC6929 /* HistoryMenuView~ipad.xib */,
 				DF9D1A6514E71D6E006A6749 /* PaletteMenuView.xib */,
 				DF188B6A154711C200CC6929 /* PaletteMenuView~ipad.xib */,
+				DF188B7E154757AB00CC6929 /* GameOverView.xib */,
 				DFCB15DF153E21E600936D28 /* Localizable.strings */,
 			);
 			path = Resources;
@@ -368,6 +374,8 @@
 				DFBB4DEF14F5DAC90041016A /* PopMenuView.m */,
 				DF9D1A6014E6DC90006A6749 /* InputMenuView.h */,
 				DF9D1A6114E6DC90006A6749 /* InputMenuView.m */,
+				DF188B77154753F300CC6929 /* GameOverView.h */,
+				DF188B78154753F300CC6929 /* GameOverView.m */,
 				DFED7AAC1365F18E00FBAFFB /* StyledTextView.h */,
 				DFED7AAD1365F18E00FBAFFB /* StyledTextView.m */,
 				DF70A15D1513F4F800B109A2 /* TextSelectView.h */,
@@ -476,6 +484,7 @@
 				DF188B6B154711C200CC6929 /* HistoryMenuView~ipad.xib in Resources */,
 				DF188B6C154711C200CC6929 /* PaletteMenuView~ipad.xib in Resources */,
 				DF188B6F154711CE00CC6929 /* InputMenuDecor~ipad.xib in Resources */,
+				DF188B7C154757AB00CC6929 /* GameOverView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -527,6 +536,7 @@
 				DF98666114FEE6270057E1E2 /* MoreBoxView.m in Sources */,
 				DF70A15F1513F4F800B109A2 /* TextSelectView.m in Sources */,
 				DFC755E415295333009F4137 /* GlkAccessTypes.m in Sources */,
+				DF188B79154753F300CC6929 /* GameOverView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -539,6 +549,14 @@
 				DF188B6E154711CE00CC6929 /* en */,
 			);
 			name = "InputMenuDecor~ipad.xib";
+			sourceTree = "<group>";
+		};
+		DF188B7E154757AB00CC6929 /* GameOverView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DF188B7D154757AB00CC6929 /* en */,
+			);
+			name = GameOverView.xib;
 			sourceTree = "<group>";
 		};
 		DFCB15DF153E21E600936D28 /* Localizable.strings */ = {

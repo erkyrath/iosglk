@@ -13,6 +13,7 @@
 #import "GlkFileSelectViewController.h"
 #import "MoreBoxView.h"
 #import "PopMenuView.h"
+#import "GameOverView.h"
 #import "GlkLibraryState.h"
 #import "GlkUtilities.h"
 
@@ -22,6 +23,7 @@
 
 @synthesize glkdelegate;
 @synthesize frameview;
+@synthesize vmexited;
 @synthesize prefinputwintag;
 @synthesize commandhistory;
 @synthesize keyboardbox;
@@ -82,6 +84,7 @@
 /* Invoked in the UI thread, from the VM thread, which will block until this returns. See comment on GlkFrameView.updateFromLibraryState.
  */
 - (void) updateFromLibraryState:(GlkLibraryState *)library {
+	vmexited = library.vmexited;
 	if (frameview)
 		[frameview updateFromLibraryState:library];
 }
@@ -126,6 +129,9 @@
 /* This returns (in order of preference) the window which currently has the input focus; the inputting window which last had the input focus; any inputting window. If no window is waiting for input at all, return nil.
  */
 - (GlkWindowView *) preferredInputWindow {
+	if (vmexited)
+		return nil;
+	
 	GlkWindowView *prefinputview = nil;
 	GlkWindowView *firstinputview = nil;
 	NSMutableDictionary *windowviews = frameview.windowviews;
@@ -187,6 +193,16 @@
 	NSLog(@"Rotated!");
 }
 */
+
+- (void) postGameOver {
+	CGRect rect = frameview.bounds;
+	rect.origin.x = 0.5*rect.size.width;
+	rect.origin.y = rect.size.height - 4;
+	rect.size.width = 4;
+	rect.size.height = 4;
+	GameOverView *menuview = [[[GameOverView alloc] initWithFrame:frameview.bounds buttonFrame:rect belowButton:NO] autorelease];
+	[frameview postPopMenu:menuview];	
+}
 
 - (void) displayModalRequest:(id)special {
 	if ([special isKindOfClass:[NSNull class]]) {

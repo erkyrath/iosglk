@@ -387,8 +387,10 @@
 	IosGlkViewController *viewc = [IosGlkViewController singleton];
 	GlkWindowView *winv = viewc.preferredInputWindow;
 
-	/* If there is no input line (anywhere), ignore single-tap and double-tap. */
+	/* If there is no input line (anywhere), ignore single-tap and double-tap. (Unless the game is over, in which case we post that dialog.) */
 	if (!winv || !winv.inputfield) {
+		if (viewc.vmexited)
+			[viewc postGameOver];
 		tapnumber = 0;
 		return;
 	}

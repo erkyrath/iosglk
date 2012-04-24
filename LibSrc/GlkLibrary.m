@@ -89,7 +89,7 @@ static GlkLibrary *singleton = nil;
 	if (version <= 0 || version > SERIAL_VERSION)
 		return nil;
 	
-	/* If the vm has exited, don't save the state! */
+	/* If the vm has exited, we shouldn't be saving the state! */
 	vmexited = NO;
 	
 	bounds = [decoder decodeCGRectForKey:@"bounds"];

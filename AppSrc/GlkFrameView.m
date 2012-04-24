@@ -190,6 +190,7 @@
 		[NSException raise:@"GlkException" format:@"updateFromLibraryState: no library"];
 	
 	self.librarystate = library;
+	// vmexited is cached in the viewc also.
 	
 	/* Build a list of windowviews which need to be closed. */
 	NSMutableDictionary *closed = [NSMutableDictionary dictionaryWithDictionary:windowviews];

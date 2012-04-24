@@ -1149,6 +1149,11 @@
 	
 	/* If there is no input line (anywhere), ignore single-tap. On double-tap, scroll to bottom. */
 	if (!winv || !winv.inputfield) {
+		if (viewc.vmexited) {
+			tapnumber = 0;
+			[viewc postGameOver];
+			return;
+		}
 		if (tapnumber >= 2) {
 			tapnumber = 0;
 			[self pageToBottom];

@@ -19,15 +19,19 @@
 	
 	/* Tag for the window which most recently had input focus */
 	NSNumber *prefinputwintag;
+	/* As of the most recent update */
+	BOOL vmexited;
 
 	/* Strings typed into input lines (across all windows) */
 	NSMutableArray *commandhistory;	
+	CGRect keyboardbox;
 }
 
 @property (nonatomic, assign) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
 @property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
 
 @property (nonatomic, retain) NSNumber *prefinputwintag;
+@property (nonatomic) BOOL vmexited;
 
 @property (nonatomic, retain) NSMutableArray *commandhistory;	
 @property (nonatomic) CGRect keyboardbox;
@@ -43,6 +47,7 @@
 - (void) preferInputWindow:(NSNumber *)tag;
 - (GlkWindowView *) preferredInputWindow;
 - (void) hideKeyboard;
+- (void) postGameOver;
 - (void) displayModalRequest:(id)special;
 - (void) keyboardWillBeShown:(NSNotification*)notification;
 - (void) keyboardWillBeHidden:(NSNotification*)notification;
