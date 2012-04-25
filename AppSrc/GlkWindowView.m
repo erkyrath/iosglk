@@ -66,6 +66,10 @@
 	/* By default, do nothing. */
 }
 
+- (CGRect) textSelectArea {
+	return CGRectNull;
+}
+
 /* The buffer view subclass overrides this. */
 - (void) setMoreFlag:(BOOL)flag {
 	/* By default, do nothing. */

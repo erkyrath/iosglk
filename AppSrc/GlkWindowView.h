@@ -43,6 +43,7 @@ typedef enum SelDragMode_enum {
 - (void) updateFromWindowInputs;
 - (void) uncacheLayoutAndStyles;
 
+- (CGRect) textSelectArea;
 - (void) setMoreFlag:(BOOL)flag;
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder;
 - (void) textFieldContinueReturn:(UITextField *)textField;

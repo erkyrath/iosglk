@@ -180,6 +180,12 @@
 	return (selectvstart >= 0 && selectvend >= 0 && selectvstart < selectvend);
 }
 
+- (CGRect) textSelectArea {
+	if (!self.anySelection)
+		return CGRectNull;
+	return selectionarea;
+}
+
 - (void) showSelectionMenu {
 	if (!self.anySelection)
 		return;

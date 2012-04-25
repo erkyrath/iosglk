@@ -105,6 +105,12 @@
 	return NO;
 }
 
+- (CGRect) textSelectArea {
+	if (!textview.anySelection)
+		return CGRectNull;
+	return textview.selectionarea;
+}
+
 - (void) setMoreFlag:(BOOL)flag {
 	if (morewaiting == flag)
 		return;
