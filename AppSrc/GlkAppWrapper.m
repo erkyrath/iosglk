@@ -102,8 +102,7 @@ static GlkAppWrapper *singleton = nil;
 	
 	/* We call selectEvent in a way that will never return. ### unless... */
 	GlkLibrary *library = [GlkLibrary singleton];
-	library.vmexited = YES;
-	library.specialrequest = [NSNull null];
+	[library setVMExited];
 	[self selectEvent:nil special:library.specialrequest];
 
 	[looppool drain]; // releases it
@@ -348,6 +347,25 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond lock];
 	
 	if (!self.iowait || !iowait_special || ![iowait_special isKindOfClass:[GlkFileRefPrompt class]]) {
+		/* The VM thread is working, or else it's waiting for a normal event. Either way, our response is not accepted right now. */
+		[iowaitcond unlock];
+		return;
+	}
+	
+	iowait_special = nil;
+	iowait = NO;
+	[iowaitcond signal];
+	[iowaitcond unlock];
+}
+
+/* The UI calls this to report that the user has pressed the restart button (or one of them), after glk_main() has exited.
+ 
+ This is called from the main thread. It synchronizes with the VM thread. 
+ */
+- (void) acceptEventRestart {
+	[iowaitcond lock];
+	
+	if (!self.iowait || !iowait_special || ![iowait_special isKindOfClass:[NSNull class]]) {
 		/* The VM thread is working, or else it's waiting for a normal event. Either way, our response is not accepted right now. */
 		[iowaitcond unlock];
 		return;

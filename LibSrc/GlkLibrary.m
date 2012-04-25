@@ -89,8 +89,9 @@ static GlkLibrary *singleton = nil;
 	if (version <= 0 || version > SERIAL_VERSION)
 		return nil;
 	
-	/* If the vm has exited, we shouldn't be saving the state! */
+	/* If the vm has exited, we shouldn't have saved the state! */
 	vmexited = NO;
+	self.specialrequest = nil;
 	
 	bounds = [decoder decodeCGRectForKey:@"bounds"];
 	geometrychanged = YES;
@@ -103,8 +104,6 @@ static GlkLibrary *singleton = nil;
 	// will be zero if no timerinterval was saved
 	timerinterval = [decoder decodeInt32ForKey:@"timerinterval"];
 	
-	//### specialrequest: this really ought to be nil, right?
-
 	// skip the calendar and filemanager fields; they're not needed
 
 	NSNumber *rootwintag = [decoder decodeObjectForKey:@"rootwintag"];
@@ -192,6 +191,8 @@ static GlkLibrary *singleton = nil;
 	NSLog(@"### GlkLibrary: encoding with %d windows, %d streams, %d filerefs", windows.count, streams.count, filerefs.count);
 	[encoder encodeInt:SERIAL_VERSION forKey:@"version"];
 	
+	NSAssert(!vmexited && specialrequest == nil, @"GlkLibrary tried to serialize in special input state");
+	
 	[encoder encodeCGRect:bounds forKey:@"bounds"];
 	
 	[encoder encodeObject:windows forKey:@"windows"];
@@ -200,8 +201,6 @@ static GlkLibrary *singleton = nil;
 
 	if (timerinterval)
 		[encoder encodeInt32:timerinterval forKey:@"timerinterval"];
-
-	//### specialrequest: this really ought to be nil, right? fail if not
 
 	if (rootwin)
 		[encoder encodeObject:rootwin.tag forKey:@"rootwintag"];
@@ -226,6 +225,15 @@ static GlkLibrary *singleton = nil;
 - (NSNumber *) generateTag {
 	tagCounter++;
 	return [NSNumber numberWithInteger:tagCounter];
+}
+
+/* Set the library state flag that indicates that glk_exit() has been called.
+ */
+- (void) setVMExited {
+	self.vmexited = YES;
+	self.specialrequest = [NSNull null];
+	
+	[glkdelegate vmHasExited];
 }
 
 /* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation. Or the keyboard opening or closing. Or a phone call, probably. Okay, lots of reasons.) The UI also calls this if the window stylesets needs to change (because the player changed a preference).
@@ -439,6 +447,7 @@ static GlkLibrary *singleton = nil;
 	otherlib.windows = nil;
 	otherlib.streams = nil;
 	otherlib.filerefs = nil;
+	otherlib.specialrequest = nil;
 }
 
 - (void) sanityCheck {

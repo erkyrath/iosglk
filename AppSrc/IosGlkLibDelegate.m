@@ -75,5 +75,10 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return rect;
 }
 
+/* This is invoked from the VM thread, when glk_exit() is called. 
+ */
+- (void) vmHasExited {
+}
+
 @end
 

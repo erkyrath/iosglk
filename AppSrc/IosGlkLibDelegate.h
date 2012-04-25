@@ -20,6 +20,7 @@
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;
 - (CGSize) interWindowSpacing;
 - (CGRect) adjustFrame:(CGRect)rect;
+- (void) vmHasExited;
 
 @end
 
