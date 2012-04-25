@@ -8,6 +8,7 @@
 */
 
 #import "GlkFileSelectViewController.h"
+#import "IosGlkViewController.h"
 #import "GlkFileTypes.h"
 #import "GlkAppWrapper.h"
 #import "RelDateFormatter.h"
@@ -190,8 +191,8 @@
 	[[GlkAppWrapper singleton] acceptEventFileSelect];
 }
 
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation {
+	return [[IosGlkViewController singleton] shouldAutorotateToInterfaceOrientation:orientation];
 }
 
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated {
