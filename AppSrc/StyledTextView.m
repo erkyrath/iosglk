@@ -7,6 +7,7 @@
 #import "StyledTextView.h"
 #import "IosGlkViewController.h"
 #import "GlkWinBufferView.h"
+#import "GlkWindowState.h"
 #import "CmdTextField.h"
 #import "GlkUtilTypes.h"
 #import "GlkAccessTypes.h"
@@ -864,8 +865,18 @@
 	return YES;
 }
 
+- (BOOL) becomeFirstResponder {
+	BOOL res = [super becomeFirstResponder];
+	if (!res)
+		return NO;
+	
+	[[IosGlkViewController singleton] textSelectionWindow:self.superviewAsBufferView.winstate.tag];
+	return YES;
+}
+
 - (BOOL) resignFirstResponder {
 	[self clearSelection];
+	[[IosGlkViewController singleton] textSelectionWindow:nil];
 	return YES;
 }
 

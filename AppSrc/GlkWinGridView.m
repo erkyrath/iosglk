@@ -135,8 +135,18 @@
 	return YES;
 }
 
+- (BOOL) becomeFirstResponder {
+	BOOL res = [super becomeFirstResponder];
+	if (!res)
+		return NO;
+	
+	[[IosGlkViewController singleton] textSelectionWindow:winstate.tag];
+	return YES;
+}
+
 - (BOOL) resignFirstResponder {
 	[self clearSelection];
+	[[IosGlkViewController singleton] textSelectionWindow:nil];
 	return YES;
 }
 

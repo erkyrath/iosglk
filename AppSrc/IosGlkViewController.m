@@ -25,6 +25,7 @@
 @synthesize frameview;
 @synthesize vmexited;
 @synthesize prefinputwintag;
+@synthesize textselecttag;
 @synthesize commandhistory;
 @synthesize keyboardbox;
 
@@ -37,6 +38,7 @@
 	self.frameview = nil;
 	self.commandhistory = nil;
 	self.prefinputwintag = nil;
+	self.textselecttag = nil;
 	[super dealloc];
 }
 
@@ -136,6 +138,10 @@
 	
 	if (frameview)
 		[frameview setNeedsLayout];
+}
+
+- (void) textSelectionWindow:(NSNumber *)tag {
+	self.textselecttag = tag;
 }
 
 - (void) preferInputWindow:(NSNumber *)tag {

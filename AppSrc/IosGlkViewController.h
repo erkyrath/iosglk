@@ -19,6 +19,8 @@
 	
 	/* Tag for the window which most recently had input focus */
 	NSNumber *prefinputwintag;
+	/* Tag for the window which currently has text selected */
+	NSNumber *textselecttag;
 	/* As of the most recent update */
 	BOOL vmexited;
 
@@ -31,6 +33,7 @@
 @property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
 
 @property (nonatomic, retain) NSNumber *prefinputwintag;
+@property (nonatomic, retain) NSNumber *textselecttag;
 @property (nonatomic) BOOL vmexited;
 
 @property (nonatomic, retain) NSMutableArray *commandhistory;	
@@ -44,6 +47,7 @@
 - (void) enteredBackground;
 - (void) updateFromLibraryState:(GlkLibraryState *)library;
 
+- (void) textSelectionWindow:(NSNumber *)tag;
 - (void) preferInputWindow:(NSNumber *)tag;
 - (GlkWindowView *) preferredInputWindow;
 - (void) hideKeyboard;
