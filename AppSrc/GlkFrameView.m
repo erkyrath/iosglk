@@ -112,7 +112,7 @@
 		return;
 	cachedGlkBox = box;
 
-	if (menuview && !menuview.belowbutton)
+	if (menuview && menuview.vertalign < 0)
 		[self removePopMenuAnimated:YES];
 
 	if (rootwintag) {

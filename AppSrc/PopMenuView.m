@@ -17,13 +17,26 @@
 @synthesize faderview;
 @synthesize framemargins;
 @synthesize buttonrect;
-@synthesize belowbutton;
+@synthesize vertalign;
+@synthesize horizalign;
+
+- (id) initWithFrame:(CGRect)frame centerInFrame:(CGRect)rect {
+	return [self initWithFrame:frame buttonFrame:rect vertAlign:0 horizAlign:0];
+}
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below {
+	int horval = (below ? 1 : -1);
+	int vertval = horval;
+	
+	return [self initWithFrame:frame buttonFrame:rect vertAlign:vertval horizAlign:horval];
+}
+
+- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect vertAlign:(int)vertval horizAlign:(int)horval {
 	self = [super initWithFrame:frame];
 	if (self) {
 		//self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5]; //###
-		belowbutton = below;
+		horizalign = horval;
+		vertalign = vertval;
 		buttonrect = rect;
 	}
 	return self;
@@ -59,13 +72,28 @@
 - (void) resizeContentTo:(CGSize)size animated:(BOOL)animated {
 	CGRect rect = CGRectMake(0, 0, size.width+framemargins.left+framemargins.right, size.height+framemargins.top+framemargins.bottom);
 	
-	if (belowbutton) {
-		rect.origin.x = buttonrect.origin.x;
+	if (vertalign > 0) {
 		rect.origin.y = (buttonrect.origin.y + buttonrect.size.height);
 	}
-	else {
-		rect.origin.x = (buttonrect.origin.x + buttonrect.size.width) - rect.size.width;
+	else if (vertalign < 0) {
 		rect.origin.y = buttonrect.origin.y - rect.size.height;
+		if (rect.origin.y < 0)
+			rect.origin.y = 0;
+	}
+	else {
+		CGFloat mid = buttonrect.origin.y + 0.5*buttonrect.size.height;
+		rect.origin.y = floorf(mid - 0.5*rect.size.height);
+	}
+	
+	if (horizalign > 0) {
+		rect.origin.x = buttonrect.origin.x;
+	}
+	else if (horizalign < 0) {
+		rect.origin.x = (buttonrect.origin.x + buttonrect.size.width) - rect.size.width;
+	}
+	else {
+		CGFloat mid = buttonrect.origin.x + 0.5*buttonrect.size.width;
+		rect.origin.x = floorf(mid - 0.5*rect.size.width);
 	}
 	
 	if (animated && [IosGlkAppDelegate animblocksavailable] && self.superview) {

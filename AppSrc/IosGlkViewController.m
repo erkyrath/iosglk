@@ -196,11 +196,7 @@
 
 - (void) postGameOver {
 	CGRect rect = frameview.bounds;
-	rect.origin.x = 0.5*rect.size.width;
-	rect.origin.y = rect.size.height - 4;
-	rect.size.width = 4;
-	rect.size.height = 4;
-	GameOverView *menuview = [[[GameOverView alloc] initWithFrame:frameview.bounds buttonFrame:rect belowButton:NO] autorelease];
+	GameOverView *menuview = [[[GameOverView alloc] initWithFrame:frameview.bounds centerInFrame:rect] autorelease];
 	[frameview postPopMenu:menuview];	
 }
 

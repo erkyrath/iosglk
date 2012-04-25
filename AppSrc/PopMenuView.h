@@ -15,7 +15,8 @@
 	UIView *faderview;
 	UIEdgeInsets framemargins; /* The distance around the content view on all sides */
 	CGRect buttonrect; /* The bounds of the button that launched this menu */
-	BOOL belowbutton; /* Does this hang below the buttonrect? */
+	int vertalign; /* 1: below the buttonrect; -1: above it; 0: centered */
+	int horizalign; /* 1: to the right of the buttonrect; -1: to the left; 0: centered */
 }
 
 @property (nonatomic, retain) IBOutlet UIView *frameview;
@@ -24,9 +25,12 @@
 @property (nonatomic, retain) IBOutlet UIView *faderview;
 @property (nonatomic) UIEdgeInsets framemargins;
 @property (nonatomic, readonly) CGRect buttonrect;
-@property (nonatomic, readonly) BOOL belowbutton;
+@property (nonatomic, readonly) int vertalign;
+@property (nonatomic, readonly) int horizalign;
 
+- (id) initWithFrame:(CGRect)frame centerInFrame:(CGRect)rect;
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below;
+- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect vertAlign:(int)vertval horizAlign:(int)horval;
 - (GlkFrameView *) superviewAsFrameView;
 - (NSString *) bottomDecorNib;
 - (void) loadContent;
