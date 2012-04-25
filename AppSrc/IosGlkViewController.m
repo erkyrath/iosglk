@@ -100,7 +100,6 @@
 	if (anyfocus) {
 		GlkWindowView *winv = self.preferredInputWindow;
 		if (winv && winv.inputfield && ![winv.inputfield isFirstResponder]) {
-			NSLog(@"### reopening keyboard!");
 			[winv.inputfield becomeFirstResponder];
 		}
 	}
