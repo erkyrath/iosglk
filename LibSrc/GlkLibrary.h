@@ -68,6 +68,7 @@
 - (NSString *) gameId;
 - (NSNumber *) generateTag;
 - (void) setVMExited;
+- (void) clearForRestart;
 - (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)box;
 - (GlkWindow *) windowForTag:(NSNumber *)tag;
 - (GlkStream *) streamForTag:(NSNumber *)tag;

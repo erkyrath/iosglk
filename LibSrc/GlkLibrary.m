@@ -231,9 +231,30 @@ static GlkLibrary *singleton = nil;
  */
 - (void) setVMExited {
 	self.vmexited = YES;
-	self.specialrequest = [NSNull null];
 	
 	[glkdelegate vmHasExited];
+}
+
+- (void) clearForRestart {
+	if (rootwin) {
+		// This takes care of all the windows
+		glk_window_close(rootwin, NULL);
+	}
+	while (streams.count) {
+		GlkStream *str = [streams objectAtIndex:0];
+		glk_stream_close(str, NULL);
+	}
+	while (filerefs.count) {
+		GlkFileRef *fref = [filerefs objectAtIndex:0];
+		glk_fileref_destroy(fref);
+	}
+	
+	self.vmexited = NO;
+	timerinterval = 0;
+	glk_request_timer_events(timerinterval);
+	
+	NSAssert(windows.count == 0 && streams.count == 0 && filerefs.count == 0, @"clearForRestart: unclosed objects remain!");
+	NSAssert(currentstr == nil && rootwin == nil, @"clearForRestart: root references remain!");
 }
 
 /* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation. Or the keyboard opening or closing. Or a phone call, probably. Okay, lots of reasons.) The UI also calls this if the window stylesets needs to change (because the player changed a preference).
@@ -362,21 +383,7 @@ static GlkLibrary *singleton = nil;
  */
 - (void) updateFromLibrary:(GlkLibrary *)otherlib {
 	/* First close all the windows and streams and filerefs. (It only really matters for streams, which need to be flushed, but it's cleaner to close everything.) */
-	if (rootwin) {
-		// This takes care of all the windows
-		glk_window_close(rootwin, NULL);
-	}
-	while (streams.count) {
-		GlkStream *str = [streams objectAtIndex:0];
-		glk_stream_close(str, NULL);
-	}
-	while (filerefs.count) {
-		GlkFileRef *fref = [filerefs objectAtIndex:0];
-		glk_fileref_destroy(fref);
-	}
-	
-	NSAssert(windows.count == 0 && streams.count == 0 && filerefs.count == 0, @"updateFromLibrary: unclosed objects remain!");
-	
+	[self clearForRestart];
 	vmexited = otherlib.vmexited;
 	
 	self.rootwin = otherlib.rootwin;

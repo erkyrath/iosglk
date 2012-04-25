@@ -6,6 +6,7 @@
 
 #import "GameOverView.h"
 #import "GlkAppWrapper.h"
+#import "GlkFrameView.h"
 
 @implementation GameOverView
 
@@ -23,6 +24,7 @@
 }
 
 - (IBAction) handleRestartButton:(id)sender {
+	[self.superviewAsFrameView removePopMenuAnimated:YES];
 	[[GlkAppWrapper singleton] acceptEventRestart];
 }
 

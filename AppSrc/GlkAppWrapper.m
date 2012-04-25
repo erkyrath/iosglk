@@ -93,17 +93,24 @@ static GlkAppWrapper *singleton = nil;
 	
 	iosglk_startup_code();
 	
-	@try {
-		lastwaittime = [NSDate timeIntervalSinceReferenceDate];
-		glk_main();
-	} @catch (GlkExitException *ce) {
-		NSLog(@"VM thread caught glk_exit exception");
-	}
+	while (YES) {
 	
-	/* We call selectEvent in a way that will never return. ### unless... */
-	GlkLibrary *library = [GlkLibrary singleton];
-	[library setVMExited];
-	[self selectEvent:nil special:library.specialrequest];
+		@try {
+			lastwaittime = [NSDate timeIntervalSinceReferenceDate];
+			glk_main();
+		} @catch (GlkExitException *ce) {
+			NSLog(@"VM thread caught glk_exit exception");
+		}
+		
+		GlkLibrary *library = [GlkLibrary singleton];
+		[library setVMExited];
+		/* Wait for the special restart button to be pushed. */
+		library.specialrequest = [NSNull null];
+		[self selectEvent:nil special:library.specialrequest];
+		library.specialrequest = nil;
+		
+		[library clearForRestart];
+	}
 
 	[looppool drain]; // releases it
 	looppool = nil;
