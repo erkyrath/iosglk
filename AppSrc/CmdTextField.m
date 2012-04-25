@@ -78,9 +78,9 @@
 		img = [menubutton backgroundImageForState:UIControlStateNormal];
 		img = [img stretchableImageWithLeftCapWidth:img.size.width/2 topCapHeight:img.size.height/2];
 		[menubutton setBackgroundImage:img forState:UIControlStateNormal];
-		img = [clearbutton backgroundImageForState:UIControlStateNormal];
-		img = [img stretchableImageWithLeftCapWidth:img.size.width/2 topCapHeight:img.size.height/2];
-		[clearbutton setBackgroundImage:img forState:UIControlStateNormal];
+		//img = [clearbutton backgroundImageForState:UIControlStateNormal];
+		//img = [img stretchableImageWithLeftCapWidth:img.size.width/2 topCapHeight:img.size.height/2];
+		//[clearbutton setBackgroundImage:img forState:UIControlStateNormal];
 		rightsideview.hidden = ![self isFirstResponder];
 		
 		//self.clearButtonMode = UITextFieldViewModeWhileEditing;
@@ -116,7 +116,7 @@
 }
 
 - (CGRect) rightViewRectForBounds:(CGRect)bounds {
-	return CGRectMake(bounds.size.width-96, 0, 96, bounds.size.height);
+	return CGRectMake(bounds.size.width-48, 0, 48, bounds.size.height);
 }
 
 - (void) handleClearButton:(id)sender {
