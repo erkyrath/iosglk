@@ -12,4 +12,6 @@
 
 @property (nonatomic, retain) IBOutlet UIView *container;
 
+- (IBAction) handleRestartButton:(id)sender;
+
 @end

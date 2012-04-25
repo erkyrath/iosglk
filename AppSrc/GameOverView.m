@@ -5,6 +5,7 @@
  */
 
 #import "GameOverView.h"
+#import "GlkAppWrapper.h"
 
 @implementation GameOverView
 
@@ -19,6 +20,10 @@
 	[[NSBundle mainBundle] loadNibNamed:@"GameOverView" owner:self options:nil];
 	[self resizeContentTo:container.frame.size animated:YES];
 	[content addSubview:container];
+}
+
+- (IBAction) handleRestartButton:(id)sender {
+	[[GlkAppWrapper singleton] acceptEventRestart];
 }
 
 @end

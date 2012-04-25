@@ -45,6 +45,7 @@
 - (void) selectPollEvent:(event_t *)event;
 - (void) acceptEvent:(GlkEventState *)event;
 - (void) acceptEventFileSelect;
+- (void) acceptEventRestart;
 - (BOOL) acceptingEvent;
 - (BOOL) acceptingEventFileSelect;
 - (NSString *) editingTextForWindow:(NSNumber *)tag;
