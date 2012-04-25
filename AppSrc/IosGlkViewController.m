@@ -84,9 +84,26 @@
 /* Invoked in the UI thread, from the VM thread, which will block until this returns. See comment on GlkFrameView.updateFromLibraryState.
  */
 - (void) updateFromLibraryState:(GlkLibraryState *)library {
+	/* Remember whether any window has the input focus. */
+	BOOL anyfocus = NO;
+	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
+		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
+			anyfocus = YES;
+			break;
+		}
+	}
+	
 	vmexited = library.vmexited;
 	if (frameview)
 		[frameview updateFromLibraryState:library];
+	
+	if (anyfocus) {
+		GlkWindowView *winv = self.preferredInputWindow;
+		if (winv && winv.inputfield && ![winv.inputfield isFirstResponder]) {
+			NSLog(@"### reopening keyboard!");
+			[winv.inputfield becomeFirstResponder];
+		}
+	}
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
