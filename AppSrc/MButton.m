@@ -63,6 +63,7 @@
 	
 	self.selectview = [[[UIImageView alloc] initWithImage:img] autorelease];
 	selectview.frame = rect;
+	selectview.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
 	selectview.hidden = !self.selected;
 	[self addSubview:selectview];
 }
