@@ -151,6 +151,7 @@ static GlkAppWrapper *singleton = nil;
 		iowait_special = nil;
 		iowait_evptr = nil;
 	}
+	/* Make sure we start out the wait loop with a updateFromLibraryState call. */
 	pendingupdaterequest = YES;
 	pendingupdatefromtop = NO;
 	pendingtimerevent = NO;
@@ -192,7 +193,9 @@ static GlkAppWrapper *singleton = nil;
 			}
 		}
 		
+		/* Wait for a signal from the VM thread. */
 		[iowaitcond wait];
+		
 		GlkEventState *gotevent = nil;
 		if (eventfromui) {
 			gotevent = [[eventfromui retain] autorelease];

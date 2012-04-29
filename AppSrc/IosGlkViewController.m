@@ -83,7 +83,7 @@
 		[frameview requestLibraryState:appdelegate.glkapp];
 }
 
-/* Invoked in the UI thread, from the VM thread, which will block until this returns. See comment on GlkFrameView.updateFromLibraryState.
+/* Invoked in the UI thread, from the VM thread. See comment on GlkFrameView.updateFromLibraryState.
  */
 - (void) updateFromLibraryState:(GlkLibraryState *)library {
 	/* Remember whether any window has the input focus. */
