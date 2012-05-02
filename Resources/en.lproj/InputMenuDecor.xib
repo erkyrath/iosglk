@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">568.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">1179</string>
+			<string key="NS.object.0">1181</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBProxyObject</string>
@@ -56,9 +56,9 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC45NTE0NDI1MzI4AA</bytes>
 						</object>
-						<object class="NSColor" key="IBUINormalTitleColor" id="627553375">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MC43NTQ2ODE2NDc5AA</bytes>
+						<object class="NSColor" key="IBUINormalTitleColor" id="848126065">
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC44NzkyNzI2Mzk4IDAuODc5NDQxNDk5NyAwLjg3OTI0NDM4NzEAA</bytes>
 						</object>
 						<object class="NSColor" key="IBUINormalTitleShadowColor" id="896087377">
 							<int key="NSColorSpace">3</int>
@@ -84,7 +84,6 @@
 						<string key="NSFrame">{{130, 0}, {130, 25}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -93,7 +92,7 @@
 						<string key="IBUINormalTitle">Recent Commands</string>
 						<reference key="IBUIHighlightedTitleColor" ref="336192594"/>
 						<reference key="IBUISelectedTitleColor" ref="897507552"/>
-						<reference key="IBUINormalTitleColor" ref="627553375"/>
+						<reference key="IBUINormalTitleColor" ref="848126065"/>
 						<reference key="IBUINormalTitleShadowColor" ref="896087377"/>
 						<reference key="IBUISelectedBackgroundImage" ref="728774252"/>
 						<reference key="IBUIFontDescription" ref="918083298"/>
@@ -105,8 +104,8 @@
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="1020233147"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
-					<int key="NSColorSpace">3</int>
-					<bytes key="NSWhite">MC4zMzMzMzMzMzMzAA</bytes>
+					<int key="NSColorSpace">1</int>
+					<bytes key="NSRGB">MC41NTE2NjMxNjAzIDAuNDk1NDk0OTAyMSAwLjM3MjY0Mjk5MzkAA</bytes>
 				</object>
 				<bool key="IBUIOpaque">NO</bool>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -204,9 +203,9 @@
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="1.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="10.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="1" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="11.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="1" key="11.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="11.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
@@ -349,6 +348,6 @@
 			<string key="NS.key.0">button-tab-sel.png</string>
 			<string key="NS.object.0">{50, 25}</string>
 		</object>
-		<string key="IBCocoaTouchPluginVersion">1179</string>
+		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>
 </archive>
