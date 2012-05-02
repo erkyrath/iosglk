@@ -47,7 +47,7 @@
 	if (curmode != inputmenu_History && curmode != inputmenu_Palette)
 		curmode = inputmenu_Palette;
 	
-	decor.layer.cornerRadius = 4;
+	//decor.layer.cornerRadius = 4;
 	
 	UIImage *img;
 	img = [historybutton backgroundImageForState:UIControlStateSelected];
