@@ -58,10 +58,6 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">button-input-menu-sel.png</string>
-						</object>
 						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">button-input-menu.png</string>
@@ -84,7 +80,6 @@
 				<string key="NSFrameSize">{48, 25}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
 					<bytes key="NSWhite">MCAwAA</bytes>
@@ -225,8 +220,7 @@
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="button-input-back.png">{14, 14}</string>
-			<string key="button-input-menu-sel.png">{14, 14}</string>
-			<string key="button-input-menu.png">{14, 14}</string>
+			<string key="button-input-menu.png">{28, 14}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>
