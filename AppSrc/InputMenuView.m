@@ -129,11 +129,12 @@
 	}
 	
 	if (displaycommand) {
+		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 		CGRect selfbounds = frameview.bounds;
 		CGRect rect = CGRectMake(0, selfbounds.size.height, selfbounds.size.width, 20);
 		self.displaylabel = [[[UILabel alloc] initWithFrame:rect] autorelease];
 		
-		displaylabel.backgroundColor = [UIColor whiteColor];
+		displaylabel.backgroundColor = (glkviewc.glkdelegate.hasDarkTheme) ? [UIColor colorWithWhite:0.42 alpha:1] : [UIColor whiteColor];
 		displaylabel.layer.cornerRadius = 10;
 		displaylabel.layer.borderWidth = 1;
 		displaylabel.layer.borderColor = [UIColor colorWithWhite:0.66 alpha:1].CGColor;
