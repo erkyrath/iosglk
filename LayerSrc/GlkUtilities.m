@@ -79,6 +79,16 @@ BOOL NumberMatch(NSNumber *num1, NSNumber *num2) {
 	return [num1 isEqualToNumber:num2];
 }
 
+/* Returns YES if the arguments are identical strings, or both nil. Returns NO if they're different strings, or if just one of them is nil.
+ */
+BOOL StringsMatch(NSString *val1, NSString *val2) {
+	if (!val1 && !val2)
+		return YES;
+	if (!val1 || !val2)
+		return NO;
+	return [val1 isEqualToString:val2];
+}
+
 /* Return a string showing the size and origin of a rectangle. (For debugging.) */
 NSString *StringFromRect(CGRect rect) {
 	return [NSString stringWithFormat:@"%.1fx%.1f at %.1f,%.1f", 

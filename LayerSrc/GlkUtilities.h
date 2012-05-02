@@ -16,6 +16,7 @@ extern NSString *StringFromDumbEncoding(NSString *str);
 extern NSString *StringToDumbEncoding(NSString *str);
 
 extern BOOL NumberMatch(NSNumber *num1, NSNumber *num2);
+extern BOOL StringsMatch(NSString *val1, NSString *val2);
 
 extern CGSize CGSizeEven(CGSize size);
 extern CGPoint RectCenter(CGRect rect);
