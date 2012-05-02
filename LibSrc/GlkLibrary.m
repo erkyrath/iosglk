@@ -227,7 +227,7 @@ static GlkLibrary *singleton = nil;
 	return [NSNumber numberWithInteger:tagCounter];
 }
 
-/* Set the library state flag that indicates that glk_exit() has been called.
+/* Set the library state flag that indicates that glk_exit() has been called. (Or glk_main() returned normally.)
  */
 - (void) setVMExited {
 	self.vmexited = YES;
@@ -235,6 +235,8 @@ static GlkLibrary *singleton = nil;
 	[glkdelegate vmHasExited];
 }
 
+/* The player wants to restart the app after a glk_exit(). Clean up all the library state and prepare for a restart.
+ */
 - (void) clearForRestart {
 	if (rootwin) {
 		// This takes care of all the windows

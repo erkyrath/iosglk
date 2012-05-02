@@ -19,8 +19,12 @@
 	[super dealloc];
 }
 
+- (NSString *) nibForContent {
+	return @"GameOverView";
+}
+
 - (void) loadContent {
-	[[NSBundle mainBundle] loadNibNamed:@"GameOverView" owner:self options:nil];
+	[[NSBundle mainBundle] loadNibNamed:self.nibForContent owner:self options:nil];
 	[self resizeContentTo:container.frame.size animated:YES];
 	[content addSubview:container];
 
