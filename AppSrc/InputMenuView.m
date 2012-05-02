@@ -200,6 +200,7 @@
 		label.backgroundColor = nil;
 		label.shadowColor = baselabel.shadowColor;
 		label.shadowOffset = baselabel.shadowOffset;
+		label.layer.cornerRadius = 3;
 		label.opaque = NO;
 		label.text = str;
 		[labels addObject:label];
@@ -248,6 +249,8 @@
 	UITouch *touch = [[event touchesForView:self] anyObject];
 	CGPoint loc = [touch locationInView:self];
 	int val = floorf((loc.y - labelbox.origin.y) / labelheight);
+	if (loc.x < labelbox.origin.x-10 || loc.x > labelbox.origin.x+labelbox.size.width+10)
+		val = -1;
 	[self selectLabel:val];
 }
 
@@ -293,6 +296,7 @@
 	for (UIView *view in self.subviews) {
 		if ([view isKindOfClass:[UILabel class]] && view.tag >= 0) {
 			[labels addObject:view];
+			view.layer.cornerRadius = 3;
 		}
 	}
 	
