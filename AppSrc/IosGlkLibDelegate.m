@@ -65,6 +65,10 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	}
 }
 
+- (BOOL) hasDarkTheme {
+	return NO;
+}
+
 /* This is invoked from both the VM and UI threads.
  */
 - (CGSize) interWindowSpacing {

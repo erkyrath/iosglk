@@ -5,6 +5,8 @@
  */
 
 #import "InputMenuView.h"
+#import "IosGlkViewController.h"
+#import "IosGlkLibDelegate.h"
 #import "GlkFrameView.h"
 #import "GlkWindowView.h"
 #import "CmdTextField.h"
@@ -47,7 +49,14 @@
 	if (curmode != inputmenu_History && curmode != inputmenu_Palette)
 		curmode = inputmenu_Palette;
 	
-	//decor.layer.cornerRadius = 4;
+	decor.layer.cornerRadius = 4;
+	decor.clipsToBounds = YES;
+	
+	if (faderview) {
+		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
+		faderview.alpha = ((glkviewc.glkdelegate.hasDarkTheme) ? 1.0 : 0.0);
+		faderview.hidden = NO;
+	}
 	
 	UIImage *img;
 	img = [historybutton backgroundImageForState:UIControlStateSelected];

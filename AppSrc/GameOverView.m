@@ -5,6 +5,8 @@
  */
 
 #import "GameOverView.h"
+#import "IosGlkViewController.h"
+#import "IosGlkLibDelegate.h"
 #import "GlkAppWrapper.h"
 #import "GlkFrameView.h"
 
@@ -21,6 +23,12 @@
 	[[NSBundle mainBundle] loadNibNamed:@"GameOverView" owner:self options:nil];
 	[self resizeContentTo:container.frame.size animated:YES];
 	[content addSubview:container];
+
+	if (faderview) {
+		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
+		faderview.alpha = ((glkviewc.glkdelegate.hasDarkTheme) ? 1.0 : 0.0);
+		faderview.hidden = NO;
+	}
 }
 
 - (IBAction) handleRestartButton:(id)sender {
