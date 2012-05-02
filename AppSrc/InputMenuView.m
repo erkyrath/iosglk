@@ -19,7 +19,9 @@
 @synthesize palettebutton;
 @synthesize historymenu;
 @synthesize palettemenu;
+@synthesize displaylabel;
 @synthesize history;
+@synthesize displaycommand;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winval history:(NSArray *)historylist {
 	self = [super initWithFrame:frame buttonFrame:rect belowButton:NO];
@@ -36,6 +38,8 @@
 	self.historymenu = nil;
 	self.palettemenu = nil;
 	self.history = nil;
+	self.displaylabel = nil;
+	self.displaycommand = nil;
 	[super dealloc];
 }
 
@@ -74,6 +78,8 @@
 		return;
 	mode = modeval;
 	
+	[self setDisplayCommand:nil];
+	
 	historybutton.selected = (mode == inputmenu_History);
 	palettebutton.selected = (mode == inputmenu_Palette);
 	
@@ -108,6 +114,39 @@
 		if (historymenu) {
 			historymenu.hidden = YES;
 		}
+	}
+}
+
+- (void) setDisplayCommand:(NSString *)val {
+	if (StringsMatch(val, displaycommand))
+		return;
+	
+	self.displaycommand = val;
+	
+	if (displaylabel) {
+		[displaylabel removeFromSuperview];
+		self.displaylabel = nil;
+	}
+	
+	if (displaycommand) {
+		CGRect selfbounds = frameview.bounds;
+		CGRect rect = CGRectMake(0, selfbounds.size.height, selfbounds.size.width, 20);
+		self.displaylabel = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		
+		displaylabel.backgroundColor = [UIColor whiteColor];
+		displaylabel.layer.cornerRadius = 10;
+		displaylabel.layer.borderWidth = 1;
+		displaylabel.layer.borderColor = [UIColor colorWithWhite:0.66 alpha:1].CGColor;
+		displaylabel.font = [UIFont boldSystemFontOfSize:14];
+		displaylabel.textAlignment = UITextAlignmentCenter;
+		displaylabel.text = displaycommand;
+		
+		CGSize size = [displaylabel sizeThatFits:displaylabel.bounds.size];
+		rect.origin.x = floorf(0.5 * (selfbounds.size.width - size.width - 40));
+		rect.size.width = size.width + 40;
+		displaylabel.frame = rect;
+		
+		[frameview addSubview:displaylabel];
 	}
 }
 
@@ -231,6 +270,10 @@
 	if (selection >= 0 && selection < labels.count) {
 		UILabel *label = [labels objectAtIndex:selection];
 		label.backgroundColor = [UIColor whiteColor];
+		[menuview setDisplayCommand:label.text];
+	}
+	else {
+		[menuview setDisplayCommand:nil];
 	}
 }
 
@@ -323,6 +366,10 @@
 	
 	if (selection) {
 		selection.backgroundColor = [UIColor whiteColor];
+		[menuview setDisplayCommand:selection.text];
+	}
+	else {
+		[menuview setDisplayCommand:nil];
 	}
 }
 

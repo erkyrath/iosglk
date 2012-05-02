@@ -9,10 +9,10 @@
 @class GlkFrameView;
 
 @interface PopMenuView : UIView {
-	UIView *frameview;
-	UIView *content;
-	UIView *decor;
-	UIView *faderview;
+	UIView *frameview; /* The menu itself, and the shadow behind it */
+	UIView *content; /* The view inside the menu frame */
+	UIView *decor; /* A nib at the bottom of the frameview (for the mini-tab bar) */
+	UIView *faderview; /* A grey translucent overlay, used for dark color themes */
 	UIEdgeInsets framemargins; /* The distance around the content view on all sides */
 	CGRect buttonrect; /* The bounds of the button that launched this menu */
 	int vertalign; /* 1: below the buttonrect; -1: above it; 0: centered */

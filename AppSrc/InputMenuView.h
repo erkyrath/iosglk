@@ -31,10 +31,13 @@ typedef enum InputMenuMode_enum {
 @property (nonatomic, retain) IBOutlet UIButton *palettebutton;
 @property (nonatomic, retain) IBOutlet HistoryMenuView *historymenu;
 @property (nonatomic, retain) IBOutlet PaletteMenuView *palettemenu;
+@property (nonatomic, retain) UILabel *displaylabel;
 @property (nonatomic, retain) NSArray *history;
+@property (nonatomic, retain) NSString *displaycommand;
 
 - (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winview history:(NSArray *)historylist;
 - (void) setMode:(InputMenuMode)mode;
+- (void) setDisplayCommand:(NSString *)val;
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu;
 - (IBAction) handlePaletteButton:(id)sender;
 - (IBAction) handleHistoryButton:(id)sender;
