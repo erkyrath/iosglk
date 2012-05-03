@@ -121,7 +121,7 @@
 			moreview.alpha = 0;
 			moreview.hidden = NO;
 			[UIView animateWithDuration:0.2 
-							 animations:^{ moreview.alpha = 1; } ];
+							 animations:^{ moreview.alpha = 0.5; } ];
 		}
 		else {
 			moreview.hidden = NO;
