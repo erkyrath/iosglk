@@ -692,8 +692,8 @@
 		while (!paragraphdone) {
 			CGFloat hpos = 0.0;
 			CGFloat maxheight = normalpointsize;
-			CGFloat maxascender = 0.0;
-			CGFloat maxdescender = 0.0;
+			//CGFloat maxascender = 0.0;
+			//CGFloat maxdescender = 0.0;
 			BOOL linedone = NO;
 			
 			while (!linedone) {
@@ -762,10 +762,12 @@
 					hpos += wordsize.width;
 					if (maxheight < wordsize.height)
 						maxheight = wordsize.height;
+					/*
 					if (maxascender < sfont.ascender)
 						maxascender = sfont.ascender;
 					if (maxdescender > sfont.descender)
 						maxdescender = sfont.descender;
+					 */
 						
 					wdpos = wdend;
 				}
