@@ -205,30 +205,37 @@
 	}
 }
 
-// Allow all orientations
+/* Allow all orientations. (An interpreter-specific subclass may override this.)
+ */
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
 
-/*
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)prevorient {
-	NSLog(@"Rotated!");
-}
-*/
-
+/* Display the "game over, what now?" popup. This is called when the player taps after glk_main() has exited.
+ */
 - (void) postGameOver {
 	CGRect rect = frameview.bounds;
 	GameOverView *menuview = [[[GameOverView alloc] initWithFrame:frameview.bounds centerInFrame:rect] autorelease];
 	[frameview postPopMenu:menuview];	
 }
 
+/* Display the appropriate modal pop-up when updating the display (at glk_select time, or whenever the VM blocks.) 
+ 
+	Called from updateFromLibraryState.
+ */
 - (void) displayModalRequest:(id)special {
+	if (!special) {
+		/* Regular glk_select(); no modal view here. */
+		return;
+	}
+	
 	if ([special isKindOfClass:[NSNull class]]) {
-		/* No modal view at exit time; just continue displaying and doing nothing. */
+		/* glk_exit(): no modal view here. (The game-over dialog is handled differently.) */
 		return;
 	}
 	
 	if ([special isKindOfClass:[GlkFileRefPrompt class]]) {
+		/* File selection. */
 		GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
 		
 		NSString *nibname;
