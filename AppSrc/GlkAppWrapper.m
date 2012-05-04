@@ -162,7 +162,7 @@ static GlkAppWrapper *singleton = nil;
 			pendingupdaterequest = NO;
 			if (pendingupdatefromtop) {
 				pendingupdatefromtop = NO;
-				NSLog(@"dirtying all library data for brand-new frameview!");
+				//NSLog(@"dirtying all library data for brand-new frameview!");
 				[library dirtyAllData];
 			}
 			/* It's possible there's no frameview right now. If not, the call will be a no-op. When the frameview comes along, it will call requestViewUpdate and we'll get back to it. */
@@ -330,7 +330,6 @@ static GlkAppWrapper *singleton = nil;
 	This is called from the main thread. It synchronizes with the VM thread. 
 */
 - (void) acceptEvent:(GlkEventState *)event {
-	[event retain];
 	[iowaitcond lock];
 	
 	if (!self.iowait || !iowait_evptr) {
@@ -346,7 +345,6 @@ static GlkAppWrapper *singleton = nil;
 	self.eventfromui = event;
 	[iowaitcond signal];
 	[iowaitcond unlock];
-	[event release];
 }
 
 /* The UI calls this to report that file selection is complete. The chosen pathname (or nil, if cancelled) is in the prompt object that was originally passed out.
