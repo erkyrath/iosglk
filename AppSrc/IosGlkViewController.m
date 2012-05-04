@@ -83,6 +83,12 @@
 		[frameview requestLibraryState:appdelegate.glkapp];
 }
 
+/* Invoked in the UI thread when an event is generated. The view controller has a chance to intercept the event and do something with or to it. Return nil to block the event; return the argument unchanged to do nothing.
+ */
+- (id) filterEvent:(id)data {
+	return data;
+}
+
 /* Invoked in the UI thread, from the VM thread. See comment on GlkFrameView.updateFromLibraryState.
  */
 - (void) updateFromLibraryState:(GlkLibraryState *)library {
@@ -221,7 +227,7 @@
 
 /* Display the appropriate modal pop-up when updating the display (at glk_select time, or whenever the VM blocks.) 
  
-	Called from updateFromLibraryState.
+	Called from updateFromLibraryState. It can also be called after the game is over. (IosFizmo has a "Restore" button in the postGameOver dialog.)
  */
 - (void) displayModalRequest:(id)special {
 	if (!special) {

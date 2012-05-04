@@ -46,6 +46,7 @@
 - (void) becameActive;
 - (void) enteredBackground;
 - (void) updateFromLibraryState:(GlkLibraryState *)library;
+- (id) filterEvent:(id)data;
 
 - (void) textSelectionWindow:(NSNumber *)tag;
 - (void) preferInputWindow:(NSNumber *)tag;

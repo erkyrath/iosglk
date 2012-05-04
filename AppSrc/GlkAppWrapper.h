@@ -8,6 +8,7 @@
 #include "glk.h"
 
 @class GlkEventState;
+@class GlkFileRefPrompt;
 
 @interface GlkAppWrapper : NSObject {
 	NSCondition *iowaitcond; /* must hold this lock to touch any of the fields below, unless otherwise noted. */
@@ -44,7 +45,7 @@
 - (void) selectEvent:(event_t *)event special:(id)special;
 - (void) selectPollEvent:(event_t *)event;
 - (void) acceptEvent:(GlkEventState *)event;
-- (void) acceptEventFileSelect;
+- (void) acceptEventFileSelect:(GlkFileRefPrompt *)prompt;
 - (void) acceptEventRestart;
 - (BOOL) acceptingEvent;
 - (BOOL) acceptingEventFileSelect;

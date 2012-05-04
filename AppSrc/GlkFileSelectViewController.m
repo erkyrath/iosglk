@@ -188,7 +188,7 @@
 - (IBAction) buttonCancel:(id)sender {
 	NSLog(@"buttonCancel");
 	[self dismissModalViewControllerAnimated:YES];
-	[[GlkAppWrapper singleton] acceptEventFileSelect];
+	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 }
 
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation {
@@ -301,7 +301,7 @@
 		prompt.filename = thumb.filename;
 		prompt.pathname = thumb.pathname;
 		[self dismissModalViewControllerAnimated:YES];
-		[[GlkAppWrapper singleton] acceptEventFileSelect];
+		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 	}
 }
 
@@ -346,14 +346,14 @@
 	
 	NSLog(@"textfield: selected \"%@\"", label);
 	[self dismissModalViewControllerAnimated:YES];
-	[[GlkAppWrapper singleton] acceptEventFileSelect];	
+	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
 }
 
 - (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 0) {
 		NSLog(@"textfield: confirmed selection");
 		[self dismissModalViewControllerAnimated:YES];
-		[[GlkAppWrapper singleton] acceptEventFileSelect];	
+		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
 	}
 }
 

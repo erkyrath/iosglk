@@ -330,10 +330,14 @@ static GlkAppWrapper *singleton = nil;
 	This is called from the main thread. It synchronizes with the VM thread. 
 */
 - (void) acceptEvent:(GlkEventState *)event {
+	event = [[IosGlkViewController singleton] filterEvent:event];
+	if (!event)
+		return;
+	
 	[iowaitcond lock];
 	
 	if (!self.iowait || !iowait_evptr) {
-		/* The VM thread is working, or else it's waiting for a file selection. Either way, events not accepted right now. However, we'll set a flag in case someone comes along and polls for it. */
+		/* The VM thread is working, or else it's waiting for a file selection, or the game has ended. Events not accepted right now. However, we'll set a flag in case someone comes along and polls for it. */
 		if (event.type == evtype_Timer)
 			pendingtimerevent = YES;
 		//### size change event too?
@@ -351,11 +355,15 @@ static GlkAppWrapper *singleton = nil;
 
 	This is called from the main thread. It synchronizes with the VM thread. 
 */
-- (void) acceptEventFileSelect {
+- (void) acceptEventFileSelect:(GlkFileRefPrompt *)prompt {
+	prompt = [[IosGlkViewController singleton] filterEvent:prompt];
+	if (!prompt)
+		return;
+	
 	[iowaitcond lock];
 	
-	if (!self.iowait || !iowait_special || ![iowait_special isKindOfClass:[GlkFileRefPrompt class]]) {
-		/* The VM thread is working, or else it's waiting for a normal event. Either way, our response is not accepted right now. */
+	if (!self.iowait || !iowait_special || ![iowait_special isKindOfClass:[GlkFileRefPrompt class]] || iowait_special != prompt) {
+		/* The VM thread is working, or else it's waiting for a normal event, or the game has ended. Either way, our response is not accepted right now. */
 		[iowaitcond unlock];
 		return;
 	}
