@@ -27,6 +27,19 @@
 @synthesize rock;
 @synthesize textmode;
 
+/* Find the user's Documents directory. 
+ */
++ (NSString *) documentsDirectory {
+	/* We use an old-fashioned way of locating the Documents directory. (The NSManager method for this is iOS 4.0 and later.) */
+	
+	NSArray *dirlist = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	if (!dirlist || [dirlist count] == 0) {
+		[GlkLibrary strictWarning:@"unable to locate Documents directory."];
+		return nil;
+	}
+	return [dirlist objectAtIndex:0];
+}
+
 /* Work out the directory for a given type of file, based on the base directory, the usage, and the game identity.
 	See the comments on GlkFileRefLayer.m for an explanation.
 */

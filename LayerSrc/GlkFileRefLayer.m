@@ -78,14 +78,9 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 	if ([filename length] == 0)
 		filename = @"X";
 		
-	/* We use an old-fashioned way of locating the Documents directory. (The NSManager method for this is iOS 4.0 and later.) */
-	
-	NSArray *dirlist = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	if (!dirlist || [dirlist count] == 0) {
-		[GlkLibrary strictWarning:@"fileref_create_by name: unable to locate Documents directory."];
+	NSString *dir = [GlkFileRef documentsDirectory];
+	if (!dir)
 		return nil;
-	}
-	NSString *dir = [dirlist objectAtIndex:0];
 
 	GlkFileRef *fref = [[GlkFileRef alloc] initWithBase:dir filename:filename type:usage rock:rock];
 	if (!fref) {
@@ -100,21 +95,17 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 {
 	GlkLibrary *library = [GlkLibrary singleton];
 
-	/* We use an old-fashioned way of locating the Documents directory. (The NSManager method for this is iOS 4.0 and later.) */
-	
-	NSArray *dirlist = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	if (!dirlist || [dirlist count] == 0) {
-		[GlkLibrary strictWarning:@"fileref_create_by name: unable to locate Documents directory."];
+	NSString *basedir = [GlkFileRef documentsDirectory];
+	if (!basedir)
 		return nil;
-	}
-	NSString *basedir = [[dirlist objectAtIndex:0] retain];
 	NSString *dirname = [GlkFileRef subDirOfBase:basedir forUsage:usage gameid:library.gameId];
 
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
 	GlkFileRefPrompt *prompt = [[GlkFileRefPrompt alloc] initWithUsage:usage fmode:fmode dirname:dirname]; // retained
 	dirname = nil;
+	basedir = nil;
 	
-	/* We call selectEvent, which will block and put up the file-selection UI. Note that the autorelease pool gets wiped, which is why we've retained everything above! */
+	/* We call selectEvent, which will block and put up the file-selection UI. Note that the autorelease pool gets wiped, which is why we've retained the prompt object above! */
 	library.specialrequest = prompt;
 	[appwrap selectEvent:nil special:prompt];
 	NSString *filename = [[prompt.filename retain] autorelease];
@@ -122,14 +113,13 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	
 	library.specialrequest = nil;
 	[prompt autorelease];
-	[basedir autorelease];
 	
 	if (!filename) {
 		/* The file selection was cancelled. */
 		return NULL;
 	}
 	
-	GlkFileRef *fref = [[GlkFileRef alloc] initWithBase:basedir filename:filename type:usage rock:rock];
+	GlkFileRef *fref = [[GlkFileRef alloc] initWithBase:[GlkFileRef documentsDirectory] filename:filename type:usage rock:rock];
 	if (!fref) {
 		[GlkLibrary strictWarning:@"fileref_create_by_prompt: unable to create file ref."];
 		return NULL;

@@ -39,6 +39,7 @@
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, readonly) BOOL textmode;
 
++ (NSString *) documentsDirectory;
 + (NSString *) subDirOfBase:(NSString *)basedir forUsage:(glui32)usage gameid:(NSString *)gameid;
 
 - (id) initWithBase:(NSString *)basedir filename:(NSString *)filename type:(glui32)usage rock:(glui32)frefrock;
