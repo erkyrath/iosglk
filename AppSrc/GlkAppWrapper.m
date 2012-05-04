@@ -230,6 +230,16 @@ static GlkAppWrapper *singleton = nil;
 						}
 					}
 					break;
+				case evtype_Timer:
+					/* Acceptable if the library has requested timer events. (If the library just cancelled the timer, it should ignore a late-arriving timer event.) */
+					if (library.timerinterval) {
+						event->type = evtype_Timer;
+						event->win = 0;
+						event->val1 = 0;
+						event->val2 = 0;
+						iowait = NO;
+					}
+					break;
 			}
 		}
 	}
@@ -351,7 +361,7 @@ static GlkAppWrapper *singleton = nil;
 	[iowaitcond unlock];
 }
 
-/* The UI calls this to report that file selection is complete. The chosen pathname (or nil, if cancelled) is in the prompt object that was originally passed out.
+/* The UI calls this to report that file selection is complete. The chosen pathname (or nil, if cancelled) is in the prompt object (which should match the prompt that was originally passed out).
 
 	This is called from the main thread. It synchronizes with the VM thread. 
 */
