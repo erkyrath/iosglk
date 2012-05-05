@@ -14,9 +14,10 @@ typedef struct FontVariants_struct {
 } FontVariants;
 
 @interface StyleSet : NSObject {
-	UIFont **fonts; /* array[style_NUMSTYLES] of retained UIFonts */
-	UIColor **colors; /* array[style_NUMSTYLES] of retained UIColors */
-	CGSize charbox; /* maximum size of a single rendered character (normal style) */
+	UIFont **fonts; /* array[style_NUMSTYLES] of retained UIFonts (malloced) */
+	UIColor **colors; /* array[style_NUMSTYLES] of retained UIColors (malloced) */
+	CGFloat leading; /* extra space below each line (uniform across all styles) */
+	CGSize charbox; /* maximum size of a single rendered character (normal style) (including leading) */
 	UIColor *backgroundcolor; /* background color for window */
 	UIEdgeInsets margins; /* margin widths around the text */
 	CGSize margintotal; /* width = left+right; height = top+bottom */
@@ -24,6 +25,7 @@ typedef struct FontVariants_struct {
 
 @property (nonatomic, readonly) UIFont **fonts;
 @property (nonatomic, readonly) UIColor **colors;
+@property (nonatomic) CGFloat leading;
 @property (nonatomic) CGSize charbox;
 @property (nonatomic, retain) UIColor *backgroundcolor;
 @property (nonatomic) UIEdgeInsets margins;

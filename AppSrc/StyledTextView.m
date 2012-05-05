@@ -661,7 +661,8 @@
 	}
 	
 	UIFont **fonts = styleset.fonts;
-	CGFloat normalpointsize = styleset.charbox.height;
+	CGFloat leading = styleset.leading;
+	CGFloat normalpointsize = styleset.charbox.height; // includes leading
 	NSMutableArray *result = [NSMutableArray arrayWithCapacity:32]; // vlines laid out
 	NSMutableArray *tmparr = [NSMutableArray arrayWithCapacity:64]; // words in a line
 	
@@ -691,7 +692,7 @@
 		
 		while (!paragraphdone) {
 			CGFloat hpos = 0.0;
-			CGFloat maxheight = normalpointsize;
+			CGFloat maxheight = 0.0;
 			//CGFloat maxascender = 0.0;
 			//CGFloat maxdescender = 0.0;
 			BOOL linedone = NO;
@@ -760,8 +761,8 @@
 					[vwd release];
 					
 					hpos += wordsize.width;
-					if (maxheight < wordsize.height)
-						maxheight = wordsize.height;
+					if (maxheight < wordsize.height+leading)
+						maxheight = wordsize.height+leading;
 					/*
 					if (maxascender < sfont.ascender)
 						maxascender = sfont.ascender;
@@ -776,6 +777,9 @@
 					sstr = nil;
 				}
 			}
+			
+			if (maxheight < 1)
+				maxheight = normalpointsize;
 
 			GlkVisualLine *vln = [[[GlkVisualLine alloc] initWithStrings:tmparr styles:styleset] autorelease];
 			// vln.vlinesnum will be filled in by the caller.

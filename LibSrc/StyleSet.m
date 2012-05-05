@@ -14,6 +14,7 @@
 
 @synthesize fonts;
 @synthesize colors;
+@synthesize leading;
 @synthesize charbox;
 @synthesize backgroundcolor;
 @synthesize margins;
@@ -116,6 +117,7 @@
 	if (self) {
 		charbox = CGSizeZero;
 		margins = UIEdgeInsetsZero;
+		leading = 0;
 		margintotal = CGSizeZero;
 		self.backgroundcolor = [UIColor whiteColor];
 		/* We have to malloc these buffers. I tried embedding it as an array of pointers in the StyleSet object, but ObjC threw a hissy-cow. */
@@ -191,6 +193,8 @@
 	size = [@"qld" sizeWithFont:fonts[style_Normal]];
 	if (charbox.height < size.height)
 		charbox.height = size.height;
+	
+	charbox.height += leading;
 	
 	margintotal.width = margins.left + margins.right;
 	margintotal.height = margins.top + margins.bottom;
