@@ -35,6 +35,7 @@
 @synthesize timerinterval;
 @synthesize bounds;
 @synthesize geometrychanged;
+@synthesize metricschanged;
 @synthesize everythingchanged;
 @synthesize specialrequest;
 @synthesize filemanager;
@@ -72,6 +73,7 @@ static GlkLibrary *singleton = nil;
 		self.currentstr = nil;
 		timerinterval = 0;
 		geometrychanged = YES;
+		metricschanged = YES;
 		everythingchanged = NO; /* not true at startup, only on refresh */
 		
 		self.specialrequest = nil;
@@ -97,6 +99,7 @@ static GlkLibrary *singleton = nil;
 	
 	bounds = [decoder decodeCGRectForKey:@"bounds"];
 	geometrychanged = YES;
+	metricschanged = YES;
 	everythingchanged = YES;
 	
 	self.windows = [decoder decodeObjectForKey:@"windows"];
@@ -263,11 +266,13 @@ static GlkLibrary *singleton = nil;
 
 /* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation. Or the keyboard opening or closing. Or a phone call, probably. Okay, lots of reasons.) The UI also calls this if the window stylesets needs to change (because the player changed a preference).
  
+	More precisely, the UI calls noteMetricsChanged or setFrameSize, which set flags and signal the selectEvent loop (VM thread) to wake up and call this.
+ 
 	Returns YES if the geometry changed (in a way visible to the VM -- i.e., grid window rows/cols changed). This errs on the side of YES, however. (A one-pixel change probably won't change the window, but it will return YES anyhow.)
  
 	This is called only at startup time and from the selectEvent loop.
 */
-- (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)boxref {
+- (BOOL) setMetricsChanged:(BOOL)didmetschange bounds:(CGRect *)boxref {
 	BOOL rearrange = NO;
 	
 	if (boxref) {
@@ -279,7 +284,8 @@ static GlkLibrary *singleton = nil;
 			//NSLog(@"setMetrics: bounds now %@", StringFromRect(bounds));
 		}
 	}
-	if (metricschanged) {
+	if (didmetschange) {
+		metricschanged = YES;
 		/* The stylesets need to change. */
 		for (GlkWindow *win in windows) {
 			if (win.styleset)
@@ -292,6 +298,7 @@ static GlkLibrary *singleton = nil;
 				if (geometry && geometry.keytag) {
 					GlkWindow *keywin = [self windowForTag:geometry.keytag];
 					geometry.keystyleset = keywin.styleset;
+					NSLog(@"### setMetrics: geometry charbox %f", geometry.keystyleset.charbox.height);
 				}
 			}
 		}
@@ -340,6 +347,7 @@ static GlkLibrary *singleton = nil;
  */
 - (void) dirtyAllData {
 	everythingchanged = YES;
+	metricschanged = YES;
 	geometrychanged = YES;
 	for (GlkWindow *win in windows) {
 		[win dirtyAllData];
@@ -373,6 +381,8 @@ static GlkLibrary *singleton = nil;
 	
 	state.geometrychanged = geometrychanged;
 	geometrychanged = NO;
+	state.metricschanged = metricschanged;
+	metricschanged = NO;
 	state.everythingchanged = everythingchanged;
 	everythingchanged = NO;
 	

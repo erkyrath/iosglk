@@ -26,6 +26,7 @@
 	glui32 timerinterval; // milliseconds
 	CGRect bounds;
 	BOOL geometrychanged;
+	BOOL metricschanged;
 	BOOL everythingchanged;
 	
 	id specialrequest;
@@ -51,6 +52,7 @@
 @property (nonatomic) glui32 timerinterval;
 @property (nonatomic, readonly) CGRect bounds;
 @property (nonatomic) BOOL geometrychanged;
+@property (nonatomic) BOOL metricschanged;
 @property (nonatomic) BOOL everythingchanged;
 @property (nonatomic, retain) NSFileManager *filemanager;
 @property (nonatomic, readonly) NSCalendar *utccalendar;
