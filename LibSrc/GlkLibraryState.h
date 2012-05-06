@@ -14,6 +14,7 @@
 	id specialrequest;
 	
 	BOOL geometrychanged;
+	BOOL metricschanged;
 	BOOL everythingchanged;
 }
 
@@ -22,6 +23,7 @@
 @property (nonatomic, retain) NSNumber *rootwintag;
 @property (nonatomic, retain) id specialrequest;
 @property (nonatomic) BOOL geometrychanged;
+@property (nonatomic) BOOL metricschanged;
 @property (nonatomic) BOOL everythingchanged;
 
 @end

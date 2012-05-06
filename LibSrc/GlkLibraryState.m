@@ -13,6 +13,7 @@
 @synthesize rootwintag;
 @synthesize specialrequest;
 @synthesize geometrychanged;
+@synthesize metricschanged;
 @synthesize everythingchanged;
 
 - (void) dealloc {
