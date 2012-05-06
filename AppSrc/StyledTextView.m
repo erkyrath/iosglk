@@ -761,8 +761,10 @@
 					[vwd release];
 					
 					hpos += wordsize.width;
-					if (maxheight < wordsize.height+leading)
-						maxheight = wordsize.height+leading;
+					
+					CGFloat lineheight = sfont.lineHeight + leading;
+					if (maxheight < lineheight)
+						maxheight = lineheight;
 					/*
 					if (maxascender < sfont.ascender)
 						maxascender = sfont.ascender;
@@ -778,7 +780,7 @@
 				}
 			}
 			
-			if (maxheight < 1)
+			if (maxheight < 2)
 				maxheight = normalpointsize;
 
 			GlkVisualLine *vln = [[[GlkVisualLine alloc] initWithStrings:tmparr styles:styleset] autorelease];
@@ -1330,8 +1332,16 @@
 	UIColor *lastcolor = nil;
 	
 	for (GlkVisualLine *vln in vlines) {
+		CGFloat maxascend = 0.0;
+		for (GlkVisualString *vwd in vln.arr) {
+			UIFont *font = fonts[vwd.style];
+			CGFloat ascend = font.ascender;
+			if (maxascend < ascend)
+				maxascend = ascend;
+		}
+		CGFloat ymin = vln.ypos - ytop;
 		CGPoint pt;
-		pt.y = vln.ypos - ytop;
+		pt.y = ymin;
 		pt.x = vln.xstart;
 		for (GlkVisualString *vwd in vln.arr) {
 			UIFont *font = fonts[vwd.style];
@@ -1340,6 +1350,7 @@
 				CGContextSetFillColorWithColor(gc, color.CGColor);
 				lastcolor = color;
 			}
+			pt.y = ymin + floorf(maxascend - font.ascender);
 			CGSize wordsize = [vwd.str drawAtPoint:pt withFont:font];
 			pt.x += wordsize.width;
 		}
