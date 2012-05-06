@@ -1351,6 +1351,8 @@
 				lastcolor = color;
 			}
 			pt.y = ymin + floorf(maxascend - font.ascender);
+			// for descenders: pt.y = (ymin + vln.height - font.lineHeight) - floorf(font.descender - mindescend)
+			
 			CGSize wordsize = [vwd.str drawAtPoint:pt withFont:font];
 			pt.x += wordsize.width;
 		}
