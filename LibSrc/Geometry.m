@@ -73,7 +73,7 @@
 	copy.division = division;
 	copy.hasborder = hasborder;
 	copy.keytag = keytag;
-	copy.keystyleset = keystyleset;
+	copy.keystyleset = keystyleset; // stylesets are immutable
 	copy.size = size;
 	copy.child1tag = child1tag;
 	copy.child2tag = child2tag;
