@@ -184,7 +184,7 @@
 	This is called from the glkviewc, but that's just a wrapper. The call originates from selectEvent in the app wrapper class.
 */
 - (void) updateFromLibraryState:(GlkLibraryState *)library {
-	NSLog(@"updateFromLibraryState");
+	NSLog(@"updateFromLibraryState (geometry %d, metrics %d)", library.geometrychanged, library.metricschanged);
 	
 	if (!library)
 		[NSException raise:@"GlkException" format:@"updateFromLibraryState: no library"];
@@ -237,7 +237,7 @@
 	}
 	
 	/* If the window geometry has changed (windows created, deleted, or arrangement-set) then rebuild the geometry cache. */
-	if (library.geometrychanged) {
+	if (library.geometrychanged || library.metricschanged) {
 		//NSLog(@"Recaching window geometries");
 		self.rootwintag = library.rootwintag;
 		[wingeometries removeAllObjects];
