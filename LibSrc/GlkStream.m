@@ -71,8 +71,6 @@
 }
 
 - (void) dealloc {
-	NSLog(@"GlkStream dealloc %x", (unsigned int)self);
-	
 	if (inlibrary)
 		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc while in library"];
 	if (type == strtype_None)

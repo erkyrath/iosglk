@@ -83,6 +83,8 @@ static GlkLibrary *singleton = nil;
 
 - (id) initWithCoder:(NSCoder *)decoder {
 	/* It is important to remember that a GlkLibrary which is deserialized through this function will *not* be installed straight into service. Instead, it will be imported into the *real* library via the updateFromLibrary method. This frees us from some consistency-check hassle.
+	 
+		Also, it means that a library created via this path is never the singleton.
 	 */
 	
 	int version = [decoder decodeIntForKey:@"version"];
@@ -165,7 +167,7 @@ static GlkLibrary *singleton = nil;
 }
 
 - (void) dealloc {
-	NSLog(@"GlkLibrary dealloc %x", (unsigned int)self);
+	//NSLog(@"GlkLibrary dealloc %x", (unsigned int)self);
 	if (singleton == self)
 		singleton = nil;
 	self.glkdelegate = nil;
