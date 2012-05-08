@@ -65,6 +65,12 @@ void glk_main() {
 					glk_stream_close(str, NULL);
 				}
 			}
+			if (!strcmp(inbuf, "long")) {
+				glk_put_string("This is a long string. Hopefully long enough to get some wrapping action.\n\n");
+				glk_put_string("This is another long string. Hopefully long enough to get some wrapping action.\n\n");
+				glk_put_string("This is a long string. Hopefully long enough to get some wrapping action.\n\n");
+				glk_put_string("This is another long string. Hopefully long enough to get some wrapping action.\n");
+			}
 			if (!strcmp(inbuf, "exit")) {
 				glk_exit(); // does not return
 			}

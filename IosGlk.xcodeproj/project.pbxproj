@@ -26,6 +26,9 @@
 		DF188B8815478EA000CC6929 /* button-pref-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = DF188B8415478EA000CC6929 /* button-pref-hi.png */; };
 		DF188B8915478EA000CC6929 /* button-pref-hi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF188B8515478EA000CC6929 /* button-pref-hi@2x.png */; };
 		DF19DDC914E87CC4007DCB29 /* IosGlkLibDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */; };
+		DF29B80C1559EA22009DA4BE /* MoreBoxView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF29B80D1559EA22009DA4BE /* MoreBoxView.xib */; };
+		DF29B8101559EA34009DA4BE /* more-arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = DF29B80E1559EA34009DA4BE /* more-arrow.png */; };
+		DF29B8111559EA34009DA4BE /* more-arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF29B80F1559EA34009DA4BE /* more-arrow@2x.png */; };
 		DF41DA6F152E09F4000B5D00 /* button-tab-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */; };
 		DF41DA70152E09F4000B5D00 /* button-tab-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */; };
 		DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */; };
@@ -56,7 +59,6 @@
 		DFCB160F153FAD5E00936D28 /* button-input-menu.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1609153FAD5E00936D28 /* button-input-menu.png */; };
 		DFCB1610153FAD5E00936D28 /* button-input-menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCB160A153FAD5E00936D28 /* button-input-menu@2x.png */; };
 		DFCB1614153FAD9400936D28 /* TextFieldRightView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1613153FAD9400936D28 /* TextFieldRightView.xib */; };
-		DFCB1615153FAE1900936D28 /* MoreBoxView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFCB1617153FAE1900936D28 /* MoreBoxView.xib */; };
 		DFCB1618153FAE2900936D28 /* InputMenuDecor.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFCB161A153FAE2900936D28 /* InputMenuDecor.xib */; };
 		DFCE593D13690D0100EACA86 /* GlkBlorbLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */; };
 		DFCE593E13690D0100EACA86 /* GlkDispatchLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */; };
@@ -115,6 +117,9 @@
 		DF188B8515478EA000CC6929 /* button-pref-hi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-pref-hi@2x.png"; sourceTree = "<group>"; };
 		DF19DDC814E87CC4007DCB29 /* IosGlkLibDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IosGlkLibDelegate.m; sourceTree = "<group>"; };
 		DF2280A413692516000AF225 /* iosglk_startup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iosglk_startup.h; sourceTree = "<group>"; };
+		DF29B80D1559EA22009DA4BE /* MoreBoxView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MoreBoxView.xib; sourceTree = "<group>"; };
+		DF29B80E1559EA34009DA4BE /* more-arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "more-arrow.png"; sourceTree = "<group>"; };
+		DF29B80F1559EA34009DA4BE /* more-arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "more-arrow@2x.png"; sourceTree = "<group>"; };
 		DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-tab-sel.png"; sourceTree = "<group>"; };
 		DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-tab-sel@2x.png"; sourceTree = "<group>"; };
 		DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDateTimeLayer.m; sourceTree = "<group>"; };
@@ -156,7 +161,6 @@
 		DFCB1609153FAD5E00936D28 /* button-input-menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-input-menu.png"; sourceTree = "<group>"; };
 		DFCB160A153FAD5E00936D28 /* button-input-menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-input-menu@2x.png"; sourceTree = "<group>"; };
 		DFCB1613153FAD9400936D28 /* TextFieldRightView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextFieldRightView.xib; sourceTree = "<group>"; };
-		DFCB1616153FAE1900936D28 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MoreBoxView.xib; sourceTree = "<group>"; };
 		DFCB1619153FAE2900936D28 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/InputMenuDecor.xib; sourceTree = "<group>"; };
 		DFCE593B13690D0100EACA86 /* GlkBlorbLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkBlorbLayer.m; sourceTree = "<group>"; };
 		DFCE593C13690D0100EACA86 /* GlkDispatchLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDispatchLayer.m; sourceTree = "<group>"; };
@@ -265,7 +269,7 @@
 				2899E5210DE3E06400AC0155 /* IosGlkViewController.xib */,
 				DFC0AF561355552000CD1F5D /* GlkFileSelectLoad.xib */,
 				DFF26A83135BCBAC00F2FBFD /* GlkFileSelectStore.xib */,
-				DFCB1617153FAE1900936D28 /* MoreBoxView.xib */,
+				DF29B80D1559EA22009DA4BE /* MoreBoxView.xib */,
 				DFBB4DF114F5E1210041016A /* PopBoxView.xib */,
 				DFCB1613153FAD9400936D28 /* TextFieldRightView.xib */,
 				DFCB161A153FAE2900936D28 /* InputMenuDecor.xib */,
@@ -312,6 +316,8 @@
 				DFC755E7152953A1009F4137 /* fader-popbox.png */,
 				DF70A1591513EDA600B109A2 /* selecthandle.png */,
 				DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */,
+				DF29B80E1559EA34009DA4BE /* more-arrow.png */,
+				DF29B80F1559EA34009DA4BE /* more-arrow@2x.png */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -479,7 +485,7 @@
 				DF9D1A6414E6E27C006A6749 /* HistoryMenuView.xib in Resources */,
 				DF9D1A6614E71D6E006A6749 /* PaletteMenuView.xib in Resources */,
 				DFBB4DF214F5E1210041016A /* PopBoxView.xib in Resources */,
-				DFCB1615153FAE1900936D28 /* MoreBoxView.xib in Resources */,
+				DF29B80C1559EA22009DA4BE /* MoreBoxView.xib in Resources */,
 				DF70A15B1513EDA600B109A2 /* selecthandle.png in Resources */,
 				DF70A15C1513EDA600B109A2 /* selecthandle@2x.png in Resources */,
 				DFC755E8152953A1009F4137 /* background-popbox.png in Resources */,
@@ -506,6 +512,8 @@
 				DF188B8715478EA000CC6929 /* button-pref-base@2x.png in Resources */,
 				DF188B8815478EA000CC6929 /* button-pref-hi.png in Resources */,
 				DF188B8915478EA000CC6929 /* button-pref-hi@2x.png in Resources */,
+				DF29B8101559EA34009DA4BE /* more-arrow.png in Resources */,
+				DF29B8111559EA34009DA4BE /* more-arrow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -587,14 +595,6 @@
 				DFCB15E0153E21E600936D28 /* en */,
 			);
 			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		DFCB1617153FAE1900936D28 /* MoreBoxView.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DFCB1616153FAE1900936D28 /* en */,
-			);
-			name = MoreBoxView.xib;
 			sourceTree = "<group>";
 		};
 		DFCB161A153FAE2900936D28 /* InputMenuDecor.xib */ = {
