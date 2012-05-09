@@ -71,6 +71,14 @@
 	self.frameview = nil;
 }
 
+- (void) viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+		BOOL hidenavbar = (self.interfaceOrientation == UIInterfaceOrientationLandscapeLeft || self.interfaceOrientation == UIInterfaceOrientationLandscapeRight);
+		[self.navigationController setNavigationBarHidden:hidenavbar animated:NO];
+	}
+}
+
 - (void) viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
 	[frameview removePopMenuAnimated:NO];
@@ -81,6 +89,19 @@
 	NSLog(@"viewDidLoad (library is %x)", (unsigned int)(appdelegate.library));
 	if (appdelegate.library)
 		[frameview requestLibraryState:appdelegate.glkapp];
+}
+
+- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration {
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+		BOOL hidenavbar = (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight);
+		[self.navigationController setNavigationBarHidden:hidenavbar animated:YES];
+	}
+}
+
+/* Allow all orientations. (An interpreter-specific subclass may override this.)
+ */
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return YES;
 }
 
 /* Invoked in the UI thread when an event is generated. The view controller has a chance to intercept the event and do something with or to it. Return nil to block the event; return the argument unchanged to do nothing.
@@ -209,12 +230,6 @@
 		//NSLog(@"Reshowing keyboard for %@", firstinputview);
 		[winv.inputfield becomeFirstResponder];
 	}
-}
-
-/* Allow all orientations. (An interpreter-specific subclass may override this.)
- */
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
 }
 
 /* Display the "game over, what now?" popup. This is called when the player taps after glk_main() has exited.
