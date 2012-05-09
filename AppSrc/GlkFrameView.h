@@ -40,6 +40,7 @@
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp;
 - (void) updateFromLibraryState:(GlkLibraryState *)library;
 - (void) updateWindowStyles;
+- (void) updateInputTraits;
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box;
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 - (void) postPopMenu:(PopMenuView *)menuview;

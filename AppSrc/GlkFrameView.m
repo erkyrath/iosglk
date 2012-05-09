@@ -85,6 +85,14 @@
 	[[GlkAppWrapper singleton] noteMetricsChanged];
 }
 
+- (void) updateInputTraits {
+	for (NSNumber *tag in windowviews) {
+		GlkWindowView *winv = [windowviews objectForKey:tag];
+		if (winv.inputfield)
+			[winv.inputfield adjustInputTraits];
+	}
+}
+
 - (void) layoutSubviews {
 	CGRect keyboardbox = [IosGlkViewController singleton].keyboardbox;
 	

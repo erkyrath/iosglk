@@ -93,6 +93,16 @@
 	else
 		self.text = @"";
 	
+	[self adjustInputTraits];
+}
+
+- (void) adjustForWindowStyles:(StyleSet *)styleset {
+	//self.backgroundColor = styleset.backgroundcolor;
+	self.font = styleset.fonts[style_Input];
+	self.textColor = styleset.colors[style_Input];
+}
+
+- (void) adjustInputTraits {
 	/* Bug: changing the returnKeyType in an existing field doesn't change the open keyboard. I don't care right now. */
 	if (singlechar) {
 		self.returnKeyType = UIReturnKeyDefault;
@@ -100,15 +110,12 @@
 	}
 	else {
 		self.returnKeyType = UIReturnKeyGo;
-		self.autocorrectionType = UITextAutocorrectionTypeDefault;
+		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+		if ([defaults boolForKey:@"NoAutocorrect"])
+			self.autocorrectionType = UITextAutocorrectionTypeNo;
+		else
+			self.autocorrectionType = UITextAutocorrectionTypeDefault;
 	}
-	
-}
-
-- (void) adjustForWindowStyles:(StyleSet *)styleset {
-	//self.backgroundColor = styleset.backgroundcolor;
-	self.font = styleset.fonts[style_Input];
-	self.textColor = styleset.colors[style_Input];
 }
 
 - (BOOL) singleChar {
