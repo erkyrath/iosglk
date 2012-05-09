@@ -174,6 +174,7 @@
 	tapseldragging = SelDrag_none;
 	taplastat = 0; // the past
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(giveUpTapCombo) object:nil];
 }
 
 - (BOOL) anySelection {
@@ -305,6 +306,19 @@
 	[self selectParagraphAt:taploc];
 }
 
+- (void) giveUpTapCombo {
+	//NSLog(@"### giveUpTapCombo: %d", tapnumber);
+	if (tapnumber == 1) {
+		IosGlkViewController *viewc = [IosGlkViewController singleton];
+		GlkWindowView *winv = viewc.preferredInputWindow;
+		if (winv && winv.inputfield && winv.inputfield.isFirstResponder) {
+			NSLog(@"### dropping keyboard!");
+			[winv.inputfield resignFirstResponder];
+		}
+	}
+	tapnumber = 0;
+}
+
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	//NSLog(@"WGV: Touch began (%d)", event.allTouches.count);
 	if (event.allTouches.count > 1) {
@@ -399,6 +413,7 @@
 	tapnumber++;
 	taplastat = now;
 	//NSLog(@"### tap %d!", tapnumber);
+	[self performSelector:@selector(giveUpTapCombo) withObject:nil afterDelay:0.5];
 
 	IosGlkViewController *viewc = [IosGlkViewController singleton];
 	GlkWindowView *winv = viewc.preferredInputWindow;
