@@ -1067,7 +1067,6 @@
 		IosGlkViewController *viewc = [IosGlkViewController singleton];
 		GlkWindowView *winv = viewc.preferredInputWindow;
 		if (winv && winv.inputfield && winv.inputfield.isFirstResponder) {
-			NSLog(@"### dropping keyboard!");
 			[winv.inputfield resignFirstResponder];
 		}
 	}
