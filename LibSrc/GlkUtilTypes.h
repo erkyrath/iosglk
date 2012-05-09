@@ -38,6 +38,8 @@ typedef enum GlkStyledLineStatus_enum {
 - (id) initWithIndex:(int)index;
 - (id) initWithIndex:(int)index status:(GlkStyledLineStatus) status;
 - (NSString *) concatLine;
+- (NSString *) wordAtPos:(CGFloat)xpos styles:(StyleSet *)styleset;
+- (NSString *) wordAtPos:(CGFloat)xpos styles:(StyleSet *)styleset inBox:(CGRect *)boxref;
 - (GlkAccStyledLine *) accessElementInContainer:(GlkWinGridView *)container;
 
 @end

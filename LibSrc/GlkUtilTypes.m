@@ -83,6 +83,52 @@
 	return concatline;
 }
 
+- (NSString *) wordAtPos:(CGFloat)xpos styles:(StyleSet *)styleset {
+	return [self wordAtPos:xpos styles:styleset inBox:nil];
+}
+
+- (NSString *) wordAtPos:(CGFloat)xpos styles:(StyleSet *)styleset inBox:(CGRect *)boxref {
+	int concatlen = self.concatLine.length;
+	CGFloat leftmargin = styleset.margins.left;
+	CGFloat charwidth = styleset.charbox.width;
+	
+	if (concatlen == 0) {
+		if (boxref)
+			*boxref = CGRectNull;
+		return nil;
+	}
+	
+	int pos = (int)((xpos - leftmargin) / charwidth);
+	pos = MIN(concatlen, pos);
+	pos = MAX(pos, 0);
+	
+	int wdstart = pos;
+	int wdend = pos;
+	NSString *line = self.concatLine;
+	
+	while (wdstart > 0 && isalnum([line characterAtIndex:wdstart-1]))
+		wdstart--;
+	while (wdend < concatlen && isalnum([line characterAtIndex:wdend]))
+		wdend++;
+	
+	if (wdstart >= wdend) {
+		if (boxref)
+			*boxref = CGRectNull;
+		return nil;
+	}
+	
+	if (boxref) {
+		CGFloat topmargin = styleset.margins.top;
+		CGFloat charheight = styleset.charbox.height;
+		*boxref = CGRectMake(leftmargin+wdstart*charwidth, topmargin+index*charheight, charwidth*(wdend-wdstart), charheight);
+	}
+	
+	NSRange range;
+	range.location = wdstart;
+	range.length = wdend - wdstart;
+	return [line substringWithRange:range];
+}
+
 - (GlkAccStyledLine *) accessElementInContainer:(GlkWinGridView *)container {
 	if (!accessel) {
 		self.accessel = [GlkAccStyledLine buildForLine:self container:container];

@@ -1203,7 +1203,7 @@
 			[winv.inputfield becomeFirstResponder];
 		}
 	}
-	else {
+	else if (!winv.inputfield.singleChar) {
 		tapnumber = 0;
 		GlkVisualLine *vln = [self lineAtPos:taploc.y];
 		if (vln) {

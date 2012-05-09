@@ -8,6 +8,7 @@
 #import "GlkWindowView.h"
 
 @class TextSelectView;
+@class GlkStyledLine;
 
 @interface GlkWinGridView : GlkWindowView {
 	NSMutableArray *lines; /* array of GlkStyledLine */
@@ -26,5 +27,7 @@
 
 @property (nonatomic, retain) NSMutableArray *lines;
 @property (nonatomic, retain) TextSelectView *selectionview;
+
+- (GlkStyledLine *) lineAtPos:(CGFloat)ypos;
 
 @end

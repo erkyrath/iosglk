@@ -46,6 +46,18 @@
 	[self setNeedsDisplay];
 }
 
+- (GlkStyledLine *) lineAtPos:(CGFloat)ypos {
+	if (!lines || !lines.count)
+		return nil;
+	
+	int pos = floorf((ypos - styleset.margins.top) / styleset.charbox.height);
+	
+	if (pos < 0 || pos >= lines.count)
+		return nil;
+	
+	return (GlkStyledLine *)[lines objectAtIndex:pos];
+}
+
 - (void) layoutSubviews {
 	//NSLog(@"GridView: layoutSubviews");
 	//### need to move or resize the text input view here
@@ -427,20 +439,54 @@
 	}
 	
 	/* Otherwise, single-tap focuses the input line. */
-	//### should really fling on double-tap
 	if (tapnumber == 1) {
 		if (![winv.inputfield isFirstResponder]) {
 			tapnumber = 0;
 			[winv.inputfield becomeFirstResponder];
 		}
 	}
-	else {
+	else if (!winv.inputfield.singleChar) {
 		tapnumber = 0;
+		GlkStyledLine *vln = [self lineAtPos:taploc.y];
+		if (vln) {
+			CGRect rect;
+			NSString *wd = [vln wordAtPos:taploc.x styles:styleset inBox:&rect];
+			if (wd) {
+				/* Send an animated label flying downhill */
+				rect = CGRectInset(rect, -4, -2);
+				UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+				label.font = styleset.fonts[style_Normal];
+				label.text = wd;
+				label.textAlignment = UITextAlignmentCenter;
+				label.backgroundColor = nil;
+				label.opaque = NO;
+				[self addSubview:label];
+				CGPoint newpt = RectCenter(winv.inputholder.frame);
+				CGSize curinputsize = [winv.inputfield.text sizeWithFont:winv.inputfield.font];
+				newpt.x = winv.inputholder.frame.origin.x + curinputsize.width + 0.5*rect.size.width;
+				[UIView beginAnimations:@"labelFling" context:label];
+				[UIView setAnimationDelegate:self];
+				[UIView setAnimationDuration:0.3];
+				[UIView setAnimationDidStopSelector:@selector(labelFlingEnd:finished:context:)];
+				[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+				label.center = newpt;
+				label.alpha = 0.25;
+				[UIView commitAnimations];
+				
+				/* Put the word into the input field */
+				[winv.inputfield applyInputString:wd replace:NO];
+			}
+		}
 	}
 }
 
 - (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 	[self clearTouchTracking];
+}
+
+- (void) labelFlingEnd:(NSString *)animid finished:(NSNumber *)finished context:(void *)context {
+	UILabel *label = (UILabel *)context;
+	[label removeFromSuperview];
 }
 
 - (BOOL) isAccessibilityElement {
