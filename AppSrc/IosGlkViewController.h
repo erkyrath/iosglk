@@ -25,7 +25,8 @@
 	BOOL vmexited;
 
 	/* Strings typed into input lines (across all windows) */
-	NSMutableArray *commandhistory;	
+	NSMutableArray *commandhistory;
+	/* Size of the keyboard, if present *and blocking* (in window coords) */
 	CGRect keyboardbox;
 }
 
