@@ -28,6 +28,16 @@
 	NSString *res = line.concatLine;
 	if (res.length == 0)
 		return NSLocalizedString(@"label.blank-line", nil);
+	
+	//### this is Inform-specific, really.
+	if ([res hasPrefix:@">"]) {
+		NSString *prefix = NSLocalizedString(@"label.prompt-colon", nil);
+		NSRange range;
+		range.location = 0;
+		range.length = 1;
+		res = [res stringByReplacingCharactersInRange:range withString:prefix];
+	}
+	
 	return res;
 }
 

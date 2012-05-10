@@ -10,6 +10,7 @@
 "label.missing-line" = "Missing line";
 "label.blank-line" = "Blank line";
 "label.no-history" = "(You haven’t done much yet)";
+"label.prompt-colon" = "Prompt: ";
 
 "use.save.readtitle" = "Load Game";
 "use.save.writetitle" = "Save Game";
