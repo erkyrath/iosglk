@@ -97,7 +97,7 @@
  */
 - (BOOL) pageDownOnInput {
 	if (textview.moreToSee) {
-		[textview pageDown];
+		[textview pageDown:self];
 		return YES;
 	}
 	
@@ -113,6 +113,11 @@
 
 - (void) setMoreFlag:(BOOL)flag {
 	if (morewaiting == flag)
+		return;
+	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	BOOL usemore = ![defaults boolForKey:@"NoMorePrompt"];
+	if (!usemore)
 		return;
 	
 	morewaiting = flag;

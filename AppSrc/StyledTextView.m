@@ -553,7 +553,7 @@
 			[self.superviewAsBufferView setMoreFlag:self.moreToSee];
 		}
 		else {
-			[self performSelectorOnMainThread:@selector(pageDown) withObject:nil waitUntilDone:NO];
+			[self performSelectorOnMainThread:@selector(pageDown:) withObject:nil waitUntilDone:NO];
 		}
 		newcontent = NO;
 		wasclear = NO;
@@ -579,16 +579,25 @@
 }
 
 /* Page down, if necessary. Returns YES if further paging is necessary, or NO if we're at the bottom.
+ 
+	Sender is self if the page was initiated by the user, or nil if it was initiated by layout. (Yes, that's awful.)
  */
-- (BOOL) pageDown {
+- (BOOL) pageDown:(id)sender {
 	CGRect visbounds = self.bounds;
 	CGSize contentsize = self.contentSize;
 	CGFloat scrolltobottom = MAX(0, contentsize.height - visbounds.size.height);
 	CGFloat scrollto;
 	
 	//NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
-	
-	if (vlines.count && endvlineseen < vlines.count) {
+
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	BOOL usemore = ![defaults boolForKey:@"NoMorePrompt"];
+
+	if (sender && !usemore) {
+		scrollto = scrolltobottom;
+		//NSLog(@"STV: pageDown to bottom: %.1f", scrollto);
+	}
+	else if (vlines.count && endvlineseen < vlines.count) {
 		int topline = endvlineseen;
 		if (topline > 0) {
 			GlkVisualLine *vln = [vlines objectAtIndex:topline-1];
@@ -1173,7 +1182,7 @@
 	if (self.moreToSee) {
 		/* If paging, all taps scroll down. */
 		tapnumber = 0;
-		[self pageDown];
+		[self pageDown:self];
 		return;
 	}
 	
@@ -1194,13 +1203,16 @@
 		return;
 	}
 	
-	/* Otherwise, single-tap focuses the input line. On double-tap, paste a word in. */
+	/* Otherwise, single-tap focuses or defocusses the input line. On double-tap, paste a word in. */
+	
 	if (tapnumber == 1) {
+		/* Single-tap... */
 		if (![winv.inputfield isFirstResponder]) {
 			tapnumber = 0;
 			[self pageToBottom];
 			[winv.inputfield becomeFirstResponder];
 		}
+		/* If the input field *is* focussed, we don't do anything yet. (This might be the beginning of a double-tap.) The giveUpTapCombo callback, coming in 0.5 second, will drop the keyboard. */
 	}
 	else if (!winv.inputfield.singleChar) {
 		tapnumber = 0;

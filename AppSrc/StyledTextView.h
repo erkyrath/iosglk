@@ -63,7 +63,7 @@
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax;
 - (void) sanityCheck;
 - (CGRect) placeForInputField;
-- (BOOL) pageDown;
+- (BOOL) pageDown:(id)sender;
 - (BOOL) pageToBottom;
 - (void) clearTouchTracking;
 - (BOOL) anySelection;
