@@ -170,7 +170,6 @@ static GlkLibrary *singleton = nil;
 }
 
 - (void) dealloc {
-	//NSLog(@"GlkLibrary dealloc %x", (unsigned int)self);
 	if (singleton == self)
 		singleton = nil;
 	self.glkdelegate = nil;

@@ -39,7 +39,6 @@
 {
 	self = [super initWithCoder:decoder];
 	if (self) {
-		NSLog(@"GlkFrameView allocated");
 		self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 		self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
 		rootwintag = nil;
@@ -52,7 +51,6 @@
 }
 
 - (void) dealloc {
-	NSLog(@"GlkFrameView dealloc %x", (unsigned int)self);
 	self.librarystate = nil;
 	self.windowviews = nil;
 	self.wingeometries = nil;

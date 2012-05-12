@@ -34,7 +34,6 @@
 }
 
 - (void) dealloc {
-	NSLog(@"IosGlkViewController dealloc %x", (unsigned int)self);
 	self.frameview = nil;
 	self.commandhistory = nil;
 	self.prefinputwintag = nil;
