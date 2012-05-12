@@ -774,7 +774,7 @@
 					
 					hpos += wordsize.width;
 					
-					CGFloat lineheight = (lineheightavail ? sfont.lineHeight : sfont.pointSize);
+					CGFloat lineheight = (lineheightavail ? (sfont.lineHeight) : (sfont.pointSize+2));
 					lineheight += leading;
 					if (maxheight < lineheight)
 						maxheight = lineheight;
