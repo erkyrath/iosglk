@@ -46,6 +46,10 @@
 		cachedGlkBox = CGRectNull;
 		
 		inputmenumode = inputmenu_Palette;
+		
+		/* Requires iOS 4 and up. Note weird idiom for checking the existence of a weakly-linked function. */
+		if (UIAccessibilityIsVoiceOverRunning != nil)
+			voiceoveravailable = YES;
 	}
 	return self;
 }
@@ -287,7 +291,7 @@
 	}
 	
 	/* Slightly awkward, but mostly right: if voiceover is on, speak the most recent buffer window update. */
-	if (UIAccessibilityIsVoiceOverRunning()) {
+	if (voiceoveravailable && UIAccessibilityIsVoiceOverRunning()) {
 		for (GlkWindowState *win in library.windows) {
 			if ([win isKindOfClass:[GlkWindowBufferState class]]) {
 				GlkWindowBufferState *bufwin = (GlkWindowBufferState *)win;

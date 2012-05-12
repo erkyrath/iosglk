@@ -28,6 +28,8 @@
 	
 	PopMenuView *menuview;
 	InputMenuMode inputmenumode;
+	
+	BOOL voiceoveravailable;
 }
 
 @property (nonatomic, retain) GlkLibraryState *librarystate;

@@ -669,12 +669,15 @@
 			return nil;
 	}
 	
+	/* Requires iOS 4 and up */
+	BOOL lineheightavail = ([UIFont instancesRespondToSelector:@selector(lineHeight)]);
+	
 	UIFont **fonts = styleset.fonts;
 	CGFloat leading = styleset.leading;
 	CGFloat normalpointsize = styleset.charbox.height; // includes leading
 	NSMutableArray *result = [NSMutableArray arrayWithCapacity:32]; // vlines laid out
 	NSMutableArray *tmparr = [NSMutableArray arrayWithCapacity:64]; // words in a line
-	
+
 	CGFloat ypos = 0;
 	
 	for (int snum = startline; ypos < ymax; snum += loopincrement) {
@@ -771,7 +774,8 @@
 					
 					hpos += wordsize.width;
 					
-					CGFloat lineheight = sfont.lineHeight + leading;
+					CGFloat lineheight = (lineheightavail ? sfont.lineHeight : sfont.pointSize);
+					lineheight += leading;
 					if (maxheight < lineheight)
 						maxheight = lineheight;
 					/*
