@@ -30,6 +30,7 @@
 
 + (IosGlkAppDelegate *) singleton;
 + (BOOL) animblocksavailable;
++ (BOOL) gesturesavailable;
 
 @end
 

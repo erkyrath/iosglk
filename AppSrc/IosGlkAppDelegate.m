@@ -24,6 +24,7 @@
 
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
 static BOOL animblocksavailable = NO; /* true for iOS4 and up */
+static BOOL gesturesavailable = NO; /* true for iOS3.2 and up */
 
 + (IosGlkAppDelegate *) singleton {
 	return singleton;
@@ -33,11 +34,20 @@ static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 	return animblocksavailable;
 }
 
++ (BOOL) gesturesavailable {
+	return gesturesavailable;
+}
+
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
 	NSLog(@"AppDelegate finished launching");	
 	singleton = self;
 	
+	/* Test if animations are available. */
 	animblocksavailable = [[UIView class] respondsToSelector:@selector(animateWithDuration:animations:)];
+	
+	/* Funny idiom for testing if gestures are available; boilerplated from iOS docs. */
+	UIGestureRecognizer *testgesture = [[[UIGestureRecognizer alloc] initWithTarget:self action:@selector(myAction:)] autorelease];
+	gesturesavailable = [testgesture respondsToSelector:@selector(locationInView:)];
 
 	// Add the view controller's view to the window and display.
 	[self.window addSubview:rootviewc.view];
