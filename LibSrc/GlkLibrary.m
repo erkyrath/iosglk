@@ -297,7 +297,6 @@ static GlkLibrary *singleton = nil;
 				if (geometry && geometry.keytag) {
 					GlkWindow *keywin = [self windowForTag:geometry.keytag];
 					geometry.keystyleset = keywin.styleset;
-					NSLog(@"### setMetrics: geometry charbox %f", geometry.keystyleset.charbox.height);
 				}
 			}
 		}
