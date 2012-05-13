@@ -757,7 +757,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		}
 	}
 	
-	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:lines.count];
+	NSMutableArray *linearr = [NSMutableArray arrayWithCapacity:lines.count];
 
 	for (int jx=0; jx<lines.count; jx++) {
 		GlkGridLine *ln = [lines objectAtIndex:jx];
@@ -766,7 +766,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		ln.dirty = NO;
 		
 		GlkStyledLine *sln = [[GlkStyledLine alloc] initWithIndex:jx]; // release soon
-		[arr addObject:sln];
+		[linearr addObject:sln];
 		[sln release];
 		
 		NSMutableArray *arr = sln.arr;
@@ -786,7 +786,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		}
 	}
 	
-	state.lines = arr;
+	state.lines = linearr;
 	
 	return state;
 }
