@@ -72,6 +72,26 @@
 	[encoder encodeObject:arr forKey:@"arr"];
 }
 
+- (NSString *) description {
+	NSString *statstr;
+	switch (status) {
+		case linestat_Continue:
+			statstr = @"cont";
+			break;
+		case linestat_NewLine:
+			statstr = @"newline";
+			break;
+		case linestat_ClearPage:
+			statstr = @"clear";
+			break;
+		default:
+			statstr = @"???";
+			break;
+	}
+	
+	return [NSString stringWithFormat:@"<GlkStyledLine (%d/%@) '%@'>", index, statstr, self.concatLine];
+}
+
 - (NSString *) concatLine {
 	if (!concatline) {
 		NSMutableString *tmpstr = [NSMutableString stringWithCapacity:80];
