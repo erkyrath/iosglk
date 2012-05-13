@@ -101,8 +101,13 @@
 	for (GlkStyledLine *sln in gridwin.lines) {
 		if (sln.index < lines.count)
 			[lines replaceObjectAtIndex:sln.index withObject:sln];
-		else
+		else {
+			while (lines.count < sln.index) {
+				GlkStyledLine *blankln = [[[GlkStyledLine alloc] initWithIndex:lines.count] autorelease];
+				[lines addObject:blankln];
+			}
 			[lines addObject:sln];
+		}
 		anychanges = YES;
 	}
 	
