@@ -186,7 +186,6 @@
 }
 
 - (IBAction) buttonCancel:(id)sender {
-	NSLog(@"buttonCancel");
 	[self dismissModalViewControllerAnimated:YES];
 	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 }
@@ -264,7 +263,6 @@
 			thumb = [filelist objectAtIndex:row];
 		if (thumb && !thumb.isfake) {
 			GlkFileThumb *thumb = [filelist objectAtIndex:row];
-			NSLog(@"selector: deleting file \"%@\" (%@)", thumb.label, thumb.pathname);
 			BOOL res = [[NSFileManager defaultManager] removeItemAtPath:thumb.pathname error:nil];
 			if (res) {
 				[filelist removeObjectAtIndex:row];
@@ -290,8 +288,6 @@
 	if (thumb.isfake)
 		return;
 		
-	NSLog(@"selector: selected \"%@\"", thumb.label);
-	
 	if (!isload) {
 		/* The user has picked a filename; copy it into the field. */
 		textfield.text = thumb.label;
@@ -344,14 +340,12 @@
 		return;
 	}
 	
-	NSLog(@"textfield: selected \"%@\"", label);
 	[self dismissModalViewControllerAnimated:YES];
 	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
 }
 
 - (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 0) {
-		NSLog(@"textfield: confirmed selection");
 		[self dismissModalViewControllerAnimated:YES];
 		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
 	}
