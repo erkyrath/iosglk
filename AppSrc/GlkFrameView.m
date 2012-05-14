@@ -98,7 +98,7 @@
 - (void) layoutSubviews {
 	CGRect keyboardbox = [IosGlkViewController singleton].keyboardbox;
 	
-	NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardbox.size));
+	//NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardbox.size));
 	
 	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 	
@@ -183,7 +183,7 @@
 /* This is invoked when the frameview is reloaded. (Although not at startup time, because that load is manual.) We request a special out-of-sequence state update, with the special flag that means "we have no idea what's dirty, just feed us the lot".
  */
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp {
-	NSLog(@"requestLibraryState");
+	//NSLog(@"requestLibraryState");
 	[glkapp requestViewUpdate];
 }
 
@@ -194,7 +194,7 @@
 	This is called from the glkviewc, but that's just a wrapper. The call originates from selectEvent in the app wrapper class.
 */
 - (void) updateFromLibraryState:(GlkLibraryState *)library {
-	NSLog(@"updateFromLibraryState (geometry %d, metrics %d)", library.geometrychanged, library.metricschanged);
+	//NSLog(@"updateFromLibraryState (geometry %d, metrics %d)", library.geometrychanged, library.metricschanged);
 	
 	if (!library)
 		[NSException raise:@"GlkException" format:@"updateFromLibraryState: no library"];

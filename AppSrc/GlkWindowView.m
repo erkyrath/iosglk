@@ -137,13 +137,10 @@
 	if ([self isKindOfClass:[GlkWinBufferView class]]) {
 		GlkWinBufferView *winv = (GlkWinBufferView *)self;
 		if ([winv pageDownOnInput]) {
-			NSLog(@"### pageDownOnInput (more prompt)");
 			if (input_single_char) {
-				NSLog(@"### ...eating single-char input");
 				return NO;
 			}
 			if ([@" " isEqualToString:str]) {
-				NSLog(@"### ...eating space");
 				return NO;
 			}
 		}
@@ -168,7 +165,6 @@
 	if ([self isKindOfClass:[GlkWinBufferView class]]) {
 		GlkWinBufferView *winv = (GlkWinBufferView *)self;
 		if ([winv pageDownOnInput]) {
-			NSLog(@"### pageDownOnInput (more prompt); eating Enter");
 			return NO;
 		}
 	}
@@ -189,7 +185,7 @@
 
 - (void) textFieldContinueReturn:(UITextField *)textField {
 	NSString *text = textField.text;
-	NSLog(@"End editing: '%@'", text);
+	//NSLog(@"End editing: '%@'", text);
 	
 	if (![[GlkAppWrapper singleton] acceptingEvent]) {
 		/* The event must have been filled while we were delaying. Oh well. */

@@ -81,7 +81,7 @@ static GlkAppWrapper *singleton = nil;
 
 - (void) appThreadMain:(id)rock {
 	looppool = [[NSAutoreleasePool alloc] init];
-	NSLog(@"VM thread starting");
+	//NSLog(@"VM thread starting");
 
 	[iowaitcond lock];
 	iowait = NO;
@@ -99,7 +99,7 @@ static GlkAppWrapper *singleton = nil;
 			lastwaittime = [NSDate timeIntervalSinceReferenceDate];
 			glk_main();
 		} @catch (GlkExitException *ce) {
-			NSLog(@"VM thread caught glk_exit exception");
+			//NSLog(@"VM thread caught glk_exit exception");
 		}
 		
 		GlkLibrary *library = [GlkLibrary singleton];
@@ -114,7 +114,7 @@ static GlkAppWrapper *singleton = nil;
 
 	[looppool drain]; // releases it
 	looppool = nil;
-	NSLog(@"VM thread exiting");
+	//NSLog(@"VM thread exiting");
 }
 
 /* ### Have a glk_tick() which drains the looppool? Timing would be tricky... Maybe measure the pool size once per thousand opcodes */
@@ -245,7 +245,7 @@ static GlkAppWrapper *singleton = nil;
 	}
 	
 	lastwaittime = [NSDate timeIntervalSinceReferenceDate];
-	NSLog(@"VM thread glk_select returned (evtype %d)", (event ? event->type : -1));
+	//NSLog(@"VM thread glk_select returned (evtype %d)", (event ? event->type : -1));
 	[iowaitcond unlock];
 }
 
@@ -425,7 +425,7 @@ static GlkAppWrapper *singleton = nil;
 
 /* This fires on the main thread. */
 - (void) fireTimer:(id)dummy {
-	NSLog(@"Timer fires!");
+	//NSLog(@"Timer fires!");
 	if (timerinterval) {
 		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:[timerinterval doubleValue]];
 	}

@@ -66,7 +66,6 @@
 }
 
 - (void) viewDidUnload {
-	NSLog(@"viewDidUnload");
 	self.frameview = nil;
 }
 
@@ -85,7 +84,6 @@
 
 - (void) viewDidLoad {
 	IosGlkAppDelegate *appdelegate = [IosGlkAppDelegate singleton];
-	NSLog(@"viewDidLoad (library is %x)", (unsigned int)(appdelegate.library));
 	if (appdelegate.library)
 		[frameview requestLibraryState:appdelegate.glkapp];
 }
@@ -149,7 +147,7 @@
 		rect.origin.x = center.x - 0.5*rect.size.width;
 		rect.origin.y = center.y - 0.5*rect.size.height;
 	}
-	NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
+	//NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
 	
 	/* This rect is in window coordinates. */
 	keyboardbox = rect;
@@ -159,7 +157,7 @@
 }
 
 - (void) keyboardWillBeHidden:(NSNotification*)notification {
-	NSLog(@"Keyboard will be hidden");
+	//NSLog(@"Keyboard will be hidden");
 	keyboardbox = CGRectZero;
 	
 	if (frameview)

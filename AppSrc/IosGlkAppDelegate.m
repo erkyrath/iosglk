@@ -50,7 +50,7 @@ static BOOL understandspng = NO; /* true for iOS4 and up */
 }
 
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
-	NSLog(@"AppDelegate finished launching");	
+	//NSLog(@"AppDelegate finished launching");	
 	singleton = self;
 	
 	/* Test if animations are available. */
@@ -74,8 +74,6 @@ static BOOL understandspng = NO; /* true for iOS4 and up */
 	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
 	[glkviewc view];
 	
-	NSLog(@"AppDelegate loaded root view controller %x, glkviewc %x", (unsigned int)rootviewc, (unsigned int)glkviewc);
-
 	self.library = [[[GlkLibrary alloc] init] autorelease];
 	self.glkapp = [[[GlkAppWrapper alloc] init] autorelease];
 	/* Set library.glkdelegate to a default value, if the glkviewc doesn't provide one. (Remember, from now on, that glkviewc.glkdelegate may be null!) */
@@ -99,7 +97,7 @@ static BOOL understandspng = NO; /* true for iOS4 and up */
 		box = [glkviewc.glkdelegate adjustFrame:box];
 	[library setMetricsChanged:YES bounds:&box];
 
-	NSLog(@"AppDelegate launching app thread");
+	//NSLog(@"AppDelegate launching app thread");
 	
 	[glkapp launchAppThread];
 	return YES;
