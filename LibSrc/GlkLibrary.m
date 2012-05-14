@@ -192,7 +192,7 @@ static GlkLibrary *singleton = nil;
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
-	NSLog(@"### GlkLibrary: encoding with %d windows, %d streams, %d filerefs", windows.count, streams.count, filerefs.count);
+	//NSLog(@"### GlkLibrary: encoding with %d windows, %d streams, %d filerefs", windows.count, streams.count, filerefs.count);
 	[encoder encodeInt:SERIAL_VERSION forKey:@"version"];
 	
 	NSAssert(!vmexited && specialrequest == nil, @"GlkLibrary tried to serialize in special input state");
@@ -307,7 +307,6 @@ static GlkLibrary *singleton = nil;
 	if (!rearrange)
 		return NO;
 	
-	NSLog(@"setMetrics: library rearrange, bounds now %@", StringFromRect(bounds));
 	if (rootwin)
 		[rootwin windowRearrange:bounds];
 	return YES;
