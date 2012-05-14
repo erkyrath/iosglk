@@ -5,6 +5,7 @@
  */
 
 #import "TextSelectView.h"
+#import "IosGlkAppDelegate.h"
 
 @implementation TextSelectView
 
@@ -34,7 +35,7 @@
 		outlineview.alpha = 0;
 		[self addSubview:outlineview];
 		
-		UIImage *img = [UIImage imageNamed:@"selecthandle"];
+		UIImage *img = [UIImage imageNamed:[IosGlkAppDelegate imageHackPNG:@"selecthandle"]];
 		self.tophandleview = [[[UIImageView alloc] initWithImage:img] autorelease];
 		tophandleview.hidden = YES;
 		self.bottomhandleview = [[[UIImageView alloc] initWithImage:img] autorelease];

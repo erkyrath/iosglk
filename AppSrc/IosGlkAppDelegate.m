@@ -25,6 +25,7 @@
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
 static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 static BOOL gesturesavailable = NO; /* true for iOS3.2 and up */
+static BOOL understandspng = NO; /* true for iOS4 and up */
 
 + (IosGlkAppDelegate *) singleton {
 	return singleton;
@@ -38,13 +39,30 @@ static BOOL gesturesavailable = NO; /* true for iOS3.2 and up */
 	return gesturesavailable;
 }
 
++ (BOOL) understandspng {
+	return understandspng;
+}
+
++ (NSString *) imageHackPNG:(NSString *)name {
+	if (!understandspng)
+		name = [name stringByAppendingString:@".png"];
+	return name;
+}
+
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
 	NSLog(@"AppDelegate finished launching");	
 	singleton = self;
 	
 	/* Test if animations are available. */
 	animblocksavailable = [[UIView class] respondsToSelector:@selector(animateWithDuration:animations:)];
-	
+
+	/* Test if PNG files are recognized out of the box. */
+	{
+		NSString *reqSysVer = @"4.0";
+		NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
+		understandspng = ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
+	}
+
 	/* Funny idiom for testing if gestures are available; boilerplated from iOS docs. */
 	UIGestureRecognizer *testgesture = [[[UIGestureRecognizer alloc] initWithTarget:self action:@selector(myAction:)] autorelease];
 	gesturesavailable = [testgesture respondsToSelector:@selector(locationInView:)];

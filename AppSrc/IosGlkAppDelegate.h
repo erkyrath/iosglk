@@ -31,6 +31,8 @@
 + (IosGlkAppDelegate *) singleton;
 + (BOOL) animblocksavailable;
 + (BOOL) gesturesavailable;
++ (BOOL) understandspng;
++ (NSString *) imageHackPNG:(NSString *)name;
 
 @end
 
