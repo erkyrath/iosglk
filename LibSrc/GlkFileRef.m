@@ -84,7 +84,7 @@
 		
 		self.dirname = [GlkFileRef subDirOfBase:basedir forUsage:usage gameid:library.gameId];
 		self.pathname = [dirname stringByAppendingPathComponent:filename];
-		NSLog(@"created fileref with pathname %@", pathname);
+		//NSLog(@"created fileref with pathname %@", pathname);
 		
 		[library.filerefs addObject:self];
 		

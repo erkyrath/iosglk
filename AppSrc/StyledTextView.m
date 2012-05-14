@@ -191,7 +191,7 @@
 	
 	if (refresh) {
 		/* We're refreshing old content. That means the player has seen it. */
-		NSLog(@"STV: ...I believe this is a refresh, not really a clear-bump.");
+		//NSLog(@"STV: ...I believe this is a refresh, not really a clear-bump.");
 		clearcount = newclearcount;
 		[vlines removeAllObjects];
 		endvlineseen = 0;
@@ -221,7 +221,7 @@
 		trimcount++;
 	}
 	if (trimcount > 0) {
-		NSLog(@"STV: trimming %d vlines from top; firstsline now %d", trimcount, firstsline);
+		//NSLog(@"STV: trimming %d vlines from top; firstsline now %d", trimcount, firstsline);
 		endvlineseen -= trimcount;
 		if (endvlineseen < 0)
 			endvlineseen = 0;
@@ -287,7 +287,7 @@
 	if (totalwidth != newtotal || wrapwidth != newwrap) {
 		totalwidth = newtotal;
 		wrapwidth = newwrap;
-		NSLog(@"STV: width has changed! now %.01f (wrap %.01f)", totalwidth, wrapwidth);
+		//NSLog(@"STV: width has changed! now %.01f (wrap %.01f)", totalwidth, wrapwidth);
 		
 		/* Trash all laid-out lines and VisualLinesViews. */
 		//NSLog(@"### removing all linesviews (for width change)");
