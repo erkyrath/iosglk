@@ -296,11 +296,11 @@
 	
 	/* If the page height has changed, we will want to do a vertical shift later on. (But if the width changed too, forget it -- that's a complete re-layout.)
 	 
-		(Also, if the view is expanding and we're at the bottom, the shift may already have been applied -- I guess when the frame changed. In that case, we leave heightchangeoffset at zero.) 
+		(Also, if the view is expanding and we're at the (old) bottom, the shift may already have been applied -- I guess when the frame changed. In that case, we leave heightchangeoffset at zero. We also leave heightchangeoffset at zero if we're *really* at the bottom. Honestly I've lost track of why this all works.)
 	 */
 	CGFloat heightchangeoffset = 0;
 	if (totalheight != visbounds.size.height) {
-		if (vlines.count > 0 && self.contentOffset.y+visbounds.size.height < self.contentSize.height) {
+		if (wasatbottom && vlines.count > 0 && self.contentOffset.y+visbounds.size.height < self.contentSize.height) {
 			heightchangeoffset = totalheight - visbounds.size.height;
 		}
 		totalheight = visbounds.size.height;
@@ -546,6 +546,9 @@
 	/* This verifies that I haven't screwed up the consistency of the lines, vlines, linesviews arrays. */
 	[self sanityCheck]; //###
 	#endif // DEBUG
+
+	/* Check whether we're scrolled to the bottom. (Allowing a small margin of error.) We'll be checking this next update. */
+	wasatbottom = (self.contentOffset.y+visbounds.size.height >= self.contentSize.height-2.0);
 	
 	if (newcontent) {
 		//NSLog(@"STV: new content time! (wasclear %d)", wasclear);
