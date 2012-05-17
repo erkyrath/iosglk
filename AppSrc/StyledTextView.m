@@ -642,9 +642,11 @@
 	}
 	
 	IosGlkViewController *viewc = [IosGlkViewController singleton];
-	//### check preference!
-	if (NO && scrollto < scrolltobottom && viewc.keyboardIsShown) {
-		[viewc hideKeyboard];
+	if (scrollto < scrolltobottom && viewc.keyboardIsShown) {
+		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+		BOOL nokeepopen = [defaults boolForKey:@"NoKeepOpen"];
+		if (nokeepopen)
+			[viewc hideKeyboard];
 	}
 	
 	self.superviewAsBufferView.nowcontentscrolling = YES;
