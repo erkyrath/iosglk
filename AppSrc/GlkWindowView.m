@@ -138,9 +138,15 @@
 		GlkWinBufferView *winv = (GlkWinBufferView *)self;
 		if ([winv pageDownOnInput]) {
 			if (input_single_char) {
+				/* While paging: ignore everything, if we're waiting for char input. */
 				return NO;
 			}
-			if ([@" " isEqualToString:str]) {
+			if (range.location == 0 && [@" " isEqualToString:str]) {
+				/* Ignore the space bar too. */
+				return NO;
+			}
+			if (str.length == 1 && range.location == 1 && [textField.text hasPrefix:str]) {
+				/* Ignore repeated taps on the same character. */
 				return NO;
 			}
 		}
