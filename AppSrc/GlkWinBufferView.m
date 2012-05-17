@@ -162,6 +162,16 @@
 /* UIScrollView delegate methods: */
 
 - (void) scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+	if (nowcontentscrolling) {
+		/* If the scroll animation left us below the desired bottom edge, we'll extend the content height to include it. But only temporarily! This is to avoid jerkiness when the player scrolls to recover. */
+		CGFloat offset = (textview.contentOffset.y+textview.bounds.size.height) - textview.contentSize.height;
+		if (offset > 1) {
+			CGSize size = textview.contentSize;
+			size.height += offset;
+			textview.contentSize = size;
+		}
+	}
+	
 	if (nowcontentscrolling && textview.moreToSee)
 		[self setMoreFlag:YES];
 	if (textview.anySelection)

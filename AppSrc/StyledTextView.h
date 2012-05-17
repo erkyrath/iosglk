@@ -30,6 +30,7 @@
 	BOOL newcontent; /* True if new text has been added recently. This is cleared by the subsequent layoutSubviews. */
 	BOOL wasclear; /* True if the new content is *entirely* new -- i.e., the screen was cleared this update. */
 	BOOL wasrefresh; /* True if the new content is really not new, but the textview is new and hasn't seen it before. */
+	CGFloat idealcontentheight; /* What we want the contentSize.height to be -- the height of the text content. The actual scrollview's value may be larger, due to resizing errors that we (grudgingly) accomodate. */
 	BOOL wasatbottom; /* True if the text was scrolled all the way down (as of the most recent update). */
 	int endvlineseen; /* End of the range of vlines that are known to have been seen. (Or, the index of the first unseen vline.) If this is equal to vlines.count, the whole page is seen. */
 	

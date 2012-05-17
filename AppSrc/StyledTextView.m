@@ -42,6 +42,7 @@
 
 		self.alwaysBounceVertical = YES;
 		self.canCancelContentTouches = YES;
+		idealcontentheight = self.bounds.size.height;
 		self.contentSize = self.bounds.size;
 		
 		[self acceptStyleset:stylesval];
@@ -84,11 +85,10 @@
 /* Return the scroll position in the page, between 0.0 and 1.0. This is only an approximation, because we don't always have the whole page laid out (into vlines). If the page content is empty or shorter than its height, returns 0.
  */
 - (CGFloat) scrollPercentage {
-	CGSize contentsize = self.contentSize;
 	CGSize vissize = self.bounds.size;
-	if (contentsize.height <= vissize.height)
+	if (idealcontentheight <= vissize.height)
 		return 0;
-	CGFloat res = self.contentOffset.y / (contentsize.height - vissize.height);
+	CGFloat res = self.contentOffset.y / (idealcontentheight - vissize.height);
 	return res;
 }
 
@@ -300,7 +300,7 @@
 	 */
 	CGFloat heightchangeoffset = 0;
 	if (totalheight != visbounds.size.height) {
-		if (wasatbottom && vlines.count > 0 && self.contentOffset.y+visbounds.size.height < self.contentSize.height) {
+		if (wasatbottom && vlines.count > 0 && self.contentOffset.y+visbounds.size.height < idealcontentheight) {
 			heightchangeoffset = totalheight - visbounds.size.height;
 		}
 		totalheight = visbounds.size.height;
@@ -310,8 +310,9 @@
 	 
 		Special case: if there are no vlines at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. (If there are vlines, we always extend that range both ways.) 
 	 */
+	BOOL newlayout = (vlines.count == 0);
 	BOOL frombottom = NO;
-	if (vlines.count == 0) {
+	if (newlayout) {
 		frombottom = (!wasclear && self.scrollPercentage > 0.5);
 		if (wasrefresh)
 			frombottom = YES;
@@ -390,7 +391,7 @@
 	
 	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. If the screen started out clear, scroll straight to the top regardless */
 	CGFloat contentheight = self.totalHeight;
-	CGSize oldcontentsize = self.contentSize;
+	CGSize oldcontentsize = CGSizeMake(self.contentSize.width, idealcontentheight);
 	CGFloat vshift = upextension + heightchangeoffset;
 	if (wasrefresh)
 		vshift = (contentheight-oldcontentsize.height)-self.contentOffset.y;
@@ -411,8 +412,13 @@
 			self.contentOffset = offset;
 		}
 
+		/* This is the one magic place where contentSize changes. Except for the place farther down where it can shrink back to idealcontentheight. */
+		idealcontentheight = contentheight;
 		CGSize newsize = CGSizeMake(visbounds.size.width, contentheight);
-		if (!CGSizeEqualToSize(oldcontentsize, newsize)) {
+		CGSize truecontentsize = self.contentSize;
+		if (newsize.height < truecontentsize.height && !newlayout)
+			newsize.height = truecontentsize.height;
+		if (!CGSizeEqualToSize(truecontentsize, newsize)) {
 			//NSLog(@"STV: contentSize now %@ (was %@)", StringFromSize(newsize), StringFromSize(oldcontentsize));
 			self.contentSize = newsize;
 		}
@@ -547,8 +553,19 @@
 	[self sanityCheck]; //###
 	#endif // DEBUG
 
-	/* Check whether we're scrolled to the bottom. (Allowing a small margin of error.) We'll be checking this next update. */
-	wasatbottom = (self.contentOffset.y+visbounds.size.height >= self.contentSize.height-2.0);
+	/* Reduce the contentsize if it's over idealcontentheight. Also, check whether we're scrolled to the bottom. (Allowing a small margin of error.) We'll be checking this next update. */
+	if (YES) {
+		CGFloat offset = (self.contentOffset.y+visbounds.size.height) - idealcontentheight;
+		CGFloat maxvis = (self.contentOffset.y+visbounds.size.height);
+		CGFloat limit = MAX(maxvis, idealcontentheight);
+		wasatbottom = (offset >= -2.0);
+		//NSLog(@"### end of layout: wasatbottom now %d, based on %f", wasatbottom, offset);
+		CGSize truecontentsize = self.contentSize;
+		if (truecontentsize.height > limit) {
+			truecontentsize.height = limit;
+			self.contentSize = truecontentsize;
+		}
+	}
 	
 	if (newcontent) {
 		//NSLog(@"STV: new content time! (wasclear %d)", wasclear);
@@ -571,8 +588,7 @@
  */
 - (BOOL) pageToBottom {
 	CGRect visbounds = self.bounds;
-	CGSize contentsize = self.contentSize;
-	CGFloat scrolltobottom = MAX(0, contentsize.height - visbounds.size.height);
+	CGFloat scrolltobottom = MAX(0, idealcontentheight - visbounds.size.height);
 	
 	if (self.contentOffset.y >= scrolltobottom)
 		return NO;
@@ -587,8 +603,7 @@
  */
 - (BOOL) pageDown:(id)sender {
 	CGRect visbounds = self.bounds;
-	CGSize contentsize = self.contentSize;
-	CGFloat scrolltobottom = MAX(0, contentsize.height - visbounds.size.height);
+	CGFloat scrolltobottom = MAX(0, idealcontentheight - visbounds.size.height);
 	CGFloat scrollto;
 	
 	//NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
@@ -624,6 +639,12 @@
 	else {
 		scrollto = scrolltobottom;
 		//NSLog(@"STV: pageDown to bottom: %.1f", scrollto);
+	}
+	
+	IosGlkViewController *viewc = [IosGlkViewController singleton];
+	//### check preference!
+	if (NO && scrollto < scrolltobottom && viewc.keyboardIsShown) {
+		[viewc hideKeyboard];
 	}
 	
 	self.superviewAsBufferView.nowcontentscrolling = YES;
