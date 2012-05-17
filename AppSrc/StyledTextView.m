@@ -608,8 +608,8 @@
 	
 	//NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
 
-	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	BOOL usemore = ![defaults boolForKey:@"NoMorePrompt"];
+	/* NoMorePrompt is a preference that I decided to drop. */
+	BOOL usemore = YES; // ![defaults boolForKey:@"NoMorePrompt"];
 
 	if (sender && !usemore) {
 		scrollto = scrolltobottom;

@@ -115,10 +115,12 @@
 	if (morewaiting == flag)
 		return;
 	
+	/* NoMorePrompt is a preference that I decided to drop.
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	BOOL usemore = ![defaults boolForKey:@"NoMorePrompt"];
 	if (!usemore)
 		return;
+	 */
 	
 	morewaiting = flag;
 	if (flag) {
