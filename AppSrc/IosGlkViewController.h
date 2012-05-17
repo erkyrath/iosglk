@@ -52,6 +52,7 @@
 - (void) textSelectionWindow:(NSNumber *)tag;
 - (void) preferInputWindow:(NSNumber *)tag;
 - (GlkWindowView *) preferredInputWindow;
+- (BOOL) keyboardIsShown;
 - (void) hideKeyboard;
 - (void) postGameOver;
 - (void) displayModalRequest:(id)special;

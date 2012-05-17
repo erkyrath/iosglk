@@ -131,6 +131,12 @@
 	}
 }
 
+/* This tests whether the keyboard is visible *and obscuring the screen*. (If the iPad's floating keyboard is up, this returns NO.)
+ */
+- (BOOL) keyboardIsShown {
+	return (!CGRectIsEmpty(keyboardbox));
+}
+
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
 	CGRect rect = CGRectZero;
