@@ -46,7 +46,7 @@
 	int clearcount; /* incremented whenever the buffer is cleared */
 	int linesdirtyfrom; /* index of first new (or changed) line */
 	int linesdirtyto; /* the index of the last line, plus one (or zero if there are no lines */
-	NSArray *lines; /* array of GlkStyledLine */
+	NSArray *lines; /* array of GlkStyledLine (indexes do not necessarily start at zero!) */
 }
 
 @property (nonatomic) int clearcount;
