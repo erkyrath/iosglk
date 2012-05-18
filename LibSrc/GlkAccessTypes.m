@@ -14,6 +14,22 @@
 
 @synthesize line;
 
+/* Change ">" at the beginning of the line to the string "prompt:".
+ 
+	### This is Inform-specific. Really, this should be a GlkLibDelegate method.
+ */
++ (NSString *) lineForSpeaking:(NSString *)val {
+	if ([val hasPrefix:@">"]) {
+		NSString *prefix = NSLocalizedString(@"label.prompt-colon", nil);
+		NSRange range;
+		range.location = 0;
+		range.length = 1;
+		val = [val stringByReplacingCharactersInRange:range withString:prefix];
+	}
+
+	return val;
+}
+
 + (GlkAccVisualLine *) buildForLine:(GlkVisualLine *)vln container:(StyledTextView *)container {
 	GlkAccVisualLine *el = [[[GlkAccVisualLine alloc] initWithAccessibilityContainer:container] autorelease];
 	el.line = vln;
@@ -29,16 +45,7 @@
 	if (res.length == 0)
 		return NSLocalizedString(@"label.blank-line", nil);
 	
-	//### this is Inform-specific, really.
-	if ([res hasPrefix:@">"]) {
-		NSString *prefix = NSLocalizedString(@"label.prompt-colon", nil);
-		NSRange range;
-		range.location = 0;
-		range.length = 1;
-		res = [res stringByReplacingCharactersInRange:range withString:prefix];
-	}
-	
-	return res;
+	return [GlkAccVisualLine lineForSpeaking:res];
 }
 
 - (CGRect) accessibilityFrame {

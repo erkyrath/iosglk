@@ -17,6 +17,7 @@
 
 @property (nonatomic, assign) GlkVisualLine *line;
 
++ (NSString *) lineForSpeaking:(NSString *)val;
 + (GlkAccVisualLine *) buildForLine:(GlkVisualLine *)vln container:(StyledTextView *)container;
 
 @end

@@ -24,6 +24,7 @@
 #import "GlkWindowState.h"
 #import "Geometry.h"
 #import "StyleSet.h"
+#import "GlkAccessTypes.h"
 #import "GlkUtilTypes.h"
 #import "GlkUtilities.h"
 
@@ -305,7 +306,7 @@
 						GlkStyledLine *vln = [lines objectAtIndex:ix];
 						NSString *str = vln.concatLine;
 						if (str.length)
-							[arr addObject:vln.concatLine];
+							[arr addObject:[GlkAccVisualLine lineForSpeaking:str]];
 					}
 					if (arr.count) {
 						NSString *speakbuffer = [arr componentsJoinedByString:@"\n"];
