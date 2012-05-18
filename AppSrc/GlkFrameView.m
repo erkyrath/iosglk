@@ -299,6 +299,8 @@
 				if (lines && lines.count && bufwin.linesdirtyto > bufwin.linesdirtyfrom) {
 					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
 					for (int ix=bufwin.linesdirtyfrom; ix<bufwin.linesdirtyto; ix++) {
+						if (ix < 0 || ix >= lines.count)
+							continue;
 						GlkStyledLine *vln = [lines objectAtIndex:ix];
 						NSString *str = vln.concatLine;
 						if (str.length)
