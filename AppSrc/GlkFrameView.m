@@ -297,8 +297,9 @@
 				GlkWindowBufferState *bufwin = (GlkWindowBufferState *)win;
 				NSArray *lines = bufwin.lines;
 				if (lines && lines.count && bufwin.linesdirtyto > bufwin.linesdirtyfrom) {
-					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
-					for (int ix=bufwin.linesdirtyfrom; ix<bufwin.linesdirtyto; ix++) {
+					int slinestart = ((GlkStyledLine *)[lines objectAtIndex:0]).index;
+					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(1 + bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
+					for (int ix=bufwin.linesdirtyfrom-slinestart; ix<bufwin.linesdirtyto-slinestart; ix++) {
 						if (ix < 0 || ix >= lines.count)
 							continue;
 						GlkStyledLine *vln = [lines objectAtIndex:ix];
@@ -310,6 +311,7 @@
 						NSString *speakbuffer = [arr componentsJoinedByString:@"\n"];
 						//NSLog(@"### speak: %@", speakbuffer);
 						UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, speakbuffer);
+						/* We only speak once per update. */
 						break;
 					}
 				}
