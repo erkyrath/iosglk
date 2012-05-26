@@ -326,8 +326,10 @@
 				NSString *wdtext = [substr substringWithRange:range];
 				CGSize wordsize = [wdtext sizeWithFont:sfont];
 				wdxpos = wdxstart+wordsize.width;
-				if (pos+ix <= concatlen)
+				if (pos+ix <= concatlen) {
+					DEBUG_PARANOID_ASSERT((pos+ix <= concatlen), @"GlkVisualLine: letterpos overflow");
 					letterpos[pos+ix] = wdxpos;
+				}
 			}
 			
 			pos += strlen;
@@ -506,6 +508,7 @@
 	
 	int ix;
 	for (ix=width; ix<val; ix++) {
+		DEBUG_PARANOID_ASSERT((ix < maxwidth), @"GlkGridLine: char/style overflow");
 		chars[ix] = ' ';
 		styles[ix] = style_Normal;
 	}
@@ -517,6 +520,7 @@
 - (void) clear {
 	int ix;
 	for (ix=0; ix<width; ix++) {
+		DEBUG_PARANOID_ASSERT((ix < maxwidth), @"GlkGridLine: char/style overflow");
 		chars[ix] = ' ';
 		styles[ix] = style_Normal;
 	}

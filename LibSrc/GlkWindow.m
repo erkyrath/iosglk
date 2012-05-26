@@ -878,6 +878,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	}
 	
 	GlkGridLine *ln = [lines objectAtIndex:cury];
+	DEBUG_PARANOID_ASSERT(curx < ln.width, @"grid putUChar overflow");
 	ln.chars[curx] = ch;
 	ln.styles[curx] = style;
 	ln.dirty = YES;

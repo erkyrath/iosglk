@@ -7,6 +7,12 @@
 #import <Foundation/Foundation.h>
 #include "glk.h"
 
+#ifdef DEBUG
+#define DEBUG_PARANOID_ASSERT(cond, msg) NSAssert(cond, msg)
+#else // DEBUG
+#define DEBUG_PARANOID_ASSERT(cond, msg) 0
+#endif // DEBUG
+
 @class StyleSet;
 @class GlkWinGridView;
 @class StyledTextView;
