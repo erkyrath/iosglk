@@ -10,7 +10,7 @@
 #ifdef DEBUG
 #define DEBUG_PARANOID_ASSERT(cond, msg) NSAssert(cond, msg)
 #else // DEBUG
-#define DEBUG_PARANOID_ASSERT(cond, msg) 0
+#define DEBUG_PARANOID_ASSERT(cond, msg) do {} while (0)
 #endif // DEBUG
 
 @class StyleSet;
