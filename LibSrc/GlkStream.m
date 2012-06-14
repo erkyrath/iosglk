@@ -1534,9 +1534,14 @@
 }
 
 - (glui32) getPosition {
-	glui32 pos = [handle offsetInFile];
-	if (readbuffer || writebuffer)
-		pos += buffermark;
+	glui32 pos;
+	if (readbuffer || writebuffer) {
+		pos = bufferpos+buffermark;
+	}
+	else {
+		pos = [handle offsetInFile];
+	}
+	
 	if (!textmode && unicode) {
 		/* This file is in four-byte chunks. */
 		pos /= 4;
