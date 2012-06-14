@@ -43,7 +43,7 @@
 						<string key="NSFrame">{{20, 20}, {230, 31}}</string>
 						<reference key="NSSuperview" ref="307763933"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="134949794"/>
+						<reference key="NSNextKeyView" ref="810767413"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -77,10 +77,10 @@
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUIButton" id="134949794">
+					<object class="IBUIButton" id="810767413">
 						<reference key="NSNextResponder" ref="307763933"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{258, 20}, {42, 31}}</string>
+						<int key="NSvFlags">289</int>
+						<string key="NSFrame">{{258, 20}, {42, 30}}</string>
 						<reference key="NSSuperview" ref="307763933"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="767612791"/>
@@ -200,7 +200,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">savebutton</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="134949794"/>
+						<reference key="destination" ref="810767413"/>
 					</object>
 					<int key="connectionID">20</int>
 				</object>
@@ -231,7 +231,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">buttonSave:</string>
-						<reference key="source" ref="134949794"/>
+						<reference key="source" ref="810767413"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
@@ -264,7 +264,7 @@
 							<reference ref="187839478"/>
 							<reference ref="873029372"/>
 							<reference ref="767612791"/>
-							<reference ref="134949794"/>
+							<reference ref="810767413"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -286,7 +286,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">19</int>
-						<reference key="object" ref="134949794"/>
+						<reference key="object" ref="810767413"/>
 						<reference key="parent" ref="307763933"/>
 					</object>
 				</array>
