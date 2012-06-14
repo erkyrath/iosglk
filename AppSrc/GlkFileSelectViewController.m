@@ -19,6 +19,7 @@
 
 @synthesize tableView;
 @synthesize textfield;
+@synthesize savebutton;
 @synthesize prompt;
 @synthesize usekey;
 @synthesize filelist;
@@ -145,6 +146,8 @@
 	self.usekey = nil;
 	self.filelist = nil;
 	self.dateformatter = nil;
+	self.savebutton = nil;
+	self.textfield = nil;
 	[super dealloc];
 }
 
@@ -188,6 +191,11 @@
 - (IBAction) buttonCancel:(id)sender {
 	[self dismissModalViewControllerAnimated:YES];
 	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
+}
+
+- (IBAction) buttonSave:(id)sender {
+	if (self.textfield)
+		[self performSelector:@selector(textFieldContinueReturn:) withObject:self.textfield afterDelay:0.0];
 }
 
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation {

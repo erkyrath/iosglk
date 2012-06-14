@@ -12,6 +12,7 @@
 @interface GlkFileSelectViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIActionSheetDelegate> {
 	UITableView *tableView;
 	UITextField *textfield; /* if this is a save dialog */
+	UIButton *savebutton; /* if this is a save dialog */
 	
 	BOOL isload;
 	GlkFileRefPrompt *prompt;
@@ -23,6 +24,7 @@
 
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet UITextField *textfield;
+@property (nonatomic, retain) IBOutlet UIButton *savebutton;
 @property (nonatomic, retain) GlkFileRefPrompt *prompt;
 @property (nonatomic, retain) NSString *usekey;
 @property (nonatomic, retain) NSMutableArray *filelist;
@@ -31,6 +33,7 @@
 - (id) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)prompt bundle:(NSBundle *)nibBundle;
 - (void) addBlankThumb;
 - (IBAction) buttonCancel:(id)sender;
+- (IBAction) buttonSave:(id)sender;
 - (void) textFieldContinueReturn:(UITextField *)textField;
 
 @end
