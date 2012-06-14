@@ -31,6 +31,10 @@
 		DF29B8111559EA34009DA4BE /* more-arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF29B80F1559EA34009DA4BE /* more-arrow@2x.png */; };
 		DF41DA6F152E09F4000B5D00 /* button-tab-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */; };
 		DF41DA70152E09F4000B5D00 /* button-tab-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */; };
+		DF564963158988F4002A52E2 /* button-done-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = DF56495F158988F4002A52E2 /* button-done-hi.png */; };
+		DF564964158988F4002A52E2 /* button-done-hi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF564960158988F4002A52E2 /* button-done-hi@2x.png */; };
+		DF564965158988F4002A52E2 /* button-done.png in Resources */ = {isa = PBXBuildFile; fileRef = DF564961158988F4002A52E2 /* button-done.png */; };
+		DF564966158988F4002A52E2 /* button-done@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF564962158988F4002A52E2 /* button-done@2x.png */; };
 		DF5A890C136E7995009C6DBC /* GlkDateTimeLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */; };
 		DF70A15B1513EDA600B109A2 /* selecthandle.png in Resources */ = {isa = PBXBuildFile; fileRef = DF70A1591513EDA600B109A2 /* selecthandle.png */; };
 		DF70A15C1513EDA600B109A2 /* selecthandle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */; };
@@ -122,6 +126,10 @@
 		DF29B80F1559EA34009DA4BE /* more-arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "more-arrow@2x.png"; sourceTree = "<group>"; };
 		DF41DA6D152E09F4000B5D00 /* button-tab-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-tab-sel.png"; sourceTree = "<group>"; };
 		DF41DA6E152E09F4000B5D00 /* button-tab-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-tab-sel@2x.png"; sourceTree = "<group>"; };
+		DF56495F158988F4002A52E2 /* button-done-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-done-hi.png"; sourceTree = "<group>"; };
+		DF564960158988F4002A52E2 /* button-done-hi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-done-hi@2x.png"; sourceTree = "<group>"; };
+		DF564961158988F4002A52E2 /* button-done.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-done.png"; sourceTree = "<group>"; };
+		DF564962158988F4002A52E2 /* button-done@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button-done@2x.png"; sourceTree = "<group>"; };
 		DF5A890B136E7995009C6DBC /* GlkDateTimeLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlkDateTimeLayer.m; sourceTree = "<group>"; };
 		DF70A1591513EDA600B109A2 /* selecthandle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = selecthandle.png; sourceTree = "<group>"; };
 		DF70A15A1513EDA600B109A2 /* selecthandle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selecthandle@2x.png"; sourceTree = "<group>"; };
@@ -311,6 +319,10 @@
 				DF188B8315478EA000CC6929 /* button-pref-base@2x.png */,
 				DF188B8415478EA000CC6929 /* button-pref-hi.png */,
 				DF188B8515478EA000CC6929 /* button-pref-hi@2x.png */,
+				DF564961158988F4002A52E2 /* button-done.png */,
+				DF564962158988F4002A52E2 /* button-done@2x.png */,
+				DF56495F158988F4002A52E2 /* button-done-hi.png */,
+				DF564960158988F4002A52E2 /* button-done-hi@2x.png */,
 				DFC755E5152953A1009F4137 /* background-popbox.png */,
 				DFC755E6152953A1009F4137 /* background-popbox@2x.png */,
 				DFC755E7152953A1009F4137 /* fader-popbox.png */,
@@ -514,6 +526,10 @@
 				DF188B8915478EA000CC6929 /* button-pref-hi@2x.png in Resources */,
 				DF29B8101559EA34009DA4BE /* more-arrow.png in Resources */,
 				DF29B8111559EA34009DA4BE /* more-arrow@2x.png in Resources */,
+				DF564963158988F4002A52E2 /* button-done-hi.png in Resources */,
+				DF564964158988F4002A52E2 /* button-done-hi@2x.png in Resources */,
+				DF564965158988F4002A52E2 /* button-done.png in Resources */,
+				DF564966158988F4002A52E2 /* button-done@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
