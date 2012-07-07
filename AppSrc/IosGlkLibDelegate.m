@@ -83,13 +83,15 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return rect;
 }
 
-/* If you want a window's "real" bounds to be larger than its apparent bounds, customize this method to return a structure with left and right margins. (Top and bottom margins are currently not supported! And by "not supported", I mean "scrolling will go horribly wrong." Leave 'em zero.)
+/* If you want a window's "real" bounds to be larger than its apparent bounds, customize this method to return a structure with left and right margins. The rect argument is the window's new frame; the framerect argument is the GlkFrameView's (unadjusted) bounds.
+ 
+	(Top and bottom margins are currently not supported! And by "not supported", I mean "scrolling will go horribly wrong." Leave 'em zero.)
  
 	The only reason for this, at the moment, is to spread out a GlkWinBufferView so that its left and right margins permit scroll and select gestures.
  
 	Invoked from the UI thread.
  */
-- (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win {
+- (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win rect:(CGRect)rect framebounds:(CGRect)framebounds {
 	return UIEdgeInsetsZero;
 }
 

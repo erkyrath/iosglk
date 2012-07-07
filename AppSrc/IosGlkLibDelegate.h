@@ -21,7 +21,7 @@
 - (BOOL) hasDarkTheme;
 - (CGSize) interWindowSpacing;
 - (CGRect) adjustFrame:(CGRect)rect;
-- (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win;
+- (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win rect:(CGRect)rect framebounds:(CGRect)framebounds;
 - (void) vmHasExited;
 
 @end

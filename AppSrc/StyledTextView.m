@@ -282,6 +282,8 @@
 - (void) layoutSubviews {
 	[super layoutSubviews];
 	
+	self.scrollIndicatorInsets = viewmargin;
+	
 	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGFloat visbottom = visbounds.origin.y + visbounds.size.height;
 	//NSLog(@"STV: layoutSubviews to visbottom %.1f (%@)", visbottom, StringFromRect(visbounds));

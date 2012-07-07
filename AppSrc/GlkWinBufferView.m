@@ -57,6 +57,16 @@
 	[super dealloc];
 }
 
+- (void) setViewmargin:(UIEdgeInsets)newmargin {
+	[super setViewmargin:newmargin];
+	
+	if (textview) {
+		textview.viewmargin = viewmargin;
+		[textview setNeedsLayout];
+		[textview setNeedsDisplay];
+	}
+}
+
 /* This is called when the GlkFrameView changes size, and also (in iOS4) when the child scrollview scrolls. This is a mysterious mix of cases, but we can safely ignore the latter by only acting when the bounds actually change. 
 */
 - (void) layoutSubviews {
@@ -74,9 +84,6 @@
 	moreview.frame = rect;
 	
 	textview.frame = lastLayoutBounds;
-	textview.viewmargin = viewmargin;
-	[textview setNeedsLayout];
-	[textview setNeedsDisplay];
 }
 
 - (void) uncacheLayoutAndStyles {

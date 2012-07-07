@@ -158,7 +158,7 @@
 		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 		UIEdgeInsets viewmargin = UIEdgeInsetsZero;
 		if (glkviewc.glkdelegate)
-			viewmargin = [glkviewc.glkdelegate viewMarginForWindow:winv.winstate];
+			viewmargin = [glkviewc.glkdelegate viewMarginForWindow:winv.winstate rect:box framebounds:self.bounds];
 		CGRect viewbox = RectApplyingEdgeInsets(box, UIEdgeInsetsInvert(viewmargin));
 		if (!(CGRectEqualToRect(winv.frame, viewbox) && UIEdgeInsetsEqualToEdgeInsets(winv.viewmargin, viewmargin))) {
 			winv.frame = viewbox;
@@ -232,7 +232,7 @@
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 			UIEdgeInsets viewmargin = UIEdgeInsetsZero;
 			if (glkviewc.glkdelegate)
-				viewmargin = [glkviewc.glkdelegate viewMarginForWindow:win];
+				viewmargin = [glkviewc.glkdelegate viewMarginForWindow:win rect:win.bbox framebounds:self.bounds];
 			CGRect viewbox = RectApplyingEdgeInsets(win.bbox, UIEdgeInsetsInvert(viewmargin));
 			//NSLog(@"### creating new winview, win box %@, view box %@", StringFromRect(win.bbox), StringFromRect(viewbox));
 			GlkWindowView *winv = nil;
