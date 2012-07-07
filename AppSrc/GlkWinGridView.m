@@ -21,11 +21,12 @@
 @synthesize lines;
 @synthesize selectionview;
 
-- (id) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box {
-	self = [super initWithWindow:winref frame:box];
+- (id) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box margin:(UIEdgeInsets)margin {
+	self = [super initWithWindow:winref frame:box margin:margin];
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:8];
-		self.backgroundColor = styleset.backgroundcolor;
+		self.backgroundColor = [UIColor clearColor];
+		//self.backgroundColor = styleset.backgroundcolor;
 		
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
 		self.contentMode = UIViewContentModeRedraw;
@@ -42,7 +43,7 @@
 - (void) uncacheLayoutAndStyles {
 	if (inputfield)
 		[inputfield adjustForWindowStyles:styleset];
-	self.backgroundColor = styleset.backgroundcolor;
+	//self.backgroundColor = styleset.backgroundcolor;
 	[self setNeedsDisplay];
 }
 
@@ -50,7 +51,7 @@
 	if (!lines || !lines.count)
 		return nil;
 	
-	int pos = floorf((ypos - styleset.margins.top) / styleset.charbox.height);
+	int pos = floorf((ypos - (styleset.margins.top + viewmargin.top)) / styleset.charbox.height);
 	
 	if (pos < 0 || pos >= lines.count)
 		return nil;
@@ -71,8 +72,12 @@
 	UIColor **colors = styleset.colors;
 	CGSize charbox = styleset.charbox;
 	CGPoint marginoffset;
-	marginoffset.x = styleset.margins.left;
-	marginoffset.y = styleset.margins.top;
+	marginoffset.x = styleset.margins.left + viewmargin.left;
+	marginoffset.y = styleset.margins.top + viewmargin.top;
+	
+	CGRect realbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
+	CGContextSetFillColorWithColor(gc, styleset.backgroundcolor.CGColor);
+	CGContextFillRect(gc, realbounds);
 	
 	/* We'll be using a limited list of colors, so it makes sense to track them by identity. */
 	UIColor *lastcolor = nil;
@@ -126,20 +131,21 @@
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
 	GlkWindowGridState *gridwin = (GlkWindowGridState *)winstate;
 	
+	CGRect realbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGSize charbox = styleset.charbox;
 	CGRect box;
 	CGPoint marginoffset;
-	marginoffset.x = styleset.margins.left;
-	marginoffset.y = styleset.margins.top;
+	marginoffset.x = styleset.margins.left + viewmargin.left;
+	marginoffset.y = styleset.margins.top + viewmargin.top;
 	
 	box.origin.x = marginoffset.x + gridwin.curx * charbox.width;
-	if (box.origin.x >= self.bounds.size.width * 0.75)
-		box.origin.x = self.bounds.size.width * 0.75;
-	box.size.width = self.bounds.size.width - box.origin.x;
+	if (box.origin.x >= realbounds.size.width * 0.75)
+		box.origin.x = realbounds.size.width * 0.75;
+	box.size.width = realbounds.size.width - box.origin.x;
 	box.origin.y = marginoffset.y + gridwin.cury * charbox.height;
 	box.size.height = 24;
-	if (box.origin.y + box.size.height > self.bounds.size.height)
-		box.origin.y = self.bounds.size.height - box.size.height;
+	if (box.origin.y + box.size.height > realbounds.size.height)
+		box.origin.y = realbounds.size.height - box.size.height;
 		
 	field.frame = CGRectMake(0, 0, box.size.width, box.size.height);
 	holder.contentSize = box.size;
@@ -226,9 +232,9 @@
 	selectvend = endln;
 
 	CGSize charbox = styleset.charbox;
-	CGFloat marginoffsety = styleset.margins.top;
+	CGFloat marginoffsety = styleset.margins.top + viewmargin.top;
 	
-	CGRect rect = self.bounds; // for x and width
+	CGRect rect = RectApplyingEdgeInsets(self.bounds, viewmargin); // for x and width
 	rect.origin.y = marginoffsety + firstln * charbox.height;
 	rect.size.height = (endln - firstln) * charbox.height;
 	selectionarea = rect;
@@ -264,7 +270,7 @@
 
 - (void) selectParagraphAt:(CGPoint)loc {
 	CGSize charbox = styleset.charbox;
-	CGFloat marginoffsety = styleset.margins.top;
+	CGFloat marginoffsety = styleset.margins.top + viewmargin.top;
 
 	int slinenum = floorf((loc.y - marginoffsety) / charbox.height);
 	if (slinenum < 0 || slinenum >= lines.count) {
@@ -278,7 +284,7 @@
 
 - (void) selectMoveEdgeAt:(CGPoint)loc mode:(SelDragMode)mode {
 	CGSize charbox = styleset.charbox;
-	CGFloat marginoffsety = styleset.margins.top;
+	CGFloat marginoffsety = styleset.margins.top + viewmargin.top;
 	
 	int slinenum = floorf((loc.y - marginoffsety) / charbox.height);
 	if (slinenum < 0 || slinenum >= lines.count) {

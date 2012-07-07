@@ -24,11 +24,11 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return nil;
 }
 
-- (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box {
+- (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	return nil;
 }
 
-- (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box {
+- (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	return nil;
 }
 
@@ -77,6 +77,10 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 
 - (CGRect) adjustFrame:(CGRect)rect {
 	return rect;
+}
+
+- (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win {
+	return UIEdgeInsetsZero;
 }
 
 /* This is invoked from the VM thread, when glk_exit() is called. 

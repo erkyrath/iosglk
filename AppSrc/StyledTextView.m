@@ -20,6 +20,7 @@
 
 @implementation StyledTextView
 
+@synthesize viewmargin;
 @synthesize slines;
 @synthesize vlines;
 @synthesize linesviews;
@@ -27,9 +28,12 @@
 @synthesize selectionview;
 @synthesize selectionarea;
 
-- (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval {
+- (id) initWithFrame:(CGRect)frame margin:(UIEdgeInsets)margin styles:(StyleSet *)stylesval {
 	self = [super initWithFrame:frame];
 	if (self) {
+		viewmargin = margin;
+		self.backgroundColor = [UIColor clearColor];
+		
 		firstsline = 0;
 		self.slines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
@@ -37,13 +41,14 @@
 		wasclear = YES;
 		wasrefresh = NO;
 
-		totalheight = self.bounds.size.height;
-		totalwidth = self.bounds.size.width;
+		CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
+		totalheight = visbounds.size.height;
+		totalwidth = visbounds.size.width;
 
 		self.alwaysBounceVertical = YES;
 		self.canCancelContentTouches = YES;
-		idealcontentheight = self.bounds.size.height;
-		self.contentSize = self.bounds.size;
+		idealcontentheight = visbounds.size.height;
+		self.contentSize = visbounds.size;
 		
 		[self acceptStyleset:stylesval];
 		
@@ -79,13 +84,14 @@
 - (void) acceptStyleset:(StyleSet *)stylesval {
 	self.styleset = stylesval;
 	wrapwidth = totalwidth - styleset.margintotal.width;
-	self.backgroundColor = styleset.backgroundcolor;
+	//self.backgroundColor = styleset.backgroundcolor;
 }
 
 /* Return the scroll position in the page, between 0.0 and 1.0. This is only an approximation, because we don't always have the whole page laid out (into vlines). If the page content is empty or shorter than its height, returns 0.
  */
 - (CGFloat) scrollPercentage {
-	CGSize vissize = self.bounds.size;
+	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
+	CGSize vissize = visbounds.size;
 	if (idealcontentheight <= vissize.height)
 		return 0;
 	CGFloat res = self.contentOffset.y / (idealcontentheight - vissize.height);
@@ -155,7 +161,7 @@
 	CGRect box;
 	
 	if (!vlines || !vlines.count) {
-		box.origin.x = styleset.margins.left;
+		box.origin.x = styleset.margins.left + viewmargin.left;
 		box.size.width = totalwidth - styleset.margintotal.width;
 		box.origin.y = 0;
 		box.size.height = 24;
@@ -163,7 +169,7 @@
 	}
 	
 	if (self.lastLaidOutLine < firstsline+self.slines.count) {
-		box.origin.x = styleset.margins.left;
+		box.origin.x = styleset.margins.left + viewmargin.left;
 		box.size.width = totalwidth - styleset.margintotal.width;
 		box.origin.y = self.totalHeight;
 		box.size.height = 24;
@@ -175,7 +181,7 @@
 	if (ptx >= totalwidth * 0.75)
 		ptx = totalwidth * 0.75;
 	
-	box.origin.x = ptx;
+	box.origin.x = viewmargin.left + ptx;
 	box.size.width = (totalwidth-styleset.margins.right) - ptx;
 	box.origin.y = vln.ypos;
 	box.size.height = vln.height;
@@ -276,9 +282,9 @@
 - (void) layoutSubviews {
 	[super layoutSubviews];
 	
-	CGRect visbounds = self.bounds;
+	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGFloat visbottom = visbounds.origin.y + visbounds.size.height;
-	//NSLog(@"STV: layoutSubviews to visbottom %.1f (%@)", visbottom, StringFromRect(self.bounds));
+	//NSLog(@"STV: layoutSubviews to visbottom %.1f (%@)", visbottom, StringFromRect(visbounds));
 		
 	/* First step: check the page width. If it's changed, discard all layout and start over. (Changing the margins has the same effect.) */
 	
@@ -424,7 +430,7 @@
 		}
 		
 		/* Recompute the visual bounds. */
-		visbounds = self.bounds;
+		visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 		visbottom = visbounds.origin.y + visbounds.size.height;
 	}
 	
@@ -584,10 +590,19 @@
 		[self showSelectionMenu];
 }
 
+- (void) drawRect:(CGRect)rect {
+	//NSLog(@"StyledTextView: drawRect %@ (bounds are %@)", StringFromRect(rect), StringFromRect(visbounds));
+	CGContextRef gc = UIGraphicsGetCurrentContext();
+	
+	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
+	CGContextSetFillColorWithColor(gc, styleset.backgroundcolor.CGColor);
+	CGContextFillRect(gc, visbounds);
+}
+
 /* Page to the bottom, if necessary. Returns YES if this occurred, NO if we were already there.
  */
 - (BOOL) pageToBottom {
-	CGRect visbounds = self.bounds;
+	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGFloat scrolltobottom = MAX(0, idealcontentheight - visbounds.size.height);
 	
 	if (self.contentOffset.y >= scrolltobottom)
@@ -602,7 +617,7 @@
 	Sender is self if the page was initiated by the user, or nil if it was initiated by layout. (Yes, that's awful.)
  */
 - (BOOL) pageDown:(id)sender {
-	CGRect visbounds = self.bounds;
+	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGFloat scrolltobottom = MAX(0, idealcontentheight - visbounds.size.height);
 	CGFloat scrollto;
 	
@@ -986,7 +1001,7 @@
 	selectvstart = firstvln;
 	selectvend = endvln;
 	
-	CGRect rect = self.bounds; // for x and width
+	CGRect rect = RectApplyingEdgeInsets(self.bounds, viewmargin); // for x and width
 	GlkVisualLine *vln = [vlines objectAtIndex:firstvln];
 	rect.origin.y = vln.ypos;
 	vln = [vlines objectAtIndex:endvln-1];

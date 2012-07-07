@@ -23,6 +23,8 @@ typedef enum SelDragMode_enum {
 	GlkWindowState *winstate; /* a clone of the most recent window state */
 	StyleSet *styleset; /* the same as the window's, unless the player is changing things */
 	
+	UIEdgeInsets viewmargin; /* the view has this much extra margin beyond the window state's bounding box */
+	
 	CmdTextField *inputfield; /* if input is happening (but not necessarily a subview of this view) */
 	UIScrollView *inputholder; /* terrible hack: all textfields must be wrapped in a UIScrollView container of the same size. */
 	int input_request_id; /* matches the value in the GlkWindow if this input field is current */
@@ -33,11 +35,12 @@ typedef enum SelDragMode_enum {
 
 @property (nonatomic, retain) GlkWindowState *winstate;
 @property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic) UIEdgeInsets viewmargin;
 @property (nonatomic, retain) CmdTextField *inputfield;
 @property (nonatomic, retain) UIScrollView *inputholder;
 @property (nonatomic) BOOL morewaiting;
 
-- (id) initWithWindow:(GlkWindowState *)winstate frame:(CGRect)box;
+- (id) initWithWindow:(GlkWindowState *)winstate frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (GlkFrameView *) superviewAsFrameView;
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;

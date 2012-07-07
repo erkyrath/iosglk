@@ -31,9 +31,10 @@
 @synthesize inputholder;
 @synthesize morewaiting;
 
-- (id) initWithWindow:(GlkWindowState *)winstateref frame:(CGRect)box {
+- (id) initWithWindow:(GlkWindowState *)winstateref frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	self = [super initWithFrame:box];
 	if (self) {
+		viewmargin = margin;
 		self.winstate = winstateref;
 		self.styleset = winstate.styleset;
 		input_request_id = 0;
@@ -52,6 +53,15 @@
 
 - (GlkFrameView *) superviewAsFrameView {
 	return (GlkFrameView *)self.superview;
+}
+
+- (UIEdgeInsets) viewmargin {
+	return viewmargin;
+}
+
+- (void) setViewmargin:(UIEdgeInsets)newmargin {
+	viewmargin = newmargin;
+	[self setNeedsLayout];
 }
 
 /* Read data from the GlkWindow object, and update the view.

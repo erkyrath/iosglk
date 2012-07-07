@@ -46,6 +46,7 @@
 	int tapnumber;
 }
 
+@property (nonatomic) UIEdgeInsets viewmargin;
 @property (nonatomic, retain) NSMutableArray *slines;
 @property (nonatomic, retain) NSMutableArray *vlines;
 @property (nonatomic, retain) NSMutableArray *linesviews;
@@ -53,7 +54,7 @@
 @property (nonatomic, retain) TextSelectView *selectionview;
 @property (nonatomic, readonly) CGRect selectionarea;
 
-- (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval;
+- (id) initWithFrame:(CGRect)frame margin:(UIEdgeInsets)margin styles:(StyleSet *)stylesval;
 - (UIScrollView *) inputholder;
 - (CmdTextField *) inputfield;
 - (void) acceptStyleset:(StyleSet *)stylesval;

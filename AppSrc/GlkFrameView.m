@@ -155,8 +155,14 @@
 		[NSException raise:@"GlkException" format:@"neither view and geometry for same window"];
 	
 	if (winv) {
-		if (!CGRectEqualToRect(winv.frame, box)) {
-			winv.frame = box;
+		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
+		UIEdgeInsets viewmargin = UIEdgeInsetsZero;
+		if (glkviewc.glkdelegate)
+			viewmargin = [glkviewc.glkdelegate viewMarginForWindow:winv.winstate];
+		CGRect viewbox = RectApplyingEdgeInsets(box, UIEdgeInsetsInvert(viewmargin));
+		if (!(CGRectEqualToRect(winv.frame, viewbox) && UIEdgeInsetsEqualToEdgeInsets(winv.viewmargin, viewmargin))) {
+			winv.frame = viewbox;
+			winv.viewmargin = viewmargin;
 			[winv setNeedsLayout];
 		}
 	}
@@ -224,20 +230,24 @@
 	for (GlkWindowState *win in library.windows) {
 		if (win.type != wintype_Pair && ![windowviews objectForKey:win.tag]) {
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
-			//NSLog(@"### creating new winview, box %@", StringFromRect(win.bbox));
+			UIEdgeInsets viewmargin = UIEdgeInsetsZero;
+			if (glkviewc.glkdelegate)
+				viewmargin = [glkviewc.glkdelegate viewMarginForWindow:win];
+			CGRect viewbox = RectApplyingEdgeInsets(win.bbox, UIEdgeInsetsInvert(viewmargin));
+			//NSLog(@"### creating new winview, win box %@, view box %@", StringFromRect(win.bbox), StringFromRect(viewbox));
 			GlkWindowView *winv = nil;
 			switch (win.type) {
 				case wintype_TextBuffer:
 					if (glkviewc.glkdelegate)
-						winv = [glkviewc.glkdelegate viewForBufferWindow:win frame:win.bbox];
+						winv = [glkviewc.glkdelegate viewForBufferWindow:win frame:viewbox margin:viewmargin];
 					if (!winv)
-						winv = [[[GlkWinBufferView alloc] initWithWindow:win frame:win.bbox] autorelease];
+						winv = [[[GlkWinBufferView alloc] initWithWindow:win frame:viewbox margin:viewmargin] autorelease];
 					break;
 				case wintype_TextGrid:
 					if (glkviewc.glkdelegate)
-						winv = [glkviewc.glkdelegate viewForGridWindow:win frame:win.bbox];
+						winv = [glkviewc.glkdelegate viewForGridWindow:win frame:viewbox margin:viewmargin];
 					if (!winv)
-						winv = [[[GlkWinGridView alloc] initWithWindow:win frame:win.bbox] autorelease];
+						winv = [[[GlkWinGridView alloc] initWithWindow:win frame:viewbox margin:viewmargin] autorelease];
 					break;
 				default:
 					[NSException raise:@"GlkException" format:@"no windowview class for this window"];

@@ -15,12 +15,13 @@
 @protocol IosGlkLibDelegate <NSObject>
 
 - (NSString *) gameId;
-- (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box;
-- (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box;
+- (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
+- (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;
 - (BOOL) hasDarkTheme;
 - (CGSize) interWindowSpacing;
 - (CGRect) adjustFrame:(CGRect)rect;
+- (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win;
 - (void) vmHasExited;
 
 @end

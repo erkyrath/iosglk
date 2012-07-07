@@ -24,11 +24,14 @@
 @synthesize moreview;
 @synthesize nowcontentscrolling;
 
-- (id) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box {
-	self = [super initWithWindow:winref frame:box];
+- (id) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box margin:(UIEdgeInsets)margin {
+	self = [super initWithWindow:winref frame:box margin:margin];
 	if (self) {
+		self.contentMode = UIViewContentModeRedraw;
+		self.backgroundColor = [UIColor clearColor];
+		
 		lastLayoutBounds = CGRectNull;
-		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds styles:styleset] autorelease];
+		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds margin:margin styles:styleset] autorelease];
 		//textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		textview.delegate = self;
 		[self addSubview:textview];
@@ -36,8 +39,8 @@
 		self.moreview = [[[MoreBoxView alloc] initWithFrame:CGRectZero] autorelease];
 		[[NSBundle mainBundle] loadNibNamed:@"MoreBoxView" owner:moreview options:nil];
 		CGRect rect = moreview.frameview.frame;
-		rect.origin.x = box.size.width - rect.size.width - 4;
-		rect.origin.y = box.size.height - rect.size.height - 4;
+		rect.origin.x = MIN(box.size.width - viewmargin.right + 4, box.size.width - (rect.size.width + 4));
+		rect.origin.y = box.size.height - (rect.size.height + 4);
 		moreview.frame = rect;
 		[moreview addSubview:moreview.frameview];
 		moreview.userInteractionEnabled = NO;
@@ -66,11 +69,12 @@
 	//NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
 	
 	CGRect rect = moreview.frameview.frame;
-	rect.origin.x = lastLayoutBounds.size.width - rect.size.width - 4;
-	rect.origin.y = lastLayoutBounds.size.height - rect.size.height - 4;
+	rect.origin.x = MIN(lastLayoutBounds.size.width - viewmargin.right + 4, lastLayoutBounds.size.width - (rect.size.width + 4));
+	rect.origin.y = lastLayoutBounds.size.height - (rect.size.height + 4);
 	moreview.frame = rect;
 	
 	textview.frame = lastLayoutBounds;
+	textview.viewmargin = viewmargin;
 	[textview setNeedsLayout];
 }
 
