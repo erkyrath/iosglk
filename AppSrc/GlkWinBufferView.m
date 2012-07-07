@@ -76,6 +76,7 @@
 	textview.frame = lastLayoutBounds;
 	textview.viewmargin = viewmargin;
 	[textview setNeedsLayout];
+	[textview setNeedsDisplay];
 }
 
 - (void) uncacheLayoutAndStyles {
