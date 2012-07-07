@@ -69,16 +69,26 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return NO;
 }
 
-/* This is invoked from both the VM and UI threads.
+/* Define the width/height of the blank space between windows.
+ 
+	This is invoked from both the VM and UI threads.
  */
 - (CGSize) interWindowSpacing {
 	return CGSizeMake(4, 4);
 }
 
+/* If you want your game content to occupy only a part of the GlkFrameView bounds, customize this method to return a subrectangle.
+ */
 - (CGRect) adjustFrame:(CGRect)rect {
 	return rect;
 }
 
+/* If you want a window's "real" bounds to be larger than its apparent bounds, customize this method to return a structure with left and right margins. (Top and bottom margins are currently not supported! And by "not supported", I mean "scrolling will go horribly wrong." Leave 'em zero.)
+ 
+	The only reason for this, at the moment, is to spread out a GlkWinBufferView so that its left and right margins permit scroll and select gestures.
+ 
+	Invoked from the UI thread.
+ */
 - (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win {
 	return UIEdgeInsetsZero;
 }
