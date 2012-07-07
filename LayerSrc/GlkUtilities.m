@@ -163,6 +163,14 @@ UIEdgeInsets UIEdgeInsetsRectDiff(CGRect rect1, CGRect rect2) {
 	return res;
 }
 
+CGRect RectApplyingEdgeInsets(CGRect rect, UIEdgeInsets margins) {
+	rect.origin.x += margins.left;
+	rect.origin.y += margins.top;
+	rect.size.width -= (margins.left + margins.right);
+	rect.size.height -= (margins.top + margins.bottom);
+	return rect;
+}
+
 CGSize CGSizeEven(CGSize size) {
 	int val = ceilf(size.width);
 	if (val & 1)

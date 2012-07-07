@@ -23,6 +23,7 @@ extern CGPoint RectCenter(CGRect rect);
 extern CGFloat DistancePoints(CGPoint p1, CGPoint p2);
 extern UIEdgeInsets UIEdgeInsetsInvert(UIEdgeInsets margins);
 extern UIEdgeInsets UIEdgeInsetsRectDiff(CGRect rect1, CGRect rect2);
+extern CGRect RectApplyingEdgeInsets(CGRect rect, UIEdgeInsets margins);
 
 extern void nslogc(char *str);
 extern void sleep_curthread(NSTimeInterval val);
