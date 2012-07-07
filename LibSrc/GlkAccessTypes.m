@@ -9,6 +9,7 @@
 #import "StyledTextView.h"
 #import "GlkWinGridView.h"
 #import "StyleSet.h"
+#import "GlkUtilities.h"
 
 @implementation GlkAccVisualLine
 
@@ -54,7 +55,7 @@
 	if (!line || !view)
 		return CGRectZero;
 	
-	CGRect rect = view.bounds; // for the left and right limits
+	CGRect rect = RectApplyingEdgeInsets(view.bounds, view.viewmargin); // for the left and right limits
 	rect.origin.y = line.ypos;
 	rect.size.height = line.height;
 	
@@ -99,7 +100,7 @@
 
 	CGSize charbox = view.styleset.charbox;
 	
-	CGRect rect = view.bounds; // for the left and right limits
+	CGRect rect = RectApplyingEdgeInsets(view.bounds, view.viewmargin); // for the left and right limits
 	rect.origin.y = view.styleset.margins.top + line.index * charbox.height;
 	rect.size.height = charbox.height;
 	
