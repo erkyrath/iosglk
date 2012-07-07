@@ -1145,6 +1145,12 @@
 	UITouch *touch = [[event allTouches] anyObject];
 	taploc = [touch locationInView:self];
 	
+	if (taploc.x < viewmargin.left || taploc.x > self.bounds.size.width - viewmargin.right) {
+		/* Ignore touches out in the view margin. */
+		[self clearTouchTracking];
+		return;
+	}
+	
 	if (self.anySelection) {
 		/* If the tap is on the upper or lower handle, go with that mode. */
 		CGFloat xcenter = selectionarea.origin.x + 0.5*selectionarea.size.width;
@@ -1266,10 +1272,11 @@
 		GlkVisualLine *vln = [self lineAtPos:taploc.y];
 		if (vln) {
 			CGRect rect;
-			NSString *wd = [vln wordAtPos:taploc.x inBox:&rect];
+			NSString *wd = [vln wordAtPos:taploc.x-viewmargin.left inBox:&rect];
 			if (wd) {
 				/* Send an animated label flying downhill */
 				rect = CGRectInset(rect, -4, -2);
+				rect.origin.x += viewmargin.left;
 				UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
 				label.font = styleset.fonts[style_Normal];
 				label.text = wd;
