@@ -46,6 +46,8 @@
 @synthesize dispatch_unregister_arr;
 
 static GlkLibrary *singleton = nil;
+static void (*extra_archive_hook)(NSCoder *) = nil;
+static void (*extra_unarchive_hook)(NSCoder *) = nil;
 
 + (GlkLibrary *) singleton {
 	return singleton;
@@ -166,6 +168,10 @@ static GlkLibrary *singleton = nil;
 	
 	// We don't worry about glkdelegate or the dispatch hooks. (Because this will only be used through updateFromLibrary). Similarly, none of the windows need stylesets yet, and none of the file streams are really open.
 	
+	// Load any interpreter-specific data.
+	if (extra_unarchive_hook)
+		extra_unarchive_hook(decoder);
+	
 	return self;
 }
 
@@ -210,6 +216,10 @@ static GlkLibrary *singleton = nil;
 		[encoder encodeObject:rootwin.tag forKey:@"rootwintag"];
 	if (currentstr)
 		[encoder encodeObject:currentstr.tag forKey:@"currentstrtag"];
+
+	// Save any interpreter-specific data.
+	if (extra_archive_hook)
+		extra_archive_hook(encoder);
 }
 
 /* If this app is an interpreter which handles many games, we need a way to keep their save files separate. We must return a string which is unique per game. (It's supplied by the delegate object.)
@@ -618,6 +628,18 @@ static GlkLibrary *singleton = nil;
 */
 + (void) strictWarning:(NSString *)msg {
 	NSLog(@"STRICT WARNING: %@", msg);
+}
+
+/* Set the global hook which is called whenever GlkLibrary is serialized. 
+ */
++ (void) setExtraArchiveHook:(void (*)(NSCoder *))hook {
+	extra_archive_hook = hook;
+}
+
+/* Set the global hook which is called whenever GlkLibrary is deserialized. 
+ */
++ (void) setExtraUnarchiveHook:(void (*)(NSCoder *))hook {
+	extra_unarchive_hook = hook;
 }
 
 @end

@@ -67,6 +67,9 @@
 + (GlkLibrary *) singleton;
 + (void) strictWarning:(NSString *)msg;
 
++ (void) setExtraArchiveHook:(void (*)(NSCoder *))hook;
++ (void) setExtraUnarchiveHook:(void (*)(NSCoder *))hook;
+
 - (NSString *) gameId;
 - (NSNumber *) generateTag;
 - (void) setVMExited;
