@@ -1,6 +1,6 @@
 IosGlk -- an iOS implementation of the Glk API.
 
-IosGlk library: version 0.1.0.
+IosGlk library: version 0.2.0.
 Glk API which this implements: version 0.7.3.
 Designed by Andrew Plotkin <erkyrath@eblong.com>
 Home site: <http://eblong.com/zarf/glk/>
@@ -11,8 +11,9 @@ It is intended to be a basis for iOS IF applications.
 For a working example, see my IosFizmo project:
 <https://github.com/erkyrath/iosfizmo/>
 
-This library is at beta-test levels. It works as far as I know, but may
-contain bugs. Documentation remains sparse.
+This library is at beta-test levels. It works as far as I know, but it has
+only been tested with IosFizmo, not with the complete Glulx unit test suite.
+Documentation remains sparse.
 
 * Permissions
 
