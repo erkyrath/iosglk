@@ -19,6 +19,11 @@ void glk_exit()
 	NSLog(@"glk_exit()!");
 	
 	[GlkExitException raise:@"GlkExitException" format:@"glk_exit() called normally"];
+	
+	/* We never reach here. This lets the compiler know that glk_exit() definitely does not return. */
+	#if __has_builtin(__builtin_unreachable)
+	__builtin_unreachable();
+	#endif
 }
 
 glui32 glk_gestalt(glui32 id, glui32 val)
