@@ -119,6 +119,11 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (id) initWithCoder:(NSCoder *)decoder {
+	if (!_GlkWindow_newlineCharSet) {
+		/* We need this for breaking up printing strings, so we set it up at init time. I think this shows up as a memory leak in Apple's tools -- sorry about that. */
+		_GlkWindow_newlineCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"\n"] retain];
+	}
+	
 	self.tag = [decoder decodeObjectForKey:@"tag"];
 	inlibrary = YES;
 	// self.library will be set later
