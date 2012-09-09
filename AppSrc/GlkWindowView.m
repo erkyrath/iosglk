@@ -186,7 +186,7 @@
 	}
 	
 	if (input_single_char) {
-		glui32 ch = '\n';
+		glui32 ch = keycode_Return;
 		if (winstate.char_request)
 			[[GlkAppWrapper singleton] acceptEvent:[GlkEventState charEvent:ch inWindow:winstate.tag]];
 		return NO;

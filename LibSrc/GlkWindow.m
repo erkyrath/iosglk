@@ -350,7 +350,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		return NO;
 		
 	glui32 ch = *chref;
-	if (!char_request_uni && (ch > 0xFF))
+	if (!char_request_uni && (ch > 0xFF && ch < keycode_Func12))
 		ch = '?';
 	*chref = ch;
 		
