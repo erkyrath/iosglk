@@ -76,7 +76,11 @@
 - (void) clearForRestart;
 - (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)box;
 - (GlkWindow *) windowForTag:(NSNumber *)tag;
+- (GlkWindow *) windowForIntTag:(glui32)tag;
 - (GlkStream *) streamForTag:(NSNumber *)tag;
+- (GlkStream *) streamForIntTag:(glui32)tag;
+- (GlkFileRef *) filerefForTag:(NSNumber *)tag;
+- (GlkFileRef *) filerefForIntTag:(glui32)tag;
 - (void) dirtyAllData;
 
 - (void) sanityCheck;

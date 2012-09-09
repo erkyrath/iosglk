@@ -336,6 +336,18 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	return nil;
 }
 
+- (GlkWindow *) windowForIntTag:(glui32)tag {
+	if (!tag)
+		return nil;
+	
+	for (GlkWindow *win in windows) {
+		if ([win.tag intValue] == tag)
+			return win;
+	}
+	
+	return nil;
+}
+
 /* Locate the stream matching a given tag. (Or nil, if no stream matches or the tag is nil.) This isn't efficient, but it's not heavily used.
  */
 - (GlkStream *) streamForTag:(NSNumber *)tag {
@@ -345,6 +357,44 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	for (GlkStream *str in streams) {
 		if ([str.tag isEqualToNumber:tag])
 			return str;
+	}
+	
+	return nil;
+}
+
+- (GlkStream *) streamForIntTag:(glui32)tag {
+	if (!tag)
+		return nil;
+	
+	for (GlkStream *str in streams) {
+		if ([str.tag intValue] == tag)
+			return str;
+	}
+	
+	return nil;
+}
+
+/* Locate the fileref matching a given tag. (Or nil, if no fileref matches or the tag is nil.) This isn't efficient, but it's not heavily used.
+ */
+- (GlkFileRef *) filerefForTag:(NSNumber *)tag {
+	if (!tag)
+		return nil;
+	
+	for (GlkFileRef *fref in filerefs) {
+		if ([fref.tag isEqualToNumber:tag])
+			return fref;
+	}
+	
+	return nil;
+}
+
+- (GlkFileRef *) filerefForIntTag:(glui32)tag {
+	if (!tag)
+		return nil;
+	
+	for (GlkFileRef *fref in filerefs) {
+		if ([fref.tag intValue] == tag)
+			return fref;
 	}
 	
 	return nil;
