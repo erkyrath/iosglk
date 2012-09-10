@@ -59,6 +59,16 @@ void gidispatch_set_retained_registry(
 	library.dispatch_unregister_arr = unregi;
 }
 
+void gidispatch_set_autorestore_registry(
+	long (*locatearr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock, int *elemsizeref),
+	gidispatch_rock_t (*restorearr)(long bufkey, glui32 len, char *typecode, void **arrayref))
+{
+	GlkLibrary *library = [GlkLibrary singleton];
+	
+	library.dispatch_locate_arr = locatearr;
+	library.dispatch_restore_arr = restorearr;
+}
+
 gidispatch_rock_t gidispatch_get_objrock(void *obj, glui32 objclass)
 {
 	switch (objclass) {
