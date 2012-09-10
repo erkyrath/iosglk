@@ -415,7 +415,7 @@
 		if (tempbufdata) {
 			if (tempbufdatalen > sizeof(glui32)*buflen)
 				tempbufdatalen = sizeof(glui32)*buflen;
-			memcpy(buf, tempbufdata, tempbufdatalen);
+			memcpy(ubuf, tempbufdata, tempbufdatalen);
 			free(tempbufdata);
 			tempbufdata = nil;
 		}
