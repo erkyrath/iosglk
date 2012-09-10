@@ -101,7 +101,7 @@
 	// self.library will be set later
 
 	rock = [decoder decodeInt32ForKey:@"rock"];
-	//### disprock?
+	// disprock is handled by the app
 	
 	self.filename = [decoder decodeObjectForKey:@"filename"];
 	self.basedir = [decoder decodeObjectForKey:@"basedir"];
@@ -135,7 +135,7 @@
 	[encoder encodeObject:tag forKey:@"tag"];
 	
 	[encoder encodeInt32:rock forKey:@"rock"];
-	//### disprock?
+	// disprock is handled by the app
 	
 	[encoder encodeObject:filename forKey:@"filename"];
 	[encoder encodeObject:basedir forKey:@"basedir"];

@@ -130,7 +130,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	
 	type = [decoder decodeInt32ForKey:@"type"];
 	rock = [decoder decodeInt32ForKey:@"rock"];
-	//### disprock?
+	// disprock is handled by the app
 
 	self.parenttag = [decoder decodeObjectForKey:@"parenttag"];
 	// parent will be set later
@@ -190,7 +190,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	
 	[encoder encodeInt32:type forKey:@"type"];
 	[encoder encodeInt32:rock forKey:@"rock"];
-	//### disprock?
+	// disprock is handled by the app
 	
 	[encoder encodeObject:parenttag forKey:@"parenttag"];
 

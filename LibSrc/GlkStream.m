@@ -58,7 +58,7 @@
 	
 	type = [decoder decodeInt32ForKey:@"type"];
 	rock = [decoder decodeInt32ForKey:@"rock"];
-	//### disprock?
+	// disprock is handled by the app
 
 	unicode = [decoder decodeBoolForKey:@"unicode"];
 
@@ -94,7 +94,7 @@
 	
 	[encoder encodeInt32:type forKey:@"type"];
 	[encoder encodeInt32:rock forKey:@"rock"];
-	//### disprock?
+	// disprock is handled by the app
 	
 	[encoder encodeBool:unicode forKey:@"unicode"];
 
