@@ -504,7 +504,8 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 				[failedstreams addObject:str];
 		}
 		else if (str.type == strtype_Memory) {
-			//### memory streams, set up pointers. (These require delving into the interpreter.)
+			GlkStreamMemory *memstr = (GlkStreamMemory *)str;
+			[memstr updateRegisterArray];
 		}
 	}
 	

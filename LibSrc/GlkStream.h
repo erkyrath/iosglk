@@ -85,6 +85,10 @@ typedef enum GlkStreamType_enum {
 	glui32 *ubufeof;
 	glui32 buflen;
 	gidispatch_rock_t arrayrock;
+	
+	/* These values are only used in a temporary GlkLibrary, while deserializing. */
+	long tempbufkey;
+	glui32 tempbufptr, tempbufend, tempbufeof;
 }
 
 @property (nonatomic, readonly) glui32 buflen;
@@ -93,6 +97,7 @@ typedef enum GlkStreamType_enum {
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)buf len:(glui32)buflen;
 - (id) initUniWithMode:(glui32)fmode rock:(glui32)rockval buf:(glui32 *)ubufval len:(glui32)ubuflenval;
+- (void) updateRegisterArray;
 
 @end
 

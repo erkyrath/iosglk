@@ -40,6 +40,8 @@
 	void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
 	gidispatch_rock_t (*dispatch_register_arr)(void *array, glui32 len, char *typecode);
 	void (*dispatch_unregister_arr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock);
+	long (*dispatch_locate_arr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock, int *elemsizeref);
+	gidispatch_rock_t (*dispatch_restore_arr)(long bufkey, glui32 len, char *typecode, void **arrayref);
 }
 
 @property (nonatomic, retain) id <IosGlkLibDelegate> glkdelegate;
@@ -63,6 +65,8 @@
 @property (nonatomic) void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
 @property (nonatomic) gidispatch_rock_t (*dispatch_register_arr)(void *array, glui32 len, char *typecode);
 @property (nonatomic) void (*dispatch_unregister_arr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock);
+@property (nonatomic) long (*dispatch_locate_arr)(void *array, glui32 len, char *typecode, gidispatch_rock_t objrock, int *elemsizeref);
+@property (nonatomic) gidispatch_rock_t (*dispatch_restore_arr)(long bufkey, glui32 len, char *typecode, void **arrayref);
 
 + (GlkLibrary *) singleton;
 + (void) strictWarning:(NSString *)msg;
