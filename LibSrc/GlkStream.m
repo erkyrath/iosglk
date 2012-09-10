@@ -357,12 +357,28 @@
 			tempbufptr = [decoder decodeInt32ForKey:@"bufptr"];
 			tempbufeof = [decoder decodeInt32ForKey:@"bufeof"];
 			tempbufend = [decoder decodeInt32ForKey:@"bufend"];
+			uint8_t *rawdata;
+			NSUInteger rawdatalen;
+			rawdata = (uint8_t *)[decoder decodeBytesForKey:@"bufdata" returnedLength:&rawdatalen];
+			if (rawdata && rawdatalen) {
+				tempbufdatalen = rawdatalen;
+				tempbufdata = malloc(rawdatalen);
+				memcpy(tempbufdata, rawdata, rawdatalen);
+			}
 		}
 		else {
 			tempbufkey = [decoder decodeInt32ForKey:@"ubuf"];
 			tempbufptr = [decoder decodeInt32ForKey:@"ubufptr"];
 			tempbufeof = [decoder decodeInt32ForKey:@"ubufeof"];
 			tempbufend = [decoder decodeInt32ForKey:@"ubufend"];
+			uint8_t *rawdata;
+			NSUInteger rawdatalen;
+			rawdata = (uint8_t *)[decoder decodeBytesForKey:@"ubufdata" returnedLength:&rawdatalen];
+			if (rawdata && rawdatalen) {
+				tempbufdatalen = rawdatalen;
+				tempbufdata = malloc(rawdatalen);
+				memcpy(tempbufdata, rawdata, rawdatalen);
+			}
 		}
 	}
 	
@@ -381,6 +397,13 @@
 		bufptr = buf + tempbufptr;
 		bufeof = buf + tempbufeof;
 		bufend = buf + tempbufend;
+		if (tempbufdata) {
+			if (tempbufdatalen > buflen)
+				tempbufdatalen = buflen;
+			memcpy(buf, tempbufdata, tempbufdatalen);
+			free(tempbufdata);
+			tempbufdata = nil;
+		}
 	}
 	else {
 		void *voidbuf = nil;
@@ -389,6 +412,13 @@
 		ubufptr = ubuf + tempbufptr;
 		ubufeof = ubuf + tempbufeof;
 		ubufend = ubuf + tempbufend;
+		if (tempbufdata) {
+			if (tempbufdatalen > sizeof(glui32)*buflen)
+				tempbufdatalen = sizeof(glui32)*buflen;
+			memcpy(buf, tempbufdata, tempbufdatalen);
+			free(tempbufdata);
+			tempbufdata = nil;
+		}
 	}
 }
 
@@ -399,33 +429,38 @@
 		[NSException raise:@"GlkException" format:@"GlkStreamMemory cannot be encoded without app support"];
 	}
 	
+	[encoder encodeInt32:buflen forKey:@"buflen"];
+	
 	long bufaddr;
 	int elemsize;
 	if (!unicode) {
-		bufaddr = (*library.dispatch_locate_arr)(buf, buflen, "&+#!Cn", arrayrock, &elemsize);
-		[encoder encodeInt64:bufaddr forKey:@"buf"];
-		[encoder encodeInt32:(bufptr-buf) forKey:@"bufptr"];
-		[encoder encodeInt32:(bufeof-buf) forKey:@"bufeof"];
-		[encoder encodeInt32:(bufend-buf) forKey:@"bufend"];
-		if (elemsize) {
-			NSAssert(elemsize == 1, @"GlkStreamMemory encoding char array: wrong elemsize");
-			// could trim trailing zeroes here
-			[encoder encodeBytes:(uint8_t *)buf length:buflen forKey:@"bufdata"];
+		if (buf && buflen) {
+			bufaddr = (*library.dispatch_locate_arr)(buf, buflen, "&+#!Cn", arrayrock, &elemsize);
+			[encoder encodeInt64:bufaddr forKey:@"buf"];
+			[encoder encodeInt32:(bufptr-buf) forKey:@"bufptr"];
+			[encoder encodeInt32:(bufeof-buf) forKey:@"bufeof"];
+			[encoder encodeInt32:(bufend-buf) forKey:@"bufend"];
+			if (elemsize) {
+				NSAssert(elemsize == 1, @"GlkStreamMemory encoding char array: wrong elemsize");
+				// could trim trailing zeroes here
+				[encoder encodeBytes:(uint8_t *)buf length:buflen forKey:@"bufdata"];
+			}
 		}
 	}
 	else {
-		bufaddr = (*library.dispatch_locate_arr)(ubuf, buflen, "&+#!Iu", arrayrock, &elemsize);
-		[encoder encodeInt64:bufaddr forKey:@"ubuf"];
-		[encoder encodeInt32:(ubufptr-ubuf) forKey:@"ubufptr"];
-		[encoder encodeInt32:(ubufeof-ubuf) forKey:@"ubufeof"];
-		[encoder encodeInt32:(ubufend-ubuf) forKey:@"ubufend"];
-		if (elemsize) {
-			NSAssert(elemsize == 4, @"GlkStreamMemory encoding char array: wrong elemsize");
-			// could trim trailing zeroes here
-			[encoder encodeBytes:(uint8_t *)ubuf length:sizeof(glui32)*buflen forKey:@"ubufdata"];
+		if (ubuf && buflen) {
+			bufaddr = (*library.dispatch_locate_arr)(ubuf, buflen, "&+#!Iu", arrayrock, &elemsize);
+			[encoder encodeInt64:bufaddr forKey:@"ubuf"];
+			[encoder encodeInt32:(ubufptr-ubuf) forKey:@"ubufptr"];
+			[encoder encodeInt32:(ubufeof-ubuf) forKey:@"ubufeof"];
+			[encoder encodeInt32:(ubufend-ubuf) forKey:@"ubufend"];
+			if (elemsize) {
+				NSAssert(elemsize == 4, @"GlkStreamMemory encoding char array: wrong elemsize");
+				// could trim trailing zeroes here
+				[encoder encodeBytes:(uint8_t *)ubuf length:sizeof(glui32)*buflen forKey:@"ubufdata"];
+			}
 		}
 	}
-	[encoder encodeInt32:buflen forKey:@"buflen"];
 }
 
 - (void) streamDelete {

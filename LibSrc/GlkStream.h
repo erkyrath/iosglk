@@ -87,6 +87,8 @@ typedef enum GlkStreamType_enum {
 	gidispatch_rock_t arrayrock;
 	
 	/* These values are only used in a temporary GlkLibrary, while deserializing. */
+	uint8_t *tempbufdata;
+	NSUInteger tempbufdatalen;
 	long tempbufkey;
 	glui32 tempbufptr, tempbufend, tempbufeof;
 }
