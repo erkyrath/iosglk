@@ -142,7 +142,31 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	char_request_uni = [decoder decodeBoolForKey:@"char_request_uni"];
 	line_request_uni = [decoder decodeBoolForKey:@"line_request_uni"];
 
-	//### all other input information!
+	line_buffer_length = [decoder decodeInt32ForKey:@"line_buffer_length"];
+	if (line_buffer_length) {
+		if (!line_request_uni) {
+			tempbufkey = [decoder decodeInt64ForKey:@"line_buffer"];
+			uint8_t *rawdata;
+			NSUInteger rawdatalen;
+			rawdata = (uint8_t *)[decoder decodeBytesForKey:@"line_buffer_data" returnedLength:&rawdatalen];
+			if (rawdata && rawdatalen) {
+				tempbufdatalen = rawdatalen;
+				tempbufdata = malloc(rawdatalen);
+				memcpy(tempbufdata, rawdata, rawdatalen);
+			}
+		}
+		else {
+			tempbufkey = [decoder decodeInt64ForKey:@"line_buffer"];
+			uint8_t *rawdata;
+			NSUInteger rawdatalen;
+			rawdata = (uint8_t *)[decoder decodeBytesForKey:@"line_buffer_data" returnedLength:&rawdatalen];
+			if (rawdata && rawdatalen) {
+				tempbufdatalen = rawdatalen;
+				tempbufdata = malloc(rawdatalen);
+				memcpy(tempbufdata, rawdata, rawdatalen);
+			}
+		}
+	}
 	
 	self.line_request_initial = [decoder decodeObjectForKey:@"line_request_initial"];
 	pending_echo_line_input = [decoder decodeBoolForKey:@"pending_echo_line_input"];
@@ -158,6 +182,42 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	// styleset is not deserialized.
 
 	return self;
+}
+
+- (void) updateRegisterArray {
+	if (!library.dispatch_restore_arr)
+		return;
+	if (!line_buffer_length)
+		return;
+	
+	if (!line_request_uni) {
+		void *voidbuf = nil;
+		inarrayrock = (*library.dispatch_restore_arr)(tempbufkey, line_buffer_length, "&+#!Cn", &voidbuf);
+		if (voidbuf) {
+			line_buffer = voidbuf;
+			if (tempbufdata) {
+				if (tempbufdatalen > line_buffer_length)
+					tempbufdatalen = line_buffer_length;
+				memcpy(line_buffer, tempbufdata, tempbufdatalen);
+				free(tempbufdata);
+				tempbufdata = nil;
+			}
+		}
+	}
+	else {
+		void *voidbuf = nil;
+		inarrayrock = (*library.dispatch_restore_arr)(tempbufkey, line_buffer_length, "&+#!Iu", &voidbuf);
+		if (voidbuf) {
+			line_buffer = voidbuf;
+			if (tempbufdata) {
+				if (tempbufdatalen > sizeof(glui32)*line_buffer_length)
+					tempbufdatalen = sizeof(glui32)*line_buffer_length;
+				memcpy(line_buffer, tempbufdata, tempbufdatalen);
+				free(tempbufdata);
+				tempbufdata = nil;
+			}
+		}
+	}
 }
 
 - (void) dealloc {
@@ -201,7 +261,29 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	[encoder encodeBool:char_request_uni forKey:@"char_request_uni"];
 	[encoder encodeBool:line_request_uni forKey:@"line_request_uni"];
 
-	//### all other input information!
+	if (line_buffer && line_buffer_length && library.dispatch_locate_arr) {
+		long bufaddr;
+		int elemsize;
+		[encoder encodeInt:line_buffer_length forKey:@"line_buffer_length"];
+		if (!line_request_uni) {
+			bufaddr = (*library.dispatch_locate_arr)(line_buffer, line_buffer_length, "&+#!Cn", inarrayrock, &elemsize);
+			[encoder encodeInt64:bufaddr forKey:@"line_buffer"];
+			if (elemsize) {
+				NSAssert(elemsize == 1, @"GlkWindow encoding char array: wrong elemsize");
+				// could trim trailing zeroes here
+				[encoder encodeBytes:(uint8_t *)line_buffer length:line_buffer_length forKey:@"line_buffer_data"];
+			}
+		}
+		else {
+			bufaddr = (*library.dispatch_locate_arr)(line_buffer, line_buffer_length, "&+#!Iu", inarrayrock, &elemsize);
+			[encoder encodeInt64:bufaddr forKey:@"line_buffer"];
+			if (elemsize) {
+				NSAssert(elemsize == 4, @"GlkWindow encoding uni array: wrong elemsize");
+				// could trim trailing zeroes here
+				[encoder encodeBytes:(uint8_t *)line_buffer length:sizeof(glui32)*line_buffer_length forKey:@"line_buffer_data"];
+			}
+		}
+	}
 
 	[encoder encodeObject:line_request_initial forKey:@"line_request_initial"];
 	[encoder encodeBool:pending_echo_line_input forKey:@"pending_echo_line_input"];

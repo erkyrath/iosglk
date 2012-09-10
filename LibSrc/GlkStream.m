@@ -353,7 +353,7 @@
 	if (self) {
 		buflen = [decoder decodeInt32ForKey:@"buflen"];
 		if (!unicode) {
-			tempbufkey = [decoder decodeInt32ForKey:@"buf"];
+			tempbufkey = [decoder decodeInt64ForKey:@"buf"];
 			tempbufptr = [decoder decodeInt32ForKey:@"bufptr"];
 			tempbufeof = [decoder decodeInt32ForKey:@"bufeof"];
 			tempbufend = [decoder decodeInt32ForKey:@"bufend"];
@@ -367,7 +367,7 @@
 			}
 		}
 		else {
-			tempbufkey = [decoder decodeInt32ForKey:@"ubuf"];
+			tempbufkey = [decoder decodeInt64ForKey:@"ubuf"];
 			tempbufptr = [decoder decodeInt32ForKey:@"ubufptr"];
 			tempbufeof = [decoder decodeInt32ForKey:@"ubufeof"];
 			tempbufend = [decoder decodeInt32ForKey:@"ubufend"];

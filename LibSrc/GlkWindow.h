@@ -47,6 +47,11 @@
 	
 	StyleSet *styleset; // not serialized
 	CGRect bbox;
+
+	/* These values are only used in a temporary GlkLibrary, while deserializing. */
+	uint8_t *tempbufdata;
+	NSUInteger tempbufdatalen;
+	long tempbufkey;
 }
 
 @property (nonatomic, retain) GlkLibrary *library;
@@ -72,6 +77,7 @@
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
 
 - (id) initWithType:(glui32)type rock:(glui32)rock;
+- (void) updateRegisterArray;
 - (void) windowCloseRecurse:(BOOL)recurse;
 - (void) windowRearrange:(CGRect)box;
 - (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref;

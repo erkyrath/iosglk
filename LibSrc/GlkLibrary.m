@@ -478,12 +478,11 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 		[filerefs addObject:fref];
 	}
 	
-	//### dispatch registry? array registry?
-
 	for (GlkWindow *win in windows) {
 		if (win.type == wintype_TextGrid || win.type == wintype_TextBuffer) {
 			win.styleset = [StyleSet buildForWindowType:win.type rock:win.rock];
 		}
+		[win updateRegisterArray];
 	}
 	for (GlkWindow *win in windows) {
 		if (win.type == wintype_Pair) {
