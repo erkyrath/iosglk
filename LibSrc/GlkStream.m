@@ -393,31 +393,35 @@
 	if (!unicode) {
 		void *voidbuf = nil;
 		arrayrock = (*library.dispatch_restore_arr)(tempbufkey, buflen, "&+#!Cn", &voidbuf);
-		buf = voidbuf;
-		bufptr = buf + tempbufptr;
-		bufeof = buf + tempbufeof;
-		bufend = buf + tempbufend;
-		if (tempbufdata) {
-			if (tempbufdatalen > buflen)
-				tempbufdatalen = buflen;
-			memcpy(buf, tempbufdata, tempbufdatalen);
-			free(tempbufdata);
-			tempbufdata = nil;
+		if (voidbuf) {
+			buf = voidbuf;
+			bufptr = buf + tempbufptr;
+			bufeof = buf + tempbufeof;
+			bufend = buf + tempbufend;
+			if (tempbufdata) {
+				if (tempbufdatalen > buflen)
+					tempbufdatalen = buflen;
+				memcpy(buf, tempbufdata, tempbufdatalen);
+				free(tempbufdata);
+				tempbufdata = nil;
+			}
 		}
 	}
 	else {
 		void *voidbuf = nil;
 		arrayrock = (*library.dispatch_restore_arr)(tempbufkey, buflen, "&+#!Iu", &voidbuf);
-		ubuf = voidbuf;
-		ubufptr = ubuf + tempbufptr;
-		ubufeof = ubuf + tempbufeof;
-		ubufend = ubuf + tempbufend;
-		if (tempbufdata) {
-			if (tempbufdatalen > sizeof(glui32)*buflen)
-				tempbufdatalen = sizeof(glui32)*buflen;
-			memcpy(ubuf, tempbufdata, tempbufdatalen);
-			free(tempbufdata);
-			tempbufdata = nil;
+		if (voidbuf) {
+			ubuf = voidbuf;
+			ubufptr = ubuf + tempbufptr;
+			ubufeof = ubuf + tempbufeof;
+			ubufend = ubuf + tempbufend;
+			if (tempbufdata) {
+				if (tempbufdatalen > sizeof(glui32)*buflen)
+					tempbufdatalen = sizeof(glui32)*buflen;
+				memcpy(ubuf, tempbufdata, tempbufdatalen);
+				free(tempbufdata);
+				tempbufdata = nil;
+			}
 		}
 	}
 }
