@@ -455,7 +455,7 @@
 			[encoder encodeInt32:(ubufeof-ubuf) forKey:@"ubufeof"];
 			[encoder encodeInt32:(ubufend-ubuf) forKey:@"ubufend"];
 			if (elemsize) {
-				NSAssert(elemsize == 4, @"GlkStreamMemory encoding char array: wrong elemsize");
+				NSAssert(elemsize == 4, @"GlkStreamMemory encoding uni array: wrong elemsize");
 				// could trim trailing zeroes here
 				[encoder encodeBytes:(uint8_t *)ubuf length:sizeof(glui32)*buflen forKey:@"ubufdata"];
 			}
