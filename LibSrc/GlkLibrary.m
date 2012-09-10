@@ -61,7 +61,8 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 			[NSException raise:@"GlkException" format:@"cannot create two GlkLibrary objects"];
 		singleton = self;
 		
-		tagCounter = 0;
+		// Deterministic object tags just confuse everybody.
+		tagCounter = ((glui32)([NSDate timeIntervalSinceReferenceDate]) % 99) + 1;
 		dispatch_register_obj = nil;
 		dispatch_unregister_obj = nil;
 		dispatch_register_arr = nil;
