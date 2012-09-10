@@ -85,6 +85,10 @@
 	[super dealloc];
 }
 
+- (NSString *) description {
+	return [NSString stringWithFormat:@"<%@ (mode %s%s, tag %@, rock %d): 0x%lx>", self.class, (readable?"r":""), (writable?"w":""), self.tag, self.rock, (long)self];
+}
+
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[encoder encodeObject:tag forKey:@"tag"];
 	
