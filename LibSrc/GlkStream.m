@@ -1466,6 +1466,11 @@
 	if (!readable)
 		return 0;
 		
+	if (getlen == 0)
+		return 0;
+	
+	getlen -= 1; /* for the terminal null */
+	
 	BOOL gotnewline = NO;
 		
 	if (!textmode) {
@@ -1484,6 +1489,10 @@
 				if (ch == '\n')
 					gotnewline = YES;
 			}
+			if (!wantunicode)
+				((char *)getbuf)[ix] = '\0';
+			else
+				((glui32 *)getbuf)[ix] = '\0';
 			return ix;
 		}
 		else {
@@ -1504,6 +1513,10 @@
 				if (ch == '\n')
 					gotnewline = YES;
 			}
+			if (!wantunicode)
+				((char *)getbuf)[ix] = '\0';
+			else
+				((glui32 *)getbuf)[ix] = '\0';
 			return ix;
 		}		
 	}
@@ -1521,6 +1534,7 @@
 				if (ch == '\n')
 					break;
 			}
+			ugetbuf[count] = '\0';
 		}
 		else {
 			char *cgetbuf = getbuf;
@@ -1532,6 +1546,7 @@
 				if (ch == '\n')
 					break;
 			}
+			cgetbuf[count] = '\0';
 		}
 		return count;
 	}
