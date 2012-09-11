@@ -20,6 +20,7 @@
 	NSThread *thread; /* not locked; does not change through the run cycle. */
 	NSAutoreleasePool *looppool; /* not locked; only touched by the VM thread. */
 	NSTimeInterval lastwaittime; /* not locked; only touched by VM thread internals. */
+	glui32 lasteventtype; /* not locked; only touched by the VM thread. */
 	
 	BOOL pendingupdaterequest; /* the frameview (UI thread) wants an update on library state */
 	BOOL pendingupdatefromtop; /* the frameview has lost its memory, and needs an update "from the top" (all data, dirty or not) */
@@ -33,6 +34,7 @@
 @property (nonatomic, retain) NSCondition *iowaitcond;
 @property (nonatomic) BOOL iowait;
 @property (nonatomic, retain) GlkEventState *eventfromui;
+@property (nonatomic, readonly) glui32 lasteventtype;
 @property (nonatomic, retain) NSNumber *timerinterval;
 
 + (GlkAppWrapper *) singleton;

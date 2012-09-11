@@ -31,6 +31,7 @@
 @synthesize iowait;
 @synthesize iowaitcond;
 @synthesize eventfromui;
+@synthesize lasteventtype;
 @synthesize timerinterval;
 
 static GlkAppWrapper *singleton = nil;
@@ -95,11 +96,13 @@ static GlkAppWrapper *singleton = nil;
 	
 	while (YES) {
 	
+		//NSLog(@"VM thread running glk_main()");
 		@try {
+			lasteventtype = -1; // meaning startup
 			lastwaittime = [NSDate timeIntervalSinceReferenceDate];
 			glk_main();
 		} @catch (GlkExitException *ce) {
-			//NSLog(@"VM thread caught glk_exit exception");
+			NSLog(@"VM thread caught glk_exit exception");
 		}
 		
 		GlkLibrary *library = [GlkLibrary singleton];
@@ -244,6 +247,7 @@ static GlkAppWrapper *singleton = nil;
 		}
 	}
 	
+	lasteventtype = (event ? event->type : evtype_None);
 	lastwaittime = [NSDate timeIntervalSinceReferenceDate];
 	//NSLog(@"VM thread glk_select returned (evtype %d)", (event ? event->type : -1));
 	[iowaitcond unlock];
