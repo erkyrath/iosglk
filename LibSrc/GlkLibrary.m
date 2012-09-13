@@ -44,6 +44,8 @@
 @synthesize dispatch_unregister_obj;
 @synthesize dispatch_register_arr;
 @synthesize dispatch_unregister_arr;
+@synthesize dispatch_locate_arr;
+@synthesize dispatch_restore_arr;
 
 static GlkLibrary *singleton = nil;
 static void (*extra_archive_hook)(NSCoder *) = nil;
