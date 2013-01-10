@@ -95,7 +95,13 @@
 	}
 }
 
-/* Allow all orientations. (An interpreter-specific subclass may override this.)
+/* Allow all orientations. (An interpreter-specific subclass may override this.) iOS6+ idiom.
+ */
+- (NSUInteger) supportedInterfaceOrientations {
+	return UIInterfaceOrientationMaskAll;
+}
+
+/* Allow all orientations. (An interpreter-specific subclass may override this.) iOS3-5 idiom.
  */
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
