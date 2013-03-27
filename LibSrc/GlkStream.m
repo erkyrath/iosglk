@@ -1083,7 +1083,7 @@
 			buffermark += addlen;
 		}
 		glui32 sofar = addlen;
-		[self flush];
+		[self flush]; // buffers are gone now.
 		if (len-sofar > maxbuffersize) {
 			NSData *data = [handle readDataOfLength:len-sofar];
 			memcpy(resultdata.mutableBytes+sofar, data.bytes, data.length);
@@ -1108,7 +1108,7 @@
 		if (gotlen > len-sofar)
 			gotlen = len-sofar;
 		if (gotlen) {
-			memcpy(resultdata.mutableBytes+sofar, data.bytes+buffermark, gotlen);
+			memcpy(resultdata.mutableBytes+sofar, data.bytes+buffermark, gotlen); // xcode sees a possible error here, but it is wrong.
 			buffermark += gotlen;
 		}
 		sofar += gotlen;
@@ -1128,7 +1128,7 @@
 			buffermark += addlen;
 		}
 		glui32 sofar = addlen;
-		[self flush];
+		[self flush]; // buffers are gone now.
 		if (len-sofar > maxbuffersize) {
 			NSData *data = [handle readDataOfLength:len-sofar];
 			memcpy(resultdata.mutableBytes+sofar, data.bytes, data.length);
@@ -1153,7 +1153,7 @@
 		if (gotlen > len-sofar)
 			gotlen = len-sofar;
 		if (gotlen) {
-			memcpy(resultdata.mutableBytes+sofar, data.bytes+buffermark, gotlen);
+			memcpy(resultdata.mutableBytes+sofar, data.bytes+buffermark, gotlen); // xcode sees a possible error here, but it is wrong.
 			buffermark += gotlen;
 		}
 		sofar += gotlen;
