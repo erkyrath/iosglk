@@ -1377,16 +1377,16 @@
 		self.backgroundColor = styleset.backgroundcolor;
 		//self.backgroundColor = [UIColor colorWithRed:(random()%127+128)/256.0 green:(random()%127+128)/256.0 blue:1 alpha:1]; //###
 		self.userInteractionEnabled = YES;
-		
+
 		if (vlines.count > 0) {
 			GlkVisualLine *vln = [vlines objectAtIndex:0];
 			vlinestart = vln.vlinenum;
 			ytop = vln.ypos;
-			
-			vln = [vlines lastObject];
+
+            vln = [vlines lastObject];
 			vlineend = vln.vlinenum+1;
 			ybottom = vln.bottom;
-			height = ybottom - ytop;
+			height = ceilf(ybottom - ytop);
 		}
 	}
 	return self;
