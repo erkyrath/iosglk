@@ -1077,7 +1077,9 @@
 		}
 		NSMutableData *resultdata = [NSMutableData dataWithLength:len];
 		*byteref = resultdata.mutableBytes;
-		glui32 addlen = writebuffer.length - buffermark;
+		glui32 addlen = 0;
+		if (writebuffer)
+			addlen = writebuffer.length - buffermark;
 		if (addlen) {
 			memcpy(resultdata.mutableBytes, writebuffer.mutableBytes+buffermark, addlen);
 			buffermark += addlen;
@@ -1122,7 +1124,9 @@
 		}
 		NSMutableData *resultdata = [NSMutableData dataWithLength:len];
 		*byteref = resultdata.mutableBytes;
-		glui32 addlen = readbuffer.length - buffermark;
+		glui32 addlen = 0;
+		if (readbuffer)
+			addlen = readbuffer.length - buffermark;
 		if (addlen) {
 			memcpy(resultdata.mutableBytes, readbuffer.bytes+buffermark, addlen);
 			buffermark += addlen;
