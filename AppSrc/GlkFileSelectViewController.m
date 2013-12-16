@@ -171,9 +171,11 @@
 		diff = (tablerect.origin.y + tablerect.size.height) - rect.origin.y;
 	}
 	else {
-		/* iOS 3.1.3... This must be an iPhone, so we assume the view extends to the bottom of the screen. */
+		/* iOS 3.1.3... This must be an iPhone, so we assume the view extends to the bottom of the screen. Note that we don't compile this code at all if the deployment target is 3.2 or later; it would never be called and we don't need the deprecation warning. */
+		#if __IPHONE_OS_VERSION_MIN_REQUIRED < 30200
 		CGRect rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
 		diff = rect.size.height;
+		#endif // __IPHONE_OS_VERSION_MIN_REQUIRED
 	}
 	
 	if (diff > 0) {

@@ -1085,7 +1085,7 @@
 			buffermark += addlen;
 		}
 		glui32 sofar = addlen;
-		[self flush];
+		[self flush]; // buffers are gone now.
 		if (len-sofar > maxbuffersize) {
 			NSData *data = [handle readDataOfLength:len-sofar];
 			memcpy(resultdata.mutableBytes+sofar, data.bytes, data.length);
@@ -1133,7 +1133,7 @@
 			buffermark += addlen;
 		}
 		glui32 sofar = addlen;
-		[self flush];
+		[self flush]; // buffers are gone now.
 		if (len-sofar > maxbuffersize) {
 			NSData *data = [handle readDataOfLength:len-sofar];
 			memcpy(resultdata.mutableBytes+sofar, data.bytes, data.length);

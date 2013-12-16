@@ -95,7 +95,16 @@
 	}
 }
 
-/* Allow all orientations. (An interpreter-specific subclass may override this.)
+/* Allow all orientations. (An interpreter-specific subclass may override this.) iOS6+ idiom.
+	(We only compile in this function if the iOS SDK is 6.0 or later; UIInterfaceOrientationMaskAll was not available before that.)
+ */
+#ifdef __IPHONE_6_0
+- (NSUInteger) supportedInterfaceOrientations {
+	return UIInterfaceOrientationMaskAll;
+}
+#endif // __IPHONE_6_0
+
+/* Allow all orientations. (An interpreter-specific subclass may override this.) iOS3-5 idiom.
  */
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
@@ -147,11 +156,13 @@
 		rect = [window convertRect:rect fromWindow:nil];
 	}
 	else {
-		/* iOS 3.1.3... */
+		/* iOS 3.1.3... Note that we don't compile this code at all if the deployment target is 3.2 or later; it would never be called and we don't need the deprecation warning. */
+		#if __IPHONE_OS_VERSION_MIN_REQUIRED < 30200
 		rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
 		CGPoint center = [[info objectForKey:UIKeyboardCenterEndUserInfoKey] CGPointValue];
 		rect.origin.x = center.x - 0.5*rect.size.width;
 		rect.origin.y = center.y - 0.5*rect.size.height;
+		#endif // __IPHONE_OS_VERSION_MIN_REQUIRED
 	}
 	//NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
 	

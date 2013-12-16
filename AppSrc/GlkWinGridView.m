@@ -174,9 +174,6 @@
 }
 
 - (void) copy:(id)sender {
-	/* Keep the menu up after the copy command */
-	[UIMenuController sharedMenuController].menuVisible = YES;
-	
 	if (!self.anySelection)
 		return;
 	

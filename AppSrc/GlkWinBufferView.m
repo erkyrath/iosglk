@@ -136,7 +136,7 @@
 	
 	morewaiting = flag;
 	if (flag) {
-		if ([IosGlkAppDelegate animblocksavailable]) {
+		if (moreview && [IosGlkAppDelegate animblocksavailable]) {
 			moreview.alpha = 0;
 			moreview.hidden = NO;
 			[UIView animateWithDuration:0.2 
@@ -147,7 +147,7 @@
 		}
 	}
 	else {
-		if ([IosGlkAppDelegate animblocksavailable]) {
+		if (moreview && [IosGlkAppDelegate animblocksavailable]) {
 			[UIView animateWithDuration:0.2 
 							 animations:^{ moreview.alpha = 0; }
 							 completion:^(BOOL finished) { moreview.hidden = YES; } ];
