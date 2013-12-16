@@ -1389,7 +1389,7 @@
 			vln = [vlines lastObject];
 			vlineend = vln.vlinenum+1;
 			ybottom = vln.bottom;
-			height = ybottom - ytop;
+			height = ceilf(ybottom - ytop);
 		}
 	}
 	return self;
