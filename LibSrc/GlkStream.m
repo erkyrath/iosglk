@@ -1110,6 +1110,7 @@
 		if (gotlen > len-sofar)
 			gotlen = len-sofar;
 		if (gotlen) {
+			// Static analyzer chokes here, because it does not understand that gotlen is only nonzero when data (and thus writebuffer) exist.
 			memcpy(resultdata.mutableBytes+sofar, data.bytes+buffermark, gotlen);
 			buffermark += gotlen;
 		}
@@ -1157,6 +1158,7 @@
 		if (gotlen > len-sofar)
 			gotlen = len-sofar;
 		if (gotlen) {
+			// Static analyzer chokes here, because it does not understand that gotlen is only nonzero when data (and thus readbuffer) exist.
 			memcpy(resultdata.mutableBytes+sofar, data.bytes+buffermark, gotlen);
 			buffermark += gotlen;
 		}
