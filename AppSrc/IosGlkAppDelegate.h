@@ -32,6 +32,7 @@
 + (BOOL) animblocksavailable;
 + (BOOL) gesturesavailable;
 + (BOOL) understandspng;
++ (BOOL) oldstyleui;
 + (NSString *) imageHackPNG:(NSString *)name;
 
 @end
