@@ -24,6 +24,8 @@
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UIViewController *rootviewc;
 @property (nonatomic, retain) IBOutlet IosGlkViewController *glkviewc;
+@property (retain, nonatomic) IBOutlet UIBarButtonItem *editButton;
+@property (retain, nonatomic) IBOutlet UIBarButtonItem *styleButton;
 
 @property (nonatomic, retain) GlkLibrary *library;
 @property (nonatomic, retain) GlkAppWrapper *glkapp;

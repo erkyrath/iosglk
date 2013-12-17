@@ -21,6 +21,8 @@
 @synthesize glkviewc;
 @synthesize library;
 @synthesize glkapp;
+@synthesize styleButton;
+@synthesize editButton;
 
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
 static BOOL animblocksavailable = NO; /* true for iOS4 and up */
@@ -122,6 +124,8 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	self.rootviewc = nil;
 	self.glkviewc = nil;
 	[window release];
+    [editButton release];
+    [styleButton release];
 	[super dealloc];
 }
 

@@ -86,6 +86,14 @@
 	IosGlkAppDelegate *appdelegate = [IosGlkAppDelegate singleton];
 	if (appdelegate.library)
 		[frameview requestLibraryState:appdelegate.glkapp];
+
+    // If we're running iOS 7 or later, modernize some of the button graphics.
+    NSString *version = [UIDevice currentDevice].systemVersion;
+    int majorVersion = [[version componentsSeparatedByString:@"."][0] intValue];
+    if ( majorVersion >= 7 ) {
+        [appdelegate.editButton setImage:[UIImage imageNamed:@"baricon-edit-ios7"]];
+        [appdelegate.styleButton setImage:[UIImage imageNamed:@"baricon-styles-ios7"]];
+    }
 }
 
 - (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration {
