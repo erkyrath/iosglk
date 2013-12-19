@@ -285,6 +285,8 @@
 			/* Requires iOS 3.2 (but it has no effect on iPhone, so just skip it in 3.1.3) */
 			[navc setModalPresentationStyle:UIModalPresentationFormSheet];
 		}
+		/* Make the navbar opaque, so that iOS7 doesn't try to underlap the view behind it. Nobody likes that. */
+		navc.navigationBar.translucent = NO;
 		[self presentModalViewController:navc animated:YES];
 		return;
 	}
