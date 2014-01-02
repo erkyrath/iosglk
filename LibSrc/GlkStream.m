@@ -352,8 +352,9 @@
 	
 	if (self) {
 		buflen = [decoder decodeInt32ForKey:@"buflen"];
+		// the decoded "buf" values are originally Glulx addresses (glui32), so stuffing them into a long is safe.
 		if (!unicode) {
-			tempbufkey = [decoder decodeInt64ForKey:@"buf"];
+			tempbufkey = (long)[decoder decodeInt64ForKey:@"buf"];
 			tempbufptr = [decoder decodeInt32ForKey:@"bufptr"];
 			tempbufeof = [decoder decodeInt32ForKey:@"bufeof"];
 			tempbufend = [decoder decodeInt32ForKey:@"bufend"];
@@ -367,7 +368,7 @@
 			}
 		}
 		else {
-			tempbufkey = [decoder decodeInt64ForKey:@"ubuf"];
+			tempbufkey = (long)[decoder decodeInt64ForKey:@"ubuf"];
 			tempbufptr = [decoder decodeInt32ForKey:@"ubufptr"];
 			tempbufeof = [decoder decodeInt32ForKey:@"ubufeof"];
 			tempbufend = [decoder decodeInt32ForKey:@"ubufend"];
@@ -1663,7 +1664,7 @@
 }
 
 - (glui32) getPosition {
-	glui32 pos;
+	unsigned long long pos;
 	if (readbuffer || writebuffer) {
 		pos = bufferpos+buffermark;
 	}
@@ -1675,7 +1676,7 @@
 		/* This file is in four-byte chunks. */
 		pos /= 4;
 	}
-	return pos;
+	return (glui32)pos;
 }
 
 

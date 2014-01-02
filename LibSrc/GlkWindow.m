@@ -144,8 +144,9 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 
 	line_buffer_length = [decoder decodeInt32ForKey:@"line_buffer_length"];
 	if (line_buffer_length) {
+		// the decoded "line_buffer" values are originally Glulx addresses (glui32), so stuffing them into a long is safe.
 		if (!line_request_uni) {
-			tempbufkey = [decoder decodeInt64ForKey:@"line_buffer"];
+			tempbufkey = (long)[decoder decodeInt64ForKey:@"line_buffer"];
 			uint8_t *rawdata;
 			NSUInteger rawdatalen;
 			rawdata = (uint8_t *)[decoder decodeBytesForKey:@"line_buffer_data" returnedLength:&rawdatalen];
@@ -156,7 +157,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 			}
 		}
 		else {
-			tempbufkey = [decoder decodeInt64ForKey:@"line_buffer"];
+			tempbufkey = (long)[decoder decodeInt64ForKey:@"line_buffer"];
 			uint8_t *rawdata;
 			NSUInteger rawdatalen;
 			rawdata = (uint8_t *)[decoder decodeBytesForKey:@"line_buffer_data" returnedLength:&rawdatalen];
