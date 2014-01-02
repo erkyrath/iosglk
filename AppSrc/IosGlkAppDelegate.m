@@ -73,7 +73,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 		oldstyleui = !([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
 	}
 
-	/* Funny idiom for testing if gestures are available; boilerplated from iOS docs. */
+	/* Funny idiom for testing if gestures are available; boilerplated from iOS docs. (Only needed for iOS3, but I'm leaving it in here anyway. This produces an "undeclared selector" warning which we ignore.) */
 	UIGestureRecognizer *testgesture = [[[UIGestureRecognizer alloc] initWithTarget:self action:@selector(myAction:)] autorelease];
 	gesturesavailable = [testgesture respondsToSelector:@selector(locationInView:)];
 
