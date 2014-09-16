@@ -898,7 +898,7 @@
 	}
 	
 	if (count != linesviews.count)
-		NSLog(@"STV-SANITY: wrong number of subviews (%d, not %d)", count, linesviews.count);
+		NSLog(@"STV-SANITY: wrong number of subviews (%d, not %d)", count, (int)linesviews.count);
 	
 	if (linesviews.count > 0) {
 		VisualLinesView *firstlinev = [linesviews objectAtIndex:0];
@@ -909,7 +909,7 @@
 			if (linev.vlines.count == 0)
 				NSLog(@"STV-SANITY: linev has no lines");
 			if (linev.vlines.count != linev.vlineend - linev.vlinestart)
-				NSLog(@"STV-SANITY: linev count %d is not %d", linev.vlines.count, linev.vlineend - linev.vlinestart);
+				NSLog(@"STV-SANITY: linev count %d is not %d", (int)linev.vlines.count, linev.vlineend - linev.vlinestart);
 			if (linev.vlinestart != lastv)
 				NSLog(@"STV-SANITY: vlinestart %d is not %d", linev.vlinestart, lastv);
 			if (linev.vlinestart != (((GlkVisualLine *)([linev.vlines objectAtIndex:0])).vlinenum))
