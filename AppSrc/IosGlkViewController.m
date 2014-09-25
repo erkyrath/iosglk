@@ -66,6 +66,7 @@
 }
 
 - (void) viewDidUnload {
+	[super viewDidUnload];
 	self.frameview = nil;
 }
 
@@ -83,6 +84,7 @@
 }
 
 - (void) viewDidLoad {
+	[super viewDidLoad];
 	IosGlkAppDelegate *appdelegate = [IosGlkAppDelegate singleton];
 	if (appdelegate.library)
 		[frameview requestLibraryState:appdelegate.glkapp];

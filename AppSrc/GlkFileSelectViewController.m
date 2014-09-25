@@ -136,6 +136,7 @@
 }
 
 - (void) viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
 	if (textfield) {
 		[textfield becomeFirstResponder];
 	}

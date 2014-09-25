@@ -939,6 +939,7 @@
 }
 
 - (BOOL) resignFirstResponder {
+	[super resignFirstResponder];
 	[self clearSelection];
 	[[IosGlkViewController singleton] textSelectionWindow:nil];
 	return YES;
