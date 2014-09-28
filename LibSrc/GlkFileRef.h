@@ -40,6 +40,8 @@
 @property (nonatomic, readonly) BOOL textmode;
 
 + (NSString *) documentsDirectory;
++ (NSString *) relativizePath:(NSString *)path;
++ (NSString *) unrelativizePath:(NSString *)path;
 + (NSString *) subDirOfBase:(NSString *)basedir forUsage:(glui32)usage gameid:(NSString *)gameid;
 
 - (id) initWithBase:(NSString *)basedir filename:(NSString *)filename type:(glui32)usage rock:(glui32)frefrock;
