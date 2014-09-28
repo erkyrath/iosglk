@@ -22,8 +22,8 @@
 	
 	NSString *filename;
 	NSString *basedir;
-	NSString *dirname;
-	NSString *pathname;
+	NSString *dirname; // basedir + subDirOfBase
+	NSString *pathname; // dirname + filename
 	glui32 filetype;
 	BOOL textmode;
 }
