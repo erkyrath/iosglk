@@ -927,7 +927,7 @@
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
-		self.pathname = [decoder decodeObjectForKey:@"pathname"];
+		self.pathname = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"pathname"]];
 		fmode = [decoder decodeInt32ForKey:@"fmode"];
 		textmode = [decoder decodeBoolForKey:@"textmode"];
 		maxbuffersize = [decoder decodeIntForKey:@"maxbuffersize"];
@@ -962,7 +962,7 @@
 	
 	[self flush];
 	
-	[encoder encodeObject:pathname forKey:@"pathname"];
+	[encoder encodeObject:[GlkFileRef relativizePath:pathname] forKey:@"pathname"];
 	[encoder encodeInt32:fmode forKey:@"fmode"];
 	[encoder encodeBool:textmode forKey:@"textmode"];
 	[encoder encodeInt:maxbuffersize forKey:@"maxbuffersize"];
