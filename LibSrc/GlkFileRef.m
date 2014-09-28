@@ -40,6 +40,51 @@
 	return [dirlist objectAtIndex:0];
 }
 
+/* Convert paths in the bundle or Documents directory to use the token $APP or $DOC instead of the literal pathname. This is necessary for serialization. (I think in iOS8 these directories are randomized on every run.)
+ */
++ (NSString *) relativizePath:(NSString *)path
+{
+	NSString *prefix;
+	
+	prefix = [NSBundle mainBundle].bundlePath;
+	if ([path hasPrefix:prefix]) {
+		NSRange range = NSMakeRange(0, prefix.length);
+		NSString *res = [path stringByReplacingCharactersInRange:range withString:@"$APP"];
+		//NSLog(@"relativizePath: converted %@ to %@", path, res);
+		return res;
+	}
+	prefix = [GlkFileRef documentsDirectory];
+	if ([path hasPrefix:prefix]) {
+		NSRange range = NSMakeRange(0, prefix.length);
+		NSString *res = [path stringByReplacingCharactersInRange:range withString:@"$DOC"];
+		//NSLog(@"relativizePath: converted %@ to %@", path, res);
+		return res;
+	}
+	NSLog(@"relativizePath: warning: unable to deal with path: %@", path);
+	return path;
+}
+
+/* Convert $APP or $DOC paths to real paths. Used in deserialization. 
+ */
++ (NSString *) unrelativizePath:(NSString *)path
+{
+	NSString *res = nil;
+	if ([path hasPrefix:@"$APP"]) {
+		NSRange range = NSMakeRange(0, 4);
+		res = [path stringByReplacingCharactersInRange:range withString:[NSBundle mainBundle].bundlePath];
+	}
+	else if ([path hasPrefix:@"$DOC"]) {
+		NSRange range = NSMakeRange(0, 4);
+		res = [path stringByReplacingCharactersInRange:range withString:[GlkFileRef documentsDirectory]];
+	}
+	else {
+		NSLog(@"unrelativizePath: warning: got absolute path: %@", path);
+		res = path;
+	}
+	//NSLog(@"unrelativizePath: converted %@ to %@", path, res);
+	return res;
+}
+
 /* Work out the directory for a given type of file, based on the base directory, the usage, and the game identity.
 	See the comments on GlkFileRefLayer.m for an explanation.
 */
@@ -104,9 +149,9 @@
 	// disprock is handled by the app
 	
 	self.filename = [decoder decodeObjectForKey:@"filename"];
-	self.basedir = [decoder decodeObjectForKey:@"basedir"];
-	self.dirname = [decoder decodeObjectForKey:@"dirname"];
-	self.pathname = [decoder decodeObjectForKey:@"pathname"];
+	self.basedir = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"basedir"]];
+	self.dirname = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"dirname"]];
+	self.pathname = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"pathname"]];
 	filetype = [decoder decodeInt32ForKey:@"filetype"];
 	textmode = [decoder decodeBoolForKey:@"textmode"];
 	
@@ -131,6 +176,10 @@
 	[super dealloc];
 }
 
+- (NSString *) description {
+	return [NSString stringWithFormat:@"<%@ (tag %@, rock %d): 0x%lx>", self.class, self.tag, self.rock, (long)self];
+}
+
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[encoder encodeObject:tag forKey:@"tag"];
 	
@@ -138,9 +187,9 @@
 	// disprock is handled by the app
 	
 	[encoder encodeObject:filename forKey:@"filename"];
-	[encoder encodeObject:basedir forKey:@"basedir"];
-	[encoder encodeObject:dirname forKey:@"dirname"];
-	[encoder encodeObject:pathname forKey:@"pathname"];
+	[encoder encodeObject:[GlkFileRef relativizePath:basedir] forKey:@"basedir"];
+	[encoder encodeObject:[GlkFileRef relativizePath:dirname] forKey:@"dirname"];
+	[encoder encodeObject:[GlkFileRef relativizePath:pathname] forKey:@"pathname"];
 
 	[encoder encodeInt32:filetype forKey:@"filetype"];
 	[encoder encodeBool:textmode forKey:@"textmode"];
