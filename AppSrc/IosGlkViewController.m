@@ -253,26 +253,32 @@
 
 /* Update the input field, as if the player had typed the string. (Any input the player was editing is replaced.) If enter is YES, a line input event is generated, as if the player had then hit Go.
  
-	This selects whichever window is accepting line input. If none are, nothing happens. If more than one is, it picks one.
+	If no windows are accepting line input, nothing happens (and the method returns NO). If a window is, it succeeds and returns YES. (If more than one is, it picks one.)
  
 	This is intended to be called by UI controls. For example, you might have a button in your app interface which generates an "INVENTORY" command.
  */
-- (void) forceLineInput:(NSString *)val enter:(BOOL)enter
+- (BOOL) forceLineInput:(NSString *)text enter:(BOOL)enter
 {
-	NSLog(@"### forceLineInput: '%@'", val);
-	
 	if (![[GlkAppWrapper singleton] acceptingEvent]) {
 		/* The VM is not currently awaiting input. */
-		return;
+		return NO;
 	}
 	
 	for (NSNumber *tag in frameview.windowviews) {
 		GlkWindowView *winv = [frameview.windowviews objectForKey:tag];
 		if (winv.inputfield && winv.winstate.line_request) {
-			winv.inputfield.text = val; //###
-			break;
+			if (!enter) {
+				winv.inputfield.text = text;
+			}
+			else {
+				// We can't absolutely guarantee that this will succeed -- the VM has to decide that. But we'll return YES anyhow.
+				[[GlkAppWrapper singleton] acceptEvent:[GlkEventState lineEvent:text inWindow:winv.winstate.tag]];
+			}
+			return YES;
 		}
 	}
+	
+	return NO;
 }
 
 /* Display the "game over, what now?" popup. This is called when the player taps after glk_main() has exited.
