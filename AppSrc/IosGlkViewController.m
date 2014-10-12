@@ -281,6 +281,27 @@
 	return NO;
 }
 
+/* Send a custom event directly to the VM. Returns YES if the VM is in glk_select(); if not, does nothing and returns NO.
+ 
+	The tag argument will be converted to a window ID in the event structure. If tag is nil, the window ID will be zero.
+ */
+- (BOOL) forceCustomEvent:(uint32_t)evtype windowTag:(NSNumber *)tag val1:(uint32_t)val1 val2:(uint32_t)val2
+{
+	if (![[GlkAppWrapper singleton] acceptingEvent]) {
+		/* The VM is not currently awaiting input. */
+		return NO;
+	}
+	
+	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
+	event.type = evtype;
+	event.tag = tag;
+	event.genval1 = val1;
+	event.genval2 = val2;
+	
+	[[GlkAppWrapper singleton] acceptEvent:event];
+	return YES;
+}
+
 /* Display the "game over, what now?" popup. This is called when the player taps after glk_main() has exited.
  */
 - (void) postGameOver {

@@ -61,6 +61,7 @@
 
 - (IBAction) toggleKeyboard;
 - (BOOL) forceLineInput:(NSString *)text enter:(BOOL)enter;
+- (BOOL) forceCustomEvent:(uint32_t)evtype windowTag:(NSNumber *)tag val1:(uint32_t)val1 val2:(uint32_t)val2;
 - (void) addToCommandHistory:(NSString *)str;
 
 @end

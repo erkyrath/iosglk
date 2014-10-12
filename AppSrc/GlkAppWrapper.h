@@ -61,12 +61,16 @@
 @interface GlkEventState : NSObject {
 	glui32 type;
 	glui32 ch;
+	glui32 genval1;
+	glui32 genval2;
 	NSString *line;
 	NSNumber *tag;
 }
 
 @property (nonatomic) glui32 type;
 @property (nonatomic) glui32 ch;
+@property (nonatomic) glui32 genval1;
+@property (nonatomic) glui32 genval2;
 @property (nonatomic, retain) NSString *line;
 @property (nonatomic, retain) NSNumber *tag;
 

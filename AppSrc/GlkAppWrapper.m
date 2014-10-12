@@ -243,6 +243,16 @@ static GlkAppWrapper *singleton = nil;
 						iowait = NO;
 					}
 					break;
+				default:
+					if (gotevent.type >= 0x8000000) {
+						/* This is a custom event type. Pass it through unmolested. */
+						event->type = gotevent.type;
+						event->win = win;
+						event->val1 = gotevent.genval1;
+						event->val2 = gotevent.genval2;
+						iowait = NO;
+					}
+					break;
 			}
 		}
 	}
@@ -444,6 +454,8 @@ static GlkAppWrapper *singleton = nil;
 
 @synthesize type;
 @synthesize ch;
+@synthesize genval1;
+@synthesize genval2;
 @synthesize line;
 @synthesize tag;
 
