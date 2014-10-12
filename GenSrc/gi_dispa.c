@@ -657,6 +657,10 @@ char *gidispatch_prototype(glui32 funcnum)
             return "3>+[8IsIsIsIsIsIsIsIs]Iu:Is";
 #endif /* GLK_MODULE_DATETIME */
 
+#ifdef GLK_EXTEND_PROTOTYPE
+        GLK_EXTEND_PROTOTYPE
+#endif /* GLK_EXTEND_PROTOTYPE */
+
         default:
             return NULL;
     }
@@ -1474,6 +1478,10 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             }
             break;
 #endif /* GLK_MODULE_DATETIME */
+
+#ifdef GLK_EXTEND_CALL
+        GLK_EXTEND_CALL
+#endif /* GLK_EXTEND_CALL */
 
         default:
             /* do nothing */
