@@ -60,6 +60,7 @@
 - (void) keyboardWillBeHidden:(NSNotification*)notification;
 
 - (IBAction) toggleKeyboard;
+- (void) forceLineInput:(NSString *)val enter:(BOOL)enter;
 - (void) addToCommandHistory:(NSString *)str;
 
 @end

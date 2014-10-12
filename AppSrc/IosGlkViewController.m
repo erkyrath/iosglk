@@ -6,6 +6,7 @@
 
 #import "IosGlkViewController.h"
 #import "IosGlkAppDelegate.h"
+#import "GlkAppWrapper.h"
 #import "GlkFrameView.h"
 #import "GlkWindowView.h"
 #import "GlkUtilTypes.h"
@@ -15,6 +16,8 @@
 #import "PopMenuView.h"
 #import "GameOverView.h"
 #import "GlkLibraryState.h"
+#import "GlkWindowState.h"
+#import "CmdTextField.h"
 #import "GlkUtilities.h"
 
 #define MAX_HISTORY_LENGTH (12)
@@ -245,6 +248,30 @@
 	else {
 		//NSLog(@"Reshowing keyboard for %@", firstinputview);
 		[winv.inputfield becomeFirstResponder];
+	}
+}
+
+/* Update the input field, as if the player had typed the string. (Any input the player was editing is replaced.) If enter is YES, a line input event is generated, as if the player had then hit Go.
+ 
+	This selects whichever window is accepting line input. If none are, nothing happens. If more than one is, it picks one.
+ 
+	This is intended to be called by UI controls. For example, you might have a button in your app interface which generates an "INVENTORY" command.
+ */
+- (void) forceLineInput:(NSString *)val enter:(BOOL)enter
+{
+	NSLog(@"### forceLineInput: '%@'", val);
+	
+	if (![[GlkAppWrapper singleton] acceptingEvent]) {
+		/* The VM is not currently awaiting input. */
+		return;
+	}
+	
+	for (NSNumber *tag in frameview.windowviews) {
+		GlkWindowView *winv = [frameview.windowviews objectForKey:tag];
+		if (winv.inputfield && winv.winstate.line_request) {
+			winv.inputfield.text = val; //###
+			break;
+		}
 	}
 }
 
