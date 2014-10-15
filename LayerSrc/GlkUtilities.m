@@ -185,12 +185,26 @@ CGSize CGSizeEven(CGSize size) {
 	return size;
 }
 
+/* Some utility functions, intended for debugging. */
 
 /* Log a C string to console. */
 void nslogc(char *str) {
 	NSLog(@"%s", str);
 }
 
-extern void sleep_curthread(NSTimeInterval val) {
+static NSTimeInterval logtimestart;
+
+void nslogtimestart() {
+	logtimestart = [NSDate timeIntervalSinceReferenceDate];
+}
+
+void nslogtimestop(char *label) {
+	NSLog(@"Time interval for %s: %lf", label, [NSDate timeIntervalSinceReferenceDate]-logtimestart);
+}
+
+/* Sleep the current thread for the given number of seconds. */
+void sleep_curthread(NSTimeInterval val) {
 	[NSThread sleepForTimeInterval:val];
 }
+
+

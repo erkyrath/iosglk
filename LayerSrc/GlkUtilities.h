@@ -26,4 +26,6 @@ extern UIEdgeInsets UIEdgeInsetsRectDiff(CGRect rect1, CGRect rect2);
 extern CGRect RectApplyingEdgeInsets(CGRect rect, UIEdgeInsets margins);
 
 extern void nslogc(char *str);
+extern void nslogtimestart(void);
+extern void nslogtimestop(char *label);
 extern void sleep_curthread(NSTimeInterval val);
