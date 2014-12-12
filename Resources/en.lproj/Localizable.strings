@@ -16,6 +16,7 @@
 "use.save.writetitle" = "Save Game";
 "use.save.replacequery" = "Replace the saved game “%@”?";
 "use.save.placeholder" = "Saved game";
+"use.save.placeholders" = "Saved games";
 "use.save.listlabel" = "Previously saved games:";
 "use.save.nofiles" = "No saved games";
 
@@ -23,13 +24,15 @@
 "use.transcript.writetitle" = "Write Transcript";
 "use.transcript.replacequery" = "Replace the transcript “%@”?";
 "use.transcript.placeholder" = "Transcript";
+"use.transcript.placeholders" = "Transcripts";
 "use.transcript.listlabel" = "Existing transcripts:";
 "use.transcript.nofiles" = "No transcripts";
 
 "use.input.readtitle" = "Find Record";
 "use.input.writetitle" = "Write Record";
 "use.input.replacequery" = "Replace the command record “%@”?";
-"use.input.placeholder" = "Command Record";
+"use.input.placeholder" = "Command record";
+"use.input.placeholders" = "Command records";
 "use.input.listlabel" = "Existing records:";
 "use.input.nofiles" = "No command records";
 
@@ -37,5 +40,6 @@
 "use.data.writetitle" = "Write Data";
 "use.data.replacequery" = "Replace the data file “%@”?";
 "use.data.placeholder" = "Data file";
+"use.data.placeholders" = "Data files";
 "use.data.listlabel" = "Existing data files:";
 "use.data.nofiles" = "No data files";
