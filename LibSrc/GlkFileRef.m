@@ -30,7 +30,7 @@
 /* Find the user's Documents directory. 
  */
 + (NSString *) documentsDirectory {
-	/* We use an old-fashioned way of locating the Documents directory. (The NSManager method for this is iOS 4.0 and later.) */
+	/* We use an old-fashioned way of locating the Documents directory. (The NSFileManager method for this is iOS 4.0 and later.) */
 	
 	NSArray *dirlist = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	if (!dirlist || [dirlist count] == 0) {
