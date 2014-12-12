@@ -122,6 +122,7 @@
 			GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
 			thumb.filename = filename;
 			thumb.pathname = pathname;
+			thumb.usage = (prompt.usage & fileusage_TypeMask);
 			thumb.modtime = [attrs fileModificationDate];
 			thumb.label = label;
 			

@@ -43,6 +43,7 @@
 @synthesize label;
 @synthesize filename;
 @synthesize pathname;
+@synthesize usage;
 @synthesize modtime;
 @synthesize isfake;
 

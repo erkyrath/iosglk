@@ -30,6 +30,7 @@
 	NSString *label;
 	NSString *filename;
 	NSString *pathname;
+	glui32 usage;
 	NSDate *modtime;
 	BOOL isfake;
 }
@@ -37,6 +38,7 @@
 @property (nonatomic, retain) NSString *label;
 @property (nonatomic, retain) NSString *filename;
 @property (nonatomic, retain) NSString *pathname;
+@property (nonatomic) glui32 usage;
 @property (nonatomic, retain) NSDate *modtime;
 @property (nonatomic) BOOL isfake;
 
