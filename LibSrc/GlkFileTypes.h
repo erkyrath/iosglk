@@ -42,9 +42,11 @@
 @property (nonatomic, retain) NSDate *modtime;
 @property (nonatomic) BOOL isfake;
 
++ (NSString *) suffixForFileUsage:(glui32)usage;
 + (NSString *) labelForFileUsage:(glui32)usage localize:(NSString *)key;
 
 - (NSComparisonResult) compareModTime:(GlkFileThumb *)other;
+- (NSString *) exportTempFile;
 
 @end
 
