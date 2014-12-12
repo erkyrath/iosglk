@@ -47,6 +47,32 @@
 @synthesize modtime;
 @synthesize isfake;
 
++ (NSString *) labelForFileUsage:(glui32)usage localize:(NSString *)key {
+	NSString *res = nil;
+	
+	switch (usage) {
+		case fileusage_SavedGame:
+			res = @"use.save";
+			break;
+		case fileusage_Transcript:
+			res = @"use.transcript";
+			break;
+		case fileusage_InputRecord:
+			res = @"use.input";
+			break;
+		case fileusage_Data:
+		default:
+			res = @"use.data";
+	}
+	
+	if (key) {
+		NSString *lockey = [NSString stringWithFormat:@"%@.%@", res, key];
+		res = NSLocalizedString(lockey, nil);
+	}
+	
+	return res;
+}
+
 - (void) dealloc {
 	self.label = nil;
 	self.filename = nil;

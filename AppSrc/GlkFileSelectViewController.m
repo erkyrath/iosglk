@@ -34,20 +34,7 @@
 		[dateformatter setDateStyle:NSDateFormatterMediumStyle];
 		[dateformatter setTimeStyle:NSDateFormatterShortStyle];
 		
-		switch (prompt.usage & fileusage_TypeMask) {
-			case fileusage_SavedGame:
-				self.usekey = @"use.save";
-				break;
-			case fileusage_Transcript:
-				self.usekey = @"use.transcript";
-				break;
-			case fileusage_InputRecord:
-				self.usekey = @"use.input";
-				break;
-			case fileusage_Data:
-			default:
-				self.usekey = @"use.data";
-		}
+		self.usekey = [GlkFileThumb labelForFileUsage:(prompt.usage & fileusage_TypeMask) localize:nil];
 	}
 	return self;
 }
