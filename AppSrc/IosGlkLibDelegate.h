@@ -12,9 +12,19 @@
 @class GlkWinGridView;
 @class GlkWindowState;
 
+/* The return value of the checkGlkSaveFileFormat method. */
+typedef enum GlkSaveFormat_enum {
+	saveformat_Ok = 0,
+	saveformat_Unreadable = 1,
+	saveformat_UnknownFormat = 2,
+	saveformat_WrongGame = 3,
+	saveformat_WrongVersion = 4,	
+} GlkSaveFormat;
+
 @protocol IosGlkLibDelegate <NSObject>
 
 - (NSString *) gameId;
+- (GlkSaveFormat) checkGlkSaveFileFormat:(NSString *)path;
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;

@@ -4,13 +4,17 @@
 	http://eblong.com/zarf/glk/
 */
 
+#import <MobileCoreServices/MobileCoreServices.h>
+
 #import "IosGlkAppDelegate.h"
 #import "IosGlkViewController.h"
 #import "IosGlkLibDelegate.h"
 
 #import "GlkFrameView.h"
 #import "GlkLibrary.h"
+#import "GlkFileRef.h"
 #import "GlkAppWrapper.h"
+#import "GlkUtilities.h"
 
 #include "glk.h"
 
@@ -125,6 +129,68 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	[super dealloc];
 }
 
+/* A .glksave URL was passed to this application by another. The URL will be a file in Documents/Inbox. We should check whether it matches our game; if so, move it to the appropriate directory and return YES; if not, delete it and return NO.
+ 
+ This is only called if the Info.plist file contains CFBundleDocumentTypes for the .glksave UTI. If the URL launched us, this will be called immediately after diFinishLaunching.
+ */
+- (BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+	NSLog(@"### appOpenURL %@, from %@, note %@", url, sourceApplication, annotation);
+	// This function is iOS5+. The project is set to require iOS5.1.1, so that's fine, but be careful if you're back-porting.
+	if (![url isFileURL]) {
+		NSLog(@"applicationOpenURL: not a file: URL; rejecting");
+		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+		return NO;
+	}
+	
+	NSString *path = url.path;
+	
+	// Now we try to work out the type (UTI). This has to be done through the file extension, apparently. The UTType functions are C, so we need manual release.
+	CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)(path.pathExtension), NULL);
+	BOOL issavefile = UTTypeConformsTo(uti, (CFStringRef)(@"com.eblong.glk.glksave"));
+	NSLog(@"### ... dropped file path %@, type '%@' (issavefile %d)", path, uti, issavefile);
+	CFRelease(uti);
+
+	if (!issavefile) {
+		//### display an alert
+		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+		return NO;
+	}
+	
+	// Now we check whether this is a save file for our game. The Glk library delegate makes that decision.
+	GlkSaveFormat res = [self.library.glkdelegate checkGlkSaveFileFormat:path];
+	if (res != saveformat_Ok) {
+		//### display an alert based on res
+		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+		return NO;
+	}
+	
+	// Move the file into the appropriate subdirectory for fileusage_SavedGame. We'll need to give it the appropriate name -- dumbass-encoded and with no file extension.
+	NSString *filename = [path lastPathComponent];
+	NSString *barefilename = [filename stringByDeletingPathExtension];
+	if (barefilename.length == 0)
+		barefilename = @"Save file";
+	NSString *newfilename = StringToDumbEncoding(barefilename);
+	
+	NSString *basedir = [GlkFileRef documentsDirectory];
+	NSString *dirname = [GlkFileRef subDirOfBase:basedir forUsage:fileusage_SavedGame gameid:self.library.gameId];
+	NSString *newpathname = [dirname stringByAppendingPathComponent:newfilename];
+	NSLog(@"### %@ -> %@ -> %@: %@", filename, barefilename, newfilename, newpathname);
+	
+	//### Check for already-exists!
+	
+	NSError *error = nil;
+	[[NSFileManager defaultManager] moveItemAtPath:path toPath:newpathname error:&error];
+	if (error) {
+		//### display alert?
+		NSLog(@"applicationOpenURL: move failed: %@", error);
+		return NO;
+	}
+	
+	//### Flip to settings/share tab? Would have to be another delegate call.
+	
+	return YES;
+}
 
 /* The application is about to become inactive. (Incoming phone call or SMS alert; device is going to sleep; the user called up the process-bar; or the user "quit" and we are about to be backgrounded.)
  

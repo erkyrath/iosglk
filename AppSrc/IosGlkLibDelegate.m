@@ -24,6 +24,10 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return nil;
 }
 
+- (GlkSaveFormat) checkGlkSaveFileFormat:(NSString *)path {
+	return saveformat_UnknownFormat;
+}
+
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	return nil;
 }
