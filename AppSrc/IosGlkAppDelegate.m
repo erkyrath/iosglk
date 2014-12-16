@@ -135,10 +135,11 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
  */
 - (BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-	NSLog(@"### appOpenURL %@, from %@, note %@", url, sourceApplication, annotation);
+	NSLog(@"applicationOpenURL: %@ (from %@)", url, sourceApplication);
+	
 	// This function is iOS5+. The project is set to require iOS5.1.1, so that's fine, but be careful if you're back-porting.
 	if (![url isFileURL]) {
-		NSLog(@"applicationOpenURL: not a file: URL; rejecting");
+		//### display an alert
 		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 		return NO;
 	}
