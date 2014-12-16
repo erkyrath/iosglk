@@ -13,7 +13,9 @@
 @class GlkLibraryState;
 @protocol IosGlkLibDelegate;
 
-@interface IosGlkViewController : UIViewController {
+typedef void (^questioncallback)(int); // callback block type for displayAdHocQuestion
+
+@interface IosGlkViewController : UIViewController <UIActionSheetDelegate> {
 	id <IosGlkLibDelegate> glkdelegate;
 	GlkFrameView *frameview;
 	
@@ -28,6 +30,9 @@
 	NSMutableArray *commandhistory;
 	/* Size of the keyboard, if present *and blocking* (in window coords) */
 	CGRect keyboardbox;
+	
+	/* Currently-displayed ad-hoc question callback */
+	questioncallback currentquestion;
 }
 
 @property (nonatomic, assign) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
@@ -39,6 +44,8 @@
 
 @property (nonatomic, retain) NSMutableArray *commandhistory;	
 @property (nonatomic) CGRect keyboardbox;
+
+@property (nonatomic, copy) questioncallback currentquestion;
 
 + (IosGlkViewController *) singleton;
 
@@ -64,6 +71,7 @@
 - (BOOL) forceCustomEvent:(uint32_t)evtype windowTag:(NSNumber *)tag val1:(uint32_t)val1 val2:(uint32_t)val2;
 - (void) addToCommandHistory:(NSString *)str;
 - (void) displayAdHocAlert:(NSString *)msg title:(NSString *)title;
+- (void) displayAdHocQuestion:(NSString *)msg option:(NSString *)opt1 option:(NSString *)opt2 callback:(questioncallback)qcallback;
 
 @end
 

@@ -28,6 +28,9 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return saveformat_UnknownFormat;
 }
 
+- (void) displayGlkFileUsage:(int)usage name:(NSString *)filename {
+}
+
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	return nil;
 }

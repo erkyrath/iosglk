@@ -194,18 +194,27 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	NSString *newpathname = [dirname stringByAppendingPathComponent:newfilename];
 	NSLog(@"### %@ -> %@ -> %@: %@", filename, barefilename, newfilename, newpathname);
 	
-	//### Check for already-exists!
+	void (^move_file_callback)(void) = ^() {
+		NSError *error = nil;
+		[[NSFileManager defaultManager] moveItemAtPath:path toPath:newpathname error:&error];
+		if (error) {
+			NSLog(@"applicationOpenURL: move failed: %@", error);
+			[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.move-failed", nil) title:nil];
+		}
+		
+		[self.library.glkdelegate displayGlkFileUsage:fileusage_SavedGame name:newfilename];
+	};
 	
-	NSError *error = nil;
-	[[NSFileManager defaultManager] moveItemAtPath:path toPath:newpathname error:&error];
-	if (error) {
-		NSLog(@"applicationOpenURL: move failed: %@", error);
-		[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.move-failed", nil) title:nil];
-		return NO;
+	if ([[NSFileManager defaultManager] fileExistsAtPath:newpathname]) {
+		// There's already a file of that name. Ask what to do. This requires a callback -- see above.
+		//###
+	}
+	else {
+		// Move the file without further prompting.
+		move_file_callback();
 	}
 	
-	//### Flip to settings/share tab? Would have to be another delegate call.
-	
+	// The user may still be at a prompt, but we have to pass an answer back, so we'll accept responsibility.
 	return YES;
 }
 

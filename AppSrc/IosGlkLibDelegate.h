@@ -25,6 +25,7 @@ typedef enum GlkSaveFormat_enum {
 
 - (NSString *) gameId;
 - (GlkSaveFormat) checkGlkSaveFileFormat:(NSString *)path;
+- (void) displayGlkFileUsage:(int)usage name:(NSString *)filename;
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;

@@ -31,6 +31,7 @@
 @synthesize textselecttag;
 @synthesize commandhistory;
 @synthesize keyboardbox;
+@synthesize currentquestion;
 
 + (IosGlkViewController *) singleton {
 	return [IosGlkAppDelegate singleton].glkviewc;
@@ -41,6 +42,7 @@
 	self.commandhistory = nil;
 	self.prefinputwintag = nil;
 	self.textselecttag = nil;
+	self.currentquestion = nil;
 	[super dealloc];
 }
 
@@ -386,6 +388,36 @@
 - (void) displayAdHocAlert:(NSString *)msg title:(NSString *)title {
 	UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:NSLocalizedString(@"button.ok", nil) otherButtonTitles:nil] autorelease];
 	[alert show];
+}
+
+/* Display an action sheet to ask a two-option question. (There's always a "cancel" option. This does not use the "destructive" red-button option.)
+ The callback will be invoked with argument 1 or 2, or 0 for cancel.
+ If there's already a question sheet visible, this fails and auto-cancels. (Weak, I know, sorry.)
+ */
+- (void) displayAdHocQuestion:(NSString *)msg option:(NSString *)opt1 option:(NSString *)opt2 callback:(questioncallback)qcallback {
+	if (self.currentquestion) {
+		NSLog(@"displayAdHocQuestion: current question already exists; cancelling");
+		qcallback(0);
+		return;
+	}
+	self.currentquestion = qcallback;
+	UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:msg delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:nil otherButtonTitles:opt1, opt2, nil] autorelease];
+	sheet.delegate = self;
+	[sheet showInView:[IosGlkAppDelegate singleton].window];
+}
+
+/* Delegate method for UIActionSheet. Used by displayAdHocQuestion.
+ */
+- (void) actionSheet:(UIActionSheet *)sheet didDismissWithButtonIndex:(NSInteger)index {
+	int res;
+	if (index == -1 || index == sheet.cancelButtonIndex)
+		res = 0;
+	else
+		res = (index - sheet.firstOtherButtonIndex) + 1;
+	
+	questioncallback qcallback = [[self.currentquestion retain] autorelease];
+	self.currentquestion = nil;
+	qcallback(res);
 }
 
 - (void) didReceiveMemoryWarning {
