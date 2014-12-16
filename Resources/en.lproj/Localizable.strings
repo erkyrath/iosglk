@@ -6,6 +6,7 @@
 
 "button.cancel" = "Cancel";
 "button.replace" = "Replace";
+"button.ok" = "Ok";
 
 "label.missing-line" = "Missing line";
 "label.blank-line" = "Blank line";
@@ -43,3 +44,11 @@
 "use.data.placeholders" = "Data files";
 "use.data.listlabel" = "Existing data files:";
 "use.data.nofiles" = "No data files";
+
+"openfile.not-file-url" = "Another app offered a file which was not local.";
+"openfile.not-save-file" = "Another app offered a file which was not a save file.";
+"openfile.wrong-version" = "Another app offered a save file, but it was for a different version of the game.";
+"openfile.wrong-game" = "Another app offered a save file, but it was not for this game.";
+"openfile.unknown-format" = "Another app offered a save file, but its format was unknown.";
+"openfile.unreadable" = "Another app offered a save file, but it was unreadable.";
+"openfile.move-failed" = "Another app offered a save file, but it could not be moved into this app’s Documents collection.";

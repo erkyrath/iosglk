@@ -139,7 +139,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	
 	// This function is iOS5+. The project is set to require iOS5.1.1, so that's fine, but be careful if you're back-porting.
 	if (![url isFileURL]) {
-		//### display an alert
+		[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.not-file-url", nil) title:nil];
 		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 		return NO;
 	}
@@ -153,7 +153,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	CFRelease(uti);
 
 	if (!issavefile) {
-		//### display an alert
+		[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.not-save-file", nil) title:nil];
 		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 		return NO;
 	}
@@ -161,7 +161,23 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	// Now we check whether this is a save file for our game. The Glk library delegate makes that decision.
 	GlkSaveFormat res = [self.library.glkdelegate checkGlkSaveFileFormat:path];
 	if (res != saveformat_Ok) {
-		//### display an alert based on res
+		NSString *msg = nil;
+		switch (res) {
+			case saveformat_WrongVersion:
+				msg = NSLocalizedString(@"openfile.wrong-version", nil);
+				break;
+			case saveformat_WrongGame:
+				msg = NSLocalizedString(@"openfile.wrong-game", nil);
+				break;
+			case saveformat_UnknownFormat:
+				msg = NSLocalizedString(@"openfile.unknown-format", nil);
+				break;
+			default:
+			case saveformat_Unreadable:
+				msg = NSLocalizedString(@"openfile.unreadable", nil);
+				break;
+		}
+		[self.glkviewc displayAdHocAlert:msg title:nil];
 		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 		return NO;
 	}
@@ -183,8 +199,8 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	NSError *error = nil;
 	[[NSFileManager defaultManager] moveItemAtPath:path toPath:newpathname error:&error];
 	if (error) {
-		//### display alert?
 		NSLog(@"applicationOpenURL: move failed: %@", error);
+		[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.move-failed", nil) title:nil];
 		return NO;
 	}
 	

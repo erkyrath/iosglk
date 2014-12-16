@@ -381,6 +381,13 @@
 	[defaults setObject:commandhistory forKey:@"CommandHistory"];
 }
 
+/* Display an alert sheet that doesn't come from the game. For example, this might be called when a file is passed to the app from another app.
+ */
+- (void) displayAdHocAlert:(NSString *)msg title:(NSString *)title {
+	UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:NSLocalizedString(@"button.ok", nil) otherButtonTitles:nil] autorelease];
+	[alert show];
+}
+
 - (void) didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
 	[super didReceiveMemoryWarning];
