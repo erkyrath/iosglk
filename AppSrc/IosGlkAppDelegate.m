@@ -226,7 +226,6 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 		key = NSLocalizedString(@"openfile.already-exists-opt2", nil);
 		NSString *opt2str = [NSString stringWithFormat:key, barefilename2];
 		questioncallback qcallback = ^(int res) {
-			NSLog(@"### callback result %d", res);
 			if (res <= 0) {
 				// Cancel; delete the temporary file.
 				[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
