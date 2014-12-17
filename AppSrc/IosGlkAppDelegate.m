@@ -194,21 +194,28 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	NSString *newpathname = [dirname stringByAppendingPathComponent:newfilename];
 	NSLog(@"### %@ -> %@ -> %@: %@", filename, barefilename, newfilename, newpathname);
 	
-	if (/*###*/1|| [[NSFileManager defaultManager] fileExistsAtPath:newpathname]) {
+	if ([[NSFileManager defaultManager] fileExistsAtPath:newpathname]) {
 		// There's already a file of that name. Ask what to do. This requires a callback.
-		// I'm using an ad-hoc and probably silly way to generate an alternative filename. If the current name seems to end with a number, increment it. Otherwise, append "-1".
-		NSString *barefilename2 = [barefilename stringByAppendingString:@"-1"];
-		NSTextCheckingResult *match = nil;
-		NSRegularExpression *pat = [NSRegularExpression regularExpressionWithPattern:@"^.*-([0-9]+)" options:0 error:nil];
-		if (pat)
-			match = [pat firstMatchInString:barefilename options:0 range:NSMakeRange(0, barefilename.length)];
-		if (match && [match rangeAtIndex:1].location != NSNotFound) {
-			int val = [barefilename substringWithRange:[match rangeAtIndex:1]].intValue;
-			barefilename2 = [barefilename substringToIndex:[match rangeAtIndex:1].location];
-			barefilename2 = [NSString stringWithFormat:@"%@%d", barefilename2, val+1];
+		// I'm using an ad-hoc and probably silly way to generate an alternative filename. If the current name seems to end with a number, increment it. Otherwise, append "-1". Repeat until we have clearance. (But only 32 times, because look, we'd rather fail than get stuck forever.)
+		NSRegularExpression *pat = [NSRegularExpression regularExpressionWithPattern:@"^.*-([0-9]+)$" options:0 error:nil];
+		NSString *barefilename2 = barefilename;
+		NSString *newfilename2 = nil;
+		NSString *newpathname2 = nil;
+		for (int try=0; try<32; try++) {
+			NSString *curname = barefilename2;
+			NSTextCheckingResult *match = [pat firstMatchInString:curname options:0 range:NSMakeRange(0, curname.length)];
+			if (match && [match rangeAtIndex:1].location != NSNotFound) {
+				int val = [curname substringWithRange:[match rangeAtIndex:1]].intValue;
+				barefilename2 = [NSString stringWithFormat:@"%@%d", [curname substringToIndex:[match rangeAtIndex:1].location], val+1];
+			}
+			else {
+				barefilename2 = [curname stringByAppendingString:@"-1"];
+			}
+			newfilename2 = StringToDumbEncoding(barefilename2);
+			newpathname2 = [dirname stringByAppendingPathComponent:newfilename2];
+			if (![[NSFileManager defaultManager] fileExistsAtPath:newpathname2])
+				break;
 		}
-		NSString *newfilename2 = StringToDumbEncoding(barefilename2);
-		NSString *newpathname2 = [dirname stringByAppendingPathComponent:newfilename2];
 		NSLog(@"### generated %@ -> %@ : %@", barefilename, barefilename2, newpathname2);
 		
 		NSString *key;
@@ -220,8 +227,11 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 		NSString *opt2str = [NSString stringWithFormat:key, barefilename2];
 		questioncallback qcallback = ^(int res) {
 			NSLog(@"### callback result %d", res);
-			if (res <= 0)
+			if (res <= 0) {
+				// Cancel; delete the temporary file.
+				[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 				return;
+			}
 			NSString *usepathname = nil;
 			NSString *usefilename = nil;
 			if (res == 2) {

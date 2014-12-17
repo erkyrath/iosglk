@@ -403,7 +403,7 @@
 	self.currentquestion = qcallback;
 	UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:msg delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:nil otherButtonTitles:opt1, opt2, nil] autorelease];
 	sheet.delegate = self;
-	[sheet showInView:[IosGlkAppDelegate singleton].window];
+	[sheet showInView:[IosGlkAppDelegate singleton].rootviewc.view];
 }
 
 /* Delegate method for UIActionSheet. Used by displayAdHocQuestion.
