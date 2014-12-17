@@ -193,7 +193,10 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	NSString *dirname = [GlkFileRef subDirOfBase:basedir forUsage:fileusage_SavedGame gameid:self.library.gameId];
 	NSString *newpathname = [dirname stringByAppendingPathComponent:newfilename];
 	NSLog(@"### %@ -> %@ -> %@: %@", filename, barefilename, newfilename, newpathname);
-	
+
+	if (![[NSFileManager defaultManager] fileExistsAtPath:dirname isDirectory:nil])
+		[[NSFileManager defaultManager] createDirectoryAtPath:dirname withIntermediateDirectories:YES attributes:nil error:nil];
+
 	if ([[NSFileManager defaultManager] fileExistsAtPath:newpathname]) {
 		// There's already a file of that name. Ask what to do. This requires a callback.
 		// I'm using an ad-hoc and probably silly way to generate an alternative filename. If the current name seems to end with a number, increment it. Otherwise, append "-1". Repeat until we have clearance. (But only 32 times, because look, we'd rather fail than get stuck forever.)
