@@ -194,24 +194,71 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	NSString *newpathname = [dirname stringByAppendingPathComponent:newfilename];
 	NSLog(@"### %@ -> %@ -> %@: %@", filename, barefilename, newfilename, newpathname);
 	
-	void (^move_file_callback)(void) = ^() {
+	if (/*###*/1|| [[NSFileManager defaultManager] fileExistsAtPath:newpathname]) {
+		// There's already a file of that name. Ask what to do. This requires a callback.
+		// I'm using an ad-hoc and probably silly way to generate an alternative filename. If the current name seems to end with a number, increment it. Otherwise, append "-1".
+		NSString *barefilename2 = [barefilename stringByAppendingString:@"-1"];
+		NSTextCheckingResult *match = nil;
+		NSRegularExpression *pat = [NSRegularExpression regularExpressionWithPattern:@"^.*-([0-9]+)" options:0 error:nil];
+		if (pat)
+			match = [pat firstMatchInString:barefilename options:0 range:NSMakeRange(0, barefilename.length)];
+		if (match && [match rangeAtIndex:1].location != NSNotFound) {
+			int val = [barefilename substringWithRange:[match rangeAtIndex:1]].intValue;
+			barefilename2 = [barefilename substringToIndex:[match rangeAtIndex:1].location];
+			barefilename2 = [NSString stringWithFormat:@"%@%d", barefilename2, val+1];
+		}
+		NSString *newfilename2 = StringToDumbEncoding(barefilename2);
+		NSString *newpathname2 = [dirname stringByAppendingPathComponent:newfilename2];
+		NSLog(@"### generated %@ -> %@ : %@", barefilename, barefilename2, newpathname2);
+		
+		NSString *key;
+		key = NSLocalizedString(@"openfile.already-exists", nil);
+		NSString *qstr = [NSString stringWithFormat:key, barefilename];
+		key = NSLocalizedString(@"openfile.already-exists-opt1", nil);
+		NSString *opt1str = [NSString stringWithFormat:key, barefilename];
+		key = NSLocalizedString(@"openfile.already-exists-opt2", nil);
+		NSString *opt2str = [NSString stringWithFormat:key, barefilename2];
+		questioncallback qcallback = ^(int res) {
+			NSLog(@"### callback result %d", res);
+			if (res <= 0)
+				return;
+			NSString *usepathname = nil;
+			NSString *usefilename = nil;
+			if (res == 2) {
+				// Use new name
+				usepathname = newpathname2;
+				usefilename = newfilename2;
+			}
+			else {
+				// Replace old file
+				usepathname = newpathname;
+				usefilename = newfilename;
+				NSError *error = nil;
+				[[NSFileManager defaultManager] removeItemAtPath:usepathname error:&error];
+				if (error) {
+					NSLog(@"applicationOpenURL: remove-old failed: %@", error);
+				}
+			}
+			NSError *error = nil;
+			[[NSFileManager defaultManager] moveItemAtPath:path toPath:usepathname error:&error];
+			if (error) {
+				NSLog(@"applicationOpenURL: move failed: %@", error);
+				[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.move-failed", nil) title:nil];
+			}
+			[self.library.glkdelegate displayGlkFileUsage:fileusage_SavedGame name:usefilename];
+			return;
+		};
+		[self.glkviewc displayAdHocQuestion:qstr option:opt1str option:opt2str callback:qcallback];
+	}
+	else {
+		// Move the file without further prompting.
 		NSError *error = nil;
 		[[NSFileManager defaultManager] moveItemAtPath:path toPath:newpathname error:&error];
 		if (error) {
 			NSLog(@"applicationOpenURL: move failed: %@", error);
 			[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.move-failed", nil) title:nil];
 		}
-		
 		[self.library.glkdelegate displayGlkFileUsage:fileusage_SavedGame name:newfilename];
-	};
-	
-	if ([[NSFileManager defaultManager] fileExistsAtPath:newpathname]) {
-		// There's already a file of that name. Ask what to do. This requires a callback -- see above.
-		//###
-	}
-	else {
-		// Move the file without further prompting.
-		move_file_callback();
 	}
 	
 	// The user may still be at a prompt, but we have to pass an answer back, so we'll accept responsibility.

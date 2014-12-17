@@ -52,3 +52,6 @@
 "openfile.unknown-format" = "Another app offered a save file, but its format was unknown.";
 "openfile.unreadable" = "Another app offered a save file, but it was unreadable.";
 "openfile.move-failed" = "Another app offered a save file, but it could not be moved into this app’s Documents collection.";
+"openfile.already-exists" = "Another app offered the save file “%@”, which already exists. Replace it, or change the new file’s name?";
+"openfile.already-exists-opt1" = "Replace “%@”";
+"openfile.already-exists-opt2" = "Change to “%@”";
