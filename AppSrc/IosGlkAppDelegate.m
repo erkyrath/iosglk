@@ -149,7 +149,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	// Now we try to work out the type (UTI). This has to be done through the file extension, apparently. The UTType functions are C, so we need manual release.
 	CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)(path.pathExtension), NULL);
 	BOOL issavefile = UTTypeConformsTo(uti, (CFStringRef)(@"com.eblong.glk.glksave"));
-	NSLog(@"### ... dropped file path %@, type '%@' (issavefile %d)", path, uti, issavefile);
+	//NSLog(@"### ... dropped file path %@, type '%@' (issavefile %d)", path, uti, issavefile);
 	CFRelease(uti);
 
 	if (!issavefile) {
@@ -192,7 +192,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	NSString *basedir = [GlkFileRef documentsDirectory];
 	NSString *dirname = [GlkFileRef subDirOfBase:basedir forUsage:fileusage_SavedGame gameid:self.library.gameId];
 	NSString *newpathname = [dirname stringByAppendingPathComponent:newfilename];
-	NSLog(@"### %@ -> %@ -> %@: %@", filename, barefilename, newfilename, newpathname);
+	//NSLog(@"### %@ -> %@ -> %@: %@", filename, barefilename, newfilename, newpathname);
 
 	if (![[NSFileManager defaultManager] fileExistsAtPath:dirname isDirectory:nil])
 		[[NSFileManager defaultManager] createDirectoryAtPath:dirname withIntermediateDirectories:YES attributes:nil error:nil];
@@ -219,7 +219,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 			if (![[NSFileManager defaultManager] fileExistsAtPath:newpathname2])
 				break;
 		}
-		NSLog(@"### generated %@ -> %@ : %@", barefilename, barefilename2, newpathname2);
+		//NSLog(@"### generated %@ -> %@ : %@", barefilename, barefilename2, newpathname2);
 		
 		NSString *key;
 		key = NSLocalizedString(@"openfile.already-exists", nil);
