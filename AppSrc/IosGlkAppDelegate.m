@@ -51,8 +51,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 
 	// Add the view controller's view to the window and display. If we're not on iOS3, set the window's rootViewController too.
 	[self.window addSubview:rootviewc.view];
-	if ([self.window respondsToSelector:@selector(setRootViewController:)])
-		[self.window setRootViewController:rootviewc];
+	[self.window setRootViewController:rootviewc];
 	[self.window makeKeyAndVisible];
 
 	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */

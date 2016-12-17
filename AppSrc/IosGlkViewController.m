@@ -108,12 +108,6 @@
 	return UIInterfaceOrientationMaskAll;
 }
 
-/* Allow all orientations. (An interpreter-specific subclass may override this.) iOS3-5 idiom.
- */
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
 /* Invoked in the UI thread when an event is generated. The view controller has a chance to intercept the event and do something with or to it. Return nil to block the event; return the argument unchanged to do nothing.
  */
 - (id) filterEvent:(id)data {
