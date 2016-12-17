@@ -29,7 +29,6 @@
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
 static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 static BOOL gesturesavailable = NO; /* true for iOS3.2 and up */
-static BOOL understandspng = NO; /* true for iOS4 and up */
 static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 
 + (IosGlkAppDelegate *) singleton {
@@ -44,18 +43,8 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	return gesturesavailable;
 }
 
-+ (BOOL) understandspng {
-	return understandspng;
-}
-
 + (BOOL) oldstyleui {
 	return oldstyleui;
-}
-
-+ (NSString *) imageHackPNG:(NSString *)name {
-	if (!understandspng)
-		name = [name stringByAppendingString:@".png"];
-	return name;
 }
 
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
@@ -68,12 +57,8 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	{
 		NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
 		
-		/* Test if PNG files are recognized out of the box. */
-		NSString *reqSysVer = @"4.0";
-		understandspng = ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
-		
 		/* Test if we have the old (iOS6, gradient-and-gloss) interface style. */
-		reqSysVer = @"7.0";
+		NSString *reqSysVer = @"7.0";
 		oldstyleui = !([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
 	}
 
