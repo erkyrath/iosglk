@@ -27,15 +27,10 @@
 @synthesize glkapp;
 
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
-static BOOL gesturesavailable = NO; /* true for iOS3.2 and up */
 static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 
 + (IosGlkAppDelegate *) singleton {
 	return singleton;
-}
-
-+ (BOOL) gesturesavailable {
-	return gesturesavailable;
 }
 
 + (BOOL) oldstyleui {
@@ -53,10 +48,6 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 		NSString *reqSysVer = @"7.0";
 		oldstyleui = !([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
 	}
-
-	/* Funny idiom for testing if gestures are available; boilerplated from iOS docs. (Only needed for iOS3, but I'm leaving it in here anyway. This produces an "undeclared selector" warning which we ignore.) */
-	UIGestureRecognizer *testgesture = [[[UIGestureRecognizer alloc] initWithTarget:self action:@selector(myAction:)] autorelease];
-	gesturesavailable = [testgesture respondsToSelector:@selector(locationInView:)];
 
 	// Add the view controller's view to the window and display. If we're not on iOS3, set the window's rootViewController too.
 	[self.window addSubview:rootviewc.view];
