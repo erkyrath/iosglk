@@ -24,22 +24,32 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return nil;
 }
 
+/* Check whether the given file is a save file for your app (or game). Return one of the GlkSaveFormat constants.
+ */
 - (GlkSaveFormat) checkGlkSaveFileFormat:(NSString *)path {
 	return saveformat_UnknownFormat;
 }
 
+/* This is invoked after a file has been imported into the app from another app. You should open the app's usual file display UI (if there is one) and highlight the given file.
+ */
 - (void) displayGlkFileUsage:(int)usage name:(NSString *)filename {
 }
 
+/* Create a GlkWinBufferView instance. Override this method if you want to use a custom subclass in your app.
+ */
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	return nil;
 }
 
+/* Create a GlkWinGridView instance. Override this method if you want to use a custom subclass in your app.
+ */
 - (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	return nil;
 }
 
-/* This is invoked from both the VM and UI threads.
+/* Set up the tables of styles which will be used for Glk buffer and grid windows. You might take app preferences or device capabilities into account when customizing this method.
+ 
+	This is invoked from both the VM and UI threads.
  */
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock {
 	CGFloat fontsize = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 14 : 16;
@@ -72,6 +82,8 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	}
 }
 
+/* Return whether the app styles are set to a generally dark palette. The app uses this to decide some minor display details, like scroll bar tint.
+ */
 - (BOOL) hasDarkTheme {
 	return NO;
 }
