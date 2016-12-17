@@ -170,7 +170,7 @@
 }
 
 - (IBAction) buttonCancel:(id)sender {
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:nil];
 	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 }
 
@@ -285,7 +285,7 @@
 		/* The user has selected a file. */
 		prompt.filename = thumb.filename;
 		prompt.pathname = thumb.pathname;
-		[self dismissModalViewControllerAnimated:YES];
+		[self dismissViewControllerAnimated:YES completion:nil];
 		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 	}
 }
@@ -329,13 +329,13 @@
 		return;
 	}
 	
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:nil];
 	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
 }
 
 - (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 0) {
-		[self dismissModalViewControllerAnimated:YES];
+		[self dismissViewControllerAnimated:YES completion:nil];
 		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
 	}
 }
