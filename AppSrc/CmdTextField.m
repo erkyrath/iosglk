@@ -152,22 +152,19 @@
 	
 	NSString *oldcmd = self.text;
 	
-	// OS dependency: UITextRange and selectedTextRange are iOS 3.2 and later. Actually, in the simulator at least, they require iOS 5.
-	if ([self respondsToSelector:@selector(selectedTextRange)]) {
-		UITextRange *selection = self.selectedTextRange;
-		if (selection) {
-			NSString *prefix = [self textInRange:[self textRangeFromPosition:self.beginningOfDocument toPosition:selection.start]];
-			if (prefix && prefix.length > 0 && ![prefix hasSuffix:@" "])
-				cmd = [@" " stringByAppendingString:cmd];
-			NSString *suffix = [self textInRange:[self textRangeFromPosition:selection.end toPosition:self.endOfDocument]];
-			if (!(suffix && suffix.length > 0 && [suffix hasPrefix:@" "]))
-				cmd = [cmd stringByAppendingString:@" "];
-			[self replaceRange:selection withText:cmd];
-			return;
-		}
+	UITextRange *selection = self.selectedTextRange;
+	if (selection) {
+		NSString *prefix = [self textInRange:[self textRangeFromPosition:self.beginningOfDocument toPosition:selection.start]];
+		if (prefix && prefix.length > 0 && ![prefix hasSuffix:@" "])
+			cmd = [@" " stringByAppendingString:cmd];
+		NSString *suffix = [self textInRange:[self textRangeFromPosition:selection.end toPosition:self.endOfDocument]];
+		if (!(suffix && suffix.length > 0 && [suffix hasPrefix:@" "]))
+			cmd = [cmd stringByAppendingString:@" "];
+		[self replaceRange:selection withText:cmd];
+		return;
 	}
 	
-	// Fallback -- old iOS, or we couldn't get the selection, or whatever. Just append the text.
+	// Fallback -- we couldn't get the selection, or whatever. Just append the text.
 	if (oldcmd.length > 0 && ![oldcmd hasSuffix:@" "])
 		cmd = [@" " stringByAppendingString:cmd];
 	cmd = [cmd stringByAppendingString:@" "];
