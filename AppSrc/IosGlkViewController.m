@@ -156,21 +156,9 @@
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
 	CGRect rect = CGRectZero;
-	/* UIKeyboardFrameEndUserInfoKey is only available in iOS 3.2 or later. Note the funny idiom for testing the presence of a weak-linked symbol. */
-	if (&UIKeyboardFrameEndUserInfoKey) {
-		UIWindow *window = [IosGlkAppDelegate singleton].window;
-		rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-		rect = [window convertRect:rect fromWindow:nil];
-	}
-	else {
-		/* iOS 3.1.3... Note that we don't compile this code at all if the deployment target is 3.2 or later; it would never be called and we don't need the deprecation warning. */
-		#if __IPHONE_OS_VERSION_MIN_REQUIRED < 30200
-		rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
-		CGPoint center = [[info objectForKey:UIKeyboardCenterEndUserInfoKey] CGPointValue];
-		rect.origin.x = center.x - 0.5*rect.size.width;
-		rect.origin.y = center.y - 0.5*rect.size.height;
-		#endif // __IPHONE_OS_VERSION_MIN_REQUIRED
-	}
+	UIWindow *window = [IosGlkAppDelegate singleton].window;
+	rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+	rect = [window convertRect:rect fromWindow:nil];
 	//NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
 	
 	/* This rect is in window coordinates. */
