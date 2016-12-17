@@ -151,21 +151,11 @@
 - (void) keyboardWillBeShown:(NSNotification*)notification {
 	NSDictionary *info = [notification userInfo];
 	CGFloat diff = 0;
-	/* UIKeyboardFrameEndUserInfoKey is only available in iOS 3.2 or later. Note the funny idiom for testing the presence of a weak-linked symbol. */
-	if (&UIKeyboardFrameEndUserInfoKey) {
-		CGRect rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-		rect = [self.tableView convertRect:rect fromView:nil];
-		/* The rect is the keyboard size in view coordinates (properly rotated). */
-		CGRect tablerect = self.tableView.bounds;
-		diff = (tablerect.origin.y + tablerect.size.height) - rect.origin.y;
-	}
-	else {
-		/* iOS 3.1.3... This must be an iPhone, so we assume the view extends to the bottom of the screen. Note that we don't compile this code at all if the deployment target is 3.2 or later; it would never be called and we don't need the deprecation warning. */
-		#if __IPHONE_OS_VERSION_MIN_REQUIRED < 30200
-		CGRect rect = [[info objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
-		diff = rect.size.height;
-		#endif // __IPHONE_OS_VERSION_MIN_REQUIRED
-	}
+	CGRect rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+	rect = [self.tableView convertRect:rect fromView:nil];
+	/* The rect is the keyboard size in view coordinates (properly rotated). */
+	CGRect tablerect = self.tableView.bounds;
+	diff = (tablerect.origin.y + tablerect.size.height) - rect.origin.y;
 	
 	if (diff > 0) {
 		UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, diff, 0.0);
