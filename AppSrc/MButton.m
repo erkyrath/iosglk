@@ -16,7 +16,7 @@
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
-		self.titleLabel.textAlignment = UITextAlignmentCenter;
+		self.titleLabel.textAlignment = NSTextAlignmentCenter;
 		
 		UIImage *img;
 		img = [self backgroundImageForState:UIControlStateNormal];

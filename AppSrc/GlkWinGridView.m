@@ -465,7 +465,7 @@
 				UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
 				label.font = styleset.fonts[style_Normal];
 				label.text = wd;
-				label.textAlignment = UITextAlignmentCenter;
+				label.textAlignment = NSTextAlignmentCenter;
 				label.backgroundColor = nil;
 				label.opaque = NO;
 				[self addSubview:label];

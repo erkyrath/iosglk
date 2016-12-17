@@ -660,7 +660,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 */
 - (NSCalendar *) utccalendar {
 	if (!utccalendar) {
-		utccalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar]; // retain
+		utccalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian]; // retain
 		utccalendar.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
 	}
 	
@@ -671,7 +671,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 */
 - (NSCalendar *) localcalendar {
 	if (!localcalendar) {
-		localcalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar]; // retain
+		localcalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian]; // retain
 	}
 	
 	return localcalendar;

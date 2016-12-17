@@ -80,7 +80,7 @@
 		CGRect rect = CGRectMake(0, 0, tableView.frame.size.width, 32);
 		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
 		label.text = NSLocalizedString([usekey stringByAppendingString:@".listlabel"], nil);
-		label.textAlignment = UITextAlignmentCenter;
+		label.textAlignment = NSTextAlignmentCenter;
 		label.textColor = [UIColor lightGrayColor];
 		tableView.tableHeaderView = label;
 	}

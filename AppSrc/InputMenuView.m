@@ -139,7 +139,7 @@
 		displaylabel.layer.borderWidth = 1;
 		displaylabel.layer.borderColor = [UIColor colorWithWhite:0.66 alpha:1].CGColor;
 		displaylabel.font = [UIFont boldSystemFontOfSize:14];
-		displaylabel.textAlignment = UITextAlignmentCenter;
+		displaylabel.textAlignment = NSTextAlignmentCenter;
 		displaylabel.text = displaycommand;
 		
 		CGSize size = [displaylabel sizeThatFits:displaylabel.bounds.size];
