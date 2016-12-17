@@ -96,7 +96,7 @@
 		rect.origin.x = floorf(mid - 0.5*rect.size.width);
 	}
 	
-	if (animated && [IosGlkAppDelegate animblocksavailable] && self.superview) {
+	if (animated && self.superview) {
 		[UIView animateWithDuration:0.25 
 						 animations:^{ frameview.frame = rect; } ];
 	}

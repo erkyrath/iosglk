@@ -381,7 +381,7 @@
 	[menuview loadContent];
 	
 	[menuview addSubview:menuview.frameview];
-	if ([IosGlkAppDelegate animblocksavailable]) {
+	if (true) {
 		menuview.alpha = 0;
 		[self addSubview:menuview];
 		[UIView animateWithDuration:0.1 
@@ -398,7 +398,7 @@
 	
 	[menuview willRemove];
 	
-	if (animated && [IosGlkAppDelegate animblocksavailable]) {
+	if (animated) {
 		UIView *oldview = menuview;
 		[UIView animateWithDuration:0.25 
 						 animations:^{ oldview.alpha = 0; } 

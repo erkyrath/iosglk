@@ -29,7 +29,6 @@
 @property (nonatomic, retain) GlkAppWrapper *glkapp;
 
 + (IosGlkAppDelegate *) singleton;
-+ (BOOL) animblocksavailable;
 + (BOOL) gesturesavailable;
 + (BOOL) oldstyleui;
 

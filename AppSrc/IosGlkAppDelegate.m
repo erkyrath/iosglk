@@ -27,16 +27,11 @@
 @synthesize glkapp;
 
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
-static BOOL animblocksavailable = NO; /* true for iOS4 and up */
 static BOOL gesturesavailable = NO; /* true for iOS3.2 and up */
 static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 
 + (IosGlkAppDelegate *) singleton {
 	return singleton;
-}
-
-+ (BOOL) animblocksavailable {
-	return animblocksavailable;
 }
 
 + (BOOL) gesturesavailable {
@@ -51,9 +46,6 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	//NSLog(@"AppDelegate finished launching");	
 	singleton = self;
 	
-	/* Test if animations are available. */
-	animblocksavailable = [[UIView class] respondsToSelector:@selector(animateWithDuration:animations:)];
-
 	{
 		NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
 		
