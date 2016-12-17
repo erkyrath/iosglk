@@ -103,13 +103,10 @@
 }
 
 /* Allow all orientations. (An interpreter-specific subclass may override this.) iOS6+ idiom.
-	(We only compile in this function if the iOS SDK is 6.0 or later; UIInterfaceOrientationMaskAll was not available before that.)
  */
-#ifdef __IPHONE_6_0
-- (NSUInteger) supportedInterfaceOrientations {
+- (UIInterfaceOrientationMask) supportedInterfaceOrientations {
 	return UIInterfaceOrientationMaskAll;
 }
-#endif // __IPHONE_6_0
 
 /* Allow all orientations. (An interpreter-specific subclass may override this.) iOS3-5 idiom.
  */
