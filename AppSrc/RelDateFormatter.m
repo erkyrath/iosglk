@@ -17,10 +17,7 @@
 - (id) init {
 	self = [super init];
 	if (self) {
-		if ([RelDateFormatter instancesRespondToSelector:@selector(setDoesRelativeDateFormatting:)]) {
-			/* Requires iOS 4.0 or later */
-			[self setDoesRelativeDateFormatting:YES];
-		}
+		[self setDoesRelativeDateFormatting:YES];
 	}
 	return self;
 }
