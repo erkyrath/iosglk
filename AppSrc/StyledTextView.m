@@ -712,9 +712,6 @@
 			return nil;
 	}
 	
-	/* Requires iOS 4 and up */
-	BOOL lineheightavail = ([UIFont instancesRespondToSelector:@selector(lineHeight)]);
-	
 	UIFont **fonts = styleset.fonts;
 	CGFloat leading = styleset.leading;
 	CGFloat normalpointsize = styleset.charbox.height; // includes leading
@@ -817,7 +814,7 @@
 					
 					hpos += wordsize.width;
 					
-					CGFloat lineheight = (lineheightavail ? (sfont.lineHeight) : (sfont.pointSize+2));
+					CGFloat lineheight = sfont.lineHeight;
 					lineheight += leading;
 					if (maxheight < lineheight)
 						maxheight = lineheight;
