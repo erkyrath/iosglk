@@ -7,8 +7,8 @@
 /*
 IosGlk -- an iOS implementation	of the Glk API.
 
-IosGlk library:	version	0.0.###.
-Glk API which this implements: version 0.7.###.
+IosGlk library:	version	0.3.0.
+Glk API which this implements: version 0.7.3.
 
 The source code in this package is copyright 2011 by Andrew Plotkin. You
 may copy and distribute it freely, by any means and under any conditions,
