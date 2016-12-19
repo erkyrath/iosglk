@@ -134,7 +134,7 @@
 		[library.filerefs addObject:self];
 		
 		if (library.dispatch_register_obj)
-			disprock = (*library.dispatch_register_obj)(self, gidisp_Class_Fileref);
+			disprock = (*library.dispatch_register_obj)((__bridge void *)(self), gidisp_Class_Fileref);
 	}
 	
 	return self;
@@ -196,7 +196,7 @@
 
 - (void) filerefDelete {
 	if (library.dispatch_unregister_obj)
-		(*library.dispatch_unregister_obj)(self, gidisp_Class_Fileref, disprock);
+		(*library.dispatch_unregister_obj)((__bridge void *)(self), gidisp_Class_Fileref, disprock);
 		
 	if (![library.filerefs containsObject:self])
 		[NSException raise:@"GlkException" format:@"GlkFileRef was not in library filerefs list"];

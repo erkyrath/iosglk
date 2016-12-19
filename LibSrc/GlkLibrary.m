@@ -82,7 +82,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 		everythingchanged = NO; /* not true at startup, only on refresh */
 		
 		self.specialrequest = nil;
-		self.filemanager = [[[NSFileManager alloc] init] autorelease];
+		self.filemanager = [[NSFileManager alloc] init];
 	}
 	
 	return self;
@@ -190,14 +190,11 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	self.specialrequest = nil;
 	self.filemanager = nil;
 	if (utccalendar) {
-		[utccalendar release];
 		utccalendar = nil;
 	}
 	if (localcalendar) {
-		[localcalendar release];
 		localcalendar = nil;
 	}
-	[super dealloc];
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
@@ -421,7 +418,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	This runs in the VM thread; the cloned GlkLibraryState is then thrown across to the UI thread, which owns it thereafter.
  */
 - (GlkLibraryState *) cloneState {
-	GlkLibraryState *state = [[[GlkLibraryState alloc] init] autorelease];
+	GlkLibraryState *state = [[GlkLibraryState alloc] init];
 	[self sanityCheck];
 	
 	state.vmexited = vmexited;
