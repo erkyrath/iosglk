@@ -271,7 +271,7 @@
 
 - (CGFloat) right {
 	if (right < 0) {
-		UIFont **fonts = styleset.fonts;
+		NSArray *fonts = styleset.fonts;
 		CGFloat ptx = xstart;
 		for (GlkVisualString *vwd in arr) {
 			UIFont *font = fonts[vwd.style];
@@ -304,7 +304,7 @@
 	if (!letterpos) {
 		letterpos = (CGFloat *)malloc(sizeof(CGFloat) * (1+concatlen));
 		
-		UIFont **fonts = styleset.fonts;
+		NSArray *fonts = styleset.fonts;
 		
 		CGFloat wdxstart = xstart;
 		CGFloat wdxpos = wdxstart;

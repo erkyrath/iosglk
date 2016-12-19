@@ -7,17 +7,17 @@
 #import <Foundation/Foundation.h>
 #include "glk.h"
 
-@interface FontVariants : NSObject {
-	UIFont *normal;
-	UIFont *italic;
-	UIFont *bold;
-}
+@interface FontVariants : NSObject
+
+@property (nonatomic, strong) UIFont *normal;
+@property (nonatomic, strong) UIFont *italic;
+@property (nonatomic, strong) UIFont *bold;
 
 @end
 
 @interface StyleSet : NSObject {
-	NSArray<UIFont *> *fonts; /* array[style_NUMSTYLES] of retained UIFonts (malloced) */
-	NSArray<UIColor *> *colors; /* array[style_NUMSTYLES] of retained UIColors (malloced) */
+	NSMutableArray *fonts; /* array of UIFonts (or NSNull during initialization) */
+	NSMutableArray *colors; /* array UIColors (or NSNull during initialization) */
 	CGFloat leading; /* extra space below each line (uniform across all styles) */
 	CGSize charbox; /* maximum size of a single rendered character (normal style) (including leading) */
 	UIColor *backgroundcolor; /* background color for window */
@@ -25,11 +25,11 @@
 	CGSize margintotal; /* width = left+right; height = top+bottom */
 }
 
-@property (nonatomic, readonly) NSArray<UIFont *> *fonts;
-@property (nonatomic, readonly) NSArray<UIColor *> *colors;
+@property (nonatomic, strong) NSMutableArray *fonts;
+@property (nonatomic, strong) NSMutableArray *colors;
 @property (nonatomic) CGFloat leading;
 @property (nonatomic) CGSize charbox;
-@property (nonatomic, retain) UIColor *backgroundcolor;
+@property (nonatomic, strong) UIColor *backgroundcolor;
 @property (nonatomic) UIEdgeInsets margins;
 @property (nonatomic) CGSize margintotal;
 
