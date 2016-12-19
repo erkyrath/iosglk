@@ -173,7 +173,6 @@
 	
 	self.library = nil;
 
-	[super dealloc];
 }
 
 - (NSString *) description {
@@ -196,9 +195,6 @@
 }
 
 - (void) filerefDelete {
-	/* We don't want this object to evaporate in the middle of this method. */
-	[[self retain] autorelease];
-	
 	if (library.dispatch_unregister_obj)
 		(*library.dispatch_unregister_obj)(self, gidisp_Class_Fileref, disprock);
 		

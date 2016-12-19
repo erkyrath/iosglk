@@ -33,7 +33,6 @@
 	self.dirname = nil;
 	self.filename = nil;
 	self.pathname = nil;
-	[super dealloc];
 }
 
 @end
@@ -97,7 +96,6 @@
 	self.filename = nil;
 	self.pathname = nil;
 	self.modtime = nil;
-	[super dealloc];
 }
 
 - (NSComparisonResult) compareModTime:(GlkFileThumb *)other {
