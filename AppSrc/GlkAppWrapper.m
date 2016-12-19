@@ -53,7 +53,7 @@ static GlkAppWrapper *singleton = nil;
 		iowait_evptr = nil;
 		iowait_special = nil;
 		pendingtimerevent = NO;
-		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
+		self.iowaitcond = [[NSCondition alloc] init];
 		
 		pendingmetricchange = NO;
 		pendingsizechange = NO;
@@ -68,7 +68,6 @@ static GlkAppWrapper *singleton = nil;
 		singleton = nil;
 	self.timerinterval = nil;
 	self.eventfromui = nil;
-	[super dealloc];
 }
 
 - (void) launchAppThread {
@@ -81,7 +80,7 @@ static GlkAppWrapper *singleton = nil;
 }
 
 - (void) appThreadMain:(id)rock {
-	looppool = [[NSAutoreleasePool alloc] init];
+	@autoreleasepool {
 	//NSLog(@"VM thread starting");
 
 	[iowaitcond lock];
@@ -115,8 +114,7 @@ static GlkAppWrapper *singleton = nil;
 		[library clearForRestart];
 	}
 
-	[looppool drain]; // releases it
-	looppool = nil;
+	}
 	//NSLog(@"VM thread exiting");
 }
 
@@ -201,7 +199,7 @@ static GlkAppWrapper *singleton = nil;
 		
 		GlkEventState *gotevent = nil;
 		if (eventfromui) {
-			gotevent = [[eventfromui retain] autorelease];
+			gotevent = eventfromui;
 			self.eventfromui = nil;
 		}
 		if (gotevent && event) {
@@ -214,7 +212,7 @@ static GlkAppWrapper *singleton = nil;
 					ch = gotevent.ch;
 					if (win && [win acceptCharInput:&ch]) {
 						event->type = evtype_CharInput;
-						event->win = win;
+						event->win = (__bridge void *)(win);
 						event->val1 = ch;
 						event->val2 = 0;
 						iowait = NO;
@@ -226,7 +224,7 @@ static GlkAppWrapper *singleton = nil;
 						/* len might be shorter than the text string, either because the buffer is short or utf16 crunching. */
 						if (len >= 0) {
 							event->type = evtype_LineInput;
-							event->win = win;
+							event->win = (__bridge void *)(win);
 							event->val1 = len;
 							event->val2 = 0;
 							iowait = NO;
@@ -247,7 +245,7 @@ static GlkAppWrapper *singleton = nil;
 					if (gotevent.type >= 0x8000000) {
 						/* This is a custom event type. Pass it through unmolested. */
 						event->type = gotevent.type;
-						event->win = win;
+						event->win = (__bridge void *)(win);
 						event->val1 = gotevent.genval1;
 						event->val2 = gotevent.genval2;
 						iowait = NO;
