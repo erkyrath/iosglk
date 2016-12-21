@@ -45,6 +45,7 @@
 		rootwintag = nil;
 		
 		cachedGlkBox = CGRectNull;
+		cachedGlkBoxInvalid = YES;
 		
 		inputmenumode = inputmenu_Palette;
 	}
@@ -78,7 +79,8 @@
 		[winv uncacheLayoutAndStyles];
 	}
 	
-	cachedGlkBox = CGRectNull;
+	/* Mark cachedGlkBox as invalid, but leave the actual rectangle value. If a updateFromLibraryState sneaks in before our next layoutSubviews, we want to have something to work with. */
+	cachedGlkBoxInvalid = YES;
 	
 	/* Now tell the VM thread to grab new stylesets, too. */
 	[[GlkAppWrapper singleton] noteMetricsChanged];
@@ -114,17 +116,19 @@
 		}
 	}
 	
-	/* Only go through the layout mess if the view size really changed. */
-	if (CGRectEqualToRect(cachedGlkBox, box))
+	/* Only go through the layout mess if the view size really changed. Or the invalid flag is set. */
+	if ((!cachedGlkBoxInvalid) && CGRectEqualToRect(cachedGlkBox, box)) {
 		return;
+	}
 	cachedGlkBox = box;
+	cachedGlkBoxInvalid = NO;
 
 	if (menuview && menuview.vertalign < 0)
 		[self removePopMenuAnimated:YES];
 
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
-		//NSLog(@"### root window exists; layout performing windowViewRearrange");
+		//NSLog(@"### root window exists; layout performing windowViewRearrange, box %@", StringFromRect(box));
 		[UIView beginAnimations:@"windowViewRearrange" context:nil];
 		[UIView setAnimationDuration:0.0];
 		/* This calls setNeedsLayout for all windows. */
@@ -268,7 +272,7 @@
 	
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
-		//NSLog(@"### root window exists; update performing windowViewRearrange");
+		//NSLog(@"### root window exists; update performing windowViewRearrange, cachedGlkBox %@ (valid %d)", StringFromRect(cachedGlkBox), cachedGlkBoxInvalid);
 		[UIView beginAnimations:@"windowViewRearrange" context:nil];
 		[UIView setAnimationDuration:0.0];
 		/* This calls setNeedsLayout for all windows. */

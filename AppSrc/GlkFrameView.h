@@ -19,6 +19,8 @@
 	
 	/* The current size of the bounds minus keyboard. */
 	CGRect cachedGlkBox;
+	/* True if we should re-layout even when the box hasn't changed. */
+	BOOL cachedGlkBoxInvalid;
 	
 	/* Maps tags (NSNumbers) to GlkWindowViews. (But pair windows are excluded.) */
 	NSMutableDictionary *windowviews;
