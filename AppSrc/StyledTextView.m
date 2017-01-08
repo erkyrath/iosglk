@@ -6,6 +6,7 @@
 
 #import "StyledTextView.h"
 #import "IosGlkViewController.h"
+#import "IosGlkLibDelegate.h"
 #import "GlkWinBufferView.h"
 #import "GlkWindowState.h"
 #import "CmdTextField.h"
