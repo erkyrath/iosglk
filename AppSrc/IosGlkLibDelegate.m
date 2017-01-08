@@ -47,6 +47,12 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	return nil;
 }
 
+/* Decide whether a single-tap should open the keyboard (toopen=YES) or close it (toopen=NO). Return YES to allow the change, NO to block it.
+ */
+- (BOOL) shouldTapSetKeyboard:(BOOL)toopen {
+	return YES;
+}
+
 /* Set up the tables of styles which will be used for Glk buffer and grid windows. You might take app preferences or device capabilities into account when customizing this method.
  
 	This is invoked from both the VM and UI threads.

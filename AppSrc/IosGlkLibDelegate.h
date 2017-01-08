@@ -28,6 +28,7 @@ typedef enum GlkSaveFormat_enum {
 - (void) displayGlkFileUsage:(int)usage name:(NSString *)filename;
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
+- (BOOL) shouldTapSetKeyboard:(BOOL)toopen;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;
 - (BOOL) hasDarkTheme;
 - (CGSize) interWindowSpacing;
