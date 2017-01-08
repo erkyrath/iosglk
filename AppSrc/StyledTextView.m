@@ -1117,7 +1117,7 @@
 	if (tapnumber == 1) {
 		IosGlkViewController *viewc = [IosGlkViewController singleton];
 		GlkWindowView *winv = viewc.preferredInputWindow;
-		if (winv && winv.inputfield && winv.inputfield.isFirstResponder) {
+		if ([viewc.glkdelegate shouldTapSetKeyboard:NO] && winv && winv.inputfield && winv.inputfield.isFirstResponder) {
 			[winv.inputfield resignFirstResponder];
 		}
 	}
@@ -1255,7 +1255,7 @@
 	
 	if (tapnumber == 1) {
 		/* Single-tap... */
-		if (![winv.inputfield isFirstResponder]) {
+		if (![winv.inputfield isFirstResponder] && [viewc.glkdelegate shouldTapSetKeyboard:YES]) {
 			tapnumber = 0;
 			[self pageToBottom];
 			[winv.inputfield becomeFirstResponder];
