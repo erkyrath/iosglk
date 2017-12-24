@@ -385,7 +385,7 @@
 	[menuview loadContent];
 	
 	[menuview addSubview:menuview.frameview];
-	if (true) {
+	if (/* DISABLES CODE */ (true)) {
 		menuview.alpha = 0;
 		[self addSubview:menuview];
 		[UIView animateWithDuration:0.1 
