@@ -70,11 +70,6 @@
 	/* Subclasses may override this */
 }
 
-- (void) viewDidUnload {
-	[super viewDidUnload];
-	self.frameview = nil;
-}
-
 - (void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
