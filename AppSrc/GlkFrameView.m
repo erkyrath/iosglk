@@ -52,14 +52,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.librarystate = nil;
-	self.windowviews = nil;
-	self.wingeometries = nil;
-	self.rootwintag = nil;
-	self.menuview = nil;
-	[super dealloc];
-}
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag {
 	return [windowviews objectForKey:tag];
@@ -241,13 +233,13 @@
 					if (glkviewc.glkdelegate)
 						winv = [glkviewc.glkdelegate viewForBufferWindow:win frame:viewbox margin:viewmargin];
 					if (!winv)
-						winv = [[[GlkWinBufferView alloc] initWithWindow:win frame:viewbox margin:viewmargin] autorelease];
+						winv = [[GlkWinBufferView alloc] initWithWindow:win frame:viewbox margin:viewmargin];
 					break;
 				case wintype_TextGrid:
 					if (glkviewc.glkdelegate)
 						winv = [glkviewc.glkdelegate viewForGridWindow:win frame:viewbox margin:viewmargin];
 					if (!winv)
-						winv = [[[GlkWinGridView alloc] initWithWindow:win frame:viewbox margin:viewmargin] autorelease];
+						winv = [[GlkWinGridView alloc] initWithWindow:win frame:viewbox margin:viewmargin];
 					break;
 				default:
 					[NSException raise:@"GlkException" format:@"no windowview class for this window"];
@@ -389,7 +381,7 @@
 		menuview.alpha = 0;
 		[self addSubview:menuview];
 		[UIView animateWithDuration:0.1 
-						 animations:^{ menuview.alpha = 1; } ];
+                         animations:^{ self->menuview.alpha = 1; } ];
 	}
 	else {
 		[self addSubview:menuview];

@@ -53,7 +53,7 @@ static GlkAppWrapper *singleton = nil;
 		iowait_evptr = nil;
 		iowait_special = nil;
 		pendingtimerevent = NO;
-		self.iowaitcond = [[[NSCondition alloc] init] autorelease];
+		self.iowaitcond = [[NSCondition alloc] init];
 		
 		pendingmetricchange = NO;
 		pendingsizechange = NO;
@@ -66,9 +66,6 @@ static GlkAppWrapper *singleton = nil;
 - (void) dealloc {
 	if (singleton == self)
 		singleton = nil;
-	self.timerinterval = nil;
-	self.eventfromui = nil;
-	[super dealloc];
 }
 
 - (void) launchAppThread {
@@ -81,9 +78,6 @@ static GlkAppWrapper *singleton = nil;
 }
 
 - (void) appThreadMain:(id)rock {
-	looppool = [[NSAutoreleasePool alloc] init];
-	//NSLog(@"VM thread starting");
-
 	[iowaitcond lock];
 	iowait = NO;
 	self.eventfromui = nil;
@@ -114,10 +108,6 @@ static GlkAppWrapper *singleton = nil;
 		
 		[library clearForRestart];
 	}
-
-	[looppool drain]; // releases it
-	looppool = nil;
-	//NSLog(@"VM thread exiting");
 }
 
 /* ### Have a glk_tick() which drains the looppool? Timing would be tricky... Maybe measure the pool size once per thousand opcodes */
@@ -128,9 +118,6 @@ static GlkAppWrapper *singleton = nil;
 */
 - (void) selectEvent:(event_t *)event special:(id)special {
 	/* This is a good time to drain and recreate the thread's autorelease pool. We'll also do this in glk_tick(). */
-	[looppool drain]; // releases it
-	looppool = [[NSAutoreleasePool alloc] init];
-		
 	GlkLibrary *library = [GlkLibrary singleton];
 	
 	if (event && special) 
@@ -142,7 +129,10 @@ static GlkAppWrapper *singleton = nil;
 	//NSLog(@"VM thread glk_select after %lf (event %x, special %x)", [NSDate timeIntervalSinceReferenceDate]-lastwaittime, (unsigned int)event, (unsigned int)special);
 	
 	if (event) {
-		bzero(event, sizeof(event_t));
+        event->type = 0;
+        event->win = NULL;
+        event->val1 = 0;
+        event->val2 = 0;
 		iowait_evptr = event;
 		iowait_special = nil;
 	}
@@ -201,7 +191,7 @@ static GlkAppWrapper *singleton = nil;
 		
 		GlkEventState *gotevent = nil;
 		if (eventfromui) {
-			gotevent = [[eventfromui retain] autorelease];
+			gotevent = eventfromui;
 			self.eventfromui = nil;
 		}
 		if (gotevent && event) {
@@ -267,8 +257,10 @@ static GlkAppWrapper *singleton = nil;
 	This must be called on the VM thread. 
 */
 - (void) selectPollEvent:(event_t *)event {
-	bzero(event, sizeof(event_t));
-	
+    event->type = 0;
+    event->win = NULL;
+    event->val1 = 0;
+    event->val2 = 0;
 	[iowaitcond lock];
 	if (pendingtimerevent) {
 		pendingtimerevent = NO;
@@ -344,8 +336,7 @@ static GlkAppWrapper *singleton = nil;
 	[frameview performSelectorOnMainThread:@selector(editingTextForWindow:)
 		withObject:tagstring waitUntilDone:YES];
 		
-	NSString *result = [[tagstring.str retain] autorelease];
-	[tagstring release];
+	NSString *result = tagstring.str;
 	return result;
 }
 
@@ -420,9 +411,6 @@ static GlkAppWrapper *singleton = nil;
 /* This method must be run on the main thread. */
 - (void) setTimerInterval:(NSNumber *)interval {
 	/* It isn't really possible that the interval argument is the same object as self.timerinterval. But we should be clean about the handover anyway. */
-	if (interval) {
-		[[interval retain] autorelease];
-	}
 	
 	if (timerinterval) {
 		[GlkAppWrapper cancelPreviousPerformRequestsWithTarget:self selector:@selector(fireTimer:) object:nil];
@@ -460,7 +448,7 @@ static GlkAppWrapper *singleton = nil;
 @synthesize tag;
 
 + (GlkEventState *) charEvent:(glui32)ch inWindow:(NSNumber *)tag {
-	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
+	GlkEventState *event = [[GlkEventState alloc] init];
 	event.type = evtype_CharInput;
 	event.tag = tag;
 	event.ch = ch;
@@ -468,7 +456,7 @@ static GlkAppWrapper *singleton = nil;
 }
 
 + (GlkEventState *) lineEvent:(NSString *)line inWindow:(NSNumber *)tag {
-	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
+	GlkEventState *event = [[GlkEventState alloc] init];
 	event.type = evtype_LineInput;
 	event.tag = tag;
 	event.line = line;
@@ -476,16 +464,11 @@ static GlkAppWrapper *singleton = nil;
 }
 
 + (GlkEventState *) timerEvent {
-	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
+	GlkEventState *event = [[GlkEventState alloc] init];
 	event.type = evtype_Timer;
 	return event;
 }
 
-- (void) dealloc {
-	self.line = nil;
-	self.tag = nil;
-	[super dealloc];
-}
 
 @end
 

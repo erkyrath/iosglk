@@ -10,6 +10,6 @@
 	UIView *frameview;
 }
 
-@property (nonatomic, retain) IBOutlet UIView *frameview;
+@property (nonatomic, strong) IBOutlet UIView *frameview;
 
 @end

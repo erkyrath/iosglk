@@ -30,7 +30,7 @@
 	if (self) {
 		self.prompt = promptref;
 		self.filelist = [NSMutableArray arrayWithCapacity:16];
-		self.dateformatter = [[[RelDateFormatter alloc] init] autorelease];
+		self.dateformatter = [[RelDateFormatter alloc] init];
 		[dateformatter setDateStyle:NSDateFormatterMediumStyle];
 		[dateformatter setTimeStyle:NSDateFormatterShortStyle];
 		
@@ -78,14 +78,14 @@
 		self.navigationItem.title = NSLocalizedString([usekey stringByAppendingString:@".writetitle"], nil);
 		textfield.placeholder = placeholder;
 		CGRect rect = CGRectMake(0, 0, tableView.frame.size.width, 32);
-		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		UILabel *label = [[UILabel alloc] initWithFrame:rect];
 		label.text = NSLocalizedString([usekey stringByAppendingString:@".listlabel"], nil);
 		label.textAlignment = NSTextAlignmentCenter;
 		label.textColor = [UIColor lightGrayColor];
 		tableView.tableHeaderView = label;
 	}
 	
-	UIBarButtonItem *cancelbutton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(buttonCancel:)] autorelease];
+	UIBarButtonItem *cancelbutton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(buttonCancel:)];
 	
 	self.navigationItem.leftBarButtonItem = cancelbutton;
 	self.navigationItem.rightBarButtonItem = [self editButtonItem];
@@ -106,7 +106,7 @@
 			if (!label)
 				label = filename;
 			
-			GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
+			GlkFileThumb *thumb = [[GlkFileThumb alloc] init];
 			thumb.filename = filename;
 			thumb.pathname = pathname;
 			thumb.usage = (prompt.usage & fileusage_TypeMask);
@@ -130,18 +130,9 @@
 	}
 }
 
-- (void) dealloc {
-	self.prompt = nil;
-	self.usekey = nil;
-	self.filelist = nil;
-	self.dateformatter = nil;
-	self.savebutton = nil;
-	self.textfield = nil;
-	[super dealloc];
-}
 
 - (void) addBlankThumb {
-	GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
+	GlkFileThumb *thumb = [[GlkFileThumb alloc] init];
 	thumb.isfake = YES;
 	thumb.modtime = [NSDate date];
 	thumb.label = NSLocalizedString([usekey stringByAppendingString:@".nofiles"], nil);
@@ -210,7 +201,7 @@
 	// This is boilerplate and I haven't touched it.
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 	if (cell == nil) {
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
 	}
 	
 	GlkFileThumb *thumb = nil;
@@ -324,7 +315,7 @@
 	
 	if (prompt.fmode != filemode_WriteAppend && [[NSFileManager defaultManager] fileExistsAtPath:prompt.pathname]) {
 		NSString *str = [NSString stringWithFormat:NSLocalizedString([usekey stringByAppendingString:@".replacequery"], nil), label];
-		UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:NSLocalizedString(@"button.replace", nil) otherButtonTitles:nil] autorelease];
+		UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:NSLocalizedString(@"button.replace", nil) otherButtonTitles:nil];
 		[sheet showInView:textfield];
 		return;
 	}

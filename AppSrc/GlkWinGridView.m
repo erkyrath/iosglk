@@ -34,11 +34,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.lines = nil;
-	self.selectionview = nil;
-	[super dealloc];
-}
 
 - (void) uncacheLayoutAndStyles {
 	if (inputfield)
@@ -68,8 +63,8 @@
 	//NSLog(@"GridView: drawRect");
 	CGContextRef gc = UIGraphicsGetCurrentContext();
 	
-	UIFont **fonts = styleset.fonts;
-	UIColor **colors = styleset.colors;
+	NSMutableArray<UIFont *> *fonts = styleset.fonts;
+    NSMutableArray<UIColor *> *colors = styleset.colors;
 	CGSize charbox = styleset.charbox;
 	CGPoint marginoffset;
 	marginoffset.x = styleset.margins.left + viewmargin.left;
@@ -93,7 +88,7 @@
 				lastcolor = color;
 			}
 			pt.x = marginoffset.x + str.pos * charbox.width;
-			[str.str drawAtPoint:pt withFont:fonts[str.style]];
+            [str.str drawAtPoint:pt withAttributes:@{NSFontAttributeName:fonts[str.style]}];
 		}
 		jx++;
 	}
@@ -108,7 +103,7 @@
 			[lines replaceObjectAtIndex:sln.index withObject:sln];
 		else {
 			while (lines.count < sln.index) {
-				GlkStyledLine *blankln = [[[GlkStyledLine alloc] initWithIndex:lines.count] autorelease];
+				GlkStyledLine *blankln = [[GlkStyledLine alloc] initWithIndex:lines.count];
 				[lines addObject:blankln];
 			}
 			[lines addObject:sln];
@@ -238,7 +233,7 @@
 	selectionarea = rect;
 	
 	if (!selectionview) {
-		self.selectionview = [[[TextSelectView alloc] initWithFrame:CGRectZero] autorelease];
+		self.selectionview = [[TextSelectView alloc] initWithFrame:CGRectZero];
 		[self addSubview:selectionview];
 		
 		rect.origin = RectCenter(selectionarea);
@@ -462,7 +457,7 @@
 			if (wd) {
 				/* Send an animated label flying downhill */
 				rect = CGRectInset(rect, -4, -2);
-				UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+				UILabel *label = [[UILabel alloc] initWithFrame:rect];
 				label.font = styleset.fonts[style_Normal];
 				label.text = wd;
 				label.textAlignment = NSTextAlignmentCenter;
@@ -470,9 +465,9 @@
 				label.opaque = NO;
 				[self addSubview:label];
 				CGPoint newpt = RectCenter(winv.inputholder.frame);
-				CGSize curinputsize = [winv.inputfield.text sizeWithFont:winv.inputfield.font];
+                CGSize curinputsize = [winv.inputfield.text sizeWithAttributes:@{NSFontAttributeName:winv.inputfield.font}];
 				newpt.x = winv.inputholder.frame.origin.x + curinputsize.width + 0.5*rect.size.width;
-				[UIView beginAnimations:@"labelFling" context:label];
+                [UIView beginAnimations:@"labelFling" context:(__bridge void * _Nullable)(label)];
 				[UIView setAnimationDelegate:self];
 				[UIView setAnimationDuration:0.3];
 				[UIView setAnimationDidStopSelector:@selector(labelFlingEnd:finished:context:)];
@@ -493,7 +488,7 @@
 }
 
 - (void) labelFlingEnd:(NSString *)animid finished:(NSNumber *)finished context:(void *)context {
-	UILabel *label = (UILabel *)context;
+    UILabel *label = (__bridge UILabel *)context;
 	[label removeFromSuperview];
 }
 

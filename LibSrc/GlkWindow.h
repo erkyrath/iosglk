@@ -54,24 +54,24 @@
 	long tempbufkey;
 }
 
-@property (nonatomic, retain) GlkLibrary *library;
-@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, strong) GlkLibrary *library;
+@property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic) gidispatch_rock_t disprock;
 @property (nonatomic, readonly) glui32 type;
 @property (nonatomic, readonly) glui32 rock;
-@property (nonatomic, retain) GlkWindowPair *parent;
-@property (nonatomic, retain) NSNumber *parenttag;
-@property (nonatomic, retain) NSString *line_request_initial;
+@property (nonatomic, strong) GlkWindowPair *parent;
+@property (nonatomic, strong) NSNumber *parenttag;
+@property (nonatomic, strong) NSString *line_request_initial;
 @property (nonatomic, readonly) int input_request_id;
 @property (nonatomic, readonly) BOOL char_request;
 @property (nonatomic, readonly) BOOL line_request;
 @property (nonatomic) BOOL echo_line_input;
 @property (nonatomic) glui32 style;
-@property (nonatomic, retain) GlkStream *stream;
-@property (nonatomic, retain) NSNumber *streamtag;
-@property (nonatomic, retain) GlkStream *echostream;
-@property (nonatomic, retain) NSNumber *echostreamtag;
-@property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic, strong) GlkStream *stream;
+@property (nonatomic, strong) NSNumber *streamtag;
+@property (nonatomic, strong) GlkStream *echostream;
+@property (nonatomic, strong) NSNumber *echostreamtag;
+@property (nonatomic, strong) StyleSet *styleset;
 @property (nonatomic, readonly) CGRect bbox;
 
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
@@ -108,7 +108,7 @@
 
 @property (nonatomic) int clearcount;
 @property (nonatomic) int linesdirtyfrom;
-@property (nonatomic, retain) NSMutableArray *lines;
+@property (nonatomic, strong) NSMutableArray *lines;
 
 - (void) putString:(NSString *)str;
 
@@ -122,7 +122,7 @@
 	int curx, cury; /* the window cursor position */
 }
 
-@property (nonatomic, retain) NSMutableArray *lines;
+@property (nonatomic, strong) NSMutableArray *lines;
 @property (nonatomic, readonly) int width;
 @property (nonatomic, readonly) int height;
 @property (nonatomic, readonly) int curx;
@@ -142,10 +142,10 @@
 	GlkWindow *child2;
 }
 
-@property (nonatomic, retain) Geometry *geometry;
+@property (nonatomic, strong) Geometry *geometry;
 @property (nonatomic) BOOL keydamage;
-@property (nonatomic, retain) GlkWindow *child1;
-@property (nonatomic, retain) GlkWindow *child2;
+@property (nonatomic, strong) GlkWindow *child1;
+@property (nonatomic, strong) GlkWindow *child2;
 
 - (id) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)size;
 

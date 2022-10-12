@@ -47,11 +47,11 @@
 }
 
 @property (nonatomic) UIEdgeInsets viewmargin;
-@property (nonatomic, retain) NSMutableArray *slines;
-@property (nonatomic, retain) NSMutableArray *vlines;
-@property (nonatomic, retain) NSMutableArray *linesviews;
-@property (nonatomic, retain) StyleSet *styleset;
-@property (nonatomic, retain) TextSelectView *selectionview;
+@property (nonatomic, strong) NSMutableArray *slines;
+@property (nonatomic, strong) NSMutableArray *vlines;
+@property (nonatomic, strong) NSMutableArray *linesviews;
+@property (nonatomic, strong) StyleSet *styleset;
+@property (nonatomic, strong) TextSelectView *selectionview;
 @property (nonatomic, readonly) CGRect selectionarea;
 
 - (id) initWithFrame:(CGRect)frame margin:(UIEdgeInsets)margin styles:(StyleSet *)stylesval;
@@ -86,8 +86,8 @@
 	int vlineend; /* The index after the last line */
 }
 
-@property (nonatomic, retain) NSArray *vlines;
-@property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic, strong) NSArray *vlines;
+@property (nonatomic, strong) StyleSet *styleset;
 @property (nonatomic) CGFloat ytop;
 @property (nonatomic) CGFloat ybottom;
 @property (nonatomic) CGFloat height;

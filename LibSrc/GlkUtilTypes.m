@@ -56,13 +56,9 @@
 }
 
 - (void) dealloc {
-	self.arr = nil;
-	self.concatline = nil;
 	if (accessel) {
 		accessel.line = nil; /* clear the weak parent link */
-		self.accessel = nil;
 	}
-	[super dealloc];
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
@@ -193,10 +189,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.str = nil;
-	[super dealloc];
-}
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	if (ismutable)
@@ -254,18 +246,13 @@
 }
 
 - (void) dealloc {
-	self.arr = nil;
-	self.concatline = nil;
 	if (accessel) {
 		accessel.line = nil; /* clear the weak parent link */
-		self.accessel = nil;
 	}
-	self.styleset = nil;
 	if (letterpos) {
 		free(letterpos);
 		letterpos = nil;
 	}
-	[super dealloc];
 }
 
 - (CGFloat) bottom {
@@ -274,11 +261,11 @@
 
 - (CGFloat) right {
 	if (right < 0) {
-		UIFont **fonts = styleset.fonts;
+		NSMutableArray<UIFont *> *fonts = styleset.fonts;
 		CGFloat ptx = xstart;
 		for (GlkVisualString *vwd in arr) {
 			UIFont *font = fonts[vwd.style];
-			CGSize wordsize = [vwd.str sizeWithFont:font];
+            CGSize wordsize = [vwd.str sizeWithAttributes:@{NSFontAttributeName:font}];
 			ptx += wordsize.width;
 		}
 		right = ptx;
@@ -307,7 +294,7 @@
 	if (!letterpos) {
 		letterpos = (CGFloat *)malloc(sizeof(CGFloat) * (1+concatlen));
 		
-		UIFont **fonts = styleset.fonts;
+		NSMutableArray<UIFont *> *fonts = styleset.fonts;
 		
 		CGFloat wdxstart = xstart;
 		CGFloat wdxpos = wdxstart;
@@ -324,7 +311,7 @@
 			for (int ix=1; ix<=strlen; ix++) {
 				range.length = ix;
 				NSString *wdtext = [substr substringWithRange:range];
-				CGSize wordsize = [wdtext sizeWithFont:sfont];
+                CGSize wordsize = [wdtext sizeWithAttributes:@{NSFontAttributeName:sfont}];
 				wdxpos = wdxstart+wordsize.width;
 				if (pos+ix <= concatlen) {
 					DEBUG_PARANOID_ASSERT((pos+ix <= concatlen), @"GlkVisualLine: letterpos overflow");
@@ -407,10 +394,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.str = nil;
-	[super dealloc];
-}
 
 @end
 
@@ -479,7 +462,6 @@
 		free(styles);
 		styles = NULL;
 	}
-	[super dealloc];
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
@@ -545,11 +527,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.tag = nil;
-	self.str = nil;
-	[super dealloc];
-}
 
 @end
 

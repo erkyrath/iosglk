@@ -19,9 +19,9 @@
 
 @property (nonatomic) glui32 usage;
 @property (nonatomic) glui32 fmode;
-@property (nonatomic, retain) NSString *dirname;
-@property (nonatomic, retain) NSString *filename;
-@property (nonatomic, retain) NSString *pathname;
+@property (nonatomic, strong) NSString *dirname;
+@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *pathname;
 
 @end
 
@@ -35,11 +35,11 @@
 	BOOL isfake;
 }
 
-@property (nonatomic, retain) NSString *label;
-@property (nonatomic, retain) NSString *filename;
-@property (nonatomic, retain) NSString *pathname;
+@property (nonatomic, strong) NSString *label;
+@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *pathname;
 @property (nonatomic) glui32 usage;
-@property (nonatomic, retain) NSDate *modtime;
+@property (nonatomic, strong) NSDate *modtime;
 @property (nonatomic) BOOL isfake;
 
 + (NSString *) suffixForFileUsage:(glui32)usage;

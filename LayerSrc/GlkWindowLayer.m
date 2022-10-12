@@ -72,7 +72,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size, glui32 win
 	else {
 		/* create pairwin, with newwin as the key */
 		GlkWindowPair *pairwin;
-		pairwin = [[[GlkWindowPair alloc] initWithMethod:method keywin:newwin size:size] autorelease];
+		pairwin = [[GlkWindowPair alloc] initWithMethod:method keywin:newwin size:size];
 
 		pairwin.child1 = splitwin;
 		pairwin.child2 = newwin;
@@ -289,7 +289,7 @@ void glk_window_set_arrangement(winid_t win, glui32 method, glui32 size, winid_t
 
 	if ((newbackward && !geometry.backward) || (!newbackward && geometry.backward)) {
 		/* switch the children */
-		GlkWindow *tmpwin = [[dwin.child1 retain] autorelease];
+		GlkWindow *tmpwin = dwin.child1;
 		dwin.child1 = dwin.child2;
 		dwin.child2 = tmpwin;
 	}

@@ -21,12 +21,12 @@
 	GlkAppWrapper *glkapp;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet UIViewController *rootviewc;
-@property (nonatomic, retain) IBOutlet IosGlkViewController *glkviewc;
+@property (nonatomic, strong) IBOutlet UIWindow *window;
+@property (nonatomic, strong) IBOutlet UIViewController *rootviewc;
+@property (nonatomic, strong) IBOutlet IosGlkViewController *glkviewc;
 
-@property (nonatomic, retain) GlkLibrary *library;
-@property (nonatomic, retain) GlkAppWrapper *glkapp;
+@property (nonatomic, strong) GlkLibrary *library;
+@property (nonatomic, strong) GlkAppWrapper *glkapp;
 
 + (IosGlkAppDelegate *) singleton;
 + (BOOL) oldstyleui;

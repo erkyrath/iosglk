@@ -33,15 +33,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.winview = nil;
-	self.historymenu = nil;
-	self.palettemenu = nil;
-	self.history = nil;
-	self.displaylabel = nil;
-	self.displaycommand = nil;
-	[super dealloc];
-}
 
 - (NSString *) bottomDecorNib {
 	return @"InputMenuDecor";
@@ -132,7 +123,7 @@
 		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 		CGRect selfbounds = frameview.bounds;
 		CGRect rect = CGRectMake(0, selfbounds.size.height, selfbounds.size.width, 20);
-		self.displaylabel = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		self.displaylabel = [[UILabel alloc] initWithFrame:rect];
 		
 		displaylabel.backgroundColor = (glkviewc.glkdelegate.hasDarkTheme) ? [UIColor colorWithWhite:0.42 alpha:1] : [UIColor whiteColor];
 		displaylabel.layer.cornerRadius = 10;
@@ -189,12 +180,6 @@
 @synthesize baselabel;
 @synthesize labels;
 
-- (void) dealloc {
-	self.menuview = nil;
-	self.baselabel = nil;
-	self.labels = nil;
-	[super dealloc];
-}
 
 - (void) awakeFromNib {
 	[super awakeFromNib];
@@ -231,7 +216,7 @@
 
 	self.labels = [NSMutableArray arrayWithCapacity:history.count];
 	for (NSString *str in history) {
-		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		UILabel *label = [[UILabel alloc] initWithFrame:rect];
 		label.font = baselabel.font;
 		if (!disabled)
 			label.textColor = baselabel.textColor;
@@ -323,10 +308,7 @@
 @synthesize labels;
 
 - (void) dealloc {
-	self.menuview = nil;
 	selection = nil;
-	self.labels = nil;
-	[super dealloc];
 }
 
 - (void) awakeFromNib {

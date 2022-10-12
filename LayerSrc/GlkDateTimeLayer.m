@@ -166,7 +166,7 @@ void glk_simple_time_to_date_local(glsi32 time, glui32 factor, glkdate_t *date)
 void glk_date_to_time_utc(glkdate_t *date, glktimeval_t *time)
 {
 	glsi32 microsec;
-	NSDateComponents *comps = [[[NSDateComponents alloc] init] autorelease];
+	NSDateComponents *comps = [[NSDateComponents alloc] init];
 	gli_date_to_comps(date, comps, &microsec);
 	
 	NSCalendar *nscal = [GlkLibrary singleton].utccalendar;
@@ -185,7 +185,7 @@ void glk_date_to_time_utc(glkdate_t *date, glktimeval_t *time)
 void glk_date_to_time_local(glkdate_t *date, glktimeval_t *time)
 {
 	glsi32 microsec;
-	NSDateComponents *comps = [[[NSDateComponents alloc] init] autorelease];
+	NSDateComponents *comps = [[NSDateComponents alloc] init];
 	gli_date_to_comps(date, comps, &microsec);
 	
 	NSCalendar *nscal = [GlkLibrary singleton].localcalendar;
@@ -204,7 +204,7 @@ void glk_date_to_time_local(glkdate_t *date, glktimeval_t *time)
 glsi32 glk_date_to_simple_time_utc(glkdate_t *date, glui32 factor)
 {
 	glsi32 microsec;
-	NSDateComponents *comps = [[[NSDateComponents alloc] init] autorelease];
+	NSDateComponents *comps = [[NSDateComponents alloc] init];
 	gli_date_to_comps(date, comps, &microsec);
 	
 	NSCalendar *nscal = [GlkLibrary singleton].utccalendar;
@@ -220,7 +220,7 @@ glsi32 glk_date_to_simple_time_utc(glkdate_t *date, glui32 factor)
 glsi32 glk_date_to_simple_time_local(glkdate_t *date, glui32 factor)
 {
 	glsi32 microsec;
-	NSDateComponents *comps = [[[NSDateComponents alloc] init] autorelease];
+	NSDateComponents *comps = [[NSDateComponents alloc] init];
 	gli_date_to_comps(date, comps, &microsec);
 	
 	NSCalendar *nscal = [GlkLibrary singleton].localcalendar;

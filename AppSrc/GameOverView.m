@@ -14,10 +14,6 @@
 
 @synthesize container;
 
-- (void) dealloc {
-	self.container = nil;
-	[super dealloc];
-}
 
 - (NSString *) nibForContent {
 	return @"GameOverView";

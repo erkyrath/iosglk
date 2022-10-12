@@ -45,7 +45,7 @@
 		[library.streams addObject:self];
 		
 		if (library.dispatch_register_obj)
-			disprock = (*library.dispatch_register_obj)(self, gidisp_Class_Stream);
+			disprock = (*library.dispatch_register_obj)((__bridge void *)(self), gidisp_Class_Stream);
 	}
 	
 	return self;
@@ -78,11 +78,8 @@
 	type = strtype_None;
 	if (!tag)
 		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc with tag unset"];
-	self.tag = nil;
 	
-	self.library = nil;
 
-	[super dealloc];
 }
 
 - (NSString *) description {
@@ -104,17 +101,14 @@
 	[encoder encodeBool:writable forKey:@"writable"];
 };
 	
-- (void) streamDelete {
-	/* We don't want this object to evaporate in the middle of this method. */
-	[[self retain] autorelease];
-	
+- (void) streamDelete {	
 	if (library.currentstr == self)
 		library.currentstr = nil;
 		
 	[GlkWindow unEchoStream:self];
 	
 	if (library.dispatch_unregister_obj)
-		(*library.dispatch_unregister_obj)(self, gidisp_Class_Stream, disprock);
+		(*library.dispatch_unregister_obj)((__bridge void *)(self), gidisp_Class_Stream, disprock);
 		
 	if (![library.streams containsObject:self])
 		[NSException raise:@"GlkException" format:@"GlkStream was not in library streams list"];
@@ -218,11 +212,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.win = nil;
-	self.wintag = nil;
-	[super dealloc];
-}
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
@@ -908,7 +897,6 @@
 		if (!newhandle) {
 			/* Failed, probably because the file doesn't exist. */
 			[self streamDelete];
-			[self release];
 			return nil;
 		}
 		
@@ -949,13 +937,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.handle = nil;
-	self.pathname = nil;
-	self.readbuffer = nil;
-	self.writebuffer = nil;
-	[super dealloc];
-}
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
@@ -1331,7 +1312,6 @@
 		NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
 		NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
 		[self writeBytes:(void *)data.bytes len:data.length];
-		[str release];
 	}
 }
 
@@ -1372,7 +1352,6 @@
 		NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 		NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
 		[self writeBytes:(void *)data.bytes len:data.length];
-		[str release];
 	}
 }
 

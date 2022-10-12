@@ -26,13 +26,13 @@
 @property (nonatomic) glui32 dir;
 @property (nonatomic) glui32 division;
 @property (nonatomic) BOOL hasborder;
-@property (nonatomic, retain) NSNumber *keytag;
-@property (nonatomic, retain) StyleSet *keystyleset; // not serialized; styleset of key window
+@property (nonatomic, strong) NSNumber *keytag;
+@property (nonatomic, strong) StyleSet *keystyleset; // not serialized; styleset of key window
 @property (nonatomic) glui32 size;
 @property (nonatomic) BOOL vertical;
 @property (nonatomic) BOOL backward;
-@property (nonatomic, retain) NSNumber *child1tag;
-@property (nonatomic, retain) NSNumber *child2tag;
+@property (nonatomic, strong) NSNumber *child1tag;
+@property (nonatomic, strong) NSNumber *child2tag;
 
 - (void) computeDivision:(CGRect)box for1:(CGRect *)boxref1 for2:(CGRect *)boxref2;
 

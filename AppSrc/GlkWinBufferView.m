@@ -31,12 +31,12 @@
 		self.backgroundColor = [UIColor clearColor];
 		
 		lastLayoutBounds = CGRectNull;
-		self.textview = [[[StyledTextView alloc] initWithFrame:self.bounds margin:margin styles:styleset] autorelease];
+		self.textview = [[StyledTextView alloc] initWithFrame:self.bounds margin:margin styles:styleset];
 		//textview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		textview.delegate = self;
 		[self addSubview:textview];
 		
-		self.moreview = [[[MoreBoxView alloc] initWithFrame:CGRectZero] autorelease];
+		self.moreview = [[MoreBoxView alloc] initWithFrame:CGRectZero];
 		[[NSBundle mainBundle] loadNibNamed:@"MoreBoxView" owner:moreview options:nil];
 		CGRect rect = moreview.frameview.frame;
 		rect.origin.x = MIN(box.size.width - viewmargin.right + 4, box.size.width - (rect.size.width + 4));
@@ -52,9 +52,6 @@
 
 - (void) dealloc {
 	textview.delegate = nil;
-	self.textview = nil;
-	self.moreview = nil;
-	[super dealloc];
 }
 
 - (void) setViewmargin:(UIEdgeInsets)newmargin {
@@ -140,7 +137,7 @@
 			moreview.alpha = 0;
 			moreview.hidden = NO;
 			[UIView animateWithDuration:0.2 
-							 animations:^{ moreview.alpha = 0.5; } ];
+                             animations:^{ self->moreview.alpha = 0.5; } ];
 		}
 		else {
 			moreview.hidden = NO;
@@ -149,8 +146,8 @@
 	else {
 		if (moreview) {
 			[UIView animateWithDuration:0.2 
-							 animations:^{ moreview.alpha = 0; }
-							 completion:^(BOOL finished) { moreview.hidden = YES; } ];
+                             animations:^{ self->moreview.alpha = 0; }
+                             completion:^(BOOL finished) { self->moreview.hidden = YES; } ];
 		}
 		else {
 			moreview.hidden = YES;

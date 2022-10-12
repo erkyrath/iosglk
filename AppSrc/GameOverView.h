@@ -10,7 +10,7 @@
 
 @interface GameOverView : PopMenuView
 
-@property (nonatomic, retain) IBOutlet UIView *container;
+@property (nonatomic, strong) IBOutlet UIView *container;
 
 - (NSString *) nibForContent;
 - (IBAction) handleRestartButton:(id)sender;

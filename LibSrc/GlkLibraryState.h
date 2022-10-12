@@ -18,10 +18,10 @@
 	BOOL everythingchanged;
 }
 
-@property (nonatomic, retain) NSArray *windows;
+@property (nonatomic, strong) NSArray *windows;
 @property (nonatomic) BOOL vmexited;
-@property (nonatomic, retain) NSNumber *rootwintag;
-@property (nonatomic, retain) id specialrequest;
+@property (nonatomic, strong) NSNumber *rootwintag;
+@property (nonatomic, strong) id specialrequest;
 @property (nonatomic) BOOL geometrychanged;
 @property (nonatomic) BOOL metricschanged;
 @property (nonatomic) BOOL everythingchanged;

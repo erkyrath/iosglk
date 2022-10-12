@@ -32,7 +32,7 @@
 }
 
 + (GlkAccVisualLine *) buildForLine:(GlkVisualLine *)vln container:(StyledTextView *)container {
-	GlkAccVisualLine *el = [[[GlkAccVisualLine alloc] initWithAccessibilityContainer:container] autorelease];
+	GlkAccVisualLine *el = [[GlkAccVisualLine alloc] initWithAccessibilityContainer:container];
 	el.line = vln;
 	el.isAccessibilityElement = YES;
 	el.accessibilityTraits = UIAccessibilityTraitStaticText;
@@ -76,7 +76,7 @@
 @synthesize line;
 
 + (GlkAccStyledLine *) buildForLine:(GlkStyledLine *)vln container:(GlkWinGridView *)container {
-	GlkAccStyledLine *el = [[[GlkAccStyledLine alloc] initWithAccessibilityContainer:container] autorelease];
+	GlkAccStyledLine *el = [[GlkAccStyledLine alloc] initWithAccessibilityContainer:container];
 	el.line = vln;
 	el.isAccessibilityElement = YES;
 	el.accessibilityTraits = UIAccessibilityTraitStaticText;

@@ -12,10 +12,10 @@
 @class GlkVisualLine;
 
 @interface GlkAccVisualLine : UIAccessibilityElement {
-	GlkVisualLine *line; /* weak parent link -- unretained */
+	GlkVisualLine *__weak line; /* weak parent link -- unretained */
 }
 
-@property (nonatomic, assign) GlkVisualLine *line;
+@property (nonatomic, weak) GlkVisualLine *line;
 
 + (NSString *) lineForSpeaking:(NSString *)val;
 + (GlkAccVisualLine *) buildForLine:(GlkVisualLine *)vln container:(StyledTextView *)container;
@@ -25,10 +25,10 @@
 
 
 @interface GlkAccStyledLine : UIAccessibilityElement {
-	GlkStyledLine *line; /* weak parent link -- unretained */
+	GlkStyledLine *__weak line; /* weak parent link -- unretained */
 }
 
-@property (nonatomic, assign) GlkStyledLine *line;
+@property (nonatomic, weak) GlkStyledLine *line;
 
 + (GlkAccStyledLine *) buildForLine:(GlkStyledLine *)vln container:(GlkWinGridView *)container;
 

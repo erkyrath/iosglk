@@ -34,17 +34,17 @@ void gidispatch_set_object_registry(
 		for (win = glk_window_iterate(NULL, NULL);
 			win;
 			win = glk_window_iterate(win, NULL)) {
-			win.disprock = (*library.dispatch_register_obj)(win, gidisp_Class_Window);
+            win.disprock = (*library.dispatch_register_obj)((__bridge void *)(win), gidisp_Class_Window);
 		}
 		for (str = glk_stream_iterate(NULL, NULL);
 			str;
 			str = glk_stream_iterate(str, NULL)) {
-			str.disprock = (*library.dispatch_register_obj)(str, gidisp_Class_Stream);
+            str.disprock = (*library.dispatch_register_obj)((__bridge void *)(str), gidisp_Class_Stream);
 		}
 		for (fref = glk_fileref_iterate(NULL, NULL);
 			fref;
 			fref = glk_fileref_iterate(fref, NULL)) {
-			fref.disprock = (*library.dispatch_register_obj)(fref, gidisp_Class_Fileref);
+            fref.disprock = (*library.dispatch_register_obj)((__bridge void *)(fref), gidisp_Class_Fileref);
 		}
 	}
 }
@@ -73,15 +73,15 @@ gidispatch_rock_t gidispatch_get_objrock(void *obj, glui32 objclass)
 {
 	switch (objclass) {
 		case gidisp_Class_Window: {
-			winid_t win = (winid_t)obj;
+            winid_t win = (__bridge winid_t)obj;
 			return win.disprock;
 		}
 		case gidisp_Class_Stream: {
-			strid_t str = (strid_t)obj;
+            strid_t str = (__bridge strid_t)obj;
 			return str.disprock;
 		}
 		case gidisp_Class_Fileref: {
-			frefid_t fref = (frefid_t)obj;
+            frefid_t fref = (__bridge frefid_t)obj;
 			return fref.disprock;
 		}
 		default: {

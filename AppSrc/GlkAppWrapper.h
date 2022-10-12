@@ -18,7 +18,6 @@
 	event_t *iowait_evptr; /* the place to stuff the event data when it arrives. */
 	id iowait_special; /* ditto, for special event requests. (A container type, currently GlkFileRefPrompt.) */
 	NSThread *thread; /* not locked; does not change through the run cycle. */
-	NSAutoreleasePool *looppool; /* not locked; only touched by the VM thread. */
 	NSTimeInterval lastwaittime; /* not locked; only touched by VM thread internals. */
 	glui32 lasteventtype; /* not locked; only touched by the VM thread. */
 	
@@ -31,11 +30,11 @@
 	NSNumber *timerinterval; /* not locked; only touched by the main thread. */
 }
 
-@property (nonatomic, retain) NSCondition *iowaitcond;
+@property (nonatomic, strong) NSCondition *iowaitcond;
 @property (nonatomic) BOOL iowait;
-@property (nonatomic, retain) GlkEventState *eventfromui;
+@property (nonatomic, strong) GlkEventState *eventfromui;
 @property (nonatomic, readonly) glui32 lasteventtype;
-@property (nonatomic, retain) NSNumber *timerinterval;
+@property (nonatomic, strong) NSNumber *timerinterval;
 
 + (GlkAppWrapper *) singleton;
 
@@ -71,8 +70,8 @@
 @property (nonatomic) glui32 ch;
 @property (nonatomic) glui32 genval1;
 @property (nonatomic) glui32 genval2;
-@property (nonatomic, retain) NSString *line;
-@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, strong) NSString *line;
+@property (nonatomic, strong) NSNumber *tag;
 
 + (GlkEventState *) charEvent:(glui32)ch inWindow:(NSNumber *)tag;
 + (GlkEventState *) lineEvent:(NSString *)line inWindow:(NSNumber *)tag;

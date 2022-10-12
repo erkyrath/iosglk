@@ -24,7 +24,7 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
 	}
 
 	strid_t str = [[GlkStreamMemory alloc] initWithMode:fmode rock:rock buf:buf len:buflen];
-	return [str autorelease];
+	return str;
 }
 
 strid_t glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode,
@@ -38,7 +38,7 @@ strid_t glk_stream_open_memory_uni(glui32 *buf, glui32 buflen, glui32 fmode,
 	}
 
 	strid_t str = [[GlkStreamMemory alloc] initUniWithMode:fmode rock:rock buf:buf len:buflen];
-	return [str autorelease];
+	return str;
 }
 
 strid_t glk_stream_open_file(frefid_t fref, glui32 fmode, glui32 rock)
@@ -51,7 +51,7 @@ strid_t glk_stream_open_file(frefid_t fref, glui32 fmode, glui32 rock)
 	strid_t str = [[GlkStreamFile alloc] initWithMode:fmode rock:rock unicode:NO fileref:fref];
 	if (!str)
 		return NULL;
-	return [str autorelease];
+	return str;
 }
 
 strid_t glk_stream_open_file_uni(frefid_t fref, glui32 fmode, glui32 rock)
@@ -64,7 +64,7 @@ strid_t glk_stream_open_file_uni(frefid_t fref, glui32 fmode, glui32 rock)
 	strid_t str = [[GlkStreamFile alloc] initWithMode:fmode rock:rock unicode:YES fileref:fref];
 	if (!str)
 		return NULL;
-	return [str autorelease];
+	return str;
 }
 
 void glk_stream_close(strid_t str, stream_result_t *result)

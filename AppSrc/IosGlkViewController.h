@@ -16,7 +16,7 @@
 typedef void (^questioncallback)(int); // callback block type for displayAdHocQuestion
 
 @interface IosGlkViewController : UIViewController <UIActionSheetDelegate> {
-	id <IosGlkLibDelegate> glkdelegate;
+	id <IosGlkLibDelegate> __weak glkdelegate;
 	GlkFrameView *frameview;
 	
 	/* Tag for the window which most recently had input focus */
@@ -35,14 +35,14 @@ typedef void (^questioncallback)(int); // callback block type for displayAdHocQu
 	questioncallback currentquestion;
 }
 
-@property (nonatomic, assign) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
-@property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
+@property (nonatomic, weak) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
+@property (nonatomic, strong) IBOutlet GlkFrameView *frameview;
 
-@property (nonatomic, retain) NSNumber *prefinputwintag;
-@property (nonatomic, retain) NSNumber *textselecttag;
+@property (nonatomic, strong) NSNumber *prefinputwintag;
+@property (nonatomic, strong) NSNumber *textselecttag;
 @property (nonatomic) BOOL vmexited;
 
-@property (nonatomic, retain) NSMutableArray *commandhistory;	
+@property (nonatomic, strong) NSMutableArray *commandhistory;	
 @property (nonatomic) CGRect keyboardbox;
 
 @property (nonatomic, copy) questioncallback currentquestion;

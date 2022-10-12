@@ -34,7 +34,7 @@
 	if (self) {
 		viewmargin = margin;
 		self.backgroundColor = [UIColor clearColor];
-		
+
 		firstsline = 0;
 		self.slines = [NSMutableArray arrayWithCapacity:32];
 		self.vlines = [NSMutableArray arrayWithCapacity:32];
@@ -50,25 +50,17 @@
 		self.canCancelContentTouches = YES;
 		idealcontentheight = visbounds.size.height;
 		self.contentSize = visbounds.size;
-		
+
 		[self acceptStyleset:stylesval];
-		
+
 		selectvstart = -1;
 		selectvend = -1;
-		
+
 		taplastat = 0; // the past
 	}
 	return self;
 }
 
-- (void) dealloc {
-	self.slines = nil;
-	self.vlines = nil;
-	self.linesviews = nil;
-	self.styleset = nil;
-	self.selectionview = nil;
-	[super dealloc];
-}
 
 - (GlkWinBufferView *) superviewAsBufferView {
 	return (GlkWinBufferView *)self.superview;
@@ -99,7 +91,7 @@
 	return res;
 }
 
-/* The total height of the window, including rendered text and margins. 
+/* The total height of the window, including rendered text and margins.
 */
 - (CGFloat) totalHeight {
 	if (!vlines || !vlines.count)
@@ -126,7 +118,7 @@
 	return vln.linenum + 1;
 }
 
-/* 
+/*
  ### also check (self.lastLaidOutLine < lines.count)?
  */
 - (BOOL) moreToSee {
@@ -142,25 +134,25 @@
 		return nil;
 	if (height <= styleset.margins.top)
 		return nil;
-	
+
 	CGFloat frac = (ypos-styleset.margins.top) / (height-styleset.margins.top);
 	int pos = (vlines.count * frac);
 	pos = MIN(vlines.count-1, pos);
 	pos = MAX(pos, 0);
-	
+
 	while (pos > 0 && ypos < ((GlkVisualLine *)[vlines objectAtIndex:pos]).ypos) {
 		pos--;
 	}
 	while (pos < vlines.count-1 && ypos >= ((GlkVisualLine *)[vlines objectAtIndex:pos+1]).ypos) {
 		pos++;
 	}
-	
+
 	return ((GlkVisualLine *)[vlines objectAtIndex:pos]);
 }
 
 - (CGRect) placeForInputField {
 	CGRect box;
-	
+
 	if (!vlines || !vlines.count) {
 		box.origin.x = styleset.margins.left + viewmargin.left;
 		box.size.width = totalwidth - styleset.margintotal.width;
@@ -168,7 +160,7 @@
 		box.size.height = 24;
 		return box;
 	}
-	
+
 	if (self.lastLaidOutLine < firstsline+self.slines.count) {
 		box.origin.x = styleset.margins.left + viewmargin.left;
 		box.size.width = totalwidth - styleset.margintotal.width;
@@ -176,17 +168,17 @@
 		box.size.height = 24;
 		return box;
 	}
-	
+
 	GlkVisualLine *vln = [vlines lastObject];
 	CGFloat ptx = vln.right;
 	if (ptx >= totalwidth * 0.75)
 		ptx = totalwidth * 0.75;
-	
+
 	box.origin.x = viewmargin.left + ptx;
 	box.size.width = (totalwidth-styleset.margins.right) - ptx;
 	box.origin.y = vln.ypos;
 	box.size.height = vln.height;
-	
+
 	return box;
 }
 
@@ -195,7 +187,7 @@
 - (void) updateWithLines:(NSArray *)uplines dirtyFrom:(int)linesdirtyfrom clearCount:(int)newclearcount refresh:(BOOL)refresh {
 	//NSLog(@"STV: updating, got %d lines %s", uplines.count, ((clearcount != newclearcount)?"(clear-bump)":""));
 	newcontent = YES;
-	
+
 	if (refresh) {
 		/* We're refreshing old content. That means the player has seen it. */
 		//NSLog(@"STV: ...I believe this is a refresh, not really a clear-bump.");
@@ -249,7 +241,7 @@
 			vln.ypos -= yshift;
 		}
 	}
-	
+
 	/* If any of the update lines replace known ones, we may have to throw away vlines at the end. */
 	while (vlines.count > 0) {
 		GlkVisualLine *vln = [vlines lastObject];
@@ -273,7 +265,7 @@
 		[vlines removeAllObjects];
 		endvlineseen = 0;
 	}
-	
+
 	for (VisualLinesView *linev in linesviews) {
 		[linev removeFromSuperview];
 	}
@@ -282,29 +274,29 @@
 
 - (void) layoutSubviews {
 	[super layoutSubviews];
-	
+
 	self.scrollIndicatorInsets = viewmargin;
-	
+
 	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGFloat visbottom = visbounds.origin.y + visbounds.size.height;
 	//NSLog(@"STV: layoutSubviews to visbottom %.1f (%@)", visbottom, StringFromRect(visbounds));
-		
+
 	/* First step: check the page width. If it's changed, discard all layout and start over. (Changing the margins has the same effect.) */
-	
+
 	CGFloat newtotal = visbounds.size.width;
 	CGFloat newwrap = newtotal - styleset.margintotal.width;
 	if (totalwidth != newtotal || wrapwidth != newwrap) {
 		totalwidth = newtotal;
 		wrapwidth = newwrap;
 		//NSLog(@"STV: width has changed! now %.01f (wrap %.01f)", totalwidth, wrapwidth);
-		
+
 		/* Trash all laid-out lines and VisualLinesViews. */
 		//NSLog(@"### removing all linesviews (for width change)");
 		[self uncacheLayoutAndVLines:YES];
 	}
-	
+
 	/* If the page height has changed, we will want to do a vertical shift later on. (But if the width changed too, forget it -- that's a complete re-layout.)
-	 
+
 		(Also, if the view is expanding and we're at the (old) bottom, the shift may already have been applied -- I guess when the frame changed. In that case, we leave heightchangeoffset at zero. We also leave heightchangeoffset at zero if we're *really* at the bottom. Honestly I've lost track of why this all works.)
 	 */
 	CGFloat heightchangeoffset = 0;
@@ -314,10 +306,10 @@
 		}
 		totalheight = visbounds.size.height;
 	}
-	
-	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.) 
-	 
-		Special case: if there are no vlines at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. (If there are vlines, we always extend that range both ways.) 
+
+	/* Extend vlines down until it's past the bottom of visbounds. (Or we're out of lines.)
+
+		Special case: if there are no vlines at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. (If there are vlines, we always extend that range both ways.)
 	 */
 	BOOL newlayout = (vlines.count == 0);
 	BOOL frombottom = NO;
@@ -330,7 +322,7 @@
 	if (frombottom)
 		NSLog(@"### frombottom case! (wasclear %d, wasrefresh %d)", wasclear, wasrefresh);
 	*/
-	
+
 	CGFloat bottom = styleset.margins.top;
 	int endlaid = firstsline;
 	if (vlines.count > 0) {
@@ -338,7 +330,7 @@
 		bottom = vln.bottom;
 		endlaid = vln.linenum+1;
 	}
-	
+
 	NSMutableArray *newlines = nil;
 	if (!frombottom)
 		newlines = [self layoutFromLine:endlaid forward:YES yMax:(visbottom-bottom)+LAYOUT_HEADROOM];
@@ -353,11 +345,11 @@
 		[vlines addObjectsFromArray:newlines];
 		//NSLog(@"STV: appended %d vlines; lines are laid to %d (of %d to %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, firstsline, firstsline+slines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
-	
+
 	/* Extend vlines up, similarly. */
-	
+
 	CGFloat upextension = 0;
-	
+
 	CGFloat top = visbottom;
 	int startlaid = firstsline+slines.count;
 	if (vlines.count > 0) {
@@ -365,7 +357,7 @@
 		top = vln.ypos;
 		startlaid = vln.linenum;
 	}
-	
+
 	newlines = [self layoutFromLine:startlaid-1 forward:NO yMax:(top-visbounds.origin.y)+LAYOUT_HEADROOM];
 	if (newlines && newlines.count) {
 		int newcount = 0;
@@ -376,7 +368,7 @@
 			newypos += vln.height;
 			newcount++;
 		}
-		
+
 		/* We're inserting at the beginning of the vlines array, so the existing vlines all shift downwards. */
 		upextension = newypos - styleset.margins.top;
 		//NSLog(@"### shifting the universe down %.1f", upextension);
@@ -397,7 +389,7 @@
 		[vlines replaceObjectsInRange:range withObjectsFromArray:newlines];
 		//NSLog(@"STV: prepended %d vlines; lines are laid to %d (of %d to %d); yrange is %.1f to %.1f", newlines.count, ((GlkVisualLine *)[vlines lastObject]).linenum, firstsline, firstsline+slines.count, ((GlkVisualLine *)[vlines objectAtIndex:0]).ypos, ((GlkVisualLine *)[vlines lastObject]).bottom);
 	}
-	
+
 	/* Adjust the contentSize to match newly-created vlines. If they were created at the top, we also adjust the contentOffset. If the screen started out clear, scroll straight to the top regardless */
 	CGFloat contentheight = self.totalHeight;
 	CGSize oldcontentsize = CGSizeMake(self.contentSize.width, idealcontentheight);
@@ -431,12 +423,12 @@
 			//NSLog(@"STV: contentSize now %@ (was %@)", StringFromSize(newsize), StringFromSize(oldcontentsize));
 			self.contentSize = newsize;
 		}
-		
+
 		/* Recompute the visual bounds. */
 		visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 		visbottom = visbounds.origin.y + visbounds.size.height;
 	}
-	
+
 	/* Locate the last unseen line (erring on the "seen" side), and bump endvlineseen. */
 	int lastseen;
 	for (lastseen = vlines.count-1; lastseen >= 0; lastseen--) {
@@ -465,12 +457,12 @@
 			inputholder.frame = rect;
 		}
 	}
-	
-	/* Now, adjust the bottom of linesviews up or down (deleting or adding VisualLinesViews) until it reaches the bottom of visbounds. 
-	 
+
+	/* Now, adjust the bottom of linesviews up or down (deleting or adding VisualLinesViews) until it reaches the bottom of visbounds.
+
 		Special case (much like the last case): if there are no linesviews at all *and* we're near the bottom, we skip this step; we'll lay out from the bottom up rather than the top down. */
 	frombottom = (linesviews.count == 0 && self.scrollPercentage > 0.5);
-	
+
 	endlaid = 0;
 	bottom = 0;
 	while (linesviews.count) {
@@ -484,7 +476,7 @@
 		[linev removeFromSuperview];
 		[linesviews removeLastObject];
 	}
-	
+
 	while ((!frombottom) && bottom < visbottom && endlaid < vlines.count) {
 		int newend = endlaid;
 		CGFloat newbottom = bottom;
@@ -493,25 +485,25 @@
 			newend++;
 			newbottom = vln.bottom;
 		}
-		
+
 		if (newend > endlaid) {
 			NSRange range;
 			range.location = endlaid;
 			range.length = newend - endlaid;
 			NSArray *subarr = [vlines subarrayWithRange:range];
-			VisualLinesView *linev = [[[VisualLinesView alloc] initWithFrame:CGRectZero styles:styleset vlines:subarr] autorelease];
+			VisualLinesView *linev = [[VisualLinesView alloc] initWithFrame:CGRectZero styles:styleset vlines:subarr];
 			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 			[linesviews addObject:linev];
 			[self insertSubview:linev atIndex:0];
 			//NSLog(@"### appending lineview (%d), yrange is %.1f-%.1f", linesviews.count-1, linev.ytop, linev.ybottom);
 		}
-		
+
 		endlaid = newend;
 		bottom = newbottom;
 	}
-	
+
 	/* Similarly, adjust the top of linesviews up or down. (startlaid now counts vlines.) */
-	
+
 	if (!vlines.count) {
 		startlaid = 0;
 		top = 0;
@@ -531,7 +523,7 @@
 		[linev removeFromSuperview];
 		[linesviews removeObjectAtIndex:0];
 	}
-	
+
 	while (top > visbounds.origin.y && startlaid > 0) {
 		int newstart = startlaid;
 		CGFloat newtop = top;
@@ -540,23 +532,23 @@
 			GlkVisualLine *vln = [vlines objectAtIndex:newstart];
 			newtop = vln.ypos;
 		}
-		
+
 		if (newstart < startlaid) {
 			NSRange range;
 			range.location = newstart;
 			range.length = startlaid - newstart;
 			NSArray *subarr = [vlines subarrayWithRange:range];
-			VisualLinesView *linev = [[[VisualLinesView alloc] initWithFrame:CGRectZero styles:styleset vlines:subarr] autorelease];
+			VisualLinesView *linev = [[VisualLinesView alloc] initWithFrame:CGRectZero styles:styleset vlines:subarr];
 			linev.frame = CGRectMake(visbounds.origin.x, linev.ytop, visbounds.size.width, linev.height);
 			[linesviews insertObject:linev atIndex:0];
 			[self insertSubview:linev atIndex:0];
 			//NSLog(@"### prepending lineview, yrange is %.1f-%.1f", linev.ytop, linev.ybottom);
 		}
-		
+
 		startlaid = newstart;
 		top = newtop;
 	}
-	
+
 	#ifdef DEBUG
 	/* This verifies that I haven't screwed up the consistency of the lines, vlines, linesviews arrays. */
 	[self sanityCheck]; //###
@@ -575,7 +567,7 @@
 			self.contentSize = truecontentsize;
 		}
 	}
-	
+
 	if (newcontent) {
 		//NSLog(@"STV: new content time! (wasclear %d)", wasclear);
 		if (wasclear) {
@@ -596,7 +588,7 @@
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"StyledTextView: drawRect %@ (bounds are %@)", StringFromRect(rect), StringFromRect(visbounds));
 	CGContextRef gc = UIGraphicsGetCurrentContext();
-	
+
 	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGContextSetFillColorWithColor(gc, styleset.backgroundcolor.CGColor);
 	CGContextFillRect(gc, visbounds);
@@ -607,7 +599,7 @@
 - (BOOL) pageToBottom {
 	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGFloat scrolltobottom = MAX(0, idealcontentheight - visbounds.size.height);
-	
+
 	if (self.contentOffset.y >= scrolltobottom)
 		return NO;
 
@@ -616,14 +608,14 @@
 }
 
 /* Page down, if necessary. Returns YES if further paging is necessary, or NO if we're at the bottom.
- 
+
 	Sender is self if the page was initiated by the user, or nil if it was initiated by layout. (Yes, that's awful.)
  */
 - (BOOL) pageDown:(id)sender {
 	CGRect visbounds = RectApplyingEdgeInsets(self.bounds, viewmargin);
 	CGFloat scrolltobottom = MAX(0, idealcontentheight - visbounds.size.height);
 	CGFloat scrollto;
-	
+
 	//NSLog(@"STV: pageDown finds contentheight %.1f, bounds %.1f, tobottom %.1f", contentsize.height, visbounds.size.height, scrolltobottom);
 
 	/* NoMorePrompt is a preference that I decided to drop. */
@@ -658,7 +650,7 @@
 		scrollto = scrolltobottom;
 		//NSLog(@"STV: pageDown to bottom: %.1f", scrollto);
 	}
-	
+
 	IosGlkViewController *viewc = [IosGlkViewController singleton];
 	if (scrollto < scrolltobottom && viewc.keyboardIsShown) {
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -666,11 +658,11 @@
 		if (nokeepopen)
 			[viewc hideKeyboard];
 	}
-	
+
 	self.superviewAsBufferView.nowcontentscrolling = YES;
-	
+
 	[self setContentOffset:CGPointMake(0, scrollto) animated:YES];
-	
+
 	/*
 	[UIView beginAnimations:@"autoscroll" context:nil];
 	[UIView setAnimationBeginsFromCurrentState:YES];
@@ -684,7 +676,7 @@
 					 animations:^{ self.contentOffset = CGPointMake(0, scrollto); }
 					 completion:nil];
 	 */
-	
+
 	return (scrollto < scrolltobottom);
 }
 
@@ -696,11 +688,11 @@
 		//NSLog(@"STV: too narrow; refusing layout.");
 		return nil;
 	}
-	
+
 	/* If the loop won't run, we'll save ourselves the effort. */
 	if (ymax <= 0)
 		return nil;
-	
+
 	int loopincrement;
 	if (forward) {
 		loopincrement = 1;
@@ -712,15 +704,15 @@
 		if (startline < firstsline)
 			return nil;
 	}
-	
-	UIFont **fonts = styleset.fonts;
+
+	NSMutableArray<UIFont *> *fonts = styleset.fonts;
 	CGFloat leading = styleset.leading;
 	CGFloat normalpointsize = styleset.charbox.height; // includes leading
 	NSMutableArray *result = [NSMutableArray arrayWithCapacity:32]; // vlines laid out
 	NSMutableArray *tmparr = [NSMutableArray arrayWithCapacity:64]; // words in a line
 
 	CGFloat ypos = 0;
-	
+
 	for (int snum = startline; ypos < ymax; snum += loopincrement) {
 		if (forward) {
 			if (snum >= firstsline+slines.count)
@@ -730,10 +722,10 @@
 			if (snum < firstsline)
 				break;
 		}
-		
+
 		GlkStyledLine *sln = [slines objectAtIndex:snum-firstsline];
 		int vlineforthis = 0;
-		
+
 		int spannum = -1;
 		GlkStyledString *sstr = nil;
 		NSString *str;
@@ -742,14 +734,14 @@
 		int strlen;
 
 		BOOL paragraphdone = NO;
-		
+
 		while (!paragraphdone) {
 			CGFloat hpos = 0.0;
 			CGFloat maxheight = 0.0;
 			//CGFloat maxascender = 0.0;
 			//CGFloat maxdescender = 0.0;
 			BOOL linedone = NO;
-			
+
 			while (!linedone) {
 				if (!sstr) {
 					spannum++;
@@ -778,13 +770,13 @@
 							break;
 						wdend++;
 					}
-					
+
 					NSRange range;
 					range.location = wdpos;
 					range.length = wdend - wdpos;
 					NSString *wdtext = [str substringWithRange:range];
-					CGSize wordsize = [wdtext sizeWithFont:sfont];
-					
+                    CGSize wordsize = [wdtext sizeWithAttributes:@{NSFontAttributeName:sfont}];
+
 					/* We want to wrap if this word will overflow the line. But if this is the first word on the line (which must be a very long word), we don't wrap here -- that would cause an infinite loop. */
 					if (tmparr.count > 0 && hpos+wordsize.width > wrapwidth) {
 						/* We don't advance wdpos to wdend, because we'll be re-measuring this word on the next line. However, we do want to squash out whitespace across the break -- the next line shouldn't start with a space. */
@@ -796,25 +788,24 @@
 						linedone = YES;
 						break;
 					}
-					
+
 					/* If the word still overflows, we (inefficiently) look for a place to break it up. */
 					if (hpos+wordsize.width > wrapwidth) {
 						while (range.length > 1) {
 							range.length--;
 							wdtext = [str substringWithRange:range];
-							wordsize = [wdtext sizeWithFont:sfont];
+                            wordsize = [wdtext sizeWithAttributes:@{NSFontAttributeName:sfont}];
 							if (hpos+wordsize.width <= wrapwidth)
 								break;
 						}
 						wdend = wdpos + range.length;
 					}
-					
+
 					GlkVisualString *vwd = [[GlkVisualString alloc] initWithText:wdtext style:sstr.style];
 					[tmparr addObject:vwd];
-					[vwd release];
-					
+
 					hpos += wordsize.width;
-					
+
 					CGFloat lineheight = sfont.lineHeight;
 					lineheight += leading;
 					if (maxheight < lineheight)
@@ -825,26 +816,26 @@
 					if (maxdescender > sfont.descender)
 						maxdescender = sfont.descender;
 					 */
-						
+
 					wdpos = wdend;
 				}
-				
+
 				if (wdpos >= strlen) {
 					sstr = nil;
 				}
 			}
-			
+
 			if (maxheight < 2)
 				maxheight = normalpointsize;
 
-			GlkVisualLine *vln = [[[GlkVisualLine alloc] initWithStrings:tmparr styles:styleset] autorelease];
+			GlkVisualLine *vln = [[GlkVisualLine alloc] initWithStrings:tmparr styles:styleset];
 			// vln.vlinesnum will be filled in by the caller.
 			vln.ypos = ypos;
 			vln.linenum = snum;
 			vln.height = maxheight;
 			vln.xstart = styleset.margins.left;
 			ypos += maxheight;
-			
+
 			if (forward) {
 				[result addObject:vln];
 			}
@@ -856,7 +847,7 @@
 			[tmparr removeAllObjects];
 		}
 	}
-		
+
 	//NSLog(@"STV: laid out %d vislines, final ypos %.1f (first line %d of %d)", result.count, ypos, startline, slines.count);
 	return result;
 }
@@ -870,7 +861,7 @@
 		NSLog(@"    %d (raw %d): %.1f to %.1f, height %.1f", vln.vlinenum, vln.linenum, vln.ypos, vln.bottom, vln.height);
 	}
 	 */
-	
+
 	if (vlines.count) {
 		GlkVisualLine *firstvln = [vlines objectAtIndex:0];
 		int count = 0;
@@ -888,21 +879,21 @@
 			count++;
 		}
 	}
-	
+
 	int count = 0;
 	for (UIView *subview in self.subviews) {
 		if ([subview isKindOfClass:[VisualLinesView class]])
 			count++;
 	}
-	
+
 	if (count != linesviews.count)
 		NSLog(@"STV-SANITY: wrong number of subviews (%d, not %d)", count, (int)linesviews.count);
-	
+
 	if (linesviews.count > 0) {
 		VisualLinesView *firstlinev = [linesviews objectAtIndex:0];
 		int lastv = firstlinev.vlinestart;
 		CGFloat bottom = firstlinev.ytop;
-		
+
 		for (VisualLinesView *linev in linesviews) {
 			if (linev.vlines.count == 0)
 				NSLog(@"STV-SANITY: linev has no lines");
@@ -931,7 +922,7 @@
 	BOOL res = [super becomeFirstResponder];
 	if (!res)
 		return NO;
-	
+
 	[[IosGlkViewController singleton] textSelectionWindow:self.superviewAsBufferView.winstate.tag];
 	return YES;
 }
@@ -961,7 +952,7 @@
 		lastln = vln.linenum;
 		[arr addObject:vln.concatLine];
 	}
-	
+
 	NSString *str = [arr componentsJoinedByString:@""];
 	[UIPasteboard generalPasteboard].string = str;
 }
@@ -981,10 +972,10 @@
 - (void) showSelectionMenu {
 	if (!self.anySelection)
 		return;
-	
+
 	if (![self isFirstResponder])
 		return;
-	
+
 	UIMenuController *menucon = [UIMenuController sharedMenuController];
 	[menucon setTargetRect:selectionarea inView:self];
 	if (!menucon.menuVisible)
@@ -998,23 +989,23 @@
 	NSAssert(firstvln >= 0 && firstvln < vlines.count && endvln > firstvln && endvln <= vlines.count, @"setSelectionStart out of bounds");
 	selectvstart = firstvln;
 	selectvend = endvln;
-	
+
 	CGRect rect = RectApplyingEdgeInsets(self.bounds, viewmargin); // for x and width
 	GlkVisualLine *vln = [vlines objectAtIndex:firstvln];
 	rect.origin.y = vln.ypos;
 	vln = [vlines objectAtIndex:endvln-1];
 	rect.size.height = vln.bottom - rect.origin.y;
 	selectionarea = rect;
-	
+
 	if (!selectionview) {
-		self.selectionview = [[[TextSelectView alloc] initWithFrame:CGRectZero] autorelease];
+		self.selectionview = [[TextSelectView alloc] initWithFrame:CGRectZero];
 		[self addSubview:selectionview];
-		
+
 		rect.origin = RectCenter(selectionarea);
 		rect.size = CGSizeMake(1,1);
 		[selectionview setOutline:CGRectInset(rect, -5, -5) animated:NO];
 	}
-	
+
 	[selectionview setArea:selectionarea];
 }
 
@@ -1024,7 +1015,7 @@
 	selectvstart = -1;
 	selectvend = -1;
 	selectionarea = CGRectNull;
-	
+
 	if (selectionview) {
 		[selectionview removeFromSuperview];
 		self.selectionview = nil;
@@ -1041,9 +1032,9 @@
 		[self clearSelection];
 		return;
 	}
-	
+
 	int slinenum = vln.linenum;
-	
+
 	int firstvln = vln.vlinenum;
 	int endvln = firstvln+1;
 	while (firstvln > 0) {
@@ -1058,7 +1049,7 @@
 			break;
 		endvln++;
 	}
-	
+
 	[self setSelectionStart:firstvln end:endvln];
 	[selectionview setOutline:selectionarea animated:YES];
 }
@@ -1068,10 +1059,10 @@
 	if (!vln) {
 		return;
 	}
-	
+
 	int firstvln = selectvstart;
 	int endvln = selectvend;
-	
+
 	CGRect rect = selectionarea;
 	CGFloat ytop = rect.origin.y;
 	CGFloat ybottom = rect.origin.y+rect.size.height;
@@ -1080,7 +1071,7 @@
 		firstvln = vln.vlinenum;
 		if (firstvln > endvln-1)
 			firstvln = endvln-1;
-		
+
 		ytop = loc.y;
 		if (ytop > ybottom-4)
 			ytop = ybottom-4;
@@ -1089,15 +1080,15 @@
 		endvln = vln.vlinenum+1;
 		if (endvln < firstvln+1)
 			endvln = firstvln+1;
-		
+
 		ybottom = loc.y;
 		if (ybottom < ytop+4)
 			ybottom = ytop+4;
 	}
-	
+
 	rect.origin.y = ytop;
 	rect.size.height = ybottom-ytop;
-	
+
 	[self setSelectionStart:firstvln end:endvln];
 	[selectionview setOutline:rect animated:YES];
 }
@@ -1132,22 +1123,22 @@
 		[self clearTouchTracking];
 		return;
 	}
-	
+
 	NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
 	if (now - taplastat > 0.5)
 		tapnumber = 0;
-	
+
 	taptracking = YES;
 	taplastat = now;
 	UITouch *touch = [[event allTouches] anyObject];
 	taploc = [touch locationInView:self];
-	
+
 	if (taploc.x < viewmargin.left || taploc.x > self.bounds.size.width - viewmargin.right) {
 		/* Ignore touches out in the view margin. */
 		[self clearTouchTracking];
 		return;
 	}
-	
+
 	if (self.anySelection) {
 		/* If the tap is on the upper or lower handle, go with that mode. */
 		CGFloat xcenter = selectionarea.origin.x + 0.5*selectionarea.size.width;
@@ -1164,7 +1155,7 @@
 			}
 		}
 	}
-	
+
 	/* Normal tap-tracking mode. But we start the timer for switching into paragraph-select mode. */
 	[self performSelector:@selector(switchToTextSelection) withObject:nil afterDelay:0.5];
 }
@@ -1172,10 +1163,10 @@
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (!taptracking)
 		return;
-	
+
 	UITouch *touch = [[event allTouches] anyObject];
 	CGPoint loc = [touch locationInView:self];
-	
+
 	if (tapseldragging) {
 		/* Text selection */
 		if (tapseldragging == SelDrag_topedge || tapseldragging == SelDrag_bottomedge) {
@@ -1199,14 +1190,14 @@
 	//NSLog(@"STV: Touch ended");
 	if (!taptracking)
 		return;
-	
+
 	BOOL wasseldragging = (tapseldragging != SelDrag_none);
-	
+
 	taptracking = NO;
 	tapseldragging = SelDrag_none;
 	// leave taplastat intact
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(switchToTextSelection) object:nil];
-	
+
 	if (wasseldragging) {
 		/* Text selection. We become the first responder (not the input field, but the text view itself). */
 		[selectionview hideOutlineAnimated:YES];
@@ -1214,31 +1205,31 @@
 		[self showSelectionMenu];
 		return;
 	}
-	
+
 	[self clearSelection];
 
 	NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
 	if (now - taplastat > 0.75) {
 		//NSLog(@"STV: Touch took too long");
 		[self clearTouchTracking];
-		return;		
+		return;
 	}
-	
+
 	tapnumber++;
 	taplastat = now;
 	//NSLog(@"### tap %d!", tapnumber);
 	[self performSelector:@selector(giveUpTapCombo) withObject:nil afterDelay:0.5];
-	
+
 	if (self.moreToSee) {
 		/* If paging, all taps scroll down. */
 		tapnumber = 0;
 		[self pageDown:self];
 		return;
 	}
-	
+
 	IosGlkViewController *viewc = [IosGlkViewController singleton];
 	GlkWindowView *winv = viewc.preferredInputWindow;
-	
+
 	/* If there is no input line (anywhere), ignore single-tap. On double-tap, scroll to bottom. */
 	if (!winv || !winv.inputfield) {
 		if (viewc.vmexited) {
@@ -1252,9 +1243,9 @@
 		}
 		return;
 	}
-	
+
 	/* Otherwise, single-tap focuses or defocusses the input line. On double-tap, paste a word in. */
-	
+
 	if (tapnumber == 1) {
 		/* Single-tap... */
 		BOOL delpermits = ((!viewc.glkdelegate) || [viewc.glkdelegate shouldTapSetKeyboard:YES]);
@@ -1275,7 +1266,7 @@
 				/* Send an animated label flying downhill */
 				rect = CGRectInset(rect, -4, -2);
 				rect.origin.x += viewmargin.left;
-				UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+				UILabel *label = [[UILabel alloc] initWithFrame:rect];
 				label.font = styleset.fonts[style_Normal];
 				label.text = wd;
 				label.textAlignment = NSTextAlignmentCenter;
@@ -1283,9 +1274,9 @@
 				label.opaque = NO;
 				[self addSubview:label];
 				CGPoint newpt = RectCenter(winv.inputholder.frame);
-				CGSize curinputsize = [winv.inputfield.text sizeWithFont:winv.inputfield.font];
+                CGSize curinputsize = [winv.inputfield.text sizeWithAttributes:@{ NSFontAttributeName:winv.inputfield.font}];
 				newpt.x = winv.inputholder.frame.origin.x + curinputsize.width + 0.5*rect.size.width;
-				[UIView beginAnimations:@"labelFling" context:label];
+                [UIView beginAnimations:@"labelFling" context:(__bridge void * _Nullable)(label)];
 				[UIView setAnimationDelegate:self];
 				[UIView setAnimationDuration:0.3];
 				[UIView setAnimationDidStopSelector:@selector(labelFlingEnd:finished:context:)];
@@ -1293,7 +1284,7 @@
 				label.center = newpt;
 				label.alpha = 0.25;
 				[UIView commitAnimations];
-				
+
 				/* Put the word into the input field */
 				[winv.inputfield applyInputString:wd replace:NO];
 			}
@@ -1307,7 +1298,7 @@
 }
 
 - (void) labelFlingEnd:(NSString *)animid finished:(NSNumber *)finished context:(void *)context {
-	UILabel *label = (UILabel *)context;
+    UILabel *label = (__bridge UILabel *)context;
 	[label removeFromSuperview];
 }
 
@@ -1330,10 +1321,10 @@
 		if (inputholder)
 			return inputholder;
 	}
-	
+
 	if (index >= vlines.count)
 		return nil;
-	
+
 	GlkVisualLine *vln = [vlines objectAtIndex:index];
 	return [vln accessElementInContainer:self];
 }
@@ -1341,10 +1332,10 @@
 - (NSInteger) indexOfAccessibilityElement:(id)element {
 	if (!element)
 		return NSNotFound;
-	
+
 	if (element == self.inputholder)
 		return vlines.count;
-	
+
 	if (![element isKindOfClass:[GlkAccVisualLine class]])
 		return NSNotFound;
 	GlkAccVisualLine *el = (GlkAccVisualLine *)element;
@@ -1374,16 +1365,16 @@
 	if (self) {
 		self.vlines = arr;
 		self.styleset = stylesval;
-		
+
 		self.backgroundColor = styleset.backgroundcolor;
 		//self.backgroundColor = [UIColor colorWithRed:(random()%127+128)/256.0 green:(random()%127+128)/256.0 blue:1 alpha:1]; //###
 		self.userInteractionEnabled = YES;
-		
+
 		if (vlines.count > 0) {
 			GlkVisualLine *vln = [vlines objectAtIndex:0];
 			vlinestart = vln.vlinenum;
 			ytop = vln.ypos;
-			
+
 			vln = [vlines lastObject];
 			vlineend = vln.vlinenum+1;
 			ybottom = vln.bottom;
@@ -1393,22 +1384,17 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.vlines = nil;
-	self.styleset = nil;
-	[super dealloc];
-}
 
 - (void) drawRect:(CGRect)rect {
 	//NSLog(@"StyledTextView: drawRect %@ (bounds are %@)", StringFromRect(rect), StringFromRect(self.bounds));
 	CGContextRef gc = UIGraphicsGetCurrentContext();
-		
-	UIFont **fonts = styleset.fonts;
-	UIColor **colors = styleset.colors;
-	
+
+    NSMutableArray<UIFont *> *fonts = styleset.fonts;
+    NSMutableArray<UIColor *> *colors = styleset.colors;
+
 	/* We'll be using a limited list of colors, so it makes sense to track them by identity. */
 	UIColor *lastcolor = nil;
-	
+
 	for (GlkVisualLine *vln in vlines) {
 		CGFloat maxascend = 0.0;
 		for (GlkVisualString *vwd in vln.arr) {
@@ -1430,8 +1416,9 @@
 			}
 			pt.y = ymin + floorf(maxascend - font.ascender);
 			// for descenders: pt.y = (ymin + vln.height - font.lineHeight) - floorf(font.descender - mindescend)
-			
-			CGSize wordsize = [vwd.str drawAtPoint:pt withFont:font];
+            
+            [vwd.str drawAtPoint:pt withAttributes:@{NSFontAttributeName:font}];
+            CGSize wordsize = [vwd.str sizeWithAttributes:@{NSFontAttributeName:font}];
 			pt.x += wordsize.width;
 		}
 	}

@@ -37,14 +37,6 @@
 	return [IosGlkAppDelegate singleton].glkviewc;
 }
 
-- (void) dealloc {
-	self.frameview = nil;
-	self.commandhistory = nil;
-	self.prefinputwintag = nil;
-	self.textselecttag = nil;
-	self.currentquestion = nil;
-	[super dealloc];
-}
 
 - (void) didFinishLaunching {
 	/* Subclasses may override this (but should be sure to call [super didFinishLaunching]) */
@@ -268,7 +260,7 @@
 		return NO;
 	}
 	
-	GlkEventState *event = [[[GlkEventState alloc] init] autorelease];
+	GlkEventState *event = [[GlkEventState alloc] init];
 	event.type = evtype;
 	event.tag = tag;
 	event.genval1 = val1;
@@ -282,7 +274,7 @@
  */
 - (void) postGameOver {
 	CGRect rect = frameview.bounds;
-	GameOverView *menuview = [[[GameOverView alloc] initWithFrame:frameview.bounds centerInFrame:rect] autorelease];
+	GameOverView *menuview = [[GameOverView alloc] initWithFrame:frameview.bounds centerInFrame:rect];
 	[frameview postPopMenu:menuview];	
 }
 
@@ -311,8 +303,8 @@
 		else
 			nibname = @"GlkFileSelectStore";
 			
-		GlkFileSelectViewController *viewc = [[[GlkFileSelectViewController alloc] initWithNibName:nibname prompt:prompt bundle:nil] autorelease];
-		UINavigationController *navc = [[[UINavigationController alloc] initWithRootViewController:viewc] autorelease];
+		GlkFileSelectViewController *viewc = [[GlkFileSelectViewController alloc] initWithNibName:nibname prompt:prompt bundle:nil];
+		UINavigationController *navc = [[UINavigationController alloc] initWithRootViewController:viewc];
 		[navc setModalPresentationStyle:UIModalPresentationFormSheet];
 		/* Make the navbar opaque, so that iOS7 doesn't try to underlap the view behind it. Nobody likes that. */
 		navc.navigationBar.translucent = NO;
@@ -357,7 +349,7 @@
 /* Display an alert sheet that doesn't come from the game. For example, this might be called when a file is passed to the app from another app.
  */
 - (void) displayAdHocAlert:(NSString *)msg title:(NSString *)title {
-	UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:NSLocalizedString(@"button.ok", nil) otherButtonTitles:nil] autorelease];
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:NSLocalizedString(@"button.ok", nil) otherButtonTitles:nil];
 	[alert show];
 }
 
@@ -372,7 +364,7 @@
 		return;
 	}
 	self.currentquestion = qcallback;
-	UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:msg delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:nil otherButtonTitles:opt1, opt2, nil] autorelease];
+	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:msg delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:nil otherButtonTitles:opt1, opt2, nil];
 	sheet.delegate = self;
 	[sheet showInView:[IosGlkAppDelegate singleton].rootviewc.view];
 }
@@ -386,7 +378,7 @@
 	else
 		res = (index - sheet.firstOtherButtonIndex) + 1;
 	
-	questioncallback qcallback = [[self.currentquestion retain] autorelease];
+	questioncallback qcallback = self.currentquestion;
 	self.currentquestion = nil;
 	qcallback(res);
 }

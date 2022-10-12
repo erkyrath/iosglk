@@ -28,13 +28,13 @@
 	BOOL textmode;
 }
 
-@property (nonatomic, retain) GlkLibrary *library;
-@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, strong) GlkLibrary *library;
+@property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic) gidispatch_rock_t disprock;
-@property (nonatomic, retain) NSString *filename;
-@property (nonatomic, retain) NSString *basedir;
-@property (nonatomic, retain) NSString *dirname;
-@property (nonatomic, retain) NSString *pathname;
+@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *basedir;
+@property (nonatomic, strong) NSString *dirname;
+@property (nonatomic, strong) NSString *pathname;
 @property (nonatomic, readonly) glui32 filetype;
 @property (nonatomic, readonly) glui32 rock;
 @property (nonatomic, readonly) BOOL textmode;

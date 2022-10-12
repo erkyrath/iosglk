@@ -58,13 +58,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.keytag = nil;
-	self.keystyleset = nil;
-	self.child1tag = nil;
-	self.child2tag = nil;
-	[super dealloc];
-}
 
 /* Standard copy method. Returns a retained object which is a (shallow) copy. */
 - (id) copyWithZone:(NSZone *)zone {

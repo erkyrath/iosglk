@@ -28,13 +28,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.rightsideview = nil;
-	self.clearbutton = nil;
-	self.menubutton = nil;
-	self.wintag = nil;
-	[super dealloc];
-}
 
 - (BOOL) becomeFirstResponder {
 	BOOL res = [super becomeFirstResponder];

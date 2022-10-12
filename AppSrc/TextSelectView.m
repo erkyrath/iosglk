@@ -26,19 +26,19 @@
 		self.userInteractionEnabled = NO;
 		self.clipsToBounds = NO;
 		
-		self.shadeview = [[[UIView alloc] initWithFrame:area] autorelease];
+		self.shadeview = [[UIView alloc] initWithFrame:area];
 		shadeview.backgroundColor = [UIColor colorWithRed:0.35 green:0.5 blue:1 alpha:0.33];
 		shadeview.opaque = NO;
 		[self addSubview:shadeview];
 		
-		self.outlineview = [[[TextOutlineView alloc] initWithFrame:area] autorelease];
+		self.outlineview = [[TextOutlineView alloc] initWithFrame:area];
 		outlineview.alpha = 0;
 		[self addSubview:outlineview];
 		
 		UIImage *img = [UIImage imageNamed:@"selecthandle"];
-		self.tophandleview = [[[UIImageView alloc] initWithImage:img] autorelease];
+		self.tophandleview = [[UIImageView alloc] initWithImage:img];
 		tophandleview.hidden = YES;
-		self.bottomhandleview = [[[UIImageView alloc] initWithImage:img] autorelease];
+		self.bottomhandleview = [[UIImageView alloc] initWithImage:img];
 		bottomhandleview.hidden = YES;
 
 		[self addSubview:tophandleview];
@@ -47,13 +47,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.shadeview = nil;
-	self.outlineview = nil;
-	self.tophandleview = nil;
-	self.bottomhandleview = nil;
-	[super dealloc];
-}
 
 - (void) setArea:(CGRect)box {
 	area = box;

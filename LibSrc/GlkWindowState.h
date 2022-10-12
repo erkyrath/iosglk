@@ -12,7 +12,7 @@
 @class Geometry;
 
 @interface GlkWindowState : NSObject {
-	GlkLibraryState *library; // weak parent link (unretained)
+	GlkLibraryState *__weak library; // weak parent link (unretained)
 	
 	NSNumber *tag;
 	glui32 type;
@@ -26,16 +26,16 @@
 	NSString *line_request_initial;
 }
 
-@property (nonatomic, assign) GlkLibraryState *library; // unretained
-@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, weak) GlkLibraryState *library; // unretained
+@property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic) glui32 type;
 @property (nonatomic) glui32 rock;
-@property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic, strong) StyleSet *styleset;
 @property (nonatomic) CGRect bbox;
 @property (nonatomic) int input_request_id;
 @property (nonatomic) BOOL char_request;
 @property (nonatomic) BOOL line_request;
-@property (nonatomic, retain) NSString *line_request_initial;
+@property (nonatomic, strong) NSString *line_request_initial;
 
 + (GlkWindowState *) windowStateWithType:(glui32)type rock:(glui32)rock;
 
@@ -52,7 +52,7 @@
 @property (nonatomic) int clearcount;
 @property (nonatomic) int linesdirtyfrom;
 @property (nonatomic) int linesdirtyto;
-@property (nonatomic, retain) NSArray *lines;
+@property (nonatomic, strong) NSArray *lines;
 
 @end
 
@@ -63,7 +63,7 @@
 	int curx, cury; /* the window cursor position */
 }
 
-@property (nonatomic, retain) NSArray *lines;
+@property (nonatomic, strong) NSArray *lines;
 @property (nonatomic) int width;
 @property (nonatomic) int height;
 @property (nonatomic) int curx;
@@ -75,7 +75,7 @@
 	Geometry *geometry;
 }
 
-@property (nonatomic, retain) Geometry *geometry;
+@property (nonatomic, strong) Geometry *geometry;
 
 @end
 

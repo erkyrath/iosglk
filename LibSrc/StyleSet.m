@@ -27,7 +27,7 @@
 + (StyleSet *) buildForWindowType:(glui32)wintype rock:(glui32)rock {
 	GlkLibrary *library = [GlkLibrary singleton];
 	
-	StyleSet *styles = [[[StyleSet alloc] init] autorelease];
+	StyleSet *styles = [[StyleSet alloc] init];
 	[library.glkdelegate prepareStyles:styles forWindowType:wintype rock:rock];
 	[styles completeForWindowType:wintype];
 
@@ -121,34 +121,15 @@
 		margintotal = CGSizeZero;
 		self.backgroundcolor = [UIColor whiteColor];
 		/* We have to malloc these buffers. I tried embedding it as an array of pointers in the StyleSet object, but ObjC threw a hissy-cow. */
-		fonts = malloc(sizeof(UIFont*) * style_NUMSTYLES);
+		fonts = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
-			fonts[ix] = nil;
-		colors = malloc(sizeof(UIColor*) * style_NUMSTYLES);
+			fonts[ix] = [UIFont systemFontOfSize:14];
+        colors = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
-			colors[ix] = nil;
+			colors[ix] = [UIColor blackColor];
 	}
 	
 	return self;
-}
-
-- (void) dealloc {
-	for (int ix=0; ix<style_NUMSTYLES; ix++) {
-		if (fonts[ix]) {
-			[fonts[ix] release];
-			fonts[ix] = nil;
-		}
-		if (colors[ix]) {
-			[colors[ix] release];
-			colors[ix] = nil;
-		}
-	}
-	free(fonts);
-	free(colors);
-	fonts = nil;
-	colors = nil;
-	self.backgroundcolor = nil;
-	[super dealloc];
 }
 
 - (void) completeForWindowType:(glui32)wintype {
@@ -183,14 +164,14 @@
 	
 	/* The delegate prepareStyles method (also the code above) filled the arrays with autoreleased fonts and colors. We retain them now. */
 	for (int ix=0; ix<style_NUMSTYLES; ix++) {
-		[fonts[ix] retain];
-		[colors[ix] retain];
+		fonts[ix];
+		colors[ix];
 	}
 	
 	CGSize size;
-	size = [@"W" sizeWithFont:fonts[style_Normal]];
+    size = [@"W" sizeWithAttributes:@{NSFontAttributeName:fonts[style_Normal]}];
 	charbox = size;
-	size = [@"qld" sizeWithFont:fonts[style_Normal]];
+	size = [@"qld" sizeWithAttributes:@{NSFontAttributeName:fonts[style_Normal]}];
 	if (charbox.height < size.height)
 		charbox.height = size.height;
 	

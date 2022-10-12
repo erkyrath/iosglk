@@ -32,11 +32,11 @@
 	InputMenuMode inputmenumode;
 }
 
-@property (nonatomic, retain) GlkLibraryState *librarystate;
-@property (nonatomic, retain) NSMutableDictionary *windowviews;
-@property (nonatomic, retain) NSMutableDictionary *wingeometries;
-@property (nonatomic, retain) NSNumber *rootwintag;
-@property (nonatomic, retain) PopMenuView *menuview;
+@property (nonatomic, strong) GlkLibraryState *librarystate;
+@property (nonatomic, strong) NSMutableDictionary *windowviews;
+@property (nonatomic, strong) NSMutableDictionary *wingeometries;
+@property (nonatomic, strong) NSNumber *rootwintag;
+@property (nonatomic, strong) PopMenuView *menuview;
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag;
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp;

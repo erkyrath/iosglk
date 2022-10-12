@@ -12,8 +12,8 @@
 	UIImageView *selectview;
 }
 
-@property (nonatomic, retain) UIImage *selectimage;
-@property (nonatomic, retain) UIImageView *selectview;
+@property (nonatomic, strong) UIImage *selectimage;
+@property (nonatomic, strong) UIImageView *selectview;
 
 - (void) setSelectImage:(UIImage *)img;
 

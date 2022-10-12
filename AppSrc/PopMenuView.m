@@ -42,13 +42,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.frameview = nil;
-	self.content = nil;
-	self.decor = nil;
-	self.faderview = nil;
-	[super dealloc];
-}
 
 - (GlkFrameView *) superviewAsFrameView {
 	return (GlkFrameView *)self.superview;
@@ -59,7 +52,7 @@
 }
 
 - (void) loadContent {
-	UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)] autorelease];
+	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
 	view.backgroundColor = [UIColor redColor];
 	view.layer.cornerRadius = 10;
 	view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -98,7 +91,7 @@
 	
 	if (animated && self.superview) {
 		[UIView animateWithDuration:0.25 
-						 animations:^{ frameview.frame = rect; } ];
+                         animations:^{ self->frameview.frame = rect; } ];
 	}
 	else {
 		frameview.frame = rect;

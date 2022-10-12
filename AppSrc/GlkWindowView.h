@@ -33,11 +33,11 @@ typedef enum SelDragMode_enum {
 	BOOL morewaiting; /* only used for buffer windows */
 }
 
-@property (nonatomic, retain) GlkWindowState *winstate;
-@property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic, strong) GlkWindowState *winstate;
+@property (nonatomic, strong) StyleSet *styleset;
 @property (nonatomic) UIEdgeInsets viewmargin;
-@property (nonatomic, retain) CmdTextField *inputfield;
-@property (nonatomic, retain) UIScrollView *inputholder;
+@property (nonatomic, strong) CmdTextField *inputfield;
+@property (nonatomic, strong) UIScrollView *inputholder;
 @property (nonatomic) BOOL morewaiting;
 
 - (id) initWithWindow:(GlkWindowState *)winstate frame:(CGRect)box margin:(UIEdgeInsets)margin;

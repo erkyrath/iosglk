@@ -52,11 +52,11 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	GlkWindow *win;
 	switch (type) {
 		case wintype_TextBuffer:
-			win = [[[GlkWindowBuffer alloc] initWithType:type rock:rock] autorelease];
+			win = [[GlkWindowBuffer alloc] initWithType:type rock:rock];
 			win.styleset = [StyleSet buildForWindowType:type rock:rock];
 			break;
 		case wintype_TextGrid:
-			win = [[[GlkWindowGrid alloc] initWithType:type rock:rock] autorelease];
+			win = [[GlkWindowGrid alloc] initWithType:type rock:rock];
 			win.styleset = [StyleSet buildForWindowType:type rock:rock];
 			break;
 		case wintype_Pair:
@@ -78,7 +78,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	
 	if (!_GlkWindow_newlineCharSet) {
 		/* We need this for breaking up printing strings, so we set it up at init time. I think this shows up as a memory leak in Apple's tools -- sorry about that. */
-		_GlkWindow_newlineCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"\n"] retain];
+		_GlkWindow_newlineCharSet = [NSCharacterSet characterSetWithCharactersInString:@"\n"];
 	}
 	
 	if (self) {
@@ -103,7 +103,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		//terminate_line_input = 0;
 		style = style_Normal;
 		
-		self.stream = [[[GlkStreamWindow alloc] initWithWindow:self] autorelease];
+		self.stream = [[GlkStreamWindow alloc] initWithWindow:self];
 		self.streamtag = self.stream.tag;
 		self.echostream = nil;
 		self.echostreamtag = nil;
@@ -112,7 +112,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		[library.windows addObject:self];
 		
 		if (library.dispatch_register_obj)
-			disprock = (*library.dispatch_register_obj)(self, gidisp_Class_Window);
+			disprock = (*library.dispatch_register_obj)((__bridge void *)(self), gidisp_Class_Window);
 	}
 	
 	return self;
@@ -121,7 +121,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 - (id) initWithCoder:(NSCoder *)decoder {
 	if (!_GlkWindow_newlineCharSet) {
 		/* We need this for breaking up printing strings, so we set it up at init time. I think this shows up as a memory leak in Apple's tools -- sorry about that. */
-		_GlkWindow_newlineCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"\n"] retain];
+		_GlkWindow_newlineCharSet = [NSCharacterSet characterSetWithCharactersInString:@"\n"];
 	}
 	
 	self.tag = [decoder decodeObjectForKey:@"tag"];
@@ -229,21 +229,10 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	type = 0;
 	if (!tag)
 		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc with tag unset"];
-	self.tag = nil;
 	
-	self.line_request_initial = nil;
 	
-	self.stream = nil;
-	self.streamtag = nil;
-	self.echostream = nil;
-	self.echostreamtag = nil;
-	self.parent = nil;
-	self.parenttag = nil;
 	
-	self.styleset = nil;
-	self.library = nil;
 
-	[super dealloc];
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
@@ -300,9 +289,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 /* Close a window, and perhaps its subwindows too. 
 */
 - (void) windowCloseRecurse:(BOOL)recurse {
-	/* We don't want this object to evaporate in the middle of this method. */
-	[[self retain] autorelease];
-	
+	/* We don't want this object to evaporate in the middle of this method. */	
 	if (line_buffer) {
 		if (library.dispatch_unregister_arr) {
 			char *typedesc = (line_request_uni ? "&+#!Iu" : "&+#!Cn");
@@ -329,7 +316,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	}
 
 	if (library.dispatch_unregister_obj)
-		(*library.dispatch_unregister_obj)(self, gidisp_Class_Window, disprock);
+		(*library.dispatch_unregister_obj)((__bridge void *)(self), gidisp_Class_Window, disprock);
 		
 	if (stream) {
 		[stream streamDelete];
@@ -560,8 +547,10 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (void) cancelLineInput:(event_t *)event {
-	bzero(event, sizeof(event_t));
-	
+    event->type = 0;
+    event->win = NULL;
+    event->val1 = 0;
+    event->val2 = 0;
 	/* We have to get the current editing state of the text field. That really should be touched only by the main thread, but we'll sneak it out. */
 
 	NSString *str = [[GlkAppWrapper singleton] editingTextForWindow:self.tag];
@@ -616,10 +605,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return self;
 }
 
-- (void) dealloc {
-	self.lines = nil;
-	[super dealloc];
-}
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
@@ -655,7 +640,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	for (GlkStyledLine *sln in lines) {
 		GlkStyledLine *newsln = [sln copy];
 		[arr addObject:newsln];
-		[newsln release];
 	}
 	state.lines = arr;
 	
@@ -687,7 +671,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	/* Turn the buffer into an NSString. We'll release this at the end of the function. */
 	NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
 	[self putString:str];	
-	[str release];
 }
 
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len {
@@ -698,7 +681,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
 	NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 	[self putString:str];	
-	[str release];
 }
 
 /* Break the string up into GlkStyledLines. When the GlkWinBufferView updates, it will pluck these out and make use of them.
@@ -720,7 +702,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		}
 		else {
 			/* This is a succeeding line, so it's the start of a new paragraph. */
-			GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithIndex:linestart+lines.count status:linestat_NewLine] autorelease];
+			GlkStyledLine *sln = [[GlkStyledLine alloc] initWithIndex:linestart+lines.count status:linestat_NewLine];
 			[lines addObject:sln];
 		}
 		
@@ -731,7 +713,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		
 		GlkStyledLine *lastsln = [lines lastObject];
 		if (!lastsln) {
-			lastsln = [[[GlkStyledLine alloc] initWithIndex:linestart+lines.count status:linestat_Continue] autorelease];
+			lastsln = [[GlkStyledLine alloc] initWithIndex:linestart+lines.count status:linestat_Continue];
 			[lines addObject:lastsln];
 		}
 		if (linesdirtyfrom > lastsln.index)
@@ -742,7 +724,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 			[laststr appendString:ln];
 		}
 		else {
-			GlkStyledString *newstr = [[[GlkStyledString alloc] initWithText:ln style:style] autorelease];
+			GlkStyledString *newstr = [[GlkStyledString alloc] initWithText:ln style:style];
 			[lastsln.arr addObject:newstr];
 		}
 	}
@@ -765,7 +747,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	linesdirtyfrom = 0;
 	clearcount++;
 	
-	GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithIndex:0 status:linestat_ClearPage] autorelease];
+	GlkStyledLine *sln = [[GlkStyledLine alloc] initWithIndex:0 status:linestat_ClearPage];
 	[lines addObject:sln];
 }
 
@@ -812,10 +794,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return self;
 }
 
-- (void) dealloc {
-	self.lines = nil;
-	[super dealloc];
-}
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
@@ -855,7 +833,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		
 		GlkStyledLine *sln = [[GlkStyledLine alloc] initWithIndex:jx]; // release soon
 		[linearr addObject:sln];
-		[sln release];
 		
 		NSMutableArray *arr = sln.arr;
 		glui32 cursty;
@@ -869,8 +846,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 			GlkStyledString *span = [[GlkStyledString alloc] initWithText:str style:cursty]; // release soon
 			span.pos = pos;
 			[arr addObject:span];
-			[span release];
-			[str release];
 		}
 	}
 	
@@ -897,7 +872,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	while (lines.count > height)
 		[lines removeLastObject];
 	while (lines.count < height)
-		[lines addObject:[[[GlkGridLine alloc] init] autorelease]];
+		[lines addObject:[[GlkGridLine alloc] init]];
 		
 	for (GlkGridLine *ln in lines)
 		[ln setWidth:width];
@@ -1020,10 +995,8 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (void) dealloc {
-	self.geometry = nil;
 	self.child1 = nil;
 	self.child2 = nil;
-	[super dealloc];
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
@@ -1036,7 +1009,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 - (GlkWindowState *) cloneState {
 	GlkWindowPairState *state = (GlkWindowPairState *)[super cloneState];
 	/* Clone the geometry object, since it's not immutable */
-	state.geometry = [[geometry copy] autorelease];
+	state.geometry = [geometry copy];
 	return state;
 }
 
@@ -1050,25 +1023,21 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 
 - (void) setChild1:(GlkWindow *)newwin {
 	if (newwin) {
-		[newwin retain];
 		geometry.child1tag = newwin.tag;
 	}
 	else {
 		geometry.child1tag = nil;
 	}
-	[child1 release];
 	child1 = newwin;
 }
 
 - (void) setChild2:(GlkWindow *)newwin {
 	if (newwin) {
-		[newwin retain];
 		geometry.child2tag = newwin.tag;
 	}
 	else {
 		geometry.child2tag = nil;
 	}
-	[child2 release];
 	child2 = newwin;
 }
 

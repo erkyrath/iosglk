@@ -33,8 +33,8 @@ typedef enum GlkStreamType_enum {
 	BOOL readable, writable;
 }
 
-@property (nonatomic, retain) GlkLibrary *library;
-@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, strong) GlkLibrary *library;
+@property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic) gidispatch_rock_t disprock;
 @property (nonatomic, readonly) GlkStreamType type;
 @property (nonatomic, readonly) glui32 rock;
@@ -66,8 +66,8 @@ typedef enum GlkStreamType_enum {
 	NSNumber *wintag;
 }
 
-@property (nonatomic, retain) GlkWindow *win;
-@property (nonatomic, retain) NSNumber *wintag;
+@property (nonatomic, strong) GlkWindow *win;
+@property (nonatomic, strong) NSNumber *wintag;
 
 - (id) initWithWindow:(GlkWindow *)win;
 
@@ -122,10 +122,10 @@ typedef enum GlkStreamType_enum {
 	unsigned long long offsetinfile; // (in bytes) only used during deserialization; zero normally
 }
 
-@property (nonatomic, retain) NSFileHandle *handle;
-@property (nonatomic, retain) NSString *pathname;
-@property (nonatomic, retain) NSData *readbuffer;
-@property (nonatomic, retain) NSMutableData *writebuffer;
+@property (nonatomic, strong) NSFileHandle *handle;
+@property (nonatomic, strong) NSString *pathname;
+@property (nonatomic, strong) NSData *readbuffer;
+@property (nonatomic, strong) NSMutableData *writebuffer;
 @property (nonatomic) unsigned long long offsetinfile;
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)unicode fileref:(GlkFileRef *)fref;

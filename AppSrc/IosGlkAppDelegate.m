@@ -57,8 +57,8 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
 	[glkviewc view];
 	
-	self.library = [[[GlkLibrary alloc] init] autorelease];
-	self.glkapp = [[[GlkAppWrapper alloc] init] autorelease];
+	self.library = [[GlkLibrary alloc] init];
+	self.glkapp = [[GlkAppWrapper alloc] init];
 	/* Set library.glkdelegate to a default value, if the glkviewc doesn't provide one. (Remember, from now on, that glkviewc.glkdelegate may be null!) */
 	if (glkviewc.glkdelegate)
 		library.glkdelegate = glkviewc.glkdelegate;
@@ -89,11 +89,6 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 
 - (void) dealloc {
 	singleton = nil;
-	self.library = nil;
-	self.rootviewc = nil;
-	self.glkviewc = nil;
-	[window release];
-	[super dealloc];
 }
 
 /* A .glksave URL was passed to this application by another. The URL will be a file in Documents/Inbox. We should check whether it matches our game; if so, move it to the appropriate directory and return YES; if not, delete it and return NO.
@@ -114,7 +109,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	NSString *path = url.path;
 	
 	// Now we try to work out the type (UTI). This has to be done through the file extension, apparently. The UTType functions are C, so we need manual release.
-	CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)(path.pathExtension), NULL);
+	CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)(path.pathExtension), NULL);
 	BOOL issavefile = UTTypeConformsTo(uti, (CFStringRef)(@"com.eblong.glk.glksave"));
 	//NSLog(@"### ... dropped file path %@, type '%@' (issavefile %d)", path, uti, issavefile);
 	CFRelease(uti);

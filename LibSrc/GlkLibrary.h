@@ -44,23 +44,23 @@
 	gidispatch_rock_t (*dispatch_restore_arr)(long bufkey, glui32 len, char *typecode, void **arrayref);
 }
 
-@property (nonatomic, retain) id <IosGlkLibDelegate> glkdelegate;
-@property (nonatomic, retain) NSMutableArray *windows;
-@property (nonatomic, retain) NSMutableArray *streams;
-@property (nonatomic, retain) NSMutableArray *filerefs;
+@property (nonatomic, strong) id <IosGlkLibDelegate> glkdelegate;
+@property (nonatomic, strong) NSMutableArray *windows;
+@property (nonatomic, strong) NSMutableArray *streams;
+@property (nonatomic, strong) NSMutableArray *filerefs;
 @property (nonatomic) BOOL vmexited;
-@property (nonatomic, retain) GlkWindow *rootwin;
-@property (nonatomic, retain) GlkStream *currentstr;
+@property (nonatomic, strong) GlkWindow *rootwin;
+@property (nonatomic, strong) GlkStream *currentstr;
 @property (nonatomic) glui32 timerinterval;
 @property (nonatomic, readonly) CGRect bounds;
 @property (nonatomic) BOOL geometrychanged;
 @property (nonatomic) BOOL metricschanged;
 @property (nonatomic) BOOL everythingchanged;
-@property (nonatomic, retain) NSFileManager *filemanager;
-@property (nonatomic, readonly) NSCalendar *utccalendar;
-@property (nonatomic, readonly) NSCalendar *localcalendar;
+@property (nonatomic, strong) NSFileManager *filemanager;
+@property (weak, nonatomic, readonly) NSCalendar *utccalendar;
+@property (weak, nonatomic, readonly) NSCalendar *localcalendar;
 @property (nonatomic, readonly) NSInteger tagCounter;
-@property (nonatomic, retain) id specialrequest;
+@property (nonatomic, strong) id specialrequest;
 @property (nonatomic) gidispatch_rock_t (*dispatch_register_obj)(void *obj, glui32 objclass);
 @property (nonatomic) void (*dispatch_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
 @property (nonatomic) gidispatch_rock_t (*dispatch_register_arr)(void *array, glui32 len, char *typecode);

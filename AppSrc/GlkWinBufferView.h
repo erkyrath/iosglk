@@ -18,8 +18,8 @@
 	BOOL nowcontentscrolling;
 }
 
-@property (nonatomic, retain) StyledTextView *textview;
-@property (nonatomic, retain) MoreBoxView *moreview;
+@property (nonatomic, strong) StyledTextView *textview;
+@property (nonatomic, strong) MoreBoxView *moreview;
 @property (nonatomic) BOOL nowcontentscrolling;
 
 - (BOOL) pageDownOnInput;

@@ -25,8 +25,8 @@
 	int tapnumber;
 }
 
-@property (nonatomic, retain) NSMutableArray *lines;
-@property (nonatomic, retain) TextSelectView *selectionview;
+@property (nonatomic, strong) NSMutableArray *lines;
+@property (nonatomic, strong) TextSelectView *selectionview;
 
 - (GlkStyledLine *) lineAtPos:(CGFloat)ypos;
 

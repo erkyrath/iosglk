@@ -19,10 +19,10 @@
 	BOOL outlinevisible;
 }
 
-@property (nonatomic, retain) UIView *shadeview;
-@property (nonatomic, retain) UIView *outlineview;
-@property (nonatomic, retain) UIImageView *tophandleview;
-@property (nonatomic, retain) UIImageView *bottomhandleview;
+@property (nonatomic, strong) UIView *shadeview;
+@property (nonatomic, strong) UIView *outlineview;
+@property (nonatomic, strong) UIImageView *tophandleview;
+@property (nonatomic, strong) UIImageView *bottomhandleview;
 
 - (void) setArea:(CGRect)box;
 - (void) setOutline:(CGRect)box animated:(BOOL)animated;
