@@ -312,7 +312,6 @@
 		UINavigationController *navc = [sb instantiateViewControllerWithIdentifier:sbname];
         GlkFileSelectViewController *viewc = (GlkFileSelectViewController *)navc.viewControllers[0];
         viewc.prompt = prompt;
-
 		[self presentViewController:navc animated:YES completion:nil];
 		return;
 	}
