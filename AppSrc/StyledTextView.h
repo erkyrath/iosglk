@@ -54,22 +54,22 @@
 @property (nonatomic, strong) TextSelectView *selectionview;
 @property (nonatomic, readonly) CGRect selectionarea;
 
-- (id) initWithFrame:(CGRect)frame margin:(UIEdgeInsets)margin styles:(StyleSet *)stylesval;
-- (UIScrollView *) inputholder;
-- (CmdTextField *) inputfield;
+- (instancetype) initWithFrame:(CGRect)frame margin:(UIEdgeInsets)margin styles:(StyleSet *)stylesval;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) UIScrollView *inputholder;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) CmdTextField *inputfield;
 - (void) acceptStyleset:(StyleSet *)stylesval;
-- (CGFloat) totalHeight;
-- (BOOL) moreToSee;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGFloat totalHeight;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL moreToSee;
 - (GlkVisualLine *) lineAtPos:(CGFloat)ypos;
 - (void) updateWithLines:(NSArray *)uplines dirtyFrom:(int)linesdirtyfrom clearCount:(int)newclearcount refresh:(BOOL)refresh;
 - (void) uncacheLayoutAndVLines:(BOOL)andvlines;
 - (NSMutableArray *) layoutFromLine:(int)startline forward:(BOOL)forward yMax:(CGFloat)ymax;
 - (void) sanityCheck;
-- (CGRect) placeForInputField;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGRect placeForInputField;
 - (BOOL) pageDown:(id)sender;
-- (BOOL) pageToBottom;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL pageToBottom;
 - (void) clearTouchTracking;
-- (BOOL) anySelection;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL anySelection;
 - (void) clearSelection;
 - (void) showSelectionMenu;
 
@@ -94,7 +94,7 @@
 @property (nonatomic) int vlinestart;
 @property (nonatomic) int vlineend;
 
-- (id) initWithFrame:(CGRect)frame styles:(StyleSet *)styleset vlines:(NSArray *)vlines;
+- (instancetype) initWithFrame:(CGRect)frame styles:(StyleSet *)styleset vlines:(NSArray *)vlines;
 
 @end
 

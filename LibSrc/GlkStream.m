@@ -29,7 +29,7 @@
     return YES;
 }
 
-- (id) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock {
+- (instancetype) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock {
 	self = [super init];
 	
 	if (self) {
@@ -55,22 +55,24 @@
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
-	self.tag = [decoder decodeObjectForKey:@"tag"];
-	inlibrary = YES;
-	// self.library will be set later
-	
-	type = [decoder decodeInt32ForKey:@"type"];
-	rock = [decoder decodeInt32ForKey:@"rock"];
-	// disprock is handled by the app
+- (instancetype) initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (self) {
+        self.tag = [decoder decodeObjectForKey:@"tag"];
+        inlibrary = YES;
+        // self.library will be set later
 
-	unicode = [decoder decodeBoolForKey:@"unicode"];
+        type = [decoder decodeInt32ForKey:@"type"];
+        rock = [decoder decodeInt32ForKey:@"rock"];
+        // disprock is handled by the app
 
-	readcount = [decoder decodeInt32ForKey:@"readcount"];
-	writecount = [decoder decodeInt32ForKey:@"writecount"];
-	readable = [decoder decodeBoolForKey:@"readable"];
-	writable = [decoder decodeBoolForKey:@"writable"];
+        unicode = [decoder decodeBoolForKey:@"unicode"];
 
+        readcount = [decoder decodeInt32ForKey:@"readcount"];
+        writecount = [decoder decodeInt32ForKey:@"writecount"];
+        readable = [decoder decodeBoolForKey:@"readable"];
+        writable = [decoder decodeBoolForKey:@"writable"];
+    }
 	return self;
 }
 
@@ -198,7 +200,7 @@
     return YES;
 }
 
-- (id) initWithWindow:(GlkWindow *)winref {
+- (instancetype) initWithWindow:(GlkWindow *)winref {
 	self = [super initWithType:strtype_Window readable:NO writable:YES rock:0];
 	
 	if (self) {
@@ -209,7 +211,7 @@
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
@@ -294,7 +296,7 @@
     return YES;
 }
 
-- (id) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)bufval len:(glui32)buflenval {
+- (instancetype) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)bufval len:(glui32)buflenval {
 	BOOL isreadable = (fmode != filemode_Write);
 	BOOL iswritable = (fmode != filemode_Read);
 	self = [super initWithType:strtype_Memory readable:isreadable writable:iswritable rock:rockval];
@@ -321,7 +323,7 @@
 	return self;
 }
 
-- (id) initUniWithMode:(glui32)fmode rock:(glui32)rockval buf:(glui32 *)ubufval len:(glui32)buflenval {
+- (instancetype) initUniWithMode:(glui32)fmode rock:(glui32)rockval buf:(glui32 *)ubufval len:(glui32)buflenval {
 	BOOL isreadable = (fmode != filemode_Write);
 	BOOL iswritable = (fmode != filemode_Read);
 	self = [super initWithType:strtype_Memory readable:isreadable writable:iswritable rock:rockval];
@@ -348,7 +350,7 @@
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
@@ -852,14 +854,14 @@
 
 /* This constructor is used by the regular Glk glk_stream_open_file() call.
 */
-- (id) initWithMode:(glui32)fmodeval rock:(glui32)rockval unicode:(BOOL)isunicode fileref:(GlkFileRef *)fref {
+- (instancetype) initWithMode:(glui32)fmodeval rock:(glui32)rockval unicode:(BOOL)isunicode fileref:(GlkFileRef *)fref {
 	self = [self initWithMode:fmodeval rock:rockval unicode:isunicode textmode:fref.textmode dirname:fref.dirname pathname:fref.pathname];
 	return self;
 }
 
 /* This constructor is used by iosglk_startup_code(), in iosstart.m.
 */
-- (id) initWithMode:(glui32)fmodeval rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)path {
+- (instancetype) initWithMode:(glui32)fmodeval rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)path {
 	BOOL isreadable = (fmodeval == filemode_Read || fmodeval == filemode_ReadWrite);
 	BOOL iswritable = (fmodeval != filemode_Read);
 
@@ -927,7 +929,7 @@
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
@@ -964,7 +966,7 @@
 	[encoder encodeBool:textmode forKey:@"textmode"];
 	[encoder encodeInt:maxbuffersize forKey:@"maxbuffersize"];
 	
-	[encoder encodeInt64:[handle offsetInFile] forKey:@"offsetinfile"];
+	[encoder encodeInt64:handle.offsetInFile forKey:@"offsetinfile"];
 
 	// skip the buffer fields, since we flushed it.
 }
@@ -1023,7 +1025,7 @@
 	if (writable) {
 		if (!writebuffer || buffermark >= writebuffer.length) {
 			[self flush];
-			bufferpos = [handle offsetInFile];
+			bufferpos = handle.offsetInFile;
 			NSData *data = [handle readDataOfLength:maxbuffersize];
 			if (!data || !data.length) {
 				// Must be at the end of the file. Leave the buffer off.
@@ -1044,7 +1046,7 @@
 	else {
 		if (!readbuffer || buffermark >= readbuffer.length) {
 			[self flush];
-			bufferpos = [handle offsetInFile];
+			bufferpos = handle.offsetInFile;
 			NSData *data = [handle readDataOfLength:maxbuffersize];
 			if (!data || !data.length) {
 				// Must be at the end of the file. Leave the buffer off.
@@ -1090,7 +1092,7 @@
 			sofar += data.length;
 			return sofar;
 		}
-		bufferpos = [handle offsetInFile];
+		bufferpos = handle.offsetInFile;
 		NSData *data = [handle readDataOfLength:maxbuffersize];
 		if (!data || !data.length) {
 			// Must be at the end of the file. Leave the buffer off.
@@ -1138,7 +1140,7 @@
 			sofar += data.length;
 			return sofar;
 		}
-		bufferpos = [handle offsetInFile];
+		bufferpos = handle.offsetInFile;
 		NSData *data = [handle readDataOfLength:maxbuffersize];
 		if (!data || !data.length) {
 			// Must be at the end of the file. Leave the buffer off.
@@ -1171,7 +1173,7 @@
 	if (writable) {
 		if (!writebuffer || buffermark >= maxbuffersize) {
 			[self flush];
-			bufferpos = [handle offsetInFile];
+			bufferpos = handle.offsetInFile;
 			NSData *data = nil;
 			if (readable)
 				data = [handle readDataOfLength:maxbuffersize];
@@ -1185,7 +1187,7 @@
 			}
 			else {
 				self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
-				[writebuffer setLength:data.length];
+				writebuffer.length = data.length;
 				memcpy(writebuffer.mutableBytes, data.bytes, data.length);
 				buffermark = 0;
 				buffertruepos = writebuffer.length;
@@ -1197,7 +1199,7 @@
 			if (buffermark < bufferdirtystart)
 				bufferdirtystart = buffermark;
 			if (buffermark+1 > writebuffer.length)
-				[writebuffer setLength:buffermark+1];
+				writebuffer.length = buffermark+1;
 			((char *)writebuffer.mutableBytes)[buffermark++] = ch;
 			if (buffermark > bufferdirtyend)
 				bufferdirtyend = buffermark;
@@ -1216,7 +1218,7 @@
 			if (buffermark < bufferdirtystart)
 				bufferdirtystart = buffermark;
 			if (buffermark+addlen > writebuffer.length)
-				[writebuffer setLength:buffermark+addlen];
+				writebuffer.length = buffermark+addlen;
 			memcpy(writebuffer.mutableBytes+buffermark, bytes, addlen);
 			buffermark += addlen;
 			if (buffermark > bufferdirtyend)
@@ -1232,7 +1234,7 @@
 			[handle writeData:data];
 			return;
 		}
-		bufferpos = [handle offsetInFile];
+		bufferpos = handle.offsetInFile;
 		NSData *data = nil;
 		if (readable)
 			data = [handle readDataOfLength:maxbuffersize];
@@ -1246,7 +1248,7 @@
 		}
 		else {
 			self.writebuffer = [NSMutableData dataWithCapacity:maxbuffersize];
-			[writebuffer setLength:data.length];
+			writebuffer.length = data.length;
 			memcpy(writebuffer.mutableBytes, data.bytes, data.length);
 			buffermark = 0;
 			buffertruepos = writebuffer.length;
@@ -1258,7 +1260,7 @@
 			if (buffermark < bufferdirtystart)
 				bufferdirtystart = buffermark;
 			if (buffermark+len > writebuffer.length)
-				[writebuffer setLength:buffermark+len];
+				writebuffer.length = buffermark+len;
 			memcpy(writebuffer.mutableBytes+buffermark, bytes, len);
 			buffermark += len;
 			if (buffermark > bufferdirtyend)
@@ -1647,12 +1649,12 @@
 			[handle seekToFileOffset:pos];
 			break;
 		case seekmode_Current:
-			pos += [handle offsetInFile];
+			pos += handle.offsetInFile;
 			[handle seekToFileOffset:pos];
 			break;
 		case seekmode_End:
 			[handle seekToEndOfFile];
-			pos += [handle offsetInFile];
+			pos += handle.offsetInFile;
 			[handle seekToFileOffset:pos];
 			break;
 	}
@@ -1664,7 +1666,7 @@
 		pos = bufferpos+buffermark;
 	}
 	else {
-		pos = [handle offsetInFile];
+		pos = handle.offsetInFile;
 	}
 	
 	if (!textmode && unicode) {

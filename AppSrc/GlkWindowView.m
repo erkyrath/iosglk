@@ -31,7 +31,7 @@
 @synthesize inputholder;
 @synthesize morewaiting;
 
-- (id) initWithWindow:(GlkWindowState *)winstateref frame:(CGRect)box margin:(UIEdgeInsets)margin {
+- (instancetype) initWithWindow:(GlkWindowState *)winstateref frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	self = [super initWithFrame:box];
 	if (self) {
 		viewmargin = margin;

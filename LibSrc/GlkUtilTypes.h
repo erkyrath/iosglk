@@ -41,9 +41,9 @@ typedef enum GlkStyledLineStatus_enum {
 @property (nonatomic, strong) NSString *concatline;
 @property (nonatomic, strong) GlkAccStyledLine *accessel;
 
-- (id) initWithIndex:(int)index;
-- (id) initWithIndex:(int)index status:(GlkStyledLineStatus) status;
-- (NSString *) concatLine;
+- (instancetype) initWithIndex:(int)index;
+- (instancetype) initWithIndex:(int)index status:(GlkStyledLineStatus) status;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *concatLine;
 - (NSString *) wordAtPos:(CGFloat)xpos styles:(StyleSet *)styleset;
 - (NSString *) wordAtPos:(CGFloat)xpos styles:(StyleSet *)styleset inBox:(CGRect *)boxref;
 - (GlkAccStyledLine *) accessElementInContainer:(GlkWinGridView *)container;
@@ -62,7 +62,7 @@ typedef enum GlkStyledLineStatus_enum {
 @property (nonatomic) glui32 style;
 @property (nonatomic) int pos;
 
-- (id) initWithText:(NSString *)str style:(glui32)style;
+- (instancetype) initWithText:(NSString *)str style:(glui32)style;
 - (void) appendString:(NSString *)newstr;
 - (void) freeze;
 
@@ -96,10 +96,10 @@ typedef enum GlkStyledLineStatus_enum {
 @property (nonatomic, strong) StyleSet *styleset;
 @property (nonatomic, strong) GlkAccVisualLine *accessel;
 
-- (id) initWithStrings:(NSArray *)strings styles:(StyleSet *)styles;
-- (CGFloat) bottom;
-- (CGFloat) right;
-- (NSString *) concatLine;
+- (instancetype) initWithStrings:(NSArray *)strings styles:(StyleSet *)styles;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGFloat bottom;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGFloat right;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *concatLine;
 - (NSString *) wordAtPos:(CGFloat)xpos;
 - (NSString *) wordAtPos:(CGFloat)xpos inBox:(CGRect *)boxref;
 - (GlkAccVisualLine *) accessElementInContainer:(StyledTextView *)container;
@@ -115,7 +115,7 @@ typedef enum GlkStyledLineStatus_enum {
 @property (nonatomic, strong) NSString *str;
 @property (nonatomic) glui32 style;
 
-- (id) initWithText:(NSString *)str style:(glui32)style;
+- (instancetype) initWithText:(NSString *)str style:(glui32)style;
 
 @end
 
@@ -143,7 +143,7 @@ typedef enum GlkStyledLineStatus_enum {
 	NSString *str;
 }
 
-- (id) initWithTag:(NSNumber *)tag text:(NSString *)str;
+- (instancetype) initWithTag:(NSNumber *)tag text:(NSString *)str;
 
 @property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic, strong) NSString *str;

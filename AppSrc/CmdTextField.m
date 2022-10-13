@@ -21,7 +21,7 @@
 @synthesize menubutton;
 @synthesize wintag;
 
-- (id) initWithFrame:(CGRect)frame {
+- (instancetype) initWithFrame:(CGRect)frame {
 	self = [super initWithFrame:frame];
 	if (self) {
 	}
@@ -74,7 +74,7 @@
 		//img = [clearbutton backgroundImageForState:UIControlStateNormal];
 		//img = [img stretchableImageWithLeftCapWidth:img.size.width/2 topCapHeight:img.size.height/2];
 		//[clearbutton setBackgroundImage:img forState:UIControlStateNormal];
-		rightsideview.hidden = ![self isFirstResponder];
+		rightsideview.hidden = !self.isFirstResponder;
 		
 		//self.clearButtonMode = UITextFieldViewModeWhileEditing;
 		self.rightViewMode = UITextFieldViewModeAlways;

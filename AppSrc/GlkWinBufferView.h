@@ -22,6 +22,6 @@
 @property (nonatomic, strong) MoreBoxView *moreview;
 @property (nonatomic) BOOL nowcontentscrolling;
 
-- (BOOL) pageDownOnInput;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL pageDownOnInput;
 
 @end

@@ -14,7 +14,7 @@
 
 @implementation RelDateFormatter
 
-- (id) init {
+- (instancetype) init {
 	self = [super init];
 	if (self) {
 		[self setDoesRelativeDateFormatting:YES];
@@ -23,7 +23,7 @@
 }
 
 - (NSString *) stringFromDate:(NSDate *)date {
-	NSTimeInterval interval = -[date timeIntervalSinceNow];
+	NSTimeInterval interval = -date.timeIntervalSinceNow;
 	if (interval < 0 || interval >= 12*60*60) {
 		return [super stringFromDate:date];
 	}

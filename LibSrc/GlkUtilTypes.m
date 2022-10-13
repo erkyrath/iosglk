@@ -27,11 +27,11 @@
     return YES;
 }
 
-- (id) initWithIndex:(int)indexval {
+- (instancetype) initWithIndex:(int)indexval {
 	return [self initWithIndex:indexval status:linestat_Continue];
 }
 
-- (id) initWithIndex:(int)indexval status:(GlkStyledLineStatus) statusval {
+- (instancetype) initWithIndex:(int)indexval status:(GlkStyledLineStatus) statusval {
 	self = [super init];
 	
 	if (self) {
@@ -43,11 +43,14 @@
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
-	index = [decoder decodeIntForKey:@"index"];
-	status = [decoder decodeIntForKey:@"status"];
-	self.arr = [decoder decodeObjectForKey:@"arr"];
-	return self;
+- (instancetype) initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (self) {
+        index = [decoder decodeIntForKey:@"index"];
+        status = [decoder decodeIntForKey:@"status"];
+        self.arr = [decoder decodeObjectForKey:@"arr"];
+    }
+    return self;
 }
 
 /* Standard copy method. Returns a retained object which is a (shallow) copy. (Skip the cached elements.) */
@@ -176,7 +179,7 @@
     return YES;
 }
 
-- (id) initWithText:(NSString *)initstr style:(glui32)initstyle {
+- (instancetype) initWithText:(NSString *)initstr style:(glui32)initstyle {
 	self = [super init];
 	
 	if (self) {
@@ -189,11 +192,14 @@
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
-	self.str = [decoder decodeObjectForKey:@"str"];
-	style = [decoder decodeInt32ForKey:@"style"];
-	pos = [decoder decodeIntForKey:@"pos"];
-	ismutable = NO;
+- (instancetype) initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (self) {
+        self.str = [decoder decodeObjectForKey:@"str"];
+        style = [decoder decodeInt32ForKey:@"style"];
+        pos = [decoder decodeIntForKey:@"pos"];
+        ismutable = NO;
+    }
 	return self;
 }
 
@@ -240,7 +246,7 @@
 @synthesize linenum;
 @synthesize accessel;
 
-- (id) initWithStrings:(NSArray *)strings styles:(StyleSet *)styles {
+- (instancetype) initWithStrings:(NSArray *)strings styles:(StyleSet *)styles {
 	self = [super init];
 	
 	if (self) {
@@ -390,7 +396,7 @@
 @synthesize str;
 @synthesize style;
 
-- (id) initWithText:(NSString *)initstr style:(glui32)initstyle {
+- (instancetype) initWithText:(NSString *)initstr style:(glui32)initstyle {
 	self = [super init];
 	
 	if (self) {
@@ -418,7 +424,7 @@
     return YES;
 }
 
-- (id) init {
+- (instancetype) init {
 	self = [super init];
 	
 	if (self) {
@@ -434,33 +440,35 @@
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
-	dirty = YES; // when loaded, all dirty
-	width = [decoder decodeIntForKey:@"width"];
-	maxwidth = [decoder decodeIntForKey:@"maxwidth"];
-
-	chars = (glui32 *)malloc(maxwidth * sizeof(glui32));
-	styles = (glui32 *)malloc(maxwidth * sizeof(glui32));
-	for (int ix=0; ix<maxwidth; ix++) {
-		chars[ix] = ' ';
-		styles[ix] = style_Normal;
-	}
-	
-	NSUInteger len;
-	uint8_t *tmpchars = (uint8_t *)[decoder decodeBytesForKey:@"chars" returnedLength:&len];
-	if (tmpchars) {
-		if (len > maxwidth * sizeof(glui32))
-			len = maxwidth * sizeof(glui32);
-		memcpy(chars, tmpchars, len);
-	}
-
-	uint8_t *tmpstyles = (uint8_t *)[decoder decodeBytesForKey:@"styles" returnedLength:&len];
-	if (tmpstyles) {
-		if (len > maxwidth * sizeof(glui32))
-			len = maxwidth * sizeof(glui32);
-		memcpy(styles, tmpstyles, len);
-	}
-
+- (instancetype) initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (self) {
+        dirty = YES; // when loaded, all dirty
+        width = [decoder decodeIntForKey:@"width"];
+        maxwidth = [decoder decodeIntForKey:@"maxwidth"];
+        
+        chars = (glui32 *)malloc(maxwidth * sizeof(glui32));
+        styles = (glui32 *)malloc(maxwidth * sizeof(glui32));
+        for (int ix=0; ix<maxwidth; ix++) {
+            chars[ix] = ' ';
+            styles[ix] = style_Normal;
+        }
+        
+        NSUInteger len;
+        uint8_t *tmpchars = (uint8_t *)[decoder decodeBytesForKey:@"chars" returnedLength:&len];
+        if (tmpchars) {
+            if (len > maxwidth * sizeof(glui32))
+                len = maxwidth * sizeof(glui32);
+            memcpy(chars, tmpchars, len);
+        }
+        
+        uint8_t *tmpstyles = (uint8_t *)[decoder decodeBytesForKey:@"styles" returnedLength:&len];
+        if (tmpstyles) {
+            if (len > maxwidth * sizeof(glui32))
+                len = maxwidth * sizeof(glui32);
+            memcpy(styles, tmpstyles, len);
+        }
+    }
 	return self;
 }
 
@@ -527,7 +535,7 @@
 @synthesize tag;
 @synthesize str;
 
-- (id) initWithTag:(NSNumber *)tagval text:(NSString *)strval {
+- (instancetype) initWithTag:(NSNumber *)tagval text:(NSString *)strval {
 	self = [super init];
 	
 	if (self) {

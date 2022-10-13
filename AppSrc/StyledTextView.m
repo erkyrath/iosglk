@@ -29,7 +29,7 @@
 @synthesize selectionview;
 @synthesize selectionarea;
 
-- (id) initWithFrame:(CGRect)frame margin:(UIEdgeInsets)margin styles:(StyleSet *)stylesval {
+- (instancetype) initWithFrame:(CGRect)frame margin:(UIEdgeInsets)margin styles:(StyleSet *)stylesval {
 	self = [super initWithFrame:frame];
 	if (self) {
 		viewmargin = margin;
@@ -96,7 +96,7 @@
 - (CGFloat) totalHeight {
 	if (!vlines || !vlines.count)
 		return styleset.margins.top + styleset.margins.bottom;
-	GlkVisualLine *vln = [vlines lastObject];
+	GlkVisualLine *vln = vlines.lastObject;
 	return vln.bottom + styleset.margins.bottom;
 }
 
@@ -105,7 +105,7 @@
 - (int) firstLaidOutLine {
 	if (!vlines || !vlines.count)
 		return -1;
-	GlkVisualLine *vln = [vlines objectAtIndex:0];
+	GlkVisualLine *vln = vlines[0];
 	return vln.linenum;
 }
 
@@ -114,7 +114,7 @@
 - (int) lastLaidOutLine {
 	if (!vlines || !vlines.count)
 		return 0;
-	GlkVisualLine *vln = [vlines lastObject];
+	GlkVisualLine *vln = vlines.lastObject;
 	return vln.linenum + 1;
 }
 
@@ -140,14 +140,14 @@
 	pos = MIN(vlines.count-1, pos);
 	pos = MAX(pos, 0);
 
-	while (pos > 0 && ypos < ((GlkVisualLine *)[vlines objectAtIndex:pos]).ypos) {
+	while (pos > 0 && ypos < ((GlkVisualLine *)vlines[pos]).ypos) {
 		pos--;
 	}
-	while (pos < vlines.count-1 && ypos >= ((GlkVisualLine *)[vlines objectAtIndex:pos+1]).ypos) {
+	while (pos < vlines.count-1 && ypos >= ((GlkVisualLine *)vlines[pos+1]).ypos) {
 		pos++;
 	}
 
-	return ((GlkVisualLine *)[vlines objectAtIndex:pos]);
+	return ((GlkVisualLine *)vlines[pos]);
 }
 
 - (CGRect) placeForInputField {
@@ -169,7 +169,7 @@
 		return box;
 	}
 
-	GlkVisualLine *vln = [vlines lastObject];
+	GlkVisualLine *vln = vlines.lastObject;
 	CGFloat ptx = vln.right;
 	if (ptx >= totalwidth * 0.75)
 		ptx = totalwidth * 0.75;
@@ -207,7 +207,7 @@
 	[slines removeAllObjects];
 	firstsline = 0;
 	if (uplines.count) {
-		GlkStyledLine *firstsln = [uplines objectAtIndex:0];
+		GlkStyledLine *firstsln = uplines[0];
 		firstsline = firstsln.index;
 		[slines addObjectsFromArray:uplines];
 	}
@@ -230,7 +230,7 @@
 		[vlines removeObjectsInRange:range];
 		CGFloat yshift = 0;
 		if (vlines.count) {
-			GlkVisualLine *vln = [vlines objectAtIndex:0];
+			GlkVisualLine *vln = vlines[0];
 			yshift = vln.ypos - styleset.margins.top;
 			CGPoint offset = self.contentOffset;
 			offset.y -= yshift;
@@ -244,7 +244,7 @@
 
 	/* If any of the update lines replace known ones, we may have to throw away vlines at the end. */
 	while (vlines.count > 0) {
-		GlkVisualLine *vln = [vlines lastObject];
+		GlkVisualLine *vln = vlines.lastObject;
 		if (vln.linenum < linesdirtyfrom)
 			break;
 		[vlines removeLastObject];
@@ -326,7 +326,7 @@
 	CGFloat bottom = styleset.margins.top;
 	int endlaid = firstsline;
 	if (vlines.count > 0) {
-		GlkVisualLine *vln = [vlines lastObject];
+		GlkVisualLine *vln = vlines.lastObject;
 		bottom = vln.bottom;
 		endlaid = vln.linenum+1;
 	}
@@ -353,7 +353,7 @@
 	CGFloat top = visbottom;
 	int startlaid = firstsline+slines.count;
 	if (vlines.count > 0) {
-		GlkVisualLine *vln = [vlines objectAtIndex:0];
+		GlkVisualLine *vln = vlines[0];
 		top = vln.ypos;
 		startlaid = vln.linenum;
 	}
@@ -432,7 +432,7 @@
 	/* Locate the last unseen line (erring on the "seen" side), and bump endvlineseen. */
 	int lastseen;
 	for (lastseen = vlines.count-1; lastseen >= 0; lastseen--) {
-		GlkVisualLine *vln = [vlines objectAtIndex:lastseen];
+		GlkVisualLine *vln = vlines[lastseen];
 		if (vln.bottom-1 <= visbottom)
 			break;
 	}
@@ -466,7 +466,7 @@
 	endlaid = 0;
 	bottom = 0;
 	while (linesviews.count) {
-		VisualLinesView *linev = [linesviews lastObject];
+		VisualLinesView *linev = linesviews.lastObject;
 		if (linev.ytop < visbottom) {
 			endlaid = linev.vlineend;
 			bottom = linev.ybottom;
@@ -481,7 +481,7 @@
 		int newend = endlaid;
 		CGFloat newbottom = bottom;
 		while (newbottom < bottom+STRIPE_WIDTH && newend < vlines.count) {
-			GlkVisualLine *vln = [vlines objectAtIndex:newend];
+			GlkVisualLine *vln = vlines[newend];
 			newend++;
 			newbottom = vln.bottom;
 		}
@@ -513,7 +513,7 @@
 		top = self.totalHeight;
 	}
 	while (linesviews.count) {
-		VisualLinesView *linev = [linesviews objectAtIndex:0];
+		VisualLinesView *linev = linesviews[0];
 		if (linev.ybottom >= visbounds.origin.y) {
 			startlaid = linev.vlinestart;
 			top = linev.ytop;
@@ -529,7 +529,7 @@
 		CGFloat newtop = top;
 		while (newtop > top-STRIPE_WIDTH && newstart > 0) {
 			newstart--;
-			GlkVisualLine *vln = [vlines objectAtIndex:newstart];
+			GlkVisualLine *vln = vlines[newstart];
 			newtop = vln.ypos;
 		}
 
@@ -628,11 +628,11 @@
 	else if (vlines.count && endvlineseen < vlines.count) {
 		int topline = endvlineseen;
 		if (topline > 0) {
-			GlkVisualLine *vln = [vlines objectAtIndex:topline-1];
+			GlkVisualLine *vln = vlines[topline-1];
 			scrollto = vln.ypos;
 		}
 		else {
-			GlkVisualLine *vln = [vlines objectAtIndex:topline];
+			GlkVisualLine *vln = vlines[topline];
 			scrollto = vln.ypos - styleset.charbox.height;
 		}
 		if (scrollto > scrolltobottom)
@@ -640,7 +640,7 @@
 		//NSLog(@"STV: pageDown one page: %.1f", scrollto);
 	}
 	else if (vlines.count && self.lastLaidOutLine < firstsline+slines.count) {
-		GlkVisualLine *vln = [vlines lastObject];
+		GlkVisualLine *vln = vlines.lastObject;
 		scrollto = vln.ypos;
 		if (scrollto > scrolltobottom)
 			scrollto = scrolltobottom;
@@ -723,7 +723,7 @@
 				break;
 		}
 
-		GlkStyledLine *sln = [slines objectAtIndex:snum-firstsline];
+		GlkStyledLine *sln = slines[snum-firstsline];
 		int vlineforthis = 0;
 
 		int spannum = -1;
@@ -750,7 +750,7 @@
 						paragraphdone = YES;
 						break;
 					}
-					sstr = [sln.arr objectAtIndex:spannum];
+					sstr = (sln.arr)[spannum];
 					str = sstr.str;
 					sfont = fonts[sstr.style];
 					strlen = str.length;
@@ -863,7 +863,7 @@
 	 */
 
 	if (vlines.count) {
-		GlkVisualLine *firstvln = [vlines objectAtIndex:0];
+		GlkVisualLine *firstvln = vlines[0];
 		int count = 0;
 		int lastraw = firstvln.linenum-1;
 		CGFloat bottom = styleset.margins.top;
@@ -890,7 +890,7 @@
 		NSLog(@"STV-SANITY: wrong number of subviews (%d, not %d)", count, (int)linesviews.count);
 
 	if (linesviews.count > 0) {
-		VisualLinesView *firstlinev = [linesviews objectAtIndex:0];
+		VisualLinesView *firstlinev = linesviews[0];
 		int lastv = firstlinev.vlinestart;
 		CGFloat bottom = firstlinev.ytop;
 
@@ -901,9 +901,9 @@
 				NSLog(@"STV-SANITY: linev count %d is not %d", (int)linev.vlines.count, linev.vlineend - linev.vlinestart);
 			if (linev.vlinestart != lastv)
 				NSLog(@"STV-SANITY: vlinestart %d is not %d", linev.vlinestart, lastv);
-			if (linev.vlinestart != (((GlkVisualLine *)([linev.vlines objectAtIndex:0])).vlinenum))
+			if (linev.vlinestart != (((GlkVisualLine *)((linev.vlines)[0])).vlinenum))
 				NSLog(@"STV-SANITY: vlinestart %d does not match first vline", linev.vlinestart);
-			if (linev.vlineend != (((GlkVisualLine *)([linev.vlines lastObject])).vlinenum) + 1)
+			if (linev.vlineend != (((GlkVisualLine *)((linev.vlines).lastObject)).vlinenum) + 1)
 				NSLog(@"STV-SANITY: vlineend %d does not match end vline", linev.vlineend);
 			if (linev.ytop != bottom)
 				NSLog(@"STV-SANITY: vlinestart %.1f is not %.1f", linev.ytop, bottom);
@@ -942,7 +942,7 @@
 	int lastln = -1;
 
 	for (int ix=selectvstart; ix<selectvend; ix++) {
-		GlkVisualLine *vln = [vlines objectAtIndex:ix];
+		GlkVisualLine *vln = vlines[ix];
 		if (lastln != -1) {
 			if (lastln != vln.linenum)
 				[arr addObject:@"\n"];
@@ -973,7 +973,7 @@
 	if (!self.anySelection)
 		return;
 
-	if (![self isFirstResponder])
+	if (!self.isFirstResponder)
 		return;
 
 	UIMenuController *menucon = [UIMenuController sharedMenuController];
@@ -991,9 +991,9 @@
 	selectvend = endvln;
 
 	CGRect rect = RectApplyingEdgeInsets(self.bounds, viewmargin); // for x and width
-	GlkVisualLine *vln = [vlines objectAtIndex:firstvln];
+	GlkVisualLine *vln = vlines[firstvln];
 	rect.origin.y = vln.ypos;
-	vln = [vlines objectAtIndex:endvln-1];
+	vln = vlines[endvln-1];
 	rect.size.height = vln.bottom - rect.origin.y;
 	selectionarea = rect;
 
@@ -1038,13 +1038,13 @@
 	int firstvln = vln.vlinenum;
 	int endvln = firstvln+1;
 	while (firstvln > 0) {
-		vln = [vlines objectAtIndex:firstvln-1];
+		vln = vlines[firstvln-1];
 		if (vln.linenum != slinenum)
 			break;
 		firstvln--;
 	}
 	while (endvln < vlines.count) {
-		vln = [vlines objectAtIndex:endvln];
+		vln = vlines[endvln];
 		if (vln.linenum != slinenum)
 			break;
 		endvln++;
@@ -1130,7 +1130,7 @@
 
 	taptracking = YES;
 	taplastat = now;
-	UITouch *touch = [[event allTouches] anyObject];
+	UITouch *touch = [event.allTouches anyObject];
 	taploc = [touch locationInView:self];
 
 	if (taploc.x < viewmargin.left || taploc.x > self.bounds.size.width - viewmargin.right) {
@@ -1164,7 +1164,7 @@
 	if (!taptracking)
 		return;
 
-	UITouch *touch = [[event allTouches] anyObject];
+	UITouch *touch = [event.allTouches anyObject];
 	CGPoint loc = [touch locationInView:self];
 
 	if (tapseldragging) {
@@ -1249,7 +1249,7 @@
 	if (tapnumber == 1) {
 		/* Single-tap... */
 		BOOL delpermits = ((!viewc.glkdelegate) || [viewc.glkdelegate shouldTapSetKeyboard:YES]);
-		if (![winv.inputfield isFirstResponder] && delpermits) {
+		if (!(winv.inputfield).isFirstResponder && delpermits) {
 			tapnumber = 0;
 			[self pageToBottom];
 			[winv.inputfield becomeFirstResponder];
@@ -1325,7 +1325,7 @@
 	if (index >= vlines.count)
 		return nil;
 
-	GlkVisualLine *vln = [vlines objectAtIndex:index];
+	GlkVisualLine *vln = vlines[index];
 	return [vln accessElementInContainer:self];
 }
 
@@ -1360,7 +1360,7 @@
 @synthesize vlinestart;
 @synthesize vlineend;
 
-- (id) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval vlines:(NSArray *)arr {
+- (instancetype) initWithFrame:(CGRect)frame styles:(StyleSet *)stylesval vlines:(NSArray *)arr {
 	self = [super initWithFrame:frame];
 	if (self) {
 		self.vlines = arr;
@@ -1371,11 +1371,11 @@
 		self.userInteractionEnabled = YES;
 
 		if (vlines.count > 0) {
-			GlkVisualLine *vln = [vlines objectAtIndex:0];
+			GlkVisualLine *vln = vlines[0];
 			vlinestart = vln.vlinenum;
 			ytop = vln.ypos;
 
-			vln = [vlines lastObject];
+			vln = vlines.lastObject;
 			vlineend = vln.vlinenum+1;
 			ybottom = vln.bottom;
 			height = ceilf(ybottom - ytop);

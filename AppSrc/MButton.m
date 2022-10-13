@@ -12,7 +12,7 @@
 @synthesize selectimage;
 @synthesize selectview;
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
@@ -64,7 +64,7 @@
 }
 
 - (void) setSelected:(BOOL)val {
-	[super setSelected:val];
+	super.selected = val;
 	
 	if (selectimage) {
 		selectview.hidden = !val;

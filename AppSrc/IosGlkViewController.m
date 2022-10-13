@@ -64,7 +64,7 @@
 
 - (void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
 		BOOL hidenavbar = (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight);
 		[self.navigationController setNavigationBarHidden:hidenavbar animated:NO];
@@ -110,8 +110,8 @@
 - (void) updateFromLibraryState:(GlkLibraryState *)library {
 	/* Remember whether any window has the input focus. */
 	BOOL anyfocus = NO;
-	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
-		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
+	for (GlkWindowView *winv in (frameview.windowviews).allValues) {
+		if (winv.inputfield && (winv.inputfield).isFirstResponder) {
 			anyfocus = YES;
 			break;
 		}
@@ -123,7 +123,7 @@
 	
 	if (anyfocus) {
 		GlkWindowView *winv = self.preferredInputWindow;
-		if (winv && winv.inputfield && ![winv.inputfield isFirstResponder]) {
+		if (winv && winv.inputfield && !(winv.inputfield).isFirstResponder) {
 			[winv.inputfield becomeFirstResponder];
 		}
 	}
@@ -136,10 +136,10 @@
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
-	NSDictionary *info = [notification userInfo];
+	NSDictionary *info = notification.userInfo;
 	CGRect rect = CGRectZero;
 	UIWindow *window = [IosGlkAppDelegate singleton].window;
-	rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+	rect = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
 	rect = [window convertRect:rect fromWindow:nil];
 	//NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
 	
@@ -177,8 +177,8 @@
 	NSMutableDictionary *windowviews = frameview.windowviews;
 	
 	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = [windowviews objectForKey:tag];
-		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
+		GlkWindowView *winv = windowviews[tag];
+		if (winv.inputfield && (winv.inputfield).isFirstResponder) {
 			return winv;
 		}
 		
@@ -199,8 +199,8 @@
 }
 
 - (void) hideKeyboard {
-	for (GlkWindowView *winv in [frameview.windowviews allValues]) {
-		if (winv.inputfield && [winv.inputfield isFirstResponder]) {
+	for (GlkWindowView *winv in (frameview.windowviews).allValues) {
+		if (winv.inputfield && (winv.inputfield).isFirstResponder) {
 			//NSLog(@"Hiding keyboard for %@", winv);
 			[winv.inputfield resignFirstResponder];
 			break;
@@ -213,7 +213,7 @@
 	if (!winv || !winv.inputfield)
 		return;
 	
-	if ([winv.inputfield isFirstResponder]) {
+	if ((winv.inputfield).isFirstResponder) {
 		//NSLog(@"Hiding keyboard for %@", winv);
 		[winv.inputfield resignFirstResponder];
 	}
@@ -237,7 +237,7 @@
 	}
 	
 	for (NSNumber *tag in frameview.windowviews) {
-		GlkWindowView *winv = [frameview.windowviews objectForKey:tag];
+		GlkWindowView *winv = (frameview.windowviews)[tag];
 		if (winv.inputfield && winv.winstate.line_request) {
 			if (!enter) {
 				winv.inputfield.text = text;
@@ -309,7 +309,7 @@
 			
 		GlkFileSelectViewController *viewc = [[GlkFileSelectViewController alloc] initWithNibName:nibname prompt:prompt bundle:nil];
 		UINavigationController *navc = [[UINavigationController alloc] initWithRootViewController:viewc];
-		[navc setModalPresentationStyle:UIModalPresentationFormSheet];
+		navc.modalPresentationStyle = UIModalPresentationFormSheet;
 		/* Make the navbar opaque, so that iOS7 doesn't try to underlap the view behind it. Nobody likes that. */
 		navc.navigationBar.translucent = NO;
 		[self presentViewController:navc animated:YES completion:nil];

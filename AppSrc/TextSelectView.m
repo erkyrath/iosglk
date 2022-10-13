@@ -15,7 +15,7 @@
 @synthesize bottomhandleview;
 
 
-- (id) initWithFrame:(CGRect)frame
+- (instancetype) initWithFrame:(CGRect)frame
 {
 	self = [super initWithFrame:frame];
 	if (self) {
@@ -105,7 +105,7 @@
 
 @implementation TextOutlineView
 
-- (id) initWithFrame:(CGRect)frame
+- (instancetype) initWithFrame:(CGRect)frame
 {
 	self = [super initWithFrame:frame];
 	if (self) {

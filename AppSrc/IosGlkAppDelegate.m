@@ -42,7 +42,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	singleton = self;
 	
 	{
-		NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
+		NSString *currSysVer = [UIDevice currentDevice].systemVersion;
 		
 		/* Test if we have the old (iOS6, gradient-and-gloss) interface style. */
 		NSString *reqSysVer = @"7.0";
@@ -51,11 +51,11 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 
 	// Add the view controller's view to the window and display. If we're not on iOS3, set the window's rootViewController too.
 	[self.window addSubview:rootviewc.view];
-	[self.window setRootViewController:rootviewc];
+	(self.window).rootViewController = rootviewc;
 	[self.window makeKeyAndVisible];
 
 	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
-	[glkviewc view];
+	glkviewc.view;
 	
 	self.library = [[GlkLibrary alloc] init];
 	self.glkapp = [[GlkAppWrapper alloc] init];
@@ -102,7 +102,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
     NSLog(@"applicationOpenURL: %@ (from %@)", url,     options[UIApplicationOpenURLOptionsSourceApplicationKey]);
 	
 	// This function is iOS5+. The project is set to require iOS5.1.1, so that's fine, but be careful if you're back-porting.
-	if (![url isFileURL]) {
+	if (!url.fileURL) {
 		[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.not-file-url", nil) title:nil];
 		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 		return NO;
@@ -147,8 +147,8 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	}
 	
 	// Move the file into the appropriate subdirectory for fileusage_SavedGame. We'll need to give it the appropriate name -- dumbass-encoded and with no file extension.
-	NSString *filename = [path lastPathComponent];
-	NSString *barefilename = [filename stringByDeletingPathExtension];
+	NSString *filename = path.lastPathComponent;
+	NSString *barefilename = filename.stringByDeletingPathExtension;
 	if (barefilename.length == 0)
 		barefilename = @"Save file";
 	NSString *newfilename = StringToDumbEncoding(barefilename);

@@ -312,7 +312,7 @@ winid_t glk_window_iterate(winid_t win, glui32 *rock)
 
 	if (!win) {
 		if (library.windows.count)
-			win = [library.windows objectAtIndex:0];
+			win = (library.windows)[0];
 		else
 			win = nil;
 	}
@@ -327,7 +327,7 @@ winid_t glk_window_iterate(winid_t win, glui32 *rock)
 			if (pos >= library.windows.count)
 				win = nil;
 			else 
-				win = [library.windows objectAtIndex:pos];
+				win = (library.windows)[pos];
 		}
 	}
 	

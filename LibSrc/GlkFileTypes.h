@@ -15,7 +15,7 @@
 	NSString *pathname;
 }
 
-- (id) initWithUsage:(glui32)usage fmode:(glui32)fmode dirname:(NSString *)dirname;
+- (instancetype) initWithUsage:(glui32)usage fmode:(glui32)fmode dirname:(NSString *)dirname;
 
 @property (nonatomic) glui32 usage;
 @property (nonatomic) glui32 fmode;
@@ -46,7 +46,7 @@
 + (NSString *) labelForFileUsage:(glui32)usage localize:(NSString *)key;
 
 - (NSComparisonResult) compareModTime:(GlkFileThumb *)other;
-- (NSString *) exportTempFile;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *exportTempFile;
 
 @end
 

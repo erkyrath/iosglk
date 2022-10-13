@@ -24,7 +24,7 @@
 @synthesize moreview;
 @synthesize nowcontentscrolling;
 
-- (id) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box margin:(UIEdgeInsets)margin {
+- (instancetype) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	self = [super initWithWindow:winref frame:box margin:margin];
 	if (self) {
 		self.contentMode = UIViewContentModeRedraw;
@@ -55,7 +55,7 @@
 }
 
 - (void) setViewmargin:(UIEdgeInsets)newmargin {
-	[super setViewmargin:newmargin];
+	super.viewmargin = newmargin;
 	
 	if (textview) {
 		textview.viewmargin = viewmargin;

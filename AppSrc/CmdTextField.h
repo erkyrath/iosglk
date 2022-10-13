@@ -26,7 +26,7 @@
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar;
 - (void) adjustInputTraits;
 - (void) adjustForWindowStyles:(StyleSet *)styleset;
-- (BOOL) singleChar;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL singleChar;
 - (void) applyInputString:(NSString *)cmd replace:(BOOL)replace;
 
 - (IBAction) handleMenuButton:(id)sender;

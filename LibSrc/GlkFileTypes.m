@@ -15,7 +15,7 @@
 @synthesize filename;
 @synthesize pathname;
 
-- (id) initWithUsage:(glui32)usageval fmode:(glui32)fmodeval dirname:(NSString *)dirnameval {
+- (instancetype) initWithUsage:(glui32)usageval fmode:(glui32)fmodeval dirname:(NSString *)dirnameval {
 	self = [super init];
 	
 	if (self) {

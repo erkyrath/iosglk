@@ -23,7 +23,7 @@
 @synthesize history;
 @synthesize displaycommand;
 
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winval history:(NSArray *)historylist {
+- (instancetype) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winval history:(NSArray *)historylist {
 	self = [super initWithFrame:frame buttonFrame:rect belowButton:NO];
 	if (self) {
 		mode = inputmenu_None;
@@ -209,7 +209,7 @@
 	
 	if (history.count == 0) {
 		disabled = YES;
-		history = [NSArray arrayWithObject:NSLocalizedString(@"label.no-history", nil)];
+		history = @[NSLocalizedString(@"label.no-history", nil)];
 	}
 
 	CGRect rect = labelbox;
@@ -247,14 +247,14 @@
 		return;
 	
 	if (selection >= 0 && selection < labels.count) {
-		UILabel *label = [labels objectAtIndex:selection];
+		UILabel *label = labels[selection];
 		label.backgroundColor = nil;
 	}
 	
 	selection = val;
 
 	if (selection >= 0 && selection < labels.count) {
-		UILabel *label = [labels objectAtIndex:selection];
+		UILabel *label = labels[selection];
 		label.backgroundColor = [UIColor whiteColor];
 		[menuview setDisplayCommand:label.text];
 	}
@@ -287,7 +287,7 @@
 	if (disabled)
 		return;
 	if (selection >= 0 && selection < labels.count) {
-		UILabel *label = [labels objectAtIndex:selection];
+		UILabel *label = labels[selection];
 		if (menuview && menuview.superview) {
 			[self selectLabel:-1];
 			[menuview acceptCommand:label.text replace:YES close:YES];

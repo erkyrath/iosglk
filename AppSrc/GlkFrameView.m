@@ -36,7 +36,7 @@
 @synthesize rootwintag;
 @synthesize menuview;
 
-- (id) initWithCoder:(NSCoder *)decoder
+- (instancetype) initWithCoder:(NSCoder *)decoder
 {
 	self = [super initWithCoder:decoder];
 	if (self) {
@@ -54,7 +54,7 @@
 
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag {
-	return [windowviews objectForKey:tag];
+	return windowviews[tag];
 }
 
 /* Force all the windows to pick up new stylesets, and force all the windowviews to notice that fact.
@@ -64,7 +64,7 @@
 - (void) updateWindowStyles {
 	[self setNeedsLayout];
 	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = [windowviews objectForKey:tag];
+		GlkWindowView *winv = windowviews[tag];
 		StyleSet *styleset = [StyleSet buildForWindowType:winv.winstate.type rock:winv.winstate.rock];
 		winv.winstate.styleset = styleset;
 		winv.styleset = styleset;
@@ -80,7 +80,7 @@
 
 - (void) updateInputTraits {
 	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = [windowviews objectForKey:tag];
+		GlkWindowView *winv = windowviews[tag];
 		if (winv.inputfield)
 			[winv.inputfield adjustInputTraits];
 	}
@@ -137,8 +137,8 @@
 	Calls setNeedsLayout for any window which changes size.
 */
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box {
-	GlkWindowView *winv = [windowviews objectForKey:tag];
-	Geometry *geometry = [wingeometries objectForKey:tag];
+	GlkWindowView *winv = windowviews[tag];
+	Geometry *geometry = wingeometries[tag];
 	
 	/* Exactly one of winv and geom should be set here. (geom for pair windows, winv for all others.) */
 	if (winv && geometry)
@@ -209,7 +209,7 @@
 
 	/* And close them. */
 	for (NSNumber *tag in closed) {
-		GlkWindowView *winv = [closed objectForKey:tag];
+		GlkWindowView *winv = closed[tag];
 		[winv removeFromSuperview];
 		winv.inputfield = nil; /* detach this now */
 		winv.inputholder = nil;
@@ -220,7 +220,7 @@
 	
 	/* If there are any new windows, create windowviews for them. */
 	for (GlkWindowState *win in library.windows) {
-		if (win.type != wintype_Pair && ![windowviews objectForKey:win.tag]) {
+		if (win.type != wintype_Pair && !windowviews[win.tag]) {
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 			UIEdgeInsets viewmargin = UIEdgeInsetsZero;
 			if (glkviewc.glkdelegate)
@@ -244,7 +244,7 @@
 				default:
 					[NSException raise:@"GlkException" format:@"no windowview class for this window"];
 			}
-			[windowviews setObject:winv forKey:win.tag];
+			windowviews[win.tag] = winv;
 			[self addSubview:winv];
 		}
 	}
@@ -257,7 +257,7 @@
 		for (GlkWindowState *win in library.windows) {
 			if (win.type == wintype_Pair) {
 				GlkWindowPairState *pairwin = (GlkWindowPairState *)win;
-				[wingeometries setObject:pairwin.geometry forKey:win.tag];
+				wingeometries[win.tag] = pairwin.geometry;
 			}
 		}
 	}
@@ -283,12 +283,12 @@
 
 	/* Now go through all the window views, and tell them to update to match their windows. */
 	for (GlkWindowState *win in library.windows) {
-		GlkWindowView *winv = [windowviews objectForKey:win.tag];
+		GlkWindowView *winv = windowviews[win.tag];
 		if (winv)
 			winv.winstate = win;
 	}
 	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = [windowviews objectForKey:tag];
+		GlkWindowView *winv = windowviews[tag];
 		[winv updateFromWindowState];
 		[winv updateFromWindowInputs];
 	}
@@ -300,12 +300,12 @@
 				GlkWindowBufferState *bufwin = (GlkWindowBufferState *)win;
 				NSArray *lines = bufwin.lines;
 				if (lines && lines.count && bufwin.linesdirtyto > bufwin.linesdirtyfrom) {
-					int slinestart = ((GlkStyledLine *)[lines objectAtIndex:0]).index;
+					int slinestart = ((GlkStyledLine *)lines[0]).index;
 					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(1 + bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
 					for (int ix=bufwin.linesdirtyfrom-slinestart; ix<bufwin.linesdirtyto-slinestart; ix++) {
 						if (ix < 0 || ix >= lines.count)
 							continue;
-						GlkStyledLine *vln = [lines objectAtIndex:ix];
+						GlkStyledLine *vln = lines[ix];
 						NSString *str = vln.concatLine;
 						if (str.length)
 							[arr addObject:[GlkAccVisualLine lineForSpeaking:str]];
@@ -332,7 +332,7 @@
 	This is invoked in the main thread, by the VM thread, which is waiting on the result. We're safe from deadlock because the VM thread can't be in glk_select(); it can't be holding the iowait lock, and it can't get into the code path that rearranges the view structure.
 */
 - (void) editingTextForWindow:(GlkTagString *)tagstring {
-	GlkWindowView *winv = [windowviews objectForKey:tagstring.tag];
+	GlkWindowView *winv = windowviews[tagstring.tag];
 	if (!winv)
 		return;
 	

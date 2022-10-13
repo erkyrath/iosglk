@@ -48,8 +48,8 @@
 - (void) acceptEvent:(GlkEventState *)event;
 - (void) acceptEventFileSelect:(GlkFileRefPrompt *)prompt;
 - (void) acceptEventRestart;
-- (BOOL) acceptingEvent;
-- (BOOL) acceptingEventFileSelect;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL acceptingEvent;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL acceptingEventFileSelect;
 - (NSString *) editingTextForWindow:(NSNumber *)tag;
 - (void) setTimerInterval:(NSNumber *)interval;
 - (void) fireTimer:(id)dummy;

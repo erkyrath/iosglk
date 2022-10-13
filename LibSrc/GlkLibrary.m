@@ -59,7 +59,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
     return YES;
 }
 
-- (id) init {
+- (instancetype) init {
 	self = [super init];
 	
 	if (self) {
@@ -92,7 +92,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	/* It is important to remember that a GlkLibrary which is deserialized through this function will *not* be installed straight into service. Instead, it will be imported into the *real* library via the updateFromLibrary method. This frees us from some consistency-check hassle.
 	 
 		Also, it means that a library created via this path is never the singleton.
@@ -226,7 +226,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 */
 - (NSNumber *) generateTag {
 	tagCounter++;
-	return [NSNumber numberWithInteger:tagCounter];
+	return @(tagCounter);
 }
 
 /* Set the library state flag that indicates that glk_exit() has been called. (Or glk_main() returned normally.)
@@ -245,11 +245,11 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 		glk_window_close(rootwin, NULL);
 	}
 	while (streams.count) {
-		GlkStream *str = [streams objectAtIndex:0];
+		GlkStream *str = streams[0];
 		glk_stream_close(str, NULL);
 	}
 	while (filerefs.count) {
-		GlkFileRef *fref = [filerefs objectAtIndex:0];
+		GlkFileRef *fref = filerefs[0];
 		glk_fileref_destroy(fref);
 	}
 	
@@ -329,7 +329,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 		return nil;
 	
 	for (GlkWindow *win in windows) {
-		if ([win.tag intValue] == tag)
+		if ((win.tag).intValue == tag)
 			return win;
 	}
 	
@@ -355,7 +355,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 		return nil;
 	
 	for (GlkStream *str in streams) {
-		if ([str.tag intValue] == tag)
+		if ((str.tag).intValue == tag)
 			return str;
 	}
 	
@@ -381,7 +381,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 		return nil;
 	
 	for (GlkFileRef *fref in filerefs) {
-		if ([fref.tag intValue] == tag)
+		if ((fref.tag).intValue == tag)
 			return fref;
 	}
 	

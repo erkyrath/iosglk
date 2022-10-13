@@ -42,7 +42,7 @@
 	return state;
 }
 
-- (id) initWithType:(glui32)typeval rock:(glui32)rockval {
+- (instancetype) initWithType:(glui32)typeval rock:(glui32)rockval {
 	self = [super init];
 	if (self) {
 		type = typeval;

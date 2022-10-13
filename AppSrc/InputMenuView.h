@@ -35,7 +35,7 @@ typedef enum InputMenuMode_enum {
 @property (nonatomic, strong) NSArray *history;
 @property (nonatomic, strong) NSString *displaycommand;
 
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winview history:(NSArray *)historylist;
+- (instancetype) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winview history:(NSArray *)historylist;
 - (void) setMode:(InputMenuMode)mode;
 - (void) setDisplayCommand:(NSString *)val;
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu;

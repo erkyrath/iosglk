@@ -44,7 +44,7 @@
 + (NSString *) unrelativizePath:(NSString *)path;
 + (NSString *) subDirOfBase:(NSString *)basedir forUsage:(glui32)usage gameid:(NSString *)gameid;
 
-- (id) initWithBase:(NSString *)basedir filename:(NSString *)filename type:(glui32)usage rock:(glui32)frefrock;
+- (instancetype) initWithBase:(NSString *)basedir filename:(NSString *)filename type:(glui32)usage rock:(glui32)frefrock;
 - (void) filerefDelete;
 
 @end

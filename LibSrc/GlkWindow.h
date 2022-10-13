@@ -76,14 +76,14 @@
 
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
 
-- (id) initWithType:(glui32)type rock:(glui32)rock;
+- (instancetype) initWithType:(glui32)type rock:(glui32)rock;
 - (void) updateRegisterArray;
 - (void) windowCloseRecurse:(BOOL)recurse;
 - (void) windowRearrange:(CGRect)box;
 - (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref;
-- (BOOL) supportsInput;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL supportsInput;
 - (void) dirtyAllData;
-- (GlkWindowState *) cloneState;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) GlkWindowState *cloneState;
 
 + (void) unEchoStream:(strid_t)str;
 - (void) putBuffer:(char *)buf len:(glui32)len;
@@ -147,7 +147,7 @@
 @property (nonatomic, strong) GlkWindow *child1;
 @property (nonatomic, strong) GlkWindow *child2;
 
-- (id) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)size;
+- (instancetype) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)size;
 
 @end
 

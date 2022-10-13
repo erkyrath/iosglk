@@ -103,7 +103,7 @@ static void gli_date_to_comps(glkdate_t *date, NSDateComponents *comps, glsi32 *
 void glk_current_time(glktimeval_t *time)
 {
 	NSDate *now = [NSDate date];
-	NSTimeInterval timestamp = [now timeIntervalSince1970];
+	NSTimeInterval timestamp = now.timeIntervalSince1970;
 	gli_timestamp_to_time(timestamp, time);
 }
 
@@ -115,7 +115,7 @@ glsi32 glk_current_simple_time(glui32 factor)
 	}
 
 	NSDate *now = [NSDate date];
-	NSTimeInterval timestamp = [now timeIntervalSince1970];
+	NSTimeInterval timestamp = now.timeIntervalSince1970;
 	return gli_simplify_time((int64_t)timestamp, factor);
 }
 
@@ -178,7 +178,7 @@ void glk_date_to_time_utc(glkdate_t *date, glktimeval_t *time)
 		return;
 	}
 	
-	NSTimeInterval timestamp = [nsdate timeIntervalSince1970];
+	NSTimeInterval timestamp = nsdate.timeIntervalSince1970;
 	gli_timestamp_usec_to_time(timestamp, time, microsec);
 }
 
@@ -197,7 +197,7 @@ void glk_date_to_time_local(glkdate_t *date, glktimeval_t *time)
 		return;
 	}
 	
-	NSTimeInterval timestamp = [nsdate timeIntervalSince1970];
+	NSTimeInterval timestamp = nsdate.timeIntervalSince1970;
 	gli_timestamp_usec_to_time(timestamp, time, microsec);
 }
 
@@ -213,7 +213,7 @@ glsi32 glk_date_to_simple_time_utc(glkdate_t *date, glui32 factor)
 		return -1;
 	}
 
-	NSTimeInterval timestamp = [nsdate timeIntervalSince1970]; // drop microseconds
+	NSTimeInterval timestamp = nsdate.timeIntervalSince1970; // drop microseconds
 	return gli_simplify_time((int64_t)timestamp, factor);
 }
 
@@ -229,7 +229,7 @@ glsi32 glk_date_to_simple_time_local(glkdate_t *date, glui32 factor)
 		return -1;
 	}
 
-	NSTimeInterval timestamp = [nsdate timeIntervalSince1970]; // drop microseconds
+	NSTimeInterval timestamp = nsdate.timeIntervalSince1970; // drop microseconds
 	return gli_simplify_time((int64_t)timestamp, factor);
 }
 

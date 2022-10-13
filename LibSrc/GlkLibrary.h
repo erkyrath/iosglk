@@ -74,8 +74,8 @@
 + (void) setExtraArchiveHook:(void (*)(NSCoder *))hook;
 + (void) setExtraUnarchiveHook:(void (*)(NSCoder *))hook;
 
-- (NSString *) gameId;
-- (NSNumber *) generateTag;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *gameId;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSNumber *generateTag;
 - (void) setVMExited;
 - (void) clearForRestart;
 - (BOOL) setMetricsChanged:(BOOL)metricschanged bounds:(CGRect *)box;
@@ -88,7 +88,7 @@
 - (void) dirtyAllData;
 
 - (void) sanityCheck;
-- (GlkLibraryState *) cloneState;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) GlkLibraryState *cloneState;
 - (void) updateFromLibrary:(GlkLibrary *)otherlib;
 
 @end

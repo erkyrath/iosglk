@@ -58,8 +58,8 @@ typedef void (^questioncallback)(int); // callback block type for displayAdHocQu
 
 - (void) textSelectionWindow:(NSNumber *)tag;
 - (void) preferInputWindow:(NSNumber *)tag;
-- (GlkWindowView *) preferredInputWindow;
-- (BOOL) keyboardIsShown;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) GlkWindowView *preferredInputWindow;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL keyboardIsShown;
 - (void) hideKeyboard;
 - (void) postGameOver;
 - (void) displayModalRequest:(id)special;

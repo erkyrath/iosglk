@@ -39,7 +39,7 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 	static glui32 temp_file_counter = 0;
 
 	NSDate *date = [NSDate date];
-	NSString *tempname = [NSString stringWithFormat:@"_glk_temp_%f-%d", [date timeIntervalSince1970], temp_file_counter++];
+	NSString *tempname = [NSString stringWithFormat:@"_glk_temp_%f-%d", date.timeIntervalSince1970, temp_file_counter++];
 	tempname = [tempname stringByReplacingOccurrencesOfString:@"." withString:@"-"];
 	NSString *tempdir = NSTemporaryDirectory();
 
@@ -75,7 +75,7 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 	/* Take out all '/' and '.' characters, and make sure the length is greater than zero. (Taking out dots is not that necessary, but it avoids the edge cases of "." and "..".) */
 	filename = [filename stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
 	filename = [filename stringByReplacingOccurrencesOfString:@"." withString:@"-"];
-	if ([filename length] == 0)
+	if (filename.length == 0)
 		filename = @"X";
 		
 	NSString *dir = [GlkFileRef documentsDirectory];
@@ -135,7 +135,7 @@ frefid_t glk_fileref_iterate(frefid_t fref, glui32 *rock)
 
 	if (!fref) {
 		if (library.filerefs.count)
-			fref = [library.filerefs objectAtIndex:0];
+			fref = (library.filerefs)[0];
 		else
 			fref = nil;
 	}
@@ -150,7 +150,7 @@ frefid_t glk_fileref_iterate(frefid_t fref, glui32 *rock)
 			if (pos >= library.filerefs.count)
 				fref = nil;
 			else 
-				fref = [library.filerefs objectAtIndex:pos];
+				fref = (library.filerefs)[pos];
 		}
 	}
 	

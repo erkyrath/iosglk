@@ -89,7 +89,7 @@ strid_t glk_stream_iterate(strid_t str, glui32 *rock)
 
 	if (!str) {
 		if (library.streams.count)
-			str = [library.streams objectAtIndex:0];
+			str = (library.streams)[0];
 		else
 			str = nil;
 	}
@@ -104,7 +104,7 @@ strid_t glk_stream_iterate(strid_t str, glui32 *rock)
 			if (pos >= library.streams.count)
 				str = nil;
 			else 
-				str = [library.streams objectAtIndex:pos];
+				str = (library.streams)[pos];
 		}
 	}
 	

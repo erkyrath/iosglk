@@ -21,7 +21,7 @@
 @synthesize lines;
 @synthesize selectionview;
 
-- (id) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box margin:(UIEdgeInsets)margin {
+- (instancetype) initWithWindow:(GlkWindowState *)winref frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	self = [super initWithWindow:winref frame:box margin:margin];
 	if (self) {
 		self.lines = [NSMutableArray arrayWithCapacity:8];
@@ -51,7 +51,7 @@
 	if (pos < 0 || pos >= lines.count)
 		return nil;
 	
-	return (GlkStyledLine *)[lines objectAtIndex:pos];
+	return (GlkStyledLine *)lines[pos];
 }
 
 - (void) layoutSubviews {
@@ -100,7 +100,7 @@
 	
 	for (GlkStyledLine *sln in gridwin.lines) {
 		if (sln.index < lines.count)
-			[lines replaceObjectAtIndex:sln.index withObject:sln];
+			lines[sln.index] = sln;
 		else {
 			while (lines.count < sln.index) {
 				GlkStyledLine *blankln = [[GlkStyledLine alloc] initWithIndex:lines.count];
@@ -176,7 +176,7 @@
 	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:2*(selectvend-selectvstart+1)];
 	
 	for (int ix=selectvstart; ix<selectvend; ix++) {
-		GlkStyledLine *vln = [lines objectAtIndex:ix];
+		GlkStyledLine *vln = lines[ix];
 		[arr addObject:vln.concatLine];
 		[arr addObject:@"\n"];
 	}
@@ -207,7 +207,7 @@
 	if (!self.anySelection)
 		return;
 	
-	if (![self isFirstResponder])
+	if (!self.isFirstResponder)
 		return;
 	
 	UIMenuController *menucon = [UIMenuController sharedMenuController];
@@ -347,7 +347,7 @@
 	
 	taptracking = YES;
 	taplastat = now;
-	UITouch *touch = [[event allTouches] anyObject];
+	UITouch *touch = [event.allTouches anyObject];
 	taploc = [touch locationInView:self];
 	
 	if (self.anySelection) {
@@ -375,7 +375,7 @@
 	if (!taptracking)
 		return;
 	
-	UITouch *touch = [[event allTouches] anyObject];
+	UITouch *touch = [event.allTouches anyObject];
 	CGPoint loc = [touch locationInView:self];
 	
 	if (tapseldragging) {
@@ -443,7 +443,7 @@
 	
 	/* Otherwise, single-tap focuses the input line. */
 	if (tapnumber == 1) {
-		if (![winv.inputfield isFirstResponder]) {
+		if (!(winv.inputfield).isFirstResponder) {
 			tapnumber = 0;
 			[winv.inputfield becomeFirstResponder];
 		}
@@ -511,7 +511,7 @@
 	if (self.inputholder && index == gridwin.cury)
 		return self.inputholder;
 
-	GlkStyledLine *vln = [lines objectAtIndex:index];
+	GlkStyledLine *vln = lines[index];
 	return [vln accessElementInContainer:self];
 }
 

@@ -44,7 +44,7 @@ void glk_request_timer_events(glui32 millisecs) {
 	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
 	NSNumber *interval = nil;
 	if (millisecs) {
-		interval = [[NSNumber alloc] initWithDouble:((double)millisecs * 0.001)];
+		interval = @((double)millisecs * 0.001);
 	}
 	[appwrap performSelectorOnMainThread:@selector(setTimerInterval:) withObject:interval waitUntilDone:NO];
 }

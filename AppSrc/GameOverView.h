@@ -12,7 +12,7 @@
 
 @property (nonatomic, strong) IBOutlet UIView *container;
 
-- (NSString *) nibForContent;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *nibForContent;
 - (IBAction) handleRestartButton:(id)sender;
 
 @end

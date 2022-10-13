@@ -25,14 +25,14 @@
 @synthesize filelist;
 @synthesize dateformatter;
 
-- (id) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)promptref bundle:(NSBundle *)nibBundle {
+- (instancetype) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)promptref bundle:(NSBundle *)nibBundle {
 	self = [super initWithNibName:nibName bundle:nibBundle];
 	if (self) {
 		self.prompt = promptref;
 		self.filelist = [NSMutableArray arrayWithCapacity:16];
 		self.dateformatter = [[RelDateFormatter alloc] init];
-		[dateformatter setDateStyle:NSDateFormatterMediumStyle];
-		[dateformatter setTimeStyle:NSDateFormatterShortStyle];
+		dateformatter.dateStyle = NSDateFormatterMediumStyle;
+		dateformatter.timeStyle = NSDateFormatterShortStyle;
 		
 		self.usekey = [GlkFileThumb labelForFileUsage:(prompt.usage & fileusage_TypeMask) localize:nil];
 	}
@@ -88,7 +88,7 @@
 	UIBarButtonItem *cancelbutton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(buttonCancel:)];
 	
 	self.navigationItem.leftBarButtonItem = cancelbutton;
-	self.navigationItem.rightBarButtonItem = [self editButtonItem];
+	self.navigationItem.rightBarButtonItem = self.editButtonItem;
 	
 	[filelist removeAllObjects];
 	NSArray *ls = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:prompt.dirname error:nil];
@@ -140,9 +140,9 @@
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
-	NSDictionary *info = [notification userInfo];
+	NSDictionary *info = notification.userInfo;
 	CGFloat diff = 0;
-	CGRect rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+	CGRect rect = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
 	rect = [self.tableView convertRect:rect fromView:nil];
 	/* The rect is the keyboard size in view coordinates (properly rotated). */
 	CGRect tablerect = self.tableView.bounds;
@@ -186,7 +186,7 @@
 	
 	int row = indexPath.row;
 	if (row >= 0 && row < filelist.count)
-		thumb = [filelist objectAtIndex:row];
+		thumb = filelist[row];
 		
 	return (thumb && !thumb.isfake);
 }
@@ -204,7 +204,7 @@
 	
 	int row = indexPath.row;
 	if (row >= 0 && row < filelist.count)
-		thumb = [filelist objectAtIndex:row];
+		thumb = filelist[row];
 		
 	/* Make the cell look right... */
 	
@@ -236,16 +236,16 @@
 		GlkFileThumb *thumb = nil;
 		int row = indexPath.row;
 		if (row >= 0 && row < filelist.count)
-			thumb = [filelist objectAtIndex:row];
+			thumb = filelist[row];
 		if (thumb && !thumb.isfake) {
-			GlkFileThumb *thumb = [filelist objectAtIndex:row];
+			GlkFileThumb *thumb = filelist[row];
 			BOOL res = [[NSFileManager defaultManager] removeItemAtPath:thumb.pathname error:nil];
 			if (res) {
 				[filelist removeObjectAtIndex:row];
-				[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+				[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
 				if (filelist.count == 0) {
 					[self addBlankThumb];
-					[tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+					[tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
 				}
 			}
 		}
@@ -258,7 +258,7 @@
 	GlkFileThumb *thumb = nil;
 	int row = indexPath.row;
 	if (row >= 0 && row < filelist.count)
-		thumb = [filelist objectAtIndex:row];
+		thumb = filelist[row];
 	if (!thumb)
 		return;
 	if (thumb.isfake)

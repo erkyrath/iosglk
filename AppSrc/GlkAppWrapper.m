@@ -40,7 +40,7 @@ static GlkAppWrapper *singleton = nil;
 	return singleton;
 }
 
-- (id) init {
+- (instancetype) init {
 	self = [super init];
 	
 	if (self) {
@@ -415,7 +415,7 @@ static GlkAppWrapper *singleton = nil;
 	if (interval) {
 		self.timerinterval = interval;
 		/* The delay value in this method is an NSTimeInterval, which is defined as double. */
-		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:[timerinterval doubleValue]];
+		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:timerinterval.doubleValue];
 	}
 	
 }
@@ -424,7 +424,7 @@ static GlkAppWrapper *singleton = nil;
 - (void) fireTimer:(id)dummy {
 	//NSLog(@"Timer fires!");
 	if (timerinterval) {
-		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:[timerinterval doubleValue]];
+		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:timerinterval.doubleValue];
 	}
 	
 	[self acceptEvent:[GlkEventState timerEvent]];

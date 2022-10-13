@@ -23,15 +23,15 @@ typedef enum GlkSaveFormat_enum {
 
 @protocol IosGlkLibDelegate <NSObject>
 
-- (NSString *) gameId;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *gameId;
 - (GlkSaveFormat) checkGlkSaveFileFormat:(NSString *)path;
 - (void) displayGlkFileUsage:(int)usage name:(NSString *)filename;
 - (GlkWinBufferView *) viewForBufferWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (BOOL) shouldTapSetKeyboard:(BOOL)toopen;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;
-- (BOOL) hasDarkTheme;
-- (CGSize) interWindowSpacing;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasDarkTheme;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGSize interWindowSpacing;
 - (CGRect) adjustFrame:(CGRect)rect;
 - (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win rect:(CGRect)rect framebounds:(CGRect)framebounds;
 - (void) vmHasExited;
