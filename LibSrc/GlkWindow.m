@@ -46,6 +46,10 @@
 
 NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
 /* Create a window with a given type. (But not Pair windows -- those use a different path.) This is invoked by glk_window_open().
 */
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock {
@@ -581,6 +585,10 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 @synthesize linesdirtyfrom;
 @synthesize lines;
 
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
 - (id) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super initWithType:wintype rock:winrock];
 	
@@ -762,6 +770,10 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 @synthesize height;
 @synthesize curx;
 @synthesize cury;
+
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
 - (id) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super initWithType:wintype rock:winrock];
@@ -959,6 +971,10 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 
 @synthesize geometry;
 @synthesize keydamage;
+
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
 /* GlkWindowPair gets a special initializer. (Only called from glk_window_open() when a window is split.)
 */

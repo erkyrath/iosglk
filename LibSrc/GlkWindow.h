@@ -15,7 +15,7 @@
 @class StyleSet;
 @class Geometry;
 
-@interface GlkWindow : NSObject {
+@interface GlkWindow : NSObject <NSSecureCoding> {
 	GlkLibrary *library;
 	BOOL inlibrary;
 	

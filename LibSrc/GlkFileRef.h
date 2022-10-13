@@ -11,7 +11,7 @@
 @class GlkLibrary;
 
 
-@interface GlkFileRef : NSObject {
+@interface GlkFileRef : NSObject <NSSecureCoding> {
 	GlkLibrary *library;
 	BOOL inlibrary;
 	

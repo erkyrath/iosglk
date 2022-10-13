@@ -27,6 +27,10 @@
 @synthesize rock;
 @synthesize textmode;
 
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
 /* Find the user's Documents directory. 
  */
 + (NSString *) documentsDirectory {

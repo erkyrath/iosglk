@@ -30,6 +30,10 @@
 @synthesize child1tag;
 @synthesize child2tag;
 
++ (BOOL)supportsSecureCoding {
+    return YES;
+}
+
 - (id) init {
 	self = [super init];
 	

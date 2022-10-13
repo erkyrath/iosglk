@@ -25,6 +25,10 @@
 @synthesize readable;
 @synthesize writable;
 
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
 - (id) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock {
 	self = [super init];
 	
@@ -190,6 +194,10 @@
 @synthesize win;
 @synthesize wintag;
 
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
 - (id) initWithWindow:(GlkWindow *)winref {
 	self = [super initWithType:strtype_Window readable:NO writable:YES rock:0];
 	
@@ -281,6 +289,10 @@
 @synthesize buflen;
 @synthesize buf;
 @synthesize ubuf;
+
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
 - (id) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)bufval len:(glui32)buflenval {
 	BOOL isreadable = (fmode != filemode_Write);
@@ -833,6 +845,10 @@
 @synthesize readbuffer;
 @synthesize writebuffer;
 @synthesize offsetinfile;
+
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
 /* This constructor is used by the regular Glk glk_stream_open_file() call.
 */

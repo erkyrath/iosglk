@@ -55,6 +55,10 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	return singleton;
 }
 
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
 - (id) init {
 	self = [super init];
 	
@@ -93,88 +97,91 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	 
 		Also, it means that a library created via this path is never the singleton.
 	 */
-	
-	int version = [decoder decodeIntForKey:@"version"];
-	if (version <= 0 || version > SERIAL_VERSION)
-		return nil;
-	
-	/* If the vm has exited, we shouldn't have saved the state! */
-	vmexited = NO;
-	self.specialrequest = nil;
-	
-	bounds = [decoder decodeCGRectForKey:@"bounds"];
-	geometrychanged = YES;
-	metricschanged = YES;
-	everythingchanged = YES;
-	
-	self.windows = [decoder decodeObjectForKey:@"windows"];
-	self.streams = [decoder decodeObjectForKey:@"streams"];
-	self.filerefs = [decoder decodeObjectForKey:@"filerefs"];
-	
-	// will be zero if no timerinterval was saved
-	timerinterval = [decoder decodeInt32ForKey:@"timerinterval"];
-	
-	// skip the calendar and filemanager fields; they're not needed
 
-	NSNumber *rootwintag = [decoder decodeObjectForKey:@"rootwintag"];
-	NSNumber *currentstrtag = [decoder decodeObjectForKey:@"currentstrtag"];
-	
-	tagCounter = 0;
-	for (GlkWindow *win in windows) {
-		win.library = self;
-		glui32 tag = win.tag.intValue;
-		if (tag > tagCounter)
-			tagCounter = tag;
-		if (rootwintag && [win.tag isEqualToNumber:rootwintag])
-			self.rootwin = win;
-	}
-	for (GlkStream *str in streams) {
-		str.library = self;
-		glui32 tag = str.tag.intValue;
-		if (tag > tagCounter)
-			tagCounter = tag;
-		if (currentstrtag && [str.tag isEqualToNumber:currentstrtag])
-			self.currentstr = str;
-	}
-	for (GlkFileRef *fref in filerefs) {
-		fref.library = self;
-		glui32 tag = fref.tag.intValue;
-		if (tag > tagCounter)
-			tagCounter = tag;
-	}
+    self = [super init];
+    if (self) {
+        int version = [decoder decodeIntForKey:@"version"];
+        if (version <= 0 || version > SERIAL_VERSION)
+            return nil;
 
-	for (GlkWindow *win in windows) {
-		win.parent = (GlkWindowPair *)[self windowForTag:win.parenttag];
-		win.stream = [self streamForTag:win.streamtag];
-		if (win.echostreamtag)
-			win.echostream = [self streamForTag:win.echostreamtag];
-		
-		if (win.type == wintype_Pair) {
-			GlkWindowPair *pairwin = (GlkWindowPair *)win;
-			pairwin.child1 = [self windowForTag:pairwin.geometry.child1tag];
-			pairwin.child2 = [self windowForTag:pairwin.geometry.child2tag];
-		}
-	}
-	
-	for (GlkStream *str in streams) {
-		switch (str.type) {
-			case strtype_Window: {
-				GlkStreamWindow *winstr = (GlkStreamWindow *)str;
-				if (winstr.wintag)
-					winstr.win = [self windowForTag:winstr.wintag];
-			}
-			break;
-			default:
-				break;
-		}
-	}
-	
-	// We don't worry about glkdelegate or the dispatch hooks. (Because this will only be used through updateFromLibrary). Similarly, none of the windows need stylesets yet, and none of the file streams are really open.
-	
-	// Load any interpreter-specific data.
-	if (extra_unarchive_hook)
-		extra_unarchive_hook(decoder);
-	
+        /* If the vm has exited, we shouldn't have saved the state! */
+        vmexited = NO;
+        self.specialrequest = nil;
+
+        NSValue *boundsVal = [decoder decodeObjectForKey:@"bounds"];
+        bounds = boundsVal.CGRectValue;
+        geometrychanged = YES;
+        metricschanged = YES;
+        everythingchanged = YES;
+
+        self.windows = [decoder decodeObjectForKey:@"windows"];
+        self.streams = [decoder decodeObjectForKey:@"streams"];
+        self.filerefs = [decoder decodeObjectForKey:@"filerefs"];
+
+        // will be zero if no timerinterval was saved
+        timerinterval = [decoder decodeInt32ForKey:@"timerinterval"];
+
+        // skip the calendar and filemanager fields; they're not needed
+
+        NSNumber *rootwintag = [decoder decodeObjectForKey:@"rootwintag"];
+        NSNumber *currentstrtag = [decoder decodeObjectForKey:@"currentstrtag"];
+
+        tagCounter = 0;
+        for (GlkWindow *win in windows) {
+            win.library = self;
+            glui32 tag = win.tag.intValue;
+            if (tag > tagCounter)
+                tagCounter = tag;
+            if (rootwintag && [win.tag isEqualToNumber:rootwintag])
+                self.rootwin = win;
+        }
+        for (GlkStream *str in streams) {
+            str.library = self;
+            glui32 tag = str.tag.intValue;
+            if (tag > tagCounter)
+                tagCounter = tag;
+            if (currentstrtag && [str.tag isEqualToNumber:currentstrtag])
+                self.currentstr = str;
+        }
+        for (GlkFileRef *fref in filerefs) {
+            fref.library = self;
+            glui32 tag = fref.tag.intValue;
+            if (tag > tagCounter)
+                tagCounter = tag;
+        }
+
+        for (GlkWindow *win in windows) {
+            win.parent = (GlkWindowPair *)[self windowForTag:win.parenttag];
+            win.stream = [self streamForTag:win.streamtag];
+            if (win.echostreamtag)
+                win.echostream = [self streamForTag:win.echostreamtag];
+
+            if (win.type == wintype_Pair) {
+                GlkWindowPair *pairwin = (GlkWindowPair *)win;
+                pairwin.child1 = [self windowForTag:pairwin.geometry.child1tag];
+                pairwin.child2 = [self windowForTag:pairwin.geometry.child2tag];
+            }
+        }
+
+        for (GlkStream *str in streams) {
+            switch (str.type) {
+                case strtype_Window: {
+                    GlkStreamWindow *winstr = (GlkStreamWindow *)str;
+                    if (winstr.wintag)
+                        winstr.win = [self windowForTag:winstr.wintag];
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // We don't worry about glkdelegate or the dispatch hooks. (Because this will only be used through updateFromLibrary). Similarly, none of the windows need stylesets yet, and none of the file streams are really open.
+
+        // Load any interpreter-specific data.
+        if (extra_unarchive_hook)
+            extra_unarchive_hook(decoder);
+    }
 	return self;
 }
 
@@ -183,9 +190,9 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	[encoder encodeInt:SERIAL_VERSION forKey:@"version"];
 	
 	NSAssert(!vmexited && specialrequest == nil, @"GlkLibrary tried to serialize in special input state");
-	
-	[encoder encodeCGRect:bounds forKey:@"bounds"];
-	
+
+    NSValue *boundsVal = [NSValue valueWithCGRect:bounds];
+    [encoder encodeObject:boundsVal forKey:@"bounds"];
 	[encoder encodeObject:windows forKey:@"windows"];
 	[encoder encodeObject:streams forKey:@"streams"];
 	[encoder encodeObject:filerefs forKey:@"filerefs"];

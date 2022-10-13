@@ -9,7 +9,7 @@
 
 @class StyleSet;
 
-@interface Geometry : NSObject {
+@interface Geometry : NSObject <NSSecureCoding> {
 	glui32 dir;
 	glui32 division;
 	BOOL hasborder;

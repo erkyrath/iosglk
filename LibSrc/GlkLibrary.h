@@ -13,7 +13,7 @@
 @class GlkLibraryState;
 @protocol IosGlkLibDelegate;
 
-@interface GlkLibrary : NSObject {
+@interface GlkLibrary : NSObject <NSSecureCoding> {
 	id <IosGlkLibDelegate> glkdelegate;
 	
 	NSMutableArray *windows; /* GlkWindow objects */

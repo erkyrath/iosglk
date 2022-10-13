@@ -18,7 +18,7 @@ typedef enum GlkStreamType_enum {
 	strtype_Memory=3
 } GlkStreamType;
 
-@interface GlkStream : NSObject {
+@interface GlkStream : NSObject <NSSecureCoding> {
 	GlkLibrary *library;
 	BOOL inlibrary;
 	
