@@ -178,17 +178,6 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	return self;
 }
 
-- (void) dealloc {
-	if (singleton == self)
-		singleton = nil;
-	if (utccalendar) {
-		utccalendar = nil;
-	}
-	if (localcalendar) {
-		localcalendar = nil;
-	}
-}
-
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	//NSLog(@"### GlkLibrary: encoding with %d windows, %d streams, %d filerefs", windows.count, streams.count, filerefs.count);
 	[encoder encodeInt:SERIAL_VERSION forKey:@"version"];

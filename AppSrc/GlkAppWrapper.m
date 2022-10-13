@@ -63,11 +63,6 @@ static GlkAppWrapper *singleton = nil;
 	return self;
 }
 
-- (void) dealloc {
-	if (singleton == self)
-		singleton = nil;
-}
-
 - (void) launchAppThread {
 	if (thread)
 		[NSException raise:@"GlkException" format:@"cannot create two app threads"];

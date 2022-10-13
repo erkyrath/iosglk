@@ -111,7 +111,7 @@
 	if (self) {
 		self.opaque = NO;
 		self.contentMode = UIViewContentModeRedraw;
-		self.contentStretch = CGRectMake(0.5, 0.5, 0, 0);
+//		self.contentStretch = CGRectMake(0.5, 0.5, 0, 0);
 	}
 	return self;
 }

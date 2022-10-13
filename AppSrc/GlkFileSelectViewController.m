@@ -170,10 +170,6 @@
 		[self performSelector:@selector(textFieldContinueReturn:) withObject:self.textfield afterDelay:0.0];
 }
 
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation {
-	return [[IosGlkViewController singleton] shouldAutorotateToInterfaceOrientation:orientation];
-}
-
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated {
 	[super setEditing:editing animated:animated];
 	[tableView setEditing:editing animated:animated];
@@ -315,20 +311,24 @@
 	
 	if (prompt.fmode != filemode_WriteAppend && [[NSFileManager defaultManager] fileExistsAtPath:prompt.pathname]) {
 		NSString *str = [NSString stringWithFormat:NSLocalizedString([usekey stringByAppendingString:@".replacequery"], nil), label];
-		UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:NSLocalizedString(@"button.replace", nil) otherButtonTitles:nil];
-		[sheet showInView:textfield];
+
+        UIAlertController *sheet = [UIAlertController alertControllerWithTitle:str message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+        [sheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}]];
+
+        [sheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.replace", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+            // Destructive button tapped.
+            [self dismissViewControllerAnimated:YES completion:^{}];
+            [[GlkAppWrapper singleton] acceptEventFileSelect:self->prompt];
+        }]];
+
+        // Present action sheet.
+        [self presentViewController:sheet animated:YES completion:nil];
 		return;
 	}
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
-}
-
-- (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 0) {
-		[self dismissViewControllerAnimated:YES completion:nil];
-		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
-	}
 }
 
 - (void) didReceiveMemoryWarning {

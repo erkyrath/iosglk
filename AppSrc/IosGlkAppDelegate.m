@@ -95,9 +95,11 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
  
  This is only called if the Info.plist file contains CFBundleDocumentTypes for the .glksave UTI. If the URL launched us, this will be called immediately after diFinishLaunching.
  */
-- (BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (BOOL) application:(UIApplication *)application openURL:(NSURL *)url
+             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
-	NSLog(@"applicationOpenURL: %@ (from %@)", url, sourceApplication);
+
+    NSLog(@"applicationOpenURL: %@ (from %@)", url,     options[UIApplicationOpenURLOptionsSourceApplicationKey]);
 	
 	// This function is iOS5+. The project is set to require iOS5.1.1, so that's fine, but be careful if you're back-porting.
 	if (![url isFileURL]) {

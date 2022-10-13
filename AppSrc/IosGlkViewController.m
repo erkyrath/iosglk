@@ -64,8 +64,9 @@
 
 - (void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-		BOOL hidenavbar = (self.interfaceOrientation == UIInterfaceOrientationLandscapeLeft || self.interfaceOrientation == UIInterfaceOrientationLandscapeRight);
+		BOOL hidenavbar = (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight);
 		[self.navigationController setNavigationBarHidden:hidenavbar animated:NO];
 	}
 }
@@ -82,10 +83,13 @@
 		[frameview requestLibraryState:appdelegate.glkapp];
 }
 
-- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration {
+- (void) viewWillTransitionToSize:(CGSize)size
+        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-		BOOL hidenavbar = (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight);
-		[self.navigationController setNavigationBarHidden:hidenavbar animated:YES];
+		BOOL hidenavbar = (size.width > size.height);
+        
+        [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) { self.navigationController.navigationBarHidden = hidenavbar; }
+                                     completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {} ];
 	}
 }
 
@@ -349,8 +353,12 @@
 /* Display an alert sheet that doesn't come from the game. For example, this might be called when a file is passed to the app from another app.
  */
 - (void) displayAdHocAlert:(NSString *)msg title:(NSString *)title {
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:NSLocalizedString(@"button.ok", nil) otherButtonTitles:nil];
-	[alert show];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
+
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.ok", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}]];
+
+    // Present alert sheet.
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 /* Display an action sheet to ask a two-option question. (There's always a "cancel" option. This does not use the "destructive" red-button option.)
@@ -364,24 +372,46 @@
 		return;
 	}
 	self.currentquestion = qcallback;
-	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:msg delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:nil otherButtonTitles:opt1, opt2, nil];
-	sheet.delegate = self;
-	[sheet showInView:[IosGlkAppDelegate singleton].rootviewc.view];
+
+    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:msg message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    [sheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        questioncallback qcallback = self.currentquestion;
+        self.currentquestion = nil;
+        qcallback(0);
+    }]];
+
+    [sheet addAction:[UIAlertAction actionWithTitle:opt1 style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        questioncallback qcallback = self.currentquestion;
+        self.currentquestion = nil;
+        qcallback(1);
+    }]];
+
+    [sheet addAction:[UIAlertAction actionWithTitle:opt2 style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        questioncallback qcallback = self.currentquestion;
+        self.currentquestion = nil;
+        qcallback(2);
+    }]];
+
+    [self presentViewController:sheet animated:YES completion:nil];
+
+//	sheet.delegate = self;
+//	[sheet showInView:[IosGlkAppDelegate singleton].rootviewc.view];
 }
 
-/* Delegate method for UIActionSheet. Used by displayAdHocQuestion.
- */
-- (void) actionSheet:(UIActionSheet *)sheet didDismissWithButtonIndex:(NSInteger)index {
-	int res;
-	if (index == -1 || index == sheet.cancelButtonIndex)
-		res = 0;
-	else
-		res = (index - sheet.firstOtherButtonIndex) + 1;
-	
-	questioncallback qcallback = self.currentquestion;
-	self.currentquestion = nil;
-	qcallback(res);
-}
+///* Delegate method for UIActionSheet. Used by displayAdHocQuestion.
+// */
+//- (void) actionSheet:(UIActionSheet *)sheet didDismissWithButtonIndex:(NSInteger)index {
+//	int res;
+//	if (index == -1 || index == sheet.cancelButtonIndex)
+//		res = 0;
+//	else
+//		res = (index - sheet.firstOtherButtonIndex) + 1;
+//
+//	questioncallback qcallback = self.currentquestion;
+//	self.currentquestion = nil;
+//	qcallback(res);
+//}
 
 - (void) didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
