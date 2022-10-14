@@ -301,17 +301,19 @@
 		/* File selection. */
 		GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
 		
-		NSString *nibname;
+		NSString *sbname;
 		if (prompt.fmode == filemode_Read)
-			nibname = @"GlkFileSelectLoad";
+			sbname = @"GlkFileSelectLoad";
 		else
-			nibname = @"GlkFileSelectStore";
+			sbname = @"GlkFileSelectStore";
+
+        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"GlkFileSelect" bundle:nil];
 			
-		GlkFileSelectViewController *viewc = [[GlkFileSelectViewController alloc] initWithNibName:nibname prompt:prompt bundle:nil];
-		UINavigationController *navc = [[UINavigationController alloc] initWithRootViewController:viewc];
-		navc.modalPresentationStyle = UIModalPresentationFormSheet;
-		/* Make the navbar opaque, so that iOS7 doesn't try to underlap the view behind it. Nobody likes that. */
-		navc.navigationBar.translucent = NO;
+
+		UINavigationController *navc = [sb instantiateViewControllerWithIdentifier:sbname];
+        GlkFileSelectViewController *viewc = (GlkFileSelectViewController *)navc.viewControllers[0];
+        viewc.prompt = prompt;
+
 		[self presentViewController:navc animated:YES completion:nil];
 		return;
 	}

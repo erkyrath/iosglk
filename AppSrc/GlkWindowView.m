@@ -125,6 +125,7 @@
 			
 			/* This places the field correctly, and adds it as a subview if it isn't already. */
 			[self placeInputField:inputfield holder:inputholder];
+            [inputfield becomeFirstResponder];
 		}
 	}
 }

@@ -25,23 +25,16 @@
 @synthesize filelist;
 @synthesize dateformatter;
 
-- (instancetype) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)promptref bundle:(NSBundle *)nibBundle {
-	self = [super initWithNibName:nibName bundle:nibBundle];
-	if (self) {
-		self.prompt = promptref;
-		self.filelist = [NSMutableArray arrayWithCapacity:16];
-		self.dateformatter = [[RelDateFormatter alloc] init];
-		dateformatter.dateStyle = NSDateFormatterMediumStyle;
-		dateformatter.timeStyle = NSDateFormatterShortStyle;
-		
-		self.usekey = [GlkFileThumb labelForFileUsage:(prompt.usage & fileusage_TypeMask) localize:nil];
-	}
-	return self;
-}
-
 - (void) viewDidLoad {
 	[super viewDidLoad];
-	
+
+    self.filelist = [NSMutableArray arrayWithCapacity:16];
+    self.dateformatter = [[RelDateFormatter alloc] init];
+    dateformatter.dateStyle = NSDateFormatterMediumStyle;
+    dateformatter.timeStyle = NSDateFormatterShortStyle;
+
+    self.usekey = [GlkFileThumb labelForFileUsage:(prompt.usage & fileusage_TypeMask) localize:nil];
+
 	isload = (prompt.fmode == filemode_Read);
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -81,7 +74,7 @@
 		UILabel *label = [[UILabel alloc] initWithFrame:rect];
 		label.text = NSLocalizedString([usekey stringByAppendingString:@".listlabel"], nil);
 		label.textAlignment = NSTextAlignmentCenter;
-		label.textColor = [UIColor lightGrayColor];
+//		label.textColor = [UIColor lightGrayColor];
 		tableView.tableHeaderView = label;
 	}
 	
@@ -212,19 +205,19 @@
 		// shouldn't happen
 		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		cell.textLabel.text = @"(null)";
-		cell.textLabel.textColor = [UIColor blackColor];
+//		cell.textLabel.textColor = [UIColor blackColor];
 		cell.detailTextLabel.text = @"?";
 	}
 	else if (thumb.isfake) {
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		cell.textLabel.text = thumb.label;
-		cell.textLabel.textColor = [UIColor lightGrayColor];
+//		cell.textLabel.textColor = [UIColor lightGrayColor];
 		cell.detailTextLabel.text = @"";
 	}
 	else {
 		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		cell.textLabel.text = thumb.label;
-		cell.textLabel.textColor = [UIColor blackColor];
+//		cell.textLabel.textColor = [UIColor blackColor];
 		cell.detailTextLabel.text = [dateformatter stringFromDate:thumb.modtime];
 	}
 
@@ -329,13 +322,6 @@
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
-}
-
-- (void) didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-	[super didReceiveMemoryWarning];
-
-	// Release any cached data, images, etc. that aren't in use.
 }
 
 @end

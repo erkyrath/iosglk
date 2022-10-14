@@ -120,7 +120,6 @@
 		leading = 0;
 		margintotal = CGSizeZero;
 		self.backgroundcolor = [UIColor whiteColor];
-		/* We have to malloc these buffers. I tried embedding it as an array of pointers in the StyleSet object, but ObjC threw a hissy-cow. */
 		fonts = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
 			fonts[ix] = [UIFont systemFontOfSize:14];

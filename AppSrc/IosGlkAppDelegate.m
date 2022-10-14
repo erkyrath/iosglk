@@ -16,13 +16,12 @@
 #import "GlkAppWrapper.h"
 #import "GlkUtilities.h"
 
+//#import "TerpGlkViewController.h"
+
 #include "glk.h"
 
 @implementation IosGlkAppDelegate
 
-@synthesize window;
-@synthesize rootviewc;
-@synthesize glkviewc;
 @synthesize library;
 @synthesize glkapp;
 
@@ -49,35 +48,38 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 		oldstyleui = !([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
 	}
 
-	// Add the view controller's view to the window and display. If we're not on iOS3, set the window's rootViewController too.
-	[self.window addSubview:rootviewc.view];
-	(self.window).rootViewController = rootviewc;
 	[self.window makeKeyAndVisible];
 
 	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
-	glkviewc.view;
+//	glkviewc.view;
 	
 	self.library = [[GlkLibrary alloc] init];
 	self.glkapp = [[GlkAppWrapper alloc] init];
 	/* Set library.glkdelegate to a default value, if the glkviewc doesn't provide one. (Remember, from now on, that glkviewc.glkdelegate may be null!) */
-	if (glkviewc.glkdelegate)
-		library.glkdelegate = glkviewc.glkdelegate;
+
+    UITabBarController *rootNavigationController = (UITabBarController *)self.window.rootViewController;
+    UINavigationController *gameNavController = (UINavigationController *)rootNavigationController.viewControllers[0];
+
+    _glkviewc = (IosGlkViewController *)gameNavController.viewControllers[0];
+
+    if (_glkviewc.glkdelegate)
+        library.glkdelegate = _glkviewc.glkdelegate;
 	else
 		library.glkdelegate = [DefaultGlkLibDelegate singleton];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
+    [[NSNotificationCenter defaultCenter] addObserver:_glkviewc
 											 selector:@selector(keyboardWillBeShown:)
 												 name:UIKeyboardWillShowNotification object:nil];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
+    [[NSNotificationCenter defaultCenter] addObserver:_glkviewc
 											 selector:@selector(keyboardWillBeHidden:)
 												 name:UIKeyboardWillHideNotification object:nil];
 	
-	[glkviewc didFinishLaunching];
+    [_glkviewc didFinishLaunching];
 	
-	CGRect box = glkviewc.frameview.bounds;
-	if (glkviewc.glkdelegate)
-		box = [glkviewc.glkdelegate adjustFrame:box];
+    CGRect box = _glkviewc.frameview.bounds;
+    if (_glkviewc.glkdelegate)
+        box = [_glkviewc.glkdelegate adjustFrame:box];
 	[library setMetricsChanged:YES bounds:&box];
 
 	//NSLog(@"AppDelegate launching app thread");
@@ -246,7 +248,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
  We should save, and also pause tasks and timers.
  */
 - (void) applicationWillResignActive:(UIApplication *)application {
-	[glkviewc becameInactive];
+    [_glkviewc becameInactive];
 	
 	/* I think maybe this happens automatically, but I'm not positive. Doesn't hurt to be sure. */
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -255,7 +257,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 /* User "quit" the application, either with the home button or the process-bar. We should release as much memory as possible.
  */
 - (void) applicationDidEnterBackground:(UIApplication *)application {
-	[glkviewc enteredBackground];
+    [_glkviewc enteredBackground];
 }
 
 /* User "launched" the application. This will be followed immediately by applicationDidBecomeActive.
@@ -266,7 +268,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 /* The application has returned to being active.
  */
 - (void) applicationDidBecomeActive:(UIApplication *)application {
-	[glkviewc becameActive];
+    [_glkviewc becameActive];
 }
 
 /* The application is being seriously shut down. (This is only called for OS3 and for old (third-gen) devices, where backgrounding doesn't exist.)

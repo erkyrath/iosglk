@@ -11,19 +11,14 @@
 @class GlkAppWrapper;
 
 @interface IosGlkAppDelegate : NSObject <UIApplicationDelegate> {
-	UIWindow *window;
 	
 	/* These could refer to the same IosGlkViewController, or rootviewc could be a UINavigationController. Up to the application. TheMainWindow nib determines the layout. */
-	UIViewController *rootviewc;
-	IosGlkViewController *glkviewc;
-	
 	GlkLibrary *library;
 	GlkAppWrapper *glkapp;
 }
 
 @property (nonatomic, strong) IBOutlet UIWindow *window;
-@property (nonatomic, strong) IBOutlet UIViewController *rootviewc;
-@property (nonatomic, strong) IBOutlet IosGlkViewController *glkviewc;
+@property (nonatomic, strong) IosGlkViewController *glkviewc;
 
 @property (nonatomic, strong) GlkLibrary *library;
 @property (nonatomic, strong) GlkAppWrapper *glkapp;
