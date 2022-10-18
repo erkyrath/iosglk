@@ -315,6 +315,13 @@
             [[GlkAppWrapper singleton] acceptEventFileSelect:self->prompt];
         }]];
 
+        UIPopoverPresentationController *popoverController = sheet.popoverPresentationController;
+        if (popoverController) {
+            popoverController.sourceView = self.view;
+            popoverController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds), 0, 0);
+            popoverController.permittedArrowDirections = 0;
+        }
+
         // Present action sheet.
         [self presentViewController:sheet animated:YES completion:nil];
 		return;

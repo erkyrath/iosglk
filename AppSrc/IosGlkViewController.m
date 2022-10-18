@@ -359,6 +359,13 @@
 
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.ok", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}]];
 
+    UIPopoverPresentationController *popoverController = alert.popoverPresentationController;
+    if (popoverController) {
+        popoverController.sourceView = self.view;
+        popoverController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds), 0, 0);
+        popoverController.permittedArrowDirections = 0;
+    }
+
     // Present alert sheet.
     [self presentViewController:alert animated:YES completion:nil];
 }
@@ -394,6 +401,13 @@
         self.currentquestion = nil;
         qcallback(2);
     }]];
+
+    UIPopoverPresentationController *popoverController = sheet.popoverPresentationController;
+    if (popoverController) {
+        popoverController.sourceView = self.view;
+        popoverController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds), 0, 0);
+        popoverController.permittedArrowDirections = 0;
+    }
 
     [self presentViewController:sheet animated:YES completion:nil];
 
