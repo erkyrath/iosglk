@@ -1365,7 +1365,7 @@
 	}
 	else {
 		/* UTF8 stream (whether the unicode flag is set or not) */
-		/* Turn the buffer into an NSString. We'll release this at the end of the function. 
+		/* Turn the buffer into an NSString. 
 			This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
 		NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 		NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
