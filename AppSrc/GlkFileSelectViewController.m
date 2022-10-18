@@ -74,7 +74,7 @@
 		UILabel *label = [[UILabel alloc] initWithFrame:rect];
 		label.text = NSLocalizedString([usekey stringByAppendingString:@".listlabel"], nil);
 		label.textAlignment = NSTextAlignmentCenter;
-//		label.textColor = [UIColor lightGrayColor];
+		label.textColor = [UIColor lightGrayColor];
 		tableView.tableHeaderView = label;
 	}
 	
@@ -204,20 +204,20 @@
 	if (!thumb) {
 		// shouldn't happen
 		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-		cell.textLabel.text = @"(null)";
-//		cell.textLabel.textColor = [UIColor blackColor];
+		cell.textLabel.text = NSLocalizedString(@"(null)", nil);
+		cell.textLabel.textColor = [UIColor colorNamed:@"CustomText"];
 		cell.detailTextLabel.text = @"?";
 	}
 	else if (thumb.isfake) {
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		cell.textLabel.text = thumb.label;
-//		cell.textLabel.textColor = [UIColor lightGrayColor];
+		cell.textLabel.textColor = [UIColor lightGrayColor];
 		cell.detailTextLabel.text = @"";
 	}
 	else {
 		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		cell.textLabel.text = thumb.label;
-//		cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.textColor = [UIColor colorNamed:@"CustomText"];
 		cell.detailTextLabel.text = [dateformatter stringFromDate:thumb.modtime];
 	}
 

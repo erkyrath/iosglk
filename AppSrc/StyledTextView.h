@@ -77,7 +77,7 @@
 
 
 @interface VisualLinesView : UIView {
-	NSArray *vlines; /* Array of GlkVisualLine */
+	NSArray<GlkVisualLine *> *vlines; /* Array of GlkVisualLine */
 	StyleSet *styleset;
 	CGFloat ytop; /* The ypos of the first line */
 	CGFloat ybottom; /* The bottom of the last line */

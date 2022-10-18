@@ -95,6 +95,9 @@
 	GlkWindowBufferState *bufwin = (GlkWindowBufferState *)winstate;
 	
 	//NSLog(@"WBV: updateFromWindowState: %d lines (dirty %d to %d)", bufwin.lines.count, bufwin.linesdirtyfrom, bufwin.linesdirtyto);
+
+    textview.backgroundColor = bufwin.styleset.backgroundcolor;
+
 	if (bufwin.linesdirtyfrom >= bufwin.linesdirtyto)
 		return;
 	

@@ -14,8 +14,8 @@ typedef struct FontVariants_struct {
 } FontVariants;
 
 @interface StyleSet : NSObject {
-    NSMutableArray<UIFont *> *fonts; /* array[style_NUMSTYLES] of retained UIFonts (malloced) */
-    NSMutableArray<UIColor *> *colors; /* array[style_NUMSTYLES] of retained UIColors (malloced) */
+    NSMutableArray *fonts; /* array[style_NUMSTYLES] of UIFonts */
+    NSMutableArray *colors; /* array[style_NUMSTYLES] of UIColors */
 	CGFloat leading; /* extra space below each line (uniform across all styles) */
 	CGSize charbox; /* maximum size of a single rendered character (normal style) (including leading) */
 	UIColor *backgroundcolor; /* background color for window */

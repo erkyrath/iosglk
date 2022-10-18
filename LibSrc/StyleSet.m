@@ -122,20 +122,20 @@
 		self.backgroundcolor = [UIColor whiteColor];
 		fonts = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
-			fonts[ix] = [UIFont systemFontOfSize:14];
+            fonts[ix] = [NSNull null];
         colors = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
-			colors[ix] = [UIColor blackColor];
+            colors[ix] = [NSNull null];
 	}
 	
 	return self;
 }
 
 - (void) completeForWindowType:(glui32)wintype {
-	/* Fill in any fonts and colors that were omitted. Use autoreleased references at this point. */
-	
+	/* Fill in any fonts and colors that were omitted. */
+
 	for (int ix=0; ix<style_NUMSTYLES; ix++) {
-		if (!fonts[ix]) {
+		if ([fonts[ix] isEqual:[NSNull null]]) {
 			switch (ix) {
 				case style_Normal:
 					if (wintype == wintype_TextBuffer)
@@ -148,8 +148,8 @@
 					break;
 			}
 		}
-		
-		if (!colors[ix]) {
+
+        if ([colors[ix] isEqual:[NSNull null]]) {
 			switch (ix) {
 				case style_Normal:
 					colors[ix] = [UIColor blackColor];
@@ -159,12 +159,6 @@
 					break;
 			}
 		}
-	}
-	
-	/* The delegate prepareStyles method (also the code above) filled the arrays with autoreleased fonts and colors. We retain them now. */
-	for (int ix=0; ix<style_NUMSTYLES; ix++) {
-		fonts[ix];
-		colors[ix];
 	}
 	
 	CGSize size;
