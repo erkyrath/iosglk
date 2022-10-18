@@ -306,7 +306,9 @@
 	int concatlen = self.concatLine.length;
 	
 	if (!letterpos) {
-		letterpos = (CGFloat *)malloc(sizeof(CGFloat) * (1+concatlen));
+        size_t mallocsize = sizeof(CGFloat) * (1+concatlen);
+		letterpos = (CGFloat *)malloc(mallocsize);
+        bzero(letterpos, mallocsize);
 		
 		NSMutableArray<UIFont *> *fonts = styleset.fonts;
 		
