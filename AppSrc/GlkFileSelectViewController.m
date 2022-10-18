@@ -309,10 +309,11 @@
 
         [sheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}]];
 
+        GlkFileSelectViewController __weak *weakSelf = self;
         [sheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.replace", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             // Destructive button tapped.
             [self dismissViewControllerAnimated:YES completion:^{}];
-            [[GlkAppWrapper singleton] acceptEventFileSelect:self->prompt];
+            [[GlkAppWrapper singleton] acceptEventFileSelect:weakSelf.prompt];
         }]];
 
         UIPopoverPresentationController *popoverController = sheet.popoverPresentationController;

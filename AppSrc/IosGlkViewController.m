@@ -308,7 +308,6 @@
 			sbname = @"GlkFileSelectStore";
 
         UIStoryboard *sb = [UIStoryboard storyboardWithName:@"GlkFileSelect" bundle:nil];
-			
 
 		UINavigationController *navc = [sb instantiateViewControllerWithIdentifier:sbname];
         GlkFileSelectViewController *viewc = (GlkFileSelectViewController *)navc.viewControllers[0];
@@ -384,21 +383,23 @@
 
     UIAlertController *sheet = [UIAlertController alertControllerWithTitle:msg message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
+    IosGlkViewController __weak *weakSelf = self;
+
     [sheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        questioncallback qcallback = self.currentquestion;
-        self.currentquestion = nil;
+        questioncallback qcallback = weakSelf.currentquestion;
+        weakSelf.currentquestion = nil;
         qcallback(0);
     }]];
 
     [sheet addAction:[UIAlertAction actionWithTitle:opt1 style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        questioncallback qcallback = self.currentquestion;
-        self.currentquestion = nil;
+        questioncallback qcallback = weakSelf.currentquestion;
+        weakSelf.currentquestion = nil;
         qcallback(1);
     }]];
 
     [sheet addAction:[UIAlertAction actionWithTitle:opt2 style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        questioncallback qcallback = self.currentquestion;
-        self.currentquestion = nil;
+        questioncallback qcallback = weakSelf.currentquestion;
+        weakSelf.currentquestion = nil;
         qcallback(2);
     }]];
 
@@ -411,29 +412,6 @@
 
     [self presentViewController:sheet animated:YES completion:nil];
 
-//	sheet.delegate = self;
-//	[sheet showInView:[IosGlkAppDelegate singleton].rootviewc.view];
-}
-
-///* Delegate method for UIActionSheet. Used by displayAdHocQuestion.
-// */
-//- (void) actionSheet:(UIActionSheet *)sheet didDismissWithButtonIndex:(NSInteger)index {
-//	int res;
-//	if (index == -1 || index == sheet.cancelButtonIndex)
-//		res = 0;
-//	else
-//		res = (index - sheet.firstOtherButtonIndex) + 1;
-//
-//	questioncallback qcallback = self.currentquestion;
-//	self.currentquestion = nil;
-//	qcallback(res);
-//}
-
-- (void) didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-	[super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
 }
 
 @end

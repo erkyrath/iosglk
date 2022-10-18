@@ -90,8 +90,9 @@
 	}
 	
 	if (animated && self.superview) {
+        PopMenuView __weak *weakSelf = self;
 		[UIView animateWithDuration:0.25 
-                         animations:^{ self->frameview.frame = rect; } ];
+                         animations:^{ weakSelf.frameview.frame = rect; } ];
 	}
 	else {
 		frameview.frame = rect;

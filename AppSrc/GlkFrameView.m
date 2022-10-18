@@ -380,8 +380,9 @@
 	if (/* DISABLES CODE */ (true)) {
 		menuview.alpha = 0;
 		[self addSubview:menuview];
+        GlkFrameView __weak *weakSelf = self;
 		[UIView animateWithDuration:0.1 
-                         animations:^{ self->menuview.alpha = 1; } ];
+                         animations:^{ weakSelf.menuview.alpha = 1; } ];
 	}
 	else {
 		[self addSubview:menuview];

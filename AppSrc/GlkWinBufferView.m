@@ -139,8 +139,9 @@
 		if (moreview) {
 			moreview.alpha = 0;
 			moreview.hidden = NO;
+            GlkWinBufferView __weak *weakSelf = self;
 			[UIView animateWithDuration:0.2 
-                             animations:^{ self->moreview.alpha = 0.5; } ];
+                             animations:^{ weakSelf.moreview.alpha = 0.5; } ];
 		}
 		else {
 			moreview.hidden = NO;
@@ -148,9 +149,10 @@
 	}
 	else {
 		if (moreview) {
+            GlkWinBufferView __weak *weakSelf = self;
 			[UIView animateWithDuration:0.2 
-                             animations:^{ self->moreview.alpha = 0; }
-                             completion:^(BOOL finished) { self->moreview.hidden = YES; } ];
+                             animations:^{ weakSelf.moreview.alpha = 0; }
+                             completion:^(BOOL finished) { weakSelf.moreview.hidden = YES; } ];
 		}
 		else {
 			moreview.hidden = YES;
