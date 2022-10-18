@@ -123,6 +123,12 @@
 	}
 }
 
+- (void) viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([[GlkAppWrapper singleton] acceptingEventFileSelect])
+        [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
+}
+
 
 - (void) addBlankThumb {
 	GlkFileThumb *thumb = [[GlkFileThumb alloc] init];
@@ -154,8 +160,8 @@
 }
 
 - (IBAction) buttonCancel:(id)sender {
+    [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 	[self dismissViewControllerAnimated:YES completion:nil];
-	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 }
 
 - (IBAction) buttonSave:(id)sender {
@@ -265,8 +271,8 @@
 		/* The user has selected a file. */
 		prompt.filename = thumb.filename;
 		prompt.pathname = thumb.pathname;
+        [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 		[self dismissViewControllerAnimated:YES completion:nil];
-		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 	}
 }
 
@@ -327,9 +333,9 @@
         [self presentViewController:sheet animated:YES completion:nil];
 		return;
 	}
-	
+
+    [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 	[self dismissViewControllerAnimated:YES completion:nil];
-	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
 }
 
 @end
