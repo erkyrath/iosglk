@@ -155,7 +155,7 @@ static GlkAppWrapper *singleton = nil;
 			}
 			/* It's possible there's no frameview right now. If not, the call will be a no-op. When the frameview comes along, it will call requestViewUpdate and we'll get back to it. */
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
-			[glkviewc performSelectorOnMainThread:@selector(updateFromLibraryState:) withObject:[library cloneState] waitUntilDone:NO];
+			[glkviewc performSelectorOnMainThread:@selector(updateFromLibraryState:) withObject:library.cloneState waitUntilDone:NO];
 		}
 		
 		if (event && (pendingsizechange || pendingmetricchange)) {

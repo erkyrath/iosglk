@@ -165,7 +165,7 @@
 /* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. Add it as a subview of the textview (if necessary), and move it to the right place.
 */
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder {
-	CGRect box = [textview placeForInputField];
+	CGRect box = textview.placeForInputField;
 	//NSLog(@"WBV: input field goes to %@", StringFromRect(box));
 	
 	field.frame = CGRectMake(0, 0, box.size.width, box.size.height);

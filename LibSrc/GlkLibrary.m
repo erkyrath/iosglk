@@ -215,7 +215,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	If this app runs a single game, we don't care about this, so we always return "GameID".
  */
 - (NSString *) gameId {
-	NSString *gameid = [glkdelegate gameId];
+	NSString *gameid = glkdelegate.gameId;
 	if (gameid)
 		return gameid;
 	return @"GameID";
@@ -418,7 +418,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	
 	NSMutableArray *winstates = [NSMutableArray arrayWithCapacity:windows.count];
 	for (GlkWindow *win in windows) {
-		GlkWindowState *winstate = [win cloneState];
+		GlkWindowState *winstate = win.cloneState;
 		winstate.library = state;
 		[winstates addObject:winstate];
 	}
@@ -485,7 +485,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	for (GlkStream *str in streams) {
 		if (str.type == strtype_File) {
 			GlkStreamFile *filestr = (GlkStreamFile *)str;
-			BOOL res = [filestr reopenInternal];
+			BOOL res = filestr.reopenInternal;
 			if (!res)
 				[failedstreams addObject:str];
 		}

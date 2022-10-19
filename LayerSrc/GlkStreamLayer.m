@@ -159,7 +159,7 @@ glui32 glk_stream_get_position(strid_t str)
 		return 0;
 	}
 	
-	return [str getPosition];
+	return str.position;
 }
 
 void glk_put_char(unsigned char ch)

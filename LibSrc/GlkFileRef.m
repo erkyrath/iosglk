@@ -123,7 +123,7 @@
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
-		self.tag = [library generateTag];
+		self.tag = library.generateTag;
 		rock = frefrock;
 		
 		textmode = ((usage & fileusage_TextMode) != 0);

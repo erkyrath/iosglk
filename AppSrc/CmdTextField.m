@@ -21,13 +21,6 @@
 @synthesize menubutton;
 @synthesize wintag;
 
-- (instancetype) initWithFrame:(CGRect)frame {
-	self = [super initWithFrame:frame];
-	if (self) {
-	}
-	return self;
-}
-
 
 - (BOOL) becomeFirstResponder {
 	BOOL res = [super becomeFirstResponder];

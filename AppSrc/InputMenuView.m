@@ -190,7 +190,7 @@
 
 - (void) setUpFromHistory:(NSArray *)history {
 	/* The iPhone only has room for a few items. On the iPad we allow more. */
-	int maxlen = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 6 : 12;
+	int maxlen = (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) ? 6 : 12;
 	if (history.count > maxlen) {
 		NSRange range;
 		range.location = history.count - maxlen;

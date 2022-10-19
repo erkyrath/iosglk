@@ -64,8 +64,17 @@
 
 - (void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+
+    UIInterfaceOrientation orientation = UIInterfaceOrientationPortrait;
+
+    UIWindow *firstWindow = UIApplication.sharedApplication.windows[0];
+    if (firstWindow != nil) {
+        UIWindowScene *windowScene = firstWindow.windowScene;
+        if (windowScene != nil){
+            orientation = windowScene.interfaceOrientation;
+        }
+    }
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
 		BOOL hidenavbar = (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight);
 		[self.navigationController setNavigationBarHidden:hidenavbar animated:NO];
 	}
@@ -85,7 +94,7 @@
 
 - (void) viewWillTransitionToSize:(CGSize)size
         withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
 		BOOL hidenavbar = (size.width > size.height);
         
         [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) { self.navigationController.navigationBarHidden = hidenavbar; }
@@ -231,7 +240,7 @@
  */
 - (BOOL) forceLineInput:(NSString *)text enter:(BOOL)enter
 {
-	if (![[GlkAppWrapper singleton] acceptingEvent]) {
+	if (![GlkAppWrapper singleton].acceptingEvent) {
 		/* The VM is not currently awaiting input. */
 		return NO;
 	}
@@ -259,7 +268,7 @@
  */
 - (BOOL) forceCustomEvent:(uint32_t)evtype windowTag:(NSNumber *)tag val1:(uint32_t)val1 val2:(uint32_t)val2
 {
-	if (![[GlkAppWrapper singleton] acceptingEvent]) {
+	if (![GlkAppWrapper singleton].acceptingEvent) {
 		/* The VM is not currently awaiting input. */
 		return NO;
 	}

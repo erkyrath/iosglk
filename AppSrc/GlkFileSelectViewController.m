@@ -125,7 +125,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    if ([[GlkAppWrapper singleton] acceptingEventFileSelect])
+    if ([GlkAppWrapper singleton].acceptingEventFileSelect)
         [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 }
 
@@ -291,7 +291,7 @@
 }
 
 - (void) textFieldContinueReturn:(UITextField *)textField {
-	if (![[GlkAppWrapper singleton] acceptingEventFileSelect]) {
+	if (![GlkAppWrapper singleton].acceptingEventFileSelect) {
 		/* A filename must already have been accepted. */
 		return;
 	}

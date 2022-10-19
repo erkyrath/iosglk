@@ -89,7 +89,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
-		self.tag = [library generateTag];
+		self.tag = library.generateTag;
 		type = wintype;
 		rock = winrock;
 		
@@ -405,7 +405,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 /* Set up the window for character input. (The next updateFromWindowInputs call will make use of this information.)
 */
 - (void) beginCharInput:(BOOL)unicode {
-	if (![self supportsInput]) {
+	if (!self.supportsInput) {
 		[GlkLibrary strictWarning:@"beginCharInput: window does not support keyboard input"];
 		return;
 	}
@@ -443,7 +443,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 /* Set up the window for line input. (The next updateFromWindowInputs call will make use of this information.)
 */
 - (void) beginLineInput:(void *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen {
-	if (![self supportsInput]) {
+	if (!self.supportsInput) {
 		[GlkLibrary strictWarning:@"beginLineInput: window does not support keyboard input"];
 		return;
 	}
@@ -627,7 +627,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (GlkWindowState *) cloneState {
-	GlkWindowBufferState *state = (GlkWindowBufferState *)[super cloneState];
+	GlkWindowBufferState *state = (GlkWindowBufferState *)super.cloneState;
 	
 	/* First, trim lines from the top if linesdirtyfrom is too large. We use linesdirtyfrom as the measure because that's the number of lines the player has seen -- at least, the number that have been cloned off to the view previously. (We also measure lines.count, for double-safety.) */
 	
@@ -820,7 +820,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (GlkWindowState *) cloneState {
-	GlkWindowGridState *state = (GlkWindowGridState *)[super cloneState];
+	GlkWindowGridState *state = (GlkWindowGridState *)super.cloneState;
 	
 	state.width = width;
 	state.height = height;
@@ -1025,7 +1025,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (GlkWindowState *) cloneState {
-	GlkWindowPairState *state = (GlkWindowPairState *)[super cloneState];
+	GlkWindowPairState *state = (GlkWindowPairState *)super.cloneState;
 	/* Clone the geometry object, since it's not immutable */
 	state.geometry = [geometry copy];
 	return state;

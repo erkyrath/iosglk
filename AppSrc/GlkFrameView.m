@@ -121,11 +121,8 @@
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
 		//NSLog(@"### root window exists; layout performing windowViewRearrange, box %@", StringFromRect(box));
-		[UIView beginAnimations:@"windowViewRearrange" context:nil];
-		[UIView setAnimationDuration:0.0];
-		/* This calls setNeedsLayout for all windows. */
-		[self windowViewRearrange:rootwintag rect:box];
-		[UIView commitAnimations];
+        GlkFrameView __weak *weakSelf = self;
+        [UIView animateWithDuration:0.0 animations:^{ [weakSelf windowViewRearrange:weakSelf.rootwintag rect:box]; } ];
 	}
 	
 	/* Now tell the VM thread. */
@@ -265,11 +262,12 @@
 	if (rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
 		//NSLog(@"### root window exists; update performing windowViewRearrange, cachedGlkBox %@ (valid %d)", StringFromRect(cachedGlkBox), cachedGlkBoxInvalid);
-		[UIView beginAnimations:@"windowViewRearrange" context:nil];
-		[UIView setAnimationDuration:0.0];
-		/* This calls setNeedsLayout for all windows. */
-		[self windowViewRearrange:rootwintag rect:cachedGlkBox];
-		[UIView commitAnimations];
+        GlkFrameView __weak *weakSelf = self;
+        [UIView animateWithDuration:0.0 animations:^{
+            GlkFrameView *strongSelf = weakSelf;
+            if (strongSelf)
+                [strongSelf windowViewRearrange:strongSelf.rootwintag rect:strongSelf->cachedGlkBox];
+        }];
 	}
 	
 	/*

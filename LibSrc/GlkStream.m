@@ -36,7 +36,7 @@
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
-		self.tag = [library generateTag];
+		self.tag = library.generateTag;
 		type = strtype;
 		rock = strrock;
 		readable = isreadable;
@@ -1380,7 +1380,7 @@
 	if (!textmode) {
 		if (!unicode) {
 			/* byte stream */
-			int ch = [self readByte];
+			int ch = self.readByte;
 			if (ch < 0)
 				return -1;
 			readcount++;
@@ -1403,7 +1403,7 @@
 	else {
 		/* UTF8 stream (whether the unicode flag is set or not) */
 		/* We have to do our own UTF8 decoding here. There's no NSFileHandle method to read a variable-length UTF8 character. I'm very sorry. */
-		int ch = [self readByte];
+		int ch = self.readByte;
 		if (ch < 0)
 			return -1;
 		glui32 val0 = ch;
@@ -1412,7 +1412,7 @@
 			return val0;
 		}
 		if ((val0 & 0xE0) == 0xC0) {
-			ch = [self readByte];
+			ch = self.readByte;
 			if (ch < 0)
 				return -1;
 			glui32 val1 = ch;
@@ -1424,11 +1424,11 @@
 			return res;
 		}
 		if ((val0 & 0xF0) == 0xE0) {
-			ch = [self readByte];
+			ch = self.readByte;
 			if (ch < 0)
 				return -1;
 			glui32 val1 = ch;
-			ch = [self readByte];
+			ch = self.readByte;
 			if (ch < 0)
 				return -1;
 			glui32 val2 = ch;
@@ -1441,15 +1441,15 @@
 			return res;
 		}
 		if ((val0 & 0xF0) == 0xF0) {
-			ch = [self readByte];
+			ch = self.readByte;
 			if (ch < 0)
 				return -1;
 			glui32 val1 = ch;
-			ch = [self readByte];
+			ch = self.readByte;
 			if (ch < 0)
 				return -1;
 			glui32 val2 = ch;
-			ch = [self readByte];
+			ch = self.readByte;
 			if (ch < 0)
 				return -1;
 			glui32 val3 = ch;
@@ -1482,7 +1482,7 @@
 			/* byte stream */
 			int ix;
 			for (ix=0; !gotnewline && ix<getlen; ix++) {
-				int ch = [self readByte];
+				int ch = self.readByte;
 				if (ch < 0)
 					break;
 				readcount++;

@@ -449,7 +449,7 @@
 	CmdTextField *inputfield = self.inputfield;
 	UIScrollView *inputholder = self.inputholder;
 	if (inputholder) {
-		CGRect rect = [self placeForInputField];
+		CGRect rect = self.placeForInputField;
 		if (!CGRectEqualToRect(inputholder.frame, rect)) {
 			//NSLog(@"STV: input field shifts to %@", StringFromRect(rect));
 			inputfield.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
@@ -977,9 +977,7 @@
 		return;
 
 	UIMenuController *menucon = [UIMenuController sharedMenuController];
-	[menucon setTargetRect:selectionarea inView:self];
-	if (!menucon.menuVisible)
-		[menucon setMenuVisible:YES animated:YES];
+    [menucon showMenuFromView:self rect:selectionarea];
 }
 
 - (void) setSelectionStart:(int)firstvln end:(int)endvln {
@@ -1023,7 +1021,7 @@
 
 	UIMenuController *menucon = [UIMenuController sharedMenuController];
 	if (menucon.menuVisible)
-		[menucon setMenuVisible:NO animated:YES];
+        [menucon hideMenuFromView:self];
 }
 
 - (void) selectParagraphAt:(CGPoint)loc {
@@ -1276,17 +1274,15 @@
 				CGPoint newpt = RectCenter(winv.inputholder.frame);
                 CGSize curinputsize = [winv.inputfield.text sizeWithAttributes:@{ NSFontAttributeName:winv.inputfield.font}];
 				newpt.x = winv.inputholder.frame.origin.x + curinputsize.width + 0.5*rect.size.width;
-                [UIView beginAnimations:@"labelFling" context:(__bridge void * _Nullable)(label)];
-				[UIView setAnimationDelegate:self];
-				[UIView setAnimationDuration:0.3];
-				[UIView setAnimationDidStopSelector:@selector(labelFlingEnd:finished:context:)];
-				[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
-				label.center = newpt;
-				label.alpha = 0.25;
-				[UIView commitAnimations];
 
-				/* Put the word into the input field */
-				[winv.inputfield applyInputString:wd replace:NO];
+                [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+                    label.center = newpt;
+                    label.alpha = 0.25;
+                } completion:^(BOOL finished) {
+                    [label removeFromSuperview];
+                    /* Put the word into the input field */
+                    [winv.inputfield applyInputString:wd replace:NO];
+                }];
 			}
 		}
 	}
@@ -1295,11 +1291,6 @@
 - (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 	//NSLog(@"STV: Touch cancelled");
 	[self clearTouchTracking];
-}
-
-- (void) labelFlingEnd:(NSString *)animid finished:(NSNumber *)finished context:(void *)context {
-    UILabel *label = (__bridge UILabel *)context;
-	[label removeFromSuperview];
 }
 
 - (BOOL) isAccessibilityElement {

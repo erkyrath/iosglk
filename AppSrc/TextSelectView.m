@@ -66,12 +66,15 @@
 			outlineview.alpha = 1;
 	}
 	else {
-		[UIView beginAnimations:@"seloutlineMove" context:nil];
-		[UIView setAnimationDuration:0.2];
-		outlineview.frame = outline;
-		if (!outlinevisible)
-			outlineview.alpha = 1;
-		[UIView commitAnimations];
+        TextSelectView __weak *weakSelf = self;
+        [UIView animateWithDuration:0.2 animations:^{
+            TextSelectView *strongSelf = weakSelf;
+            if (strongSelf) {
+                strongSelf.outlineview.frame = strongSelf->outline;
+                if (!strongSelf->outlinevisible)
+                    strongSelf.outlineview.alpha = 1;
+            }
+        }];
 	}
 
 	outlinevisible = YES;
@@ -88,10 +91,10 @@
 		outlineview.alpha = 0;
 	}
 	else {
-		[UIView beginAnimations:@"seloutlineHide" context:nil];
-		[UIView setAnimationDuration:0.2];
-		outlineview.alpha = 0;
-		[UIView commitAnimations];
+        TextSelectView __weak *weakSelf = self;
+        [UIView animateWithDuration:0.2 animations:^{
+            weakSelf.outlineview.alpha = 0;
+        }];
 	}
 	
 	outlinevisible = NO;

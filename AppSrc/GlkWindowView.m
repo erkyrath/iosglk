@@ -142,7 +142,7 @@
 - (BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)str {
 	if ([self isKindOfClass:[GlkWinBufferView class]]) {
 		GlkWinBufferView *winv = (GlkWinBufferView *)self;
-		if ([winv pageDownOnInput]) {
+		if (winv.pageDownOnInput) {
 			if (input_single_char) {
 				/* While paging: ignore everything, if we're waiting for char input. */
 				return NO;
@@ -176,7 +176,7 @@
 - (BOOL) textFieldShouldReturn:(UITextField *)textField {
 	if ([self isKindOfClass:[GlkWinBufferView class]]) {
 		GlkWinBufferView *winv = (GlkWinBufferView *)self;
-		if ([winv pageDownOnInput]) {
+		if (winv.pageDownOnInput) {
 			return NO;
 		}
 	}
@@ -199,7 +199,7 @@
 	NSString *text = textField.text;
 	//NSLog(@"End editing: '%@'", text);
 	
-	if (![[GlkAppWrapper singleton] acceptingEvent]) {
+	if (![GlkAppWrapper singleton].acceptingEvent) {
 		/* The event must have been filled while we were delaying. Oh well. */
 		return;
 	}

@@ -58,7 +58,7 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	This is invoked from both the VM and UI threads.
  */
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock {
-	CGFloat fontsize = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 14 : 16;
+	CGFloat fontsize = (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) ? 14 : 16;
 	
 	if (wintype == wintype_TextGrid) {
 		styles.margins = UIEdgeInsetsMake(4, 6, 4, 6);
