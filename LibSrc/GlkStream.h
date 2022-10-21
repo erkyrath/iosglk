@@ -19,28 +19,18 @@ typedef enum GlkStreamType_enum {
 } GlkStreamType;
 
 @interface GlkStream : NSObject <NSSecureCoding> {
-	GlkLibrary *library;
 	BOOL inlibrary;
-	
-	NSNumber *tag;
-	gidispatch_rock_t disprock;
-
-	GlkStreamType type; /* file, window, or memory stream */
-	glui32 rock;
-	BOOL unicode; /* one-byte or four-byte chars? Not meaningful for windows */
-
 	glui32 readcount, writecount;
-	BOOL readable, writable;
 }
 
-@property (nonatomic, strong) GlkLibrary *library;
-@property (nonatomic, strong) NSNumber *tag;
+@property (nonatomic, weak) GlkLibrary *library;
+@property (nonatomic, weak) NSNumber *tag;
 @property (nonatomic) gidispatch_rock_t disprock;
-@property (nonatomic, readonly) GlkStreamType type;
-@property (nonatomic, readonly) glui32 rock;
-@property (nonatomic, readonly) BOOL unicode;
-@property (nonatomic, readonly) BOOL readable;
-@property (nonatomic, readonly) BOOL writable;
+@property (nonatomic) GlkStreamType type; /* file, window, or memory stream */
+@property (nonatomic) glui32 rock;
+@property (nonatomic) BOOL unicode; /* one-byte or four-byte chars? Not meaningful for windows */
+@property (nonatomic) BOOL readable;
+@property (nonatomic) BOOL writable;
 
 - (instancetype) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock;
 - (void) streamDelete;
@@ -75,15 +65,12 @@ typedef enum GlkStreamType_enum {
 
 @interface GlkStreamMemory : GlkStream {
 	/* The pointers needed for stream operation. We keep separate sets for the one-byte and four-byte cases. */
-	unsigned char *buf;
 	unsigned char *bufptr;
 	unsigned char *bufend;
 	unsigned char *bufeof;
-	glui32 *ubuf;
 	glui32 *ubufptr;
 	glui32 *ubufend;
 	glui32 *ubufeof;
-	glui32 buflen;
 	gidispatch_rock_t arrayrock;
 	
 	/* These values are only used in a temporary GlkLibrary, while deserializing. */
@@ -93,9 +80,9 @@ typedef enum GlkStreamType_enum {
 	glui32 tempbufptr, tempbufend, tempbufeof;
 }
 
-@property (nonatomic, readonly) glui32 buflen;
-@property (nonatomic, readonly) unsigned char *buf;
-@property (nonatomic, readonly) glui32 *ubuf;
+@property (NS_NONATOMIC_IOSONLY) glui32 buflen;
+@property (NS_NONATOMIC_IOSONLY) unsigned char *buf;
+@property (NS_NONATOMIC_IOSONLY) glui32 *ubuf;
 
 - (instancetype) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)buf len:(glui32)buflen;
 - (instancetype) initUniWithMode:(glui32)fmode rock:(glui32)rockval buf:(glui32 *)ubufval len:(glui32)ubuflenval;

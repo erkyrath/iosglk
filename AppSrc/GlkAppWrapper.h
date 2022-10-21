@@ -11,35 +11,28 @@
 @class GlkFileRefPrompt;
 
 @interface GlkAppWrapper : NSObject {
-	NSCondition *iowaitcond; /* must hold this lock to touch any of the fields below, unless otherwise noted. */
-	
-	BOOL iowait; /* true when waiting for an event; becomes false when one arrives. */
-	GlkEventState *eventfromui; /* a prospective event coming in from the UI. */
 	event_t *iowait_evptr; /* the place to stuff the event data when it arrives. */
 	id iowait_special; /* ditto, for special event requests. (A container type, currently GlkFileRefPrompt.) */
 	NSThread *thread; /* not locked; does not change through the run cycle. */
-	NSTimeInterval lastwaittime; /* not locked; only touched by VM thread internals. */
-	glui32 lasteventtype; /* not locked; only touched by the VM thread. */
-	
 	BOOL pendingupdaterequest; /* the frameview (UI thread) wants an update on library state */
 	BOOL pendingupdatefromtop; /* the frameview has lost its memory, and needs an update "from the top" (all data, dirty or not) */
-	BOOL pendingtimerevent;
-	BOOL pendingmetricchange; /* the fonts or font sizes have just changed */
-	BOOL pendingsizechange; /* the frame rectangle has just changed (to pendingsize) */
 	CGRect pendingsize;
-	NSNumber *timerinterval; /* not locked; only touched by the main thread. */
 }
 
-@property (nonatomic, strong) NSCondition *iowaitcond;
-@property (nonatomic) BOOL iowait;
-@property (nonatomic, strong) GlkEventState *eventfromui;
-@property (nonatomic, readonly) glui32 lasteventtype;
-@property (nonatomic, strong) NSNumber *timerinterval;
+@property (NS_NONATOMIC_IOSONLY, strong) NSCondition *iowaitcond; /* must hold this lock to touch any of the fields below, unless otherwise noted. */
+@property (NS_NONATOMIC_IOSONLY) BOOL iowait; /* true when waiting for an event; becomes false when one arrives. */
+@property (NS_NONATOMIC_IOSONLY, strong) GlkEventState *eventfromui; /* a prospective event coming in from the UI. */
+@property (NS_NONATOMIC_IOSONLY, strong) NSNumber *timerinterval;
+
+@property (NS_NONATOMIC_IOSONLY) BOOL pendingtimerevent;
+@property (NS_NONATOMIC_IOSONLY) BOOL pendingmetricchange; /* the fonts or font sizes have just changed */
+@property (NS_NONATOMIC_IOSONLY) BOOL pendingsizechange; /* the frame rectangle has just changed (to pendingsize) */
+@property (NS_NONATOMIC_IOSONLY) NSTimeInterval lastwaittime; /* not locked; only touched by VM thread internals. */
+@property (NS_NONATOMIC_IOSONLY) glui32 lasteventtype; /* not locked; only touched by the VM thread. */
 
 + (GlkAppWrapper *) singleton;
 
 - (void) launchAppThread;
-- (void) appThreadMain:(id)rock;
 - (void) requestViewUpdate;
 - (void) setFrameSize:(CGRect)box;
 - (void) noteMetricsChanged;

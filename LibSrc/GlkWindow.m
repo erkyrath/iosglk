@@ -37,10 +37,6 @@
 @synthesize line_request;
 @synthesize echo_line_input;
 @synthesize style;
-@synthesize stream;
-@synthesize streamtag;
-@synthesize echostream;
-@synthesize echostreamtag;
 @synthesize styleset;
 @synthesize bbox;
 
@@ -235,10 +231,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	type = 0;
 	if (!tag)
 		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc with tag unset"];
-	
-	
-	
-
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
@@ -286,8 +278,8 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	[encoder encodeBool:echo_line_input forKey:@"echo_line_input"];
 	[encoder encodeInt32:style forKey:@"style"];
 
-	[encoder encodeObject:streamtag forKey:@"streamtag"];
-	[encoder encodeObject:echostreamtag forKey:@"echostreamtag"];
+	[encoder encodeObject:_streamtag forKey:@"streamtag"];
+	[encoder encodeObject:_echostreamtag forKey:@"echostreamtag"];
 
 	[encoder encodeCGRect:bbox forKey:@"bbox"];
 }
@@ -324,8 +316,8 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	if (library.dispatch_unregister_obj)
 		(*library.dispatch_unregister_obj)((__bridge void *)(self), gidisp_Class_Window, disprock);
 		
-	if (stream) {
-		[stream streamDelete];
+	if (_stream) {
+		[_stream streamDelete];
 		self.stream = nil;
 		self.streamtag = nil;
 	}
@@ -528,17 +520,17 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		
 		if (!unicode) {
 			[self putBuffer:buf len:buflen];
-			if (echostream)
-				[echostream putBuffer:buf len:buflen];
+			if (_echostream)
+				[_echostream putBuffer:buf len:buflen];
 		}
 		else {
 			[self putUBuffer:ubuf len:buflen];
-			if (echostream)
-				[echostream putUBuffer:ubuf len:buflen];
+			if (_echostream)
+				[_echostream putUBuffer:ubuf len:buflen];
 		}
 		[self putBuffer:"\n" len:1];
-		if (echostream)
-			[echostream putBuffer:"\n" len:1];
+		if (_echostream)
+			[_echostream putBuffer:"\n" len:1];
 			
 		style = origstyle;
 	}

@@ -27,11 +27,9 @@
 
 @synthesize glkdelegate;
 @synthesize windows;
-@synthesize streams;
 @synthesize filerefs;
 @synthesize vmexited;
 @synthesize rootwin;
-@synthesize currentstr;
 @synthesize timerinterval;
 @synthesize bounds;
 @synthesize geometrychanged;
@@ -135,7 +133,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
             if (rootwintag && [win.tag isEqualToNumber:rootwintag])
                 self.rootwin = win;
         }
-        for (GlkStream *str in streams) {
+        for (GlkStream *str in _streams) {
             str.library = self;
             glui32 tag = str.tag.intValue;
             if (tag > tagCounter)
@@ -163,7 +161,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
             }
         }
 
-        for (GlkStream *str in streams) {
+        for (GlkStream *str in _streams) {
             switch (str.type) {
                 case strtype_Window: {
                     GlkStreamWindow *winstr = (GlkStreamWindow *)str;
@@ -186,7 +184,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
-	//NSLog(@"### GlkLibrary: encoding with %d windows, %d streams, %d filerefs", windows.count, streams.count, filerefs.count);
+	//NSLog(@"### GlkLibrary: encoding with %d windows, %d streams, %d filerefs", windows.count, _streams.count, filerefs.count);
 	[encoder encodeInt:SERIAL_VERSION forKey:@"version"];
 	
 	NSAssert(!vmexited && specialrequest == nil, @"GlkLibrary tried to serialize in special input state");
@@ -194,7 +192,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
     NSValue *boundsVal = [NSValue valueWithCGRect:bounds];
     [encoder encodeObject:boundsVal forKey:@"bounds"];
 	[encoder encodeObject:windows forKey:@"windows"];
-	[encoder encodeObject:streams forKey:@"streams"];
+	[encoder encodeObject:_streams forKey:@"streams"];
 	[encoder encodeObject:filerefs forKey:@"filerefs"];
 
 	if (timerinterval)
@@ -202,8 +200,8 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 
 	if (rootwin)
 		[encoder encodeObject:rootwin.tag forKey:@"rootwintag"];
-	if (currentstr)
-		[encoder encodeObject:currentstr.tag forKey:@"currentstrtag"];
+	if (_currentstr)
+		[encoder encodeObject:_currentstr.tag forKey:@"currentstrtag"];
 
 	// Save any interpreter-specific data.
 	if (extra_archive_hook)
@@ -244,8 +242,8 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 		// This takes care of all the windows
 		glk_window_close(rootwin, NULL);
 	}
-	while (streams.count) {
-		GlkStream *str = streams[0];
+	while (_streams.count) {
+		GlkStream *str = _streams[0];
 		glk_stream_close(str, NULL);
 	}
 	while (filerefs.count) {
@@ -257,8 +255,8 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	timerinterval = 0;
 	glk_request_timer_events(timerinterval);
 	
-	NSAssert(windows.count == 0 && streams.count == 0 && filerefs.count == 0, @"clearForRestart: unclosed objects remain!");
-	NSAssert(currentstr == nil && rootwin == nil, @"clearForRestart: root references remain!");
+	NSAssert(windows.count == 0 && _streams.count == 0 && filerefs.count == 0, @"clearForRestart: unclosed objects remain!");
+	NSAssert(_currentstr == nil && rootwin == nil, @"clearForRestart: root references remain!");
 }
 
 /* When the UI sees the screen change size, it calls this to tell the library. (On iOS, that happens only because of device rotation. Or the keyboard opening or closing. Or a phone call, probably. Okay, lots of reasons.) The UI also calls this if the window stylesets needs to change (because the player changed a preference).
@@ -342,7 +340,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	if (!tag)
 		return nil;
 	
-	for (GlkStream *str in streams) {
+	for (GlkStream *str in _streams) {
 		if ([str.tag isEqualToNumber:tag])
 			return str;
 	}
@@ -354,7 +352,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	if (!tag)
 		return nil;
 	
-	for (GlkStream *str in streams) {
+	for (GlkStream *str in _streams) {
 		if ((str.tag).intValue == tag)
 			return str;
 	}
@@ -458,7 +456,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	}
 	for (GlkStream *str in otherlib.streams) {
 		str.library = self;
-		[streams addObject:str];
+		[_streams addObject:str];
 	}
 	for (GlkFileRef *fref in otherlib.filerefs) {
 		fref.library = self;
@@ -482,7 +480,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	}
 	
 	NSMutableArray *failedstreams = [NSMutableArray arrayWithCapacity:4];
-	for (GlkStream *str in streams) {
+	for (GlkStream *str in _streams) {
 		if (str.type == strtype_File) {
 			GlkStreamFile *filestr = (GlkStreamFile *)str;
 			BOOL res = filestr.reopenInternal;
@@ -526,7 +524,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 	if (rootwin && [windows indexOfObject:rootwin] == NSNotFound)
 		NSLog(@"SANITY: root window not listed");
 	
-	if (currentstr && [streams indexOfObject:currentstr] == NSNotFound)
+	if (_currentstr && [_streams indexOfObject:_currentstr] == NSNotFound)
 		NSLog(@"SANITY: current stream not listed");
 
 	for (GlkWindow *win in windows) {
@@ -591,7 +589,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 		}
 	}
 	
-	for (GlkStream *str in streams) {
+	for (GlkStream *str in _streams) {
 		if (!str.type)
 			NSLog(@"SANITY: stream lacks type");
 		if (!(str.readable || str.writable))

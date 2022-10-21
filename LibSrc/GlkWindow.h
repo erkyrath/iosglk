@@ -40,11 +40,6 @@
 	BOOL echo_line_input; // applies to future inputs
 	glui32 style;
 	
-	GlkStream *stream;
-	NSNumber *streamtag;
-	GlkStream *echostream;
-	NSNumber *echostreamtag;
-	
 	StyleSet *styleset; // not serialized
 	CGRect bbox;
 

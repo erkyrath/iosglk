@@ -16,15 +16,6 @@
 
 @implementation GlkStream
 
-@synthesize library;
-@synthesize tag;
-@synthesize disprock;
-@synthesize type;
-@synthesize rock;
-@synthesize unicode;
-@synthesize readable;
-@synthesize writable;
-
 + (BOOL) supportsSecureCoding {
     return YES;
 }
@@ -36,20 +27,21 @@
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
-		self.tag = library.generateTag;
-		type = strtype;
-		rock = strrock;
-		readable = isreadable;
-		writable = iswritable;
+		self.tag = _library.generateTag;
+		_type = strtype;
+		_rock = strrock;
+		_readable = isreadable;
+		_writable = iswritable;
 		
 		readcount = 0;
 		writecount = 0;
-		unicode = NO;
+		_unicode = NO;
 				
-		[library.streams addObject:self];
+		[_library.streams addObject:self];
 		
-		if (library.dispatch_register_obj)
-			disprock = (*library.dispatch_register_obj)((__bridge void *)(self), gidisp_Class_Stream);
+		if (_library.dispatch_register_obj)
+			_disprock = (*_library.dispatch_register_obj)((__bridge void *)(self), gidisp_Class_Stream);
+        NSLog(@"Size:%ld", sizeof(self));
 	}
 	
 	return self;
@@ -62,16 +54,16 @@
         inlibrary = YES;
         // self.library will be set later
 
-        type = [decoder decodeInt32ForKey:@"type"];
-        rock = [decoder decodeInt32ForKey:@"rock"];
+        _type = [decoder decodeInt32ForKey:@"type"];
+        _rock = [decoder decodeInt32ForKey:@"rock"];
         // disprock is handled by the app
 
-        unicode = [decoder decodeBoolForKey:@"unicode"];
+        _unicode = [decoder decodeBoolForKey:@"unicode"];
 
         readcount = [decoder decodeInt32ForKey:@"readcount"];
         writecount = [decoder decodeInt32ForKey:@"writecount"];
-        readable = [decoder decodeBoolForKey:@"readable"];
-        writable = [decoder decodeBoolForKey:@"writable"];
+        _readable = [decoder decodeBoolForKey:@"readable"];
+        _writable = [decoder decodeBoolForKey:@"writable"];
     }
 	return self;
 }
@@ -79,47 +71,51 @@
 - (void) dealloc {
 	if (inlibrary)
 		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc while in library"];
-	if (type == strtype_None)
+	if (_type == strtype_None)
 		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc with type unset"];
-	type = strtype_None;
-	if (!tag)
+	_type = strtype_None;
+	if (!_tag)
 		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc with tag unset"];
-	
+//    NSLog(@"Stream %@ is released", self.tag);
 
 }
 
 - (NSString *) description {
-	return [NSString stringWithFormat:@"<%@ (mode %s%s, tag %@, rock %d): 0x%lx>", self.class, (readable?"r":""), (writable?"w":""), self.tag, self.rock, (long)self];
+	return [NSString stringWithFormat:@"<%@ (mode %s%s, tag %@, rock %d): 0x%lx>", self.class, (_readable?"r":""), (_writable?"w":""), self.tag, self.rock, (long)self];
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
-	[encoder encodeObject:tag forKey:@"tag"];
+	[encoder encodeObject:_tag forKey:@"tag"];
 	
-	[encoder encodeInt32:type forKey:@"type"];
-	[encoder encodeInt32:rock forKey:@"rock"];
+	[encoder encodeInt32:_type forKey:@"type"];
+	[encoder encodeInt32:_rock forKey:@"rock"];
 	// disprock is handled by the app
 	
-	[encoder encodeBool:unicode forKey:@"unicode"];
+	[encoder encodeBool:_unicode forKey:@"unicode"];
 
 	[encoder encodeInt32:readcount forKey:@"readcount"];
 	[encoder encodeInt32:writecount forKey:@"writecount"];
-	[encoder encodeBool:readable forKey:@"readable"];
-	[encoder encodeBool:writable forKey:@"writable"];
+	[encoder encodeBool:_readable forKey:@"readable"];
+	[encoder encodeBool:_writable forKey:@"writable"];
 };
 	
 - (void) streamDelete {	
-	if (library.currentstr == self)
-		library.currentstr = nil;
+	if (_library.currentstr == self)
+		_library.currentstr = nil;
 		
 	[GlkWindow unEchoStream:self];
 	
-	if (library.dispatch_unregister_obj)
-		(*library.dispatch_unregister_obj)((__bridge void *)(self), gidisp_Class_Stream, disprock);
-		
-	if (![library.streams containsObject:self])
+	if (_library.dispatch_unregister_obj)
+        (*_library.dispatch_unregister_obj)((__bridge void *)(self), gidisp_Class_Stream, _disprock);
+
+	if (![_library.streams containsObject:self])
 		[NSException raise:@"GlkException" format:@"GlkStream was not in library streams list"];
-	[library.streams removeObject:self];
-	inlibrary = NO;
+	[_library.streams removeObject:self];
+    gidispatch_rock_t dummy;
+    dummy.num = 0;
+    _disprock = dummy;
+    inlibrary = NO;
+    _library = nil;
 }
 
 /* Return the number of characters read from and written to the stream. (The result pointer may be NULL, in which case this does nothing.)
@@ -288,10 +284,6 @@
 
 @implementation GlkStreamMemory
 
-@synthesize buflen;
-@synthesize buf;
-@synthesize ubuf;
-
 + (BOOL) supportsSecureCoding {
     return YES;
 }
@@ -302,21 +294,21 @@
 	self = [super initWithType:strtype_Memory readable:isreadable writable:iswritable rock:rockval];
 	
 	if (self) {
-		unicode = NO;
-		buf = (unsigned char *)bufval;
+		self.unicode = NO;
+		_buf = (unsigned char *)bufval;
 		bufptr = (unsigned char *)bufval;
-		buflen = buflenval;
-		bufend = buf + buflen;
+		_buflen = buflenval;
+		bufend = _buf + _buflen;
 		if (fmode == filemode_Write)
 			bufeof = (unsigned char *)bufval;
 		else
 			bufeof = bufend;
 	
-		ubuf = NULL;
+		_ubuf = NULL;
 		ubufptr = NULL;
 		
-		if (library.dispatch_register_arr) {
-			arrayrock = (*library.dispatch_register_arr)(buf, buflen, "&+#!Cn");
+		if (self.library.dispatch_register_arr) {
+			arrayrock = (*self.library.dispatch_register_arr)(_buf, _buflen, "&+#!Cn");
 		}
 	}
 	
@@ -329,21 +321,21 @@
 	self = [super initWithType:strtype_Memory readable:isreadable writable:iswritable rock:rockval];
 	
 	if (self) {
-		unicode = YES;
-		ubuf = ubufval;
+		self.unicode = YES;
+		_ubuf = ubufval;
 		ubufptr = ubufval;
-		buflen = buflenval;
-		ubufend = ubuf + buflen;
+		_buflen = buflenval;
+		ubufend = _ubuf + _buflen;
 		if (fmode == filemode_Write)
 			ubufeof = ubufval;
 		else
 			ubufeof = ubufend;
 	
-		buf = NULL;
+		_buf = NULL;
 		bufptr = NULL;
 		
-		if (library.dispatch_register_arr) {
-			arrayrock = (*library.dispatch_register_arr)(ubuf, buflen, "&+#!Iu");
+		if (self.library.dispatch_register_arr) {
+			arrayrock = (*self.library.dispatch_register_arr)(_ubuf, _buflen, "&+#!Iu");
 		}
 	}
 	
@@ -354,9 +346,9 @@
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
-		buflen = [decoder decodeInt32ForKey:@"buflen"];
+		_buflen = [decoder decodeInt32ForKey:@"buflen"];
 		// the decoded "buf" values are originally Glulx addresses (glui32), so stuffing them into a long is safe.
-		if (!unicode) {
+		if (!self.unicode) {
 			tempbufkey = (long)[decoder decodeInt64ForKey:@"buf"];
 			tempbufptr = [decoder decodeInt32ForKey:@"bufptr"];
 			tempbufeof = [decoder decodeInt32ForKey:@"bufeof"];
@@ -390,22 +382,22 @@
 }
 
 - (void) updateRegisterArray {
-	if (!library.dispatch_restore_arr) {
+	if (!self.library.dispatch_restore_arr) {
 		[NSException raise:@"GlkException" format:@"GlkStreamMemory cannot be updated-from without app support"];
 	}
 	
-	if (!unicode) {
+	if (!self.unicode) {
 		void *voidbuf = nil;
-		arrayrock = (*library.dispatch_restore_arr)(tempbufkey, buflen, "&+#!Cn", &voidbuf);
+		arrayrock = (*self.library.dispatch_restore_arr)(tempbufkey, _buflen, "&+#!Cn", &voidbuf);
 		if (voidbuf) {
-			buf = voidbuf;
-			bufptr = buf + tempbufptr;
-			bufeof = buf + tempbufeof;
-			bufend = buf + tempbufend;
+			_buf = voidbuf;
+			bufptr = _buf + tempbufptr;
+			bufeof = _buf + tempbufeof;
+			bufend = _buf + tempbufend;
 			if (tempbufdata) {
-				if (tempbufdatalen > buflen)
-					tempbufdatalen = buflen;
-				memcpy(buf, tempbufdata, tempbufdatalen);
+				if (tempbufdatalen > _buflen)
+					tempbufdatalen = _buflen;
+				memcpy(_buf, tempbufdata, tempbufdatalen);
 				free(tempbufdata);
 				tempbufdata = nil;
 			}
@@ -413,16 +405,16 @@
 	}
 	else {
 		void *voidbuf = nil;
-		arrayrock = (*library.dispatch_restore_arr)(tempbufkey, buflen, "&+#!Iu", &voidbuf);
+		arrayrock = (*self.library.dispatch_restore_arr)(tempbufkey, _buflen, "&+#!Iu", &voidbuf);
 		if (voidbuf) {
-			ubuf = voidbuf;
-			ubufptr = ubuf + tempbufptr;
-			ubufeof = ubuf + tempbufeof;
-			ubufend = ubuf + tempbufend;
+			_ubuf = voidbuf;
+			ubufptr = _ubuf + tempbufptr;
+			ubufeof = _ubuf + tempbufeof;
+			ubufend = _ubuf + tempbufend;
 			if (tempbufdata) {
-				if (tempbufdatalen > sizeof(glui32)*buflen)
-					tempbufdatalen = sizeof(glui32)*buflen;
-				memcpy(ubuf, tempbufdata, tempbufdatalen);
+				if (tempbufdatalen > sizeof(glui32)*_buflen)
+					tempbufdatalen = sizeof(glui32)*_buflen;
+				memcpy(_ubuf, tempbufdata, tempbufdatalen);
 				free(tempbufdata);
 				tempbufdata = nil;
 			}
@@ -433,100 +425,109 @@
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
 	
-	if (!library.dispatch_locate_arr) {
+	if (!self.library.dispatch_locate_arr) {
 		[NSException raise:@"GlkException" format:@"GlkStreamMemory cannot be encoded without app support"];
 	}
 	
-	[encoder encodeInt32:buflen forKey:@"buflen"];
+	[encoder encodeInt32:_buflen forKey:@"buflen"];
 	
 	long bufaddr;
 	int elemsize;
-	if (!unicode) {
-		if (buf && buflen) {
-			bufaddr = (*library.dispatch_locate_arr)(buf, buflen, "&+#!Cn", arrayrock, &elemsize);
+	if (!self.unicode) {
+		if (_buf && _buflen) {
+			bufaddr = (*self.library.dispatch_locate_arr)(_buf, _buflen, "&+#!Cn", arrayrock, &elemsize);
 			[encoder encodeInt64:bufaddr forKey:@"buf"];
-			[encoder encodeInt32:(bufptr-buf) forKey:@"bufptr"];
-			[encoder encodeInt32:(bufeof-buf) forKey:@"bufeof"];
-			[encoder encodeInt32:(bufend-buf) forKey:@"bufend"];
+			[encoder encodeInt32:(bufptr-_buf) forKey:@"bufptr"];
+			[encoder encodeInt32:(bufeof-_buf) forKey:@"bufeof"];
+			[encoder encodeInt32:(bufend-_buf) forKey:@"bufend"];
 			if (elemsize) {
 				NSAssert(elemsize == 1, @"GlkStreamMemory encoding char array: wrong elemsize");
 				// could trim trailing zeroes here
-				[encoder encodeBytes:(uint8_t *)buf length:buflen forKey:@"bufdata"];
+				[encoder encodeBytes:(uint8_t *)_buf length:_buflen forKey:@"bufdata"];
 			}
 		}
 	}
 	else {
-		if (ubuf && buflen) {
-			bufaddr = (*library.dispatch_locate_arr)(ubuf, buflen, "&+#!Iu", arrayrock, &elemsize);
+		if (_ubuf && _buflen) {
+			bufaddr = (*self.library.dispatch_locate_arr)(_ubuf, _buflen, "&+#!Iu", arrayrock, &elemsize);
 			[encoder encodeInt64:bufaddr forKey:@"ubuf"];
-			[encoder encodeInt32:(ubufptr-ubuf) forKey:@"ubufptr"];
-			[encoder encodeInt32:(ubufeof-ubuf) forKey:@"ubufeof"];
-			[encoder encodeInt32:(ubufend-ubuf) forKey:@"ubufend"];
+			[encoder encodeInt32:(ubufptr-_ubuf) forKey:@"ubufptr"];
+			[encoder encodeInt32:(ubufeof-_ubuf) forKey:@"ubufeof"];
+			[encoder encodeInt32:(ubufend-_ubuf) forKey:@"ubufend"];
 			if (elemsize) {
 				NSAssert(elemsize == 4, @"GlkStreamMemory encoding uni array: wrong elemsize");
 				// could trim trailing zeroes here
-				[encoder encodeBytes:(uint8_t *)ubuf length:sizeof(glui32)*buflen forKey:@"ubufdata"];
+				[encoder encodeBytes:(uint8_t *)_ubuf length:sizeof(glui32)*_buflen forKey:@"ubufdata"];
 			}
 		}
 	}
 }
 
 - (void) streamDelete {
-	if (library.dispatch_unregister_arr) {
-		char *typedesc = (unicode ? "&+#!Iu" : "&+#!Cn");
-		void *vbuf = (unicode ? (void*)ubuf : (void*)buf);
-		(*library.dispatch_unregister_arr)(vbuf, buflen, typedesc, arrayrock);
+	if (self.library.dispatch_unregister_arr) {
+		char *typedesc = (self.unicode ? "&+#!Iu" : "&+#!Cn");
+		void *vbuf = (self.unicode ? (void*)_ubuf : (void*)_buf);
+		(*self.library.dispatch_unregister_arr)(vbuf, _buflen, typedesc, arrayrock);
 	}
+
+    gidispatch_rock_t dummy;
+    dummy.ptr = NULL;
+    arrayrock = dummy;
+
+    bufend = NULL;
+    bufeof = NULL;
+    ubufend = NULL;
+    ubufeof = NULL;
 	
-	buf = NULL;
+	_buf = NULL;
 	bufptr = NULL;
-	ubuf = NULL;
+	_ubuf = NULL;
 	ubufptr = NULL;
-	buflen = 0;
+	_buflen = 0;
 	[super streamDelete];
 }
 
 - (void) setPosition:(glsi32)pos seekmode:(glui32)seekmode {
-	if (!unicode) {
+	if (!self.unicode) {
 		if (seekmode == seekmode_Current) {
-			pos = (bufptr - buf) + pos;
+			pos = (bufptr - _buf) + pos;
 		}
 		else if (seekmode == seekmode_End) {
-			pos = (bufeof - buf) + pos;
+			pos = (bufeof - _buf) + pos;
 		}
 		else {
 			/* pos = pos */
 		}
 		if (pos < 0)
 			pos = 0;
-		if (pos > (bufeof - buf))
-			pos = (bufeof - buf);
-		bufptr = buf + pos;
+		if (pos > (bufeof - _buf))
+			pos = (bufeof - _buf);
+		bufptr = _buf + pos;
 	}
 	else {
 		if (seekmode == seekmode_Current) {
-			pos = (ubufptr - ubuf) + pos;
+			pos = (ubufptr - _ubuf) + pos;
 		}
 		else if (seekmode == seekmode_End) {
-			pos = (ubufeof - ubuf) + pos;
+			pos = (ubufeof - _ubuf) + pos;
 		}
 		else {
 			/* pos = pos */
 		}
 		if (pos < 0)
 			pos = 0;
-		if (pos > (ubufeof - ubuf))
-			pos = (ubufeof - ubuf);
-		ubufptr = ubuf + pos;
+		if (pos > (ubufeof - _ubuf))
+			pos = (ubufeof - _ubuf);
+		ubufptr = _ubuf + pos;
 	}
 }
 
 - (glui32) getPosition {
-	if (!unicode) {
-		return (bufptr - buf);
+	if (!self.unicode) {
+		return (bufptr - _buf);
 	}
 	else {
-		return (ubufptr - ubuf);
+		return (ubufptr - _ubuf);
 	}
 }
 
@@ -537,7 +538,7 @@
 		return;
 	writecount += len;
 	
-	if (!unicode) {
+	if (!self.unicode) {
 		if (bufptr >= bufend) {
 			len = 0;
 		}
@@ -588,7 +589,7 @@
 		return;
 	writecount += len;
 	
-	if (!unicode) {
+	if (!self.unicode) {
 		if (bufptr >= bufend) {
 			len = 0;
 		}
@@ -634,10 +635,10 @@
 }
 
 - (glsi32) getChar:(BOOL)wantunicode {
-	if (!readable)
+	if (!self.readable)
 		return -1;
 
-	if (!unicode) {
+	if (!self.unicode) {
 		if (bufptr < bufend) {
 			unsigned char ch = *(bufptr);
 			bufptr++;
@@ -664,12 +665,12 @@
 }
 
 - (glui32) getBuffer:(void *)getbuf buflen:(glui32)getlen unicode:(BOOL)wantunicode {
-	if (!readable)
+	if (!self.readable)
 		return 0;
 		
 	/* This is messy, because we have to deal with the stream being unicode or not *and* with getbuf being unicode or not. */
 
-	if (!unicode) {
+	if (!self.unicode) {
 		if (bufptr >= bufend) {
 			getlen = 0;
 		}
@@ -740,7 +741,7 @@
 }
 
 - (glui32) getLine:(void *)getbuf buflen:(glui32)getlen unicode:(BOOL)wantunicode {
-	if (!readable)
+	if (!self.readable)
 		return 0;
 		
 	/* This is messy, because we have to deal with the stream being unicode or not *and* with getbuf being unicode or not. */
@@ -753,7 +754,7 @@
 	glui32 lx;
 	int gotnewline = FALSE;
 	
-	if (!unicode) {
+	if (!self.unicode) {
 		if (bufptr >= bufend) {
 			getlen = 0;
 		}
@@ -882,7 +883,7 @@
 		
 		/* Set the easy fields. */
 		self.pathname = path;
-		unicode = isunicode;
+		self.unicode = isunicode;
 		textmode = istextmode;
 		
 		if (fmode != filemode_Read) {
@@ -1022,7 +1023,7 @@
 /* Return one byte (0-255), or -1 for EOF.
 */
 - (int) readByte {
-	if (writable) {
+	if (self.writable) {
 		if (!writebuffer || buffermark >= writebuffer.length) {
 			[self flush];
 			bufferpos = handle.offsetInFile;
@@ -1069,7 +1070,7 @@
 /* Read (up to) len bytes. Returns the number of bytes read. The array returned in byteref will be this many bytes long, and temporary (on autorelease). If at end of file, this returns 0 and byteref should be ignored.
 */
 - (glui32) readBytes:(void **)byteref len:(glui32)len {
-	if (writable) {
+	if (self.writable) {
 		if (writebuffer && writebuffer.length - buffermark >= len) {
 			*byteref = writebuffer.mutableBytes+buffermark;
 			buffermark += len;
@@ -1170,12 +1171,12 @@
 /* Write out one byte.
 */
 - (void) writeByte:(char)ch {
-	if (writable) {
+	if (self.writable) {
 		if (!writebuffer || buffermark >= maxbuffersize) {
 			[self flush];
 			bufferpos = handle.offsetInFile;
 			NSData *data = nil;
-			if (readable)
+			if (self.readable)
 				data = [handle readDataOfLength:maxbuffersize];
 			if (!data || !data.length) {
 				// Must be at the end of the file, or it's a write-only file.
@@ -1210,7 +1211,7 @@
 /* Write out len bytes.
 */
 - (void) writeBytes:(void *)bytes len:(glui32)len {
-	if (writable) {
+	if (self.writable) {
 		if (writebuffer && buffermark < maxbuffersize) {
 			glui32 addlen = maxbuffersize - buffermark;
 			if (addlen > len)
@@ -1236,7 +1237,7 @@
 		}
 		bufferpos = handle.offsetInFile;
 		NSData *data = nil;
-		if (readable)
+		if (self.readable)
 			data = [handle readDataOfLength:maxbuffersize];
 		if (!data || !data.length) {
 			// Must be at the end of the file, or it's a write-only file.
@@ -1275,7 +1276,7 @@
 	if (!(readbuffer || writebuffer))
 		return;
 		
-	if (writable && writebuffer && bufferdirtystart < bufferdirtyend) {
+	if (self.writable && writebuffer && bufferdirtystart < bufferdirtyend) {
 		/* Write out the dirty part of the buffer. */
 		[handle seekToFileOffset:bufferpos+bufferdirtystart];
 		glui32 len = bufferdirtyend - bufferdirtystart;
@@ -1307,7 +1308,7 @@
 	writecount += len;
 
 	if (!textmode) {
-		if (!unicode) {
+		if (!self.unicode) {
 			/* byte stream */
 			if (len == 1)
 				[self writeByte:buf[0]];
@@ -1339,7 +1340,7 @@
 	writecount += len;
 
 	if (!textmode) {
-		if (!unicode) {
+		if (!self.unicode) {
 			/* byte stream */
 			char *ubuf = malloc(len);
 			for (int ix=0; ix<len; ix++) {
@@ -1374,11 +1375,11 @@
 }
 
 - (glsi32) getChar:(BOOL)wantunicode {
-	if (!readable)
+	if (!self.readable)
 		return -1;
 
 	if (!textmode) {
-		if (!unicode) {
+		if (!self.unicode) {
 			/* byte stream */
 			int ch = self.readByte;
 			if (ch < 0)
@@ -1467,7 +1468,7 @@
 }
 
 - (glui32) getLine:(void *)getbuf buflen:(glui32)getlen unicode:(BOOL)wantunicode {
-	if (!readable)
+	if (!self.readable)
 		return 0;
 		
 	if (getlen == 0)
@@ -1478,7 +1479,7 @@
 	BOOL gotnewline = NO;
 		
 	if (!textmode) {
-		if (!unicode) {
+		if (!self.unicode) {
 			/* byte stream */
 			int ix;
 			for (ix=0; !gotnewline && ix<getlen; ix++) {
@@ -1557,11 +1558,11 @@
 }
 
 - (glui32) getBuffer:(void *)getbuf buflen:(glui32)getlen unicode:(BOOL)wantunicode {
-	if (!readable)
+	if (!self.readable)
 		return 0;
 		
 	if (!textmode) {
-		if (!unicode) {
+		if (!self.unicode) {
 			/* byte stream */
 			void *bytes;
 			glui32 readlen = [self readBytes:&bytes len:getlen];
@@ -1636,7 +1637,7 @@
 }
 
 - (void) setPosition:(glsi32)pos seekmode:(glui32)seekmode {
-	if (!textmode && unicode) {
+	if (!textmode && self.unicode) {
 		/* This file is in four-byte chunks. */
 		pos *= 4;
 	}
@@ -1669,7 +1670,7 @@
 		pos = handle.offsetInFile;
 	}
 	
-	if (!textmode && unicode) {
+	if (!textmode && self.unicode) {
 		/* This file is in four-byte chunks. */
 		pos /= 4;
 	}

@@ -17,12 +17,10 @@
 	id <IosGlkLibDelegate> glkdelegate;
 	
 	NSMutableArray *windows; /* GlkWindow objects */
-	NSMutableArray *streams; /* GlkStream objects */
 	NSMutableArray *filerefs; /* GlkFileRef objects */
 	
 	BOOL vmexited;
 	GlkWindow *rootwin;
-	GlkStream *currentstr;
 	glui32 timerinterval; // milliseconds
 	CGRect bounds;
 	BOOL geometrychanged;
@@ -45,12 +43,12 @@
 }
 
 @property (nonatomic, strong) id <IosGlkLibDelegate> glkdelegate;
-@property (nonatomic, strong) NSMutableArray *windows;
-@property (nonatomic, strong) NSMutableArray *streams;
-@property (nonatomic, strong) NSMutableArray *filerefs;
+@property (nonatomic, strong) NSMutableArray<GlkWindow *> *windows;
+@property (nonatomic, strong) NSMutableArray<GlkStream *> *streams;
+@property (nonatomic, strong) NSMutableArray<GlkFileRef *> *filerefs;
 @property (nonatomic) BOOL vmexited;
 @property (nonatomic, strong) GlkWindow *rootwin;
-@property (nonatomic, strong) GlkStream *currentstr;
+@property (nonatomic, weak) GlkStream *currentstr;
 @property (nonatomic) glui32 timerinterval;
 @property (nonatomic, readonly) CGRect bounds;
 @property (nonatomic) BOOL geometrychanged;

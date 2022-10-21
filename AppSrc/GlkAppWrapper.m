@@ -7,11 +7,11 @@
 /*	This class contains the VM thread, and the methods that synchronize it with the main (UI) thread.
 
 	The portable Glk program runs in its own thread (which I'll refer to as "the VM thread", even if the program isn't a virtual machine per se). It has a simple lifecycle: it runs along for a while, and then it calls glk_select(). That blocks and waits for the UI thread to send some kind of input event. (Presumably a response to the input requests that the Glk program has made.) When an event arrives, the VM thread wakes up and processes it.
-	
+
 	The iowait flag indicates whether the VM thread is awake or asleep. It is set when the VM enters glk_select(); it is cleared when an input event arrives.
-	
+
 	Coordinating threads is always a headache, of course. We do all our synchronization using iowaitcond, an NSCondition variable. (NSConditions are also thread locks.) Any cross-thread variable -- principly iowait, but there are a handful of others -- may only be accessed while holding iowaitcond.
-	
+
 	Note, however, that the VM thread does not hold iowaitcond the whole time it is running. It leaves that free in normal operation. (The main thread sometimes grabs it to pass in information, such as window size changes that happen while the VM thread is awake.) The VM thread only takes iowaitcond when it is setting up a glk_select().
 */
 
@@ -28,12 +28,6 @@
 
 @implementation GlkAppWrapper
 
-@synthesize iowait;
-@synthesize iowaitcond;
-@synthesize eventfromui;
-@synthesize lasteventtype;
-@synthesize timerinterval;
-
 static GlkAppWrapper *singleton = nil;
 
 + (GlkAppWrapper *) singleton {
@@ -42,87 +36,89 @@ static GlkAppWrapper *singleton = nil;
 
 - (instancetype) init {
 	self = [super init];
-	
+
 	if (self) {
 		if (singleton)
 			[NSException raise:@"GlkException" format:@"cannot create two GlkAppWrapper objects"];
 		singleton = self;
-		
-		iowait = NO;
-		eventfromui = nil;
+
+		_iowait = NO;
+		_eventfromui = nil;
 		iowait_evptr = nil;
 		iowait_special = nil;
-		pendingtimerevent = NO;
+        _pendingtimerevent = NO;
 		self.iowaitcond = [[NSCondition alloc] init];
-		
-		pendingmetricchange = NO;
-		pendingsizechange = NO;
-		timerinterval = nil;
+
+        _pendingmetricchange = NO;
+        _pendingsizechange = NO;
+		_timerinterval = nil;
 	}
-	
+
 	return self;
 }
 
-- (void) launchAppThread {
-	if (thread)
-		[NSException raise:@"GlkException" format:@"cannot create two app threads"];
-		
-	thread = [[NSThread alloc] initWithTarget:self
-		selector:@selector(appThreadMain:) object:nil];
-	[thread start];
+- (void) dealloc {
+	if (singleton == self)
+		singleton = nil;
 }
 
-- (void) appThreadMain:(id)rock {
-	[iowaitcond lock];
-	iowait = NO;
-	self.eventfromui = nil;
-	pendingmetricchange = NO;
-	pendingsizechange = NO;
-	pendingtimerevent = NO;
-	[iowaitcond unlock];
-	
-	iosglk_startup_code();
-	
-	while (YES) {
-	
-		//NSLog(@"VM thread running glk_main()");
-		@try {
-			lasteventtype = -1; // meaning startup
-			lastwaittime = [NSDate timeIntervalSinceReferenceDate];
-			glk_main();
-		} @catch (GlkExitException *ce) {
-			NSLog(@"VM thread caught glk_exit exception");
-		}
-		
-		GlkLibrary *library = [GlkLibrary singleton];
-		[library setVMExited];
-		/* Wait for the special restart button to be pushed. */
-		library.specialrequest = [NSNull null];
-		[self selectEvent:nil special:library.specialrequest];
-		library.specialrequest = nil;
-		
-		[library clearForRestart];
-	}
+- (void) launchAppThread {
+
+    GlkAppWrapper __weak *weakSelf = self;
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [weakSelf.iowaitcond lock];
+        weakSelf.iowait = NO;
+        weakSelf.eventfromui = nil;
+        weakSelf.pendingmetricchange = NO;
+        weakSelf.pendingsizechange = NO;
+        weakSelf.pendingtimerevent = NO;
+        [weakSelf.iowaitcond unlock];
+
+        iosglk_startup_code();
+
+        while (YES) {
+
+            //NSLog(@"VM thread running glk_main()");
+            @try {
+                weakSelf.lasteventtype = -1; // meaning startup
+                weakSelf.lastwaittime = [NSDate timeIntervalSinceReferenceDate];
+                glk_main();
+            } @catch (GlkExitException *ce) {
+                NSLog(@"VM thread caught glk_exit exception");
+            }
+
+            GlkLibrary *library = [GlkLibrary singleton];
+            [library setVMExited];
+            /* Wait for the special restart button to be pushed. */
+            library.specialrequest = [NSNull null];
+            [self selectEvent:nil special:library.specialrequest];
+            library.specialrequest = nil;
+
+            [library clearForRestart];
+        }
+    });
 }
 
 /* ### Have a glk_tick() which drains the looppool? Timing would be tricky... Maybe measure the pool size once per thousand opcodes */
 
 /* Block and wait for an event to arrive. This is called to wait for a regular Glk event (in which case event must be non-null), or for a special request (e.g., file selection) (in which case special must be non-null). If both arguments are null, this will block forever and ignore all UI input.
 
-	This must be called on the VM thread. 
+	This must be called on the VM thread.
 */
 - (void) selectEvent:(event_t *)event special:(id)special {
 	/* This is a good time to drain and recreate the thread's autorelease pool. We'll also do this in glk_tick(). */
+
 	GlkLibrary *library = [GlkLibrary singleton];
-	
-	if (event && special) 
+
+	if (event && special)
 		[NSException raise:@"GlkException" format:@"selectEvent called with both event and special arguments"];
 	if (special != library.specialrequest)
 		[NSException raise:@"GlkException" format:@"selectEvent called with wrong special value"];
-	
-	[iowaitcond lock];
+
+	[_iowaitcond lock];
 	//NSLog(@"VM thread glk_select after %lf (event %x, special %x)", [NSDate timeIntervalSinceReferenceDate]-lastwaittime, (unsigned int)event, (unsigned int)special);
-	
+
 	if (event) {
         event->type = 0;
         event->win = NULL;
@@ -142,9 +138,9 @@ static GlkAppWrapper *singleton = nil;
 	/* Make sure we start out the wait loop with a updateFromLibraryState call. */
 	pendingupdaterequest = YES;
 	pendingupdatefromtop = NO;
-	pendingtimerevent = NO;
-	iowait = YES;
-	
+    _pendingtimerevent = NO;
+	_iowait = YES;
+
 	while (self.iowait) {
 		if (pendingupdaterequest) {
 			pendingupdaterequest = NO;
@@ -157,17 +153,17 @@ static GlkAppWrapper *singleton = nil;
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 			[glkviewc performSelectorOnMainThread:@selector(updateFromLibraryState:) withObject:library.cloneState waitUntilDone:NO];
 		}
-		
-		if (event && (pendingsizechange || pendingmetricchange)) {
+
+        if (event && (_pendingsizechange || _pendingmetricchange)) {
 			/* This could be set while we're waiting, or it could have been set already when we entered selectEvent. Note that we won't get in here if this is a special event request (because event will be null). */
-			BOOL metricschanged = pendingmetricchange;
+			BOOL metricschanged = _pendingmetricchange;
 			CGRect *boxref = nil;
-			if (pendingsizechange) {
+            if (_pendingsizechange) {
 				boxref = &pendingsize;
 			}
-			pendingsizechange = NO;
-			pendingmetricchange = NO;
-			
+            _pendingsizechange = NO;
+            _pendingmetricchange = NO;
+
 			BOOL sizechanged = [library setMetricsChanged:metricschanged bounds:boxref];
 			if (sizechanged) {
 				/* We duplicate all the event-setting machinery here, because we're already in the VM thread and inside the lock. */
@@ -176,17 +172,17 @@ static GlkAppWrapper *singleton = nil;
 				event->win = nil;
 				event->val1 = 0;
 				event->val2 = 0;
-				iowait = NO;
+				_iowait = NO;
 				break;
 			}
 		}
-		
+
 		/* Wait for a signal from the VM thread. */
-		[iowaitcond wait];
-		
+		[_iowaitcond wait];
+
 		GlkEventState *gotevent = nil;
-		if (eventfromui) {
-			gotevent = eventfromui;
+		if (_eventfromui) {
+			gotevent = _eventfromui;
 			self.eventfromui = nil;
 		}
 		if (gotevent && event) {
@@ -202,7 +198,7 @@ static GlkAppWrapper *singleton = nil;
 						event->win = win;
 						event->val1 = ch;
 						event->val2 = 0;
-						iowait = NO;
+						_iowait = NO;
 					}
 					break;
 				case evtype_LineInput:
@@ -214,7 +210,7 @@ static GlkAppWrapper *singleton = nil;
 							event->win = win;
 							event->val1 = len;
 							event->val2 = 0;
-							iowait = NO;
+							_iowait = NO;
 						}
 					}
 					break;
@@ -225,7 +221,7 @@ static GlkAppWrapper *singleton = nil;
 						event->win = 0;
 						event->val1 = 0;
 						event->val2 = 0;
-						iowait = NO;
+						_iowait = NO;
 					}
 					break;
 				default:
@@ -235,45 +231,45 @@ static GlkAppWrapper *singleton = nil;
 						event->win = win;
 						event->val1 = gotevent.genval1;
 						event->val2 = gotevent.genval2;
-						iowait = NO;
+						_iowait = NO;
 					}
 					break;
 			}
 		}
 	}
-	
-	lasteventtype = (event ? event->type : evtype_None);
-	lastwaittime = [NSDate timeIntervalSinceReferenceDate];
+
+	_lasteventtype = (event ? event->type : evtype_None);
+	_lastwaittime = [NSDate timeIntervalSinceReferenceDate];
 	//NSLog(@"VM thread glk_select returned (evtype %d)", (event ? event->type : -1));
-	[iowaitcond unlock];
+	[_iowaitcond unlock];
 }
 
 /* Check if one of the internal event types has arrived. (That includes timer and resize events, not input events.)
-	This must be called on the VM thread. 
+	This must be called on the VM thread.
 */
 - (void) selectPollEvent:(event_t *)event {
     event->type = 0;
     event->win = NULL;
     event->val1 = 0;
     event->val2 = 0;
-	[iowaitcond lock];
-	if (pendingtimerevent) {
-		pendingtimerevent = NO;
+	[_iowaitcond lock];
+	if (_pendingtimerevent) {
+		_pendingtimerevent = NO;
 		event->type = evtype_Timer;
 	}
-	[iowaitcond unlock];
+	[_iowaitcond unlock];
 }
 
 /* The UI wants an update (updateFromLibraryState) call.
- 
+
 	This is called from the main thread. It synchronizes with the VM thread.
  */
 - (void) requestViewUpdate {
-	[iowaitcond lock];
+	[_iowaitcond lock];
 	pendingupdaterequest = YES;
 	pendingupdatefromtop = YES;
-	[iowaitcond signal];
-	[iowaitcond unlock];
+	[_iowaitcond signal];
+	[_iowaitcond unlock];
 }
 
 /* The UI's frame size has changed. All the UI windowviews are already resized; now we have to update the VM's windows equivalently. (The VM's windows may no longer match the UI, but that's okay -- the UI will catch up.)
@@ -281,31 +277,31 @@ static GlkAppWrapper *singleton = nil;
 	This is called from the main thread. It synchronizes with the VM thread. If the VM thread is blocked, it will wake up briefly to handle the size change (and maybe begin a evtype_Arrange event). If the VM thread is running, it will get back to the size change at the next glk_select() time. */
 - (void) setFrameSize:(CGRect)box {
 	//NSLog(@"setFrameSize: %@", StringFromRect(box));
-	[iowaitcond lock];
-	pendingsizechange = YES;
+	[_iowaitcond lock];
+	_pendingsizechange = YES;
 	pendingsize = box;
-	[iowaitcond signal];
-	[iowaitcond unlock];
+	[_iowaitcond signal];
+	[_iowaitcond unlock];
 }
 
 /* The UI's fonts or font sizes have changed. Again, all the UI windowviews have already done this; we need to apply the changes to the VM windows. (It matters because, for example, a GlkGridWindow might now be a different number of characters across.) This involves telling the VM windows to grab newly-computed stylesets.
- 
+
 	This is called from the main thread. It synchronizes with the VM thread. If the VM thread is blocked, it will wake up briefly to handle the size change (and maybe begin a evtype_Arrange event). If the VM thread is running, it will get back to the size change at the next glk_select() time. */
 - (void) noteMetricsChanged {
 	//NSLog(@"setFrameSize: %@", StringFromRect(box));
-	[iowaitcond lock];
-	pendingmetricchange = YES;
-	[iowaitcond signal];
-	[iowaitcond unlock];
+	[_iowaitcond lock];
+	_pendingmetricchange = YES;
+	[_iowaitcond signal];
+	[_iowaitcond unlock];
 }
 
 /* Check whether the VM is blocked and waiting for events. (Special filename-prompt blocking doesn't count!)
 	This is called from the main thread. It synchronizes with the VM thread. */
 - (BOOL) acceptingEvent {
 	BOOL res;
-	[iowaitcond lock];
+	[_iowaitcond lock];
 	res = self.iowait && iowait_evptr;
-	[iowaitcond unlock];
+	[_iowaitcond unlock];
 	return res;
 }
 
@@ -313,9 +309,9 @@ static GlkAppWrapper *singleton = nil;
 	This is called from the main thread. It synchronizes with the VM thread. */
 - (BOOL) acceptingEventFileSelect {
 	BOOL res;
-	[iowaitcond lock];
+	[_iowaitcond lock];
 	res = self.iowait && iowait_special && [iowait_special isKindOfClass:[GlkFileRefPrompt class]];
-	[iowaitcond unlock];
+	[_iowaitcond unlock];
 	return res;
 }
 
@@ -324,109 +320,109 @@ static GlkAppWrapper *singleton = nil;
 	GlkFrameView *frameview = [IosGlkViewController singleton].frameview;
 	if (!frameview)
 		return nil;
-	
+
 	GlkTagString *tagstring = [[GlkTagString alloc] initWithTag:tag text:nil]; // retain
-	
+
 	// Block waiting for main thread to update tagstring
 	[frameview performSelectorOnMainThread:@selector(editingTextForWindow:)
 		withObject:tagstring waitUntilDone:YES];
-		
+
 	NSString *result = tagstring.str;
 	return result;
 }
 
 /* The UI calls this to report an input event.
- 
-	This is called from the main thread. It synchronizes with the VM thread. 
+
+	This is called from the main thread. It synchronizes with the VM thread.
 */
 - (void) acceptEvent:(GlkEventState *)event {
 	event = [[IosGlkViewController singleton] filterEvent:event];
 	if (!event)
 		return;
-	
-	[iowaitcond lock];
-	
+
+	[_iowaitcond lock];
+
 	if (!self.iowait || !iowait_evptr) {
 		/* The VM thread is working, or else it's waiting for a file selection, or the game has ended. Events not accepted right now. However, we'll set a flag in case someone comes along and polls for it. */
 		if (event.type == evtype_Timer)
-			pendingtimerevent = YES;
+			_pendingtimerevent = YES;
 		//### size change event too?
-		[iowaitcond unlock];
+		[_iowaitcond unlock];
 		return;
 	}
-	
+
 	/* We'll want to check, inside the VM thread, to make sure the event is really acceptable. So we don't turn off iowait just yet. */
 	self.eventfromui = event;
-	[iowaitcond signal];
-	[iowaitcond unlock];
+	[_iowaitcond signal];
+	[_iowaitcond unlock];
 }
 
 /* The UI calls this to report that file selection is complete. The chosen pathname (or nil, if cancelled) is in the prompt object (which should match the prompt that was originally passed out).
 
-	This is called from the main thread. It synchronizes with the VM thread. 
+	This is called from the main thread. It synchronizes with the VM thread.
 */
 - (void) acceptEventFileSelect:(GlkFileRefPrompt *)prompt {
 	prompt = [[IosGlkViewController singleton] filterEvent:prompt];
 	if (!prompt)
 		return;
-	
-	[iowaitcond lock];
-	
+
+	[_iowaitcond lock];
+
 	if (!self.iowait || !iowait_special || ![iowait_special isKindOfClass:[GlkFileRefPrompt class]] || iowait_special != prompt) {
 		/* The VM thread is working, or else it's waiting for a normal event, or the game has ended. Either way, our response is not accepted right now. */
-		[iowaitcond unlock];
+		[_iowaitcond unlock];
 		return;
 	}
-	
+
 	iowait_special = nil;
-	iowait = NO;
-	[iowaitcond signal];
-	[iowaitcond unlock];
+	_iowait = NO;
+	[_iowaitcond signal];
+	[_iowaitcond unlock];
 }
 
 /* The UI calls this to report that the user has pressed the restart button (or one of them), after glk_main() has exited.
- 
- This is called from the main thread. It synchronizes with the VM thread. 
+
+ This is called from the main thread. It synchronizes with the VM thread.
  */
 - (void) acceptEventRestart {
-	[iowaitcond lock];
-	
+	[_iowaitcond lock];
+
 	if (!self.iowait || !iowait_special || ![iowait_special isKindOfClass:[NSNull class]]) {
 		/* The VM thread is working, or else it's waiting for a normal event. Either way, our response is not accepted right now. */
-		[iowaitcond unlock];
+		[_iowaitcond unlock];
 		return;
 	}
-	
+
 	iowait_special = nil;
-	iowait = NO;
-	[iowaitcond signal];
-	[iowaitcond unlock];
+	_iowait = NO;
+	[_iowaitcond signal];
+	[_iowaitcond unlock];
 }
 
 /* This method must be run on the main thread. */
 - (void) setTimerInterval:(NSNumber *)interval {
 	/* It isn't really possible that the interval argument is the same object as self.timerinterval. But we should be clean about the handover anyway. */
-	
-	if (timerinterval) {
+
+	if (_timerinterval) {
 		[GlkAppWrapper cancelPreviousPerformRequestsWithTarget:self selector:@selector(fireTimer:) object:nil];
 		self.timerinterval = nil;
 	}
-	
+
 	if (interval) {
 		self.timerinterval = interval;
 		/* The delay value in this method is an NSTimeInterval, which is defined as double. */
-		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:timerinterval.doubleValue];
+		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:_timerinterval.doubleValue];
 	}
-	
+
 }
 
 /* This fires on the main thread. */
 - (void) fireTimer:(id)dummy {
 	//NSLog(@"Timer fires!");
-	if (timerinterval) {
-		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:timerinterval.doubleValue];
+	if (_timerinterval) {
+		[self performSelector:@selector(fireTimer:) withObject:nil afterDelay:_timerinterval.doubleValue];
 	}
-	
+
 	[self acceptEvent:[GlkEventState timerEvent]];
 }
 
