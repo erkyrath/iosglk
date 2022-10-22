@@ -22,12 +22,13 @@
 
 - (instancetype) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock {
 	self = [super init];
-	
+
 	if (self) {
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
 		self.tag = _library.generateTag;
+//      NSLog(@"GlkStream %@ was created", self.tag);
 		_type = strtype;
 		_rock = strrock;
 		_readable = isreadable;
@@ -41,7 +42,6 @@
 		
 		if (_library.dispatch_register_obj)
 			_disprock = (*_library.dispatch_register_obj)((__bridge void *)(self), gidisp_Class_Stream);
-        NSLog(@"Size:%ld", sizeof(self));
 	}
 	
 	return self;
@@ -77,7 +77,6 @@
 	if (!_tag)
 		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc with tag unset"];
 //    NSLog(@"Stream %@ is released", self.tag);
-
 }
 
 - (NSString *) description {

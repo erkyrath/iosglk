@@ -16,14 +16,14 @@
 
 
 void glk_select(event_t *event) {
-	GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
-	if (!appwrap)
-		[NSException raise:@"GlkException" format:@"glk_select: no AppWrapper"];
-		
-	event_t dummy;
-	if (!event)
-		event = &dummy;
-	[appwrap selectEvent:event special:nil]; 
+    GlkAppWrapper *appwrap = [GlkAppWrapper singleton];
+    if (!appwrap)
+        [NSException raise:@"GlkException" format:@"glk_select: no AppWrapper"];
+
+    event_t dummy;
+    if (!event)
+        event = &dummy;
+    [appwrap selectEvent:event special:nil];
 }
 
 void glk_select_poll(event_t *event) {
