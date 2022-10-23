@@ -51,12 +51,9 @@ typedef enum GlkStreamType_enum {
 @end
 
 
-@interface GlkStreamWindow : GlkStream {
-	GlkWindow *win;
-	NSNumber *wintag;
-}
+@interface GlkStreamWindow : GlkStream
 
-@property (nonatomic, strong) GlkWindow *win;
+@property (nonatomic, weak) GlkWindow *win;
 @property (nonatomic, strong) NSNumber *wintag;
 
 - (instancetype) initWithWindow:(GlkWindow *)win;

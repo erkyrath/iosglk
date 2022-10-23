@@ -28,7 +28,7 @@
 		inlibrary = YES;
 		
 		self.tag = _library.generateTag;
-//      NSLog(@"GlkStream %@ was created", self.tag);
+        NSLog(@"GlkStream %@ was created", self.tag);
 		_type = strtype;
 		_rock = strrock;
 		_readable = isreadable;
@@ -76,7 +76,7 @@
 	_type = strtype_None;
 	if (!_tag)
 		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc with tag unset"];
-//    NSLog(@"Stream %@ is released", self.tag);
+    NSLog(@"Stream %@ is deallocated", self.tag);
 }
 
 - (NSString *) description {
@@ -188,9 +188,6 @@
 
 @implementation GlkStreamWindow
 
-@synthesize win;
-@synthesize wintag;
-
 + (BOOL) supportsSecureCoding {
     return YES;
 }
@@ -221,8 +218,8 @@
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
 	
-	if (win)
-		[encoder encodeObject:win.tag forKey:@"wintag"];
+	if (_win)
+		[encoder encodeObject:_win.tag forKey:@"wintag"];
 }
 
 - (void) streamDelete {
@@ -244,15 +241,15 @@
 		return;
 	writecount += len;
 	
-	if (win.line_request) {
+	if (_win.line_request) {
 		[GlkLibrary strictWarning:@"putBuffer: window has pending line request"];
 		return;
 	}
 	
-	[win putBuffer:buf len:len];
+	[_win putBuffer:buf len:len];
 	
-	if (win.echostream)
-		[win.echostream putBuffer:buf len:len];
+	if (_win.echostream)
+		[_win.echostream putBuffer:buf len:len];
 }
 
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len {
@@ -260,22 +257,22 @@
 		return;
 	writecount += len;
 	
-	if (win.line_request) {
+	if (_win.line_request) {
 		[GlkLibrary strictWarning:@"putUBuffer: window has pending line request"];
 		return;
 	}
 	
-	[win putUBuffer:buf len:len];
+	[_win putUBuffer:buf len:len];
 	
-	if (win.echostream)
-		[win.echostream putUBuffer:buf len:len];
+	if (_win.echostream)
+		[_win.echostream putUBuffer:buf len:len];
 }
 
 - (void) setStyle:(glui32)styl {
-	win.style = styl;
+	_win.style = styl;
 	
-	if (win.echostream)
-		[win.echostream setStyle:styl];
+	if (_win.echostream)
+		[_win.echostream setStyle:styl];
 }
 
 @end

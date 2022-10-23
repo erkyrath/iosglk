@@ -16,31 +16,15 @@
 @class Geometry;
 
 @interface GlkWindow : NSObject <NSSecureCoding> {
-	GlkLibrary *library;
 	BOOL inlibrary;
-	
-	NSNumber *tag;
-	gidispatch_rock_t disprock;
-	glui32 type;
-	glui32 rock;
-	
-	GlkWindowPair *parent;
-	NSNumber *parenttag;
-	int input_request_id;
+
 	void *line_buffer;
 	gidispatch_rock_t inarrayrock;
 	int line_buffer_length;
-	BOOL char_request;
-	BOOL line_request;
 	BOOL char_request_uni;
 	BOOL line_request_uni;
-	NSString *line_request_initial;
 	BOOL pending_echo_line_input; // applies to current input; only meaningful for buffer windows
 	
-	BOOL echo_line_input; // applies to future inputs
-	glui32 style;
-	
-	StyleSet *styleset; // not serialized
 	CGRect bbox;
 
 	/* These values are only used in a temporary GlkLibrary, while deserializing. */
@@ -49,24 +33,24 @@
 	long tempbufkey;
 }
 
-@property (nonatomic, strong) GlkLibrary *library;
+@property (nonatomic, weak) GlkLibrary *library;
 @property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic) gidispatch_rock_t disprock;
 @property (nonatomic, readonly) glui32 type;
 @property (nonatomic, readonly) glui32 rock;
-@property (nonatomic, strong) GlkWindowPair *parent;
+@property (nonatomic, weak) GlkWindowPair *parent;
 @property (nonatomic, strong) NSNumber *parenttag;
-@property (nonatomic, strong) NSString *line_request_initial;
+@property (nonatomic, weak) NSString *line_request_initial;
 @property (nonatomic, readonly) int input_request_id;
 @property (nonatomic, readonly) BOOL char_request;
 @property (nonatomic, readonly) BOOL line_request;
-@property (nonatomic) BOOL echo_line_input;
+@property (nonatomic) BOOL echo_line_input; // applies to future inputs
 @property (nonatomic) glui32 style;
 @property (nonatomic, strong) GlkStream *stream;
 @property (nonatomic, strong) NSNumber *streamtag;
 @property (nonatomic, strong) GlkStream *echostream;
 @property (nonatomic, strong) NSNumber *echostreamtag;
-@property (nonatomic, strong) StyleSet *styleset;
+@property (nonatomic, strong) StyleSet *styleset; // not serialized
 @property (nonatomic, readonly) CGRect bbox;
 
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
@@ -129,16 +113,10 @@
 @end
 
 
-@interface GlkWindowPair : GlkWindow {
-	Geometry *geometry;
-	BOOL keydamage; // only used within glk_window_close().
-	
-	GlkWindow *child1;
-	GlkWindow *child2;
-}
+@interface GlkWindowPair : GlkWindow
 
 @property (nonatomic, strong) Geometry *geometry;
-@property (nonatomic) BOOL keydamage;
+@property (nonatomic) BOOL keydamage; // only used within glk_window_close().
 @property (nonatomic, strong) GlkWindow *child1;
 @property (nonatomic, strong) GlkWindow *child2;
 
