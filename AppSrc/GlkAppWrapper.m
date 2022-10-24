@@ -107,7 +107,6 @@ static GlkAppWrapper *singleton = nil;
     This must be called on the VM thread.
 */
 - (void) selectEvent:(event_t *)event special:(id)special {
-    /* This is a good time to drain and recreate the thread's autorelease pool. We'll also do this in glk_tick(). */
 
     GlkLibrary *library = [GlkLibrary singleton];
 
