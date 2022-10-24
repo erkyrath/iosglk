@@ -47,7 +47,7 @@ static GlkAppWrapper *singleton = nil;
         iowait_evptr = nil;
         iowait_special = nil;
         _pendingtimerevent = NO;
-        self.iowaitcond = [[[NSCondition alloc] init] autorelease];
+        self.iowaitcond = [[NSCondition alloc] init];
 
         _pendingmetricchange = NO;
         _pendingsizechange = NO;
@@ -60,9 +60,6 @@ static GlkAppWrapper *singleton = nil;
 - (void) dealloc {
     if (singleton == self)
         singleton = nil;
-	self.timerinterval = nil;
-	self.eventfromui = nil;
-	[super dealloc];
 }
 
 - (void) launchAppThread {
@@ -70,9 +67,6 @@ static GlkAppWrapper *singleton = nil;
     GlkAppWrapper __weak *weakSelf = self;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		weakSelf.looppool = [[NSAutoreleasePool alloc] init];
-		//NSLog(@"VM thread starting");
-
         [weakSelf.iowaitcond lock];
         weakSelf.iowait = NO;
         weakSelf.eventfromui = nil;
@@ -103,10 +97,6 @@ static GlkAppWrapper *singleton = nil;
 
             [library clearForRestart];
         }
-
-	    [weakSelf.looppool drain]; // releases it
-	    weakSelf.looppool = nil;
-	    //NSLog(@"VM thread exiting");
     });
 }
 
@@ -118,8 +108,6 @@ static GlkAppWrapper *singleton = nil;
 */
 - (void) selectEvent:(event_t *)event special:(id)special {
     /* This is a good time to drain and recreate the thread's autorelease pool. We'll also do this in glk_tick(). */
-	[_looppool drain]; // releases it
-	_looppool = [[NSAutoreleasePool alloc] init];
 
     GlkLibrary *library = [GlkLibrary singleton];
 
@@ -194,7 +182,7 @@ static GlkAppWrapper *singleton = nil;
 
         GlkEventState *gotevent = nil;
         if (_eventfromui) {
-            gotevent = [[_eventfromui retain] autorelease];
+            gotevent = _eventfromui;
             self.eventfromui = nil;
         }
         if (gotevent && event) {
@@ -339,8 +327,7 @@ static GlkAppWrapper *singleton = nil;
     [frameview performSelectorOnMainThread:@selector(editingTextForWindow:)
         withObject:tagstring waitUntilDone:YES];
 
-	NSString *result = [[tagstring.str retain] autorelease];
-	[tagstring release];
+    NSString *result = tagstring.str;
     return result;
 }
 
@@ -415,9 +402,6 @@ static GlkAppWrapper *singleton = nil;
 /* This method must be run on the main thread. */
 - (void) setTimerInterval:(NSNumber *)interval {
     /* It isn't really possible that the interval argument is the same object as self.timerinterval. But we should be clean about the handover anyway. */
-	if (interval) {
-		[[interval retain] autorelease];
-	}
 
     if (_timerinterval) {
         [GlkAppWrapper cancelPreviousPerformRequestsWithTarget:self selector:@selector(fireTimer:) object:nil];

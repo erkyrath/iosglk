@@ -28,7 +28,6 @@
 		inlibrary = YES;
 		
 		self.tag = _library.generateTag;
-        NSLog(@"GlkStream %@ was created", self.tag);
 		_type = strtype;
 		_rock = strrock;
 		_readable = isreadable;
@@ -76,7 +75,6 @@
 	_type = strtype_None;
 	if (!_tag)
 		[NSException raise:@"GlkException" format:@"GlkStream reached dealloc with tag unset"];
-    NSLog(@"Stream %@ is deallocated", self.tag);
 }
 
 - (NSString *) description {

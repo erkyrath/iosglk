@@ -19,10 +19,10 @@
 	CGRect pendingsize;
 }
 
-@property (NS_NONATOMIC_IOSONLY, retain) NSCondition *iowaitcond; /* must hold this lock to touch any of the fields below, unless otherwise noted. */
+@property (NS_NONATOMIC_IOSONLY, strong) NSCondition *iowaitcond; /* must hold this lock to touch any of the fields below, unless otherwise noted. */
 @property (NS_NONATOMIC_IOSONLY) BOOL iowait; /* true when waiting for an event; becomes false when one arrives. */
-@property (NS_NONATOMIC_IOSONLY, retain) GlkEventState *eventfromui; /* a prospective event coming in from the UI. */
-@property (NS_NONATOMIC_IOSONLY, retain) NSNumber *timerinterval;
+@property (NS_NONATOMIC_IOSONLY, strong) GlkEventState *eventfromui; /* a prospective event coming in from the UI. */
+@property (NS_NONATOMIC_IOSONLY, strong) NSNumber *timerinterval;
 
 @property (NS_NONATOMIC_IOSONLY) BOOL pendingtimerevent;
 @property (NS_NONATOMIC_IOSONLY) BOOL pendingmetricchange; /* the fonts or font sizes have just changed */
@@ -37,12 +37,6 @@
 - (void) setFrameSize:(CGRect)box;
 - (void) noteMetricsChanged;
 - (void) selectEvent:(event_t *)event special:(id)special;
-
-#if __has_feature(objc_arc)
-#else
-@property (NS_NONATOMIC_IOSONLY, assign) NSAutoreleasePool *looppool; /* not locked; only touched by the VM thread. */
-#endif
-
 - (void) selectPollEvent:(event_t *)event;
 - (void) acceptEvent:(GlkEventState *)event;
 - (void) acceptEventFileSelect:(GlkFileRefPrompt *)prompt;
