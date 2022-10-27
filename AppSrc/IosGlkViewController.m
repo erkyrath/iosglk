@@ -167,6 +167,12 @@
 		[frameview setNeedsLayout];
 }
 
+/* Return whether the system is set to dark mode. The app uses this to decide some minor display details, like scroll bar tint.
+ */
+- (BOOL) hasDarkTheme {
+    return (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+}
+
 - (void) textSelectionWindow:(NSNumber *)tag {
 	self.textselecttag = tag;
 }

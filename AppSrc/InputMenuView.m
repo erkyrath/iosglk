@@ -49,7 +49,7 @@
 	
 	if (faderview) {
 		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
-		faderview.alpha = ((glkviewc.glkdelegate.hasDarkTheme) ? 1.0 : 0.0);
+		faderview.alpha = ((glkviewc.hasDarkTheme) ? 1.0 : 0.0);
 		faderview.hidden = NO;
 	}
 	
@@ -125,7 +125,7 @@
 		CGRect rect = CGRectMake(0, selfbounds.size.height, selfbounds.size.width, 20);
 		self.displaylabel = [[UILabel alloc] initWithFrame:rect];
 		
-		displaylabel.backgroundColor = (glkviewc.glkdelegate.hasDarkTheme) ? [UIColor colorWithWhite:0.42 alpha:1] : [UIColor whiteColor];
+		displaylabel.backgroundColor = (glkviewc.hasDarkTheme) ? [UIColor colorWithWhite:0.42 alpha:1] : [UIColor whiteColor];
 		displaylabel.layer.cornerRadius = 10;
 		displaylabel.layer.borderWidth = 1;
 		displaylabel.layer.borderColor = [UIColor colorWithWhite:0.66 alpha:1].CGColor;

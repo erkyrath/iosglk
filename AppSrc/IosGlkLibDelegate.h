@@ -30,7 +30,6 @@ typedef enum GlkSaveFormat_enum {
 - (GlkWinGridView *) viewForGridWindow:(GlkWindowState *)win frame:(CGRect)box margin:(UIEdgeInsets)margin;
 - (BOOL) shouldTapSetKeyboard:(BOOL)toopen;
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock;
-@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasDarkTheme;
 @property (NS_NONATOMIC_IOSONLY, readonly) CGSize interWindowSpacing;
 - (CGRect) adjustFrame:(CGRect)rect;
 - (UIEdgeInsets) viewMarginForWindow:(GlkWindowState *)win rect:(CGRect)rect framebounds:(CGRect)framebounds;

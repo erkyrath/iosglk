@@ -88,12 +88,6 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	}
 }
 
-/* Return whether the app styles are set to a generally dark palette. The app uses this to decide some minor display details, like scroll bar tint.
- */
-- (BOOL) hasDarkTheme {
-	return NO;
-}
-
 /* Define the width/height of the blank space between windows.
  
 	This is invoked from both the VM and UI threads.
