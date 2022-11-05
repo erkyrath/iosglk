@@ -25,8 +25,6 @@
 	BOOL line_request_uni;
 	BOOL pending_echo_line_input; // applies to current input; only meaningful for buffer windows
 	
-	CGRect bbox;
-
 	/* These values are only used in a temporary GlkLibrary, while deserializing. */
 	uint8_t *tempbufdata;
 	NSUInteger tempbufdatalen;
@@ -51,7 +49,7 @@
 @property (nonatomic, strong) GlkStream *echostream;
 @property (nonatomic, strong) NSNumber *echostreamtag;
 @property (nonatomic, strong) StyleSet *styleset; // not serialized
-@property (nonatomic, readonly) CGRect bbox;
+@property (nonatomic) CGRect bbox;
 
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
 
@@ -79,16 +77,12 @@
 @end
 
 
-@interface GlkWindowBuffer : GlkWindow {
-	int clearcount; /* incremented whenever the buffer is cleared */
-	int linesdirtyfrom; /* index of first new (or changed) line */
-	NSMutableArray *lines; /* array of GlkStyledLine */
-}
+@interface GlkWindowBuffer : GlkWindow
 
+/* incremented whenever the buffer is cleared */
 @property (nonatomic) int clearcount;
-@property (nonatomic) int linesdirtyfrom;
-@property (nonatomic, strong) NSMutableArray *lines;
-
+@property (nonatomic, strong) NSMutableAttributedString *attrstring;
+@property (nonatomic, strong) NSMutableAttributedString *savedattrstring;
 - (void) putString:(NSString *)str;
 
 @end
@@ -96,16 +90,14 @@
 
 @interface GlkWindowGrid : GlkWindow {
 	int width, height;
-	NSMutableArray *lines; /* array of GlkGridLine (length is self.height) */
-	
 	int curx, cury; /* the window cursor position */
 }
 
-@property (nonatomic, strong) NSMutableArray *lines;
 @property (nonatomic, readonly) int width;
 @property (nonatomic, readonly) int height;
 @property (nonatomic, readonly) int curx;
 @property (nonatomic, readonly) int cury;
+@property (nonatomic, strong) NSMutableAttributedString *attrstring;
 
 - (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos;
 - (void) putUChar:(glui32)ch;

@@ -10,17 +10,15 @@
 @class StyledTextView;
 @class MoreBoxView;
 
-@interface GlkWinBufferView : GlkWindowView <UIScrollViewDelegate> {
-	StyledTextView *textview;
-	MoreBoxView *moreview;
-	
+@interface GlkWinBufferView : GlkWindowView <UIScrollViewDelegate, UITextViewDelegate> {
 	CGRect lastLayoutBounds;
-	BOOL nowcontentscrolling;
+    NSUInteger lastSeenCharacterIndex;
 }
 
-@property (nonatomic, strong) StyledTextView *textview;
+@property (nonatomic, strong) UITextView *textview;
 @property (nonatomic, strong) MoreBoxView *moreview;
 @property (nonatomic) BOOL nowcontentscrolling;
+@property (nonatomic) NSUInteger clearcount;
 
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL pageDownOnInput;
 

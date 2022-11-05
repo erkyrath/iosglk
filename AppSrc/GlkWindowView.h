@@ -38,6 +38,7 @@ typedef enum SelDragMode_enum {
 @property (nonatomic) UIEdgeInsets viewmargin;
 @property (nonatomic, strong) CmdTextField *inputfield;
 @property (nonatomic, strong) UIScrollView *inputholder;
+@property (nonatomic, strong) NSNumber *tagobj;
 @property (nonatomic) BOOL morewaiting;
 
 - (instancetype) initWithWindow:(GlkWindowState *)winstate frame:(CGRect)box margin:(UIEdgeInsets)margin;

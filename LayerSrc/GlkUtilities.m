@@ -207,4 +207,18 @@ void sleep_curthread(NSTimeInterval val) {
 	[NSThread sleepForTimeInterval:val];
 }
 
+NSAttributedString *attributedWordAtIndex(NSUInteger index, NSAttributedString *attrstring, NSRange *range) {
+    *range = NSMakeRange(0, 0);
+    if (index >= attrstring.length)
+        return nil;
+    NSLinguisticTagger *tagger = [[NSLinguisticTagger alloc] initWithTagSchemes:@[ NSLinguisticTagSchemeTokenType ] options:kNilOptions];
+    tagger.string = attrstring.string;
+    NSString *tag = [tagger tagAtIndex:index scheme:NSLinguisticTagSchemeTokenType tokenRange:range sentenceRange:nil];
+
+    if ([tag isEqualToString:NSLinguisticTagWord]) {
+        return [attrstring attributedSubstringFromRange:*range];
+    }
+    else return nil;
+}
+
 

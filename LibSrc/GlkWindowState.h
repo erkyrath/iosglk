@@ -11,22 +11,9 @@
 @class StyleSet;
 @class Geometry;
 
-@interface GlkWindowState : NSObject {
-	GlkLibraryState *__weak library; // weak parent link (unretained)
-	
-	NSNumber *tag;
-	glui32 type;
-	glui32 rock;
-	
-	StyleSet *styleset;
-	CGRect bbox;
-	int input_request_id;
-	BOOL char_request;
-	BOOL line_request;
-	NSString *line_request_initial;
-}
+@interface GlkWindowState : NSObject
 
-@property (nonatomic, weak) GlkLibraryState *library; // unretained
+@property (nonatomic, weak) GlkLibraryState *library; // weak parent link
 @property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic) glui32 type;
 @property (nonatomic) glui32 rock;
@@ -42,38 +29,24 @@
 @end
 
 
-@interface GlkWindowBufferState : GlkWindowState {
-	int clearcount; /* incremented whenever the buffer is cleared */
-	int linesdirtyfrom; /* index of first new (or changed) line */
-	int linesdirtyto; /* the index of the last line, plus one (or zero if there are no lines */
-	NSArray *lines; /* array of GlkStyledLine (indexes do not necessarily start at zero!) */
-}
+@interface GlkWindowBufferState : GlkWindowState
 
-@property (nonatomic) int clearcount;
-@property (nonatomic) int linesdirtyfrom;
-@property (nonatomic) int linesdirtyto;
-@property (nonatomic, strong) NSArray *lines;
+@property (nonatomic) int clearcount; /* incremented whenever the buffer is cleared */
+@property (nonatomic, strong) NSAttributedString *attrstring;
 
 @end
 
-@interface GlkWindowGridState : GlkWindowState {
-	int width, height;
-	NSArray *lines; /* array of GlkStyledLine (may be sparse or empty) */
-	
-	int curx, cury; /* the window cursor position */
-}
+@interface GlkWindowGridState : GlkWindowState
 
-@property (nonatomic, strong) NSArray *lines;
 @property (nonatomic) int width;
 @property (nonatomic) int height;
-@property (nonatomic) int curx;
+@property (nonatomic) int curx; /* the window cursor position */
 @property (nonatomic) int cury;
+@property (nonatomic, strong) NSAttributedString *attrstring;
 
 @end
 
-@interface GlkWindowPairState : GlkWindowState {
-	Geometry *geometry;
-}
+@interface GlkWindowPairState : GlkWindowState
 
 @property (nonatomic, strong) Geometry *geometry;
 

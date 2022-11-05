@@ -8,28 +8,15 @@
 
 @class GlkWinGridView;
 @class StyledTextView;
-@class GlkStyledLine;
-@class GlkVisualLine;
 
-@interface GlkAccVisualLine : UIAccessibilityElement {
-	GlkVisualLine *__weak line; /* weak parent link -- unretained */
-}
+@interface GlkAccVisualLine : UIAccessibilityElement
 
-@property (nonatomic, weak) GlkVisualLine *line;
 
 + (NSString *) lineForSpeaking:(NSString *)val;
-+ (GlkAccVisualLine *) buildForLine:(GlkVisualLine *)vln container:(StyledTextView *)container;
 
 @end
 
 
-
-@interface GlkAccStyledLine : UIAccessibilityElement {
-	GlkStyledLine *__weak line; /* weak parent link -- unretained */
-}
-
-@property (nonatomic, weak) GlkStyledLine *line;
-
-+ (GlkAccStyledLine *) buildForLine:(GlkStyledLine *)vln container:(GlkWinGridView *)container;
+@interface GlkAccStyledLine : UIAccessibilityElement
 
 @end

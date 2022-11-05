@@ -24,15 +24,6 @@
 
 @implementation IosGlkViewController
 
-@synthesize glkdelegate;
-@synthesize frameview;
-@synthesize vmexited;
-@synthesize prefinputwintag;
-@synthesize textselecttag;
-@synthesize commandhistory;
-@synthesize keyboardbox;
-@synthesize currentquestion;
-
 + (IosGlkViewController *) singleton {
 	return [IosGlkAppDelegate singleton].glkviewc;
 }
@@ -46,7 +37,7 @@
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	NSArray *arr = [defaults arrayForKey:@"CommandHistory"];
 	if (arr) {
-		[commandhistory addObjectsFromArray:arr];
+		[_commandhistory addObjectsFromArray:arr];
 	}
 }
 
@@ -82,14 +73,14 @@
 
 - (void) viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
-	[frameview removePopMenuAnimated:NO];
+	[_frameview removePopMenuAnimated:NO];
 }
 
 - (void) viewDidLoad {
 	[super viewDidLoad];
 	IosGlkAppDelegate *appdelegate = [IosGlkAppDelegate singleton];
 	if (appdelegate.library)
-		[frameview requestLibraryState:appdelegate.glkapp];
+		[_frameview requestLibraryState:appdelegate.glkapp];
 }
 
 - (void) viewWillTransitionToSize:(CGSize)size
@@ -105,66 +96,66 @@
 /* Allow all orientations. (An interpreter-specific subclass may override this.) iOS6+ idiom.
  */
 - (UIInterfaceOrientationMask) supportedInterfaceOrientations {
-	return UIInterfaceOrientationMaskAll;
+    return UIInterfaceOrientationMaskAll;
 }
 
 /* Invoked in the UI thread when an event is generated. The view controller has a chance to intercept the event and do something with or to it. Return nil to block the event; return the argument unchanged to do nothing.
  */
 - (id) filterEvent:(id)data {
-	return data;
+    return data;
 }
 
-/* Invoked in the UI thread, from the VM thread. See comment on GlkFrameView.updateFromLibraryState.
+/* Invoked in the UI thread, from the VM thread. See comment on [GlkFrameView updateFromLibraryState].
  */
 - (void) updateFromLibraryState:(GlkLibraryState *)library {
-	/* Remember whether any window has the input focus. */
-	BOOL anyfocus = NO;
-	for (GlkWindowView *winv in (frameview.windowviews).allValues) {
-		if (winv.inputfield && (winv.inputfield).isFirstResponder) {
-			anyfocus = YES;
-			break;
-		}
-	}
-	
-	vmexited = library.vmexited;
-	if (frameview)
-		[frameview updateFromLibraryState:library];
-	
-	if (anyfocus) {
-		GlkWindowView *winv = self.preferredInputWindow;
-		if (winv && winv.inputfield && !(winv.inputfield).isFirstResponder) {
-			[winv.inputfield becomeFirstResponder];
-		}
-	}
+    /* Remember whether any window has the input focus. */
+    BOOL anyfocus = NO;
+    for (GlkWindowView *winv in (_frameview.windowviews).allValues) {
+        if (winv.inputfield && (winv.inputfield).isFirstResponder) {
+            anyfocus = YES;
+            break;
+        }
+    }
+
+    _vmexited = library.vmexited;
+    if (_frameview)
+        [_frameview updateFromLibraryState:library];
+
+    if (anyfocus) {
+        GlkWindowView *winv = self.preferredInputWindow;
+        if (winv && winv.inputfield && !(winv.inputfield).isFirstResponder) {
+            [winv.inputfield becomeFirstResponder];
+        }
+    }
 }
 
 /* This tests whether the keyboard is visible *and obscuring the screen*. (If the iPad's floating keyboard is up, this returns NO.)
  */
 - (BOOL) keyboardIsShown {
-	return (!CGRectIsEmpty(keyboardbox));
+    return (!CGRectIsEmpty(_keyboardbox));
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
-	NSDictionary *info = notification.userInfo;
-	CGRect rect = CGRectZero;
-	UIWindow *window = [IosGlkAppDelegate singleton].window;
-	rect = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-	rect = [window convertRect:rect fromWindow:nil];
-	//NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
-	
-	/* This rect is in window coordinates. */
-	keyboardbox = rect;
-	
-	if (frameview)
-		[frameview setNeedsLayout];
+    NSDictionary *info = notification.userInfo;
+    CGRect rect = CGRectZero;
+    UIWindow *window = [IosGlkAppDelegate singleton].window;
+    rect = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    rect = [window convertRect:rect fromWindow:nil];
+    //NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
+
+    /* This rect is in window coordinates. */
+    _keyboardbox = rect;
+
+    if (_frameview)
+        [_frameview setNeedsLayout];
 }
 
 - (void) keyboardWillBeHidden:(NSNotification*)notification {
-	//NSLog(@"Keyboard will be hidden");
-	keyboardbox = CGRectZero;
-	
-	if (frameview)
-		[frameview setNeedsLayout];
+    //NSLog(@"Keyboard will be hidden");
+    _keyboardbox = CGRectZero;
+
+    if (_frameview)
+        [_frameview setNeedsLayout];
 }
 
 /* Return whether the system is set to dark mode. The app uses this to decide some minor display details, like scroll bar tint.
@@ -174,195 +165,195 @@
 }
 
 - (void) textSelectionWindow:(NSNumber *)tag {
-	self.textselecttag = tag;
+    self.textselecttag = tag;
 }
 
 - (void) preferInputWindow:(NSNumber *)tag {
-	self.prefinputwintag = tag;
+    self.prefinputwintag = tag;
 }
 
 /* This returns (in order of preference) the window which currently has the input focus; the inputting window which last had the input focus; any inputting window. If no window is waiting for input at all, return nil.
  */
 - (GlkWindowView *) preferredInputWindow {
-	if (vmexited)
-		return nil;
-	
-	GlkWindowView *prefinputview = nil;
-	GlkWindowView *firstinputview = nil;
-	NSMutableDictionary *windowviews = frameview.windowviews;
-	
-	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = windowviews[tag];
-		if (winv.inputfield && (winv.inputfield).isFirstResponder) {
-			return winv;
-		}
-		
-		if (winv.inputfield) {
-			if (!firstinputview)
-				firstinputview = winv;
-			if (NumberMatch(tag, prefinputwintag))
-				prefinputview = winv;
-		}
-	}
-	
-	if (prefinputview)
-		return prefinputview;
-	else if (firstinputview)
-		return firstinputview;
-	else
-		return nil;
+    if (_vmexited)
+        return nil;
+
+    GlkWindowView *prefinputview = nil;
+    GlkWindowView *firstinputview = nil;
+    NSMutableDictionary *windowviews = _frameview.windowviews;
+
+    for (NSNumber *tag in windowviews) {
+        GlkWindowView *winv = windowviews[tag];
+        if (winv.inputfield && (winv.inputfield).isFirstResponder) {
+            return winv;
+        }
+
+        if (winv.inputfield) {
+            if (!firstinputview)
+                firstinputview = winv;
+            if (NumberMatch(tag, _prefinputwintag))
+                prefinputview = winv;
+        }
+    }
+
+    if (prefinputview)
+        return prefinputview;
+    else if (firstinputview)
+        return firstinputview;
+    else
+        return nil;
 }
 
 - (void) hideKeyboard {
-	for (GlkWindowView *winv in (frameview.windowviews).allValues) {
-		if (winv.inputfield && (winv.inputfield).isFirstResponder) {
-			//NSLog(@"Hiding keyboard for %@", winv);
-			[winv.inputfield resignFirstResponder];
-			break;
-		}
-	}
+    for (GlkWindowView *winv in (_frameview.windowviews).allValues) {
+        if (winv.inputfield && (winv.inputfield).isFirstResponder) {
+            //NSLog(@"Hiding keyboard for %@", winv);
+            [winv.inputfield resignFirstResponder];
+            break;
+        }
+    }
 }
 
 - (IBAction) toggleKeyboard {
-	GlkWindowView *winv = self.preferredInputWindow;
-	if (!winv || !winv.inputfield)
-		return;
-	
-	if ((winv.inputfield).isFirstResponder) {
-		//NSLog(@"Hiding keyboard for %@", winv);
-		[winv.inputfield resignFirstResponder];
-	}
-	else {
-		//NSLog(@"Reshowing keyboard for %@", firstinputview);
-		[winv.inputfield becomeFirstResponder];
-	}
+    GlkWindowView *winv = self.preferredInputWindow;
+    if (!winv || !winv.inputfield)
+        return;
+
+    if ((winv.inputfield).isFirstResponder) {
+        //NSLog(@"Hiding keyboard for %@", winv);
+        [winv.inputfield resignFirstResponder];
+    }
+    else {
+        //NSLog(@"Reshowing keyboard for %@", firstinputview);
+        [winv.inputfield becomeFirstResponder];
+    }
 }
 
 /* Update the input field, as if the player had typed the string. (Any input the player was editing is replaced.) If enter is YES, a line input event is generated, as if the player had then hit Go.
- 
-	If no windows are accepting line input, nothing happens (and the method returns NO). If a window is, it succeeds and returns YES. (If more than one is, it picks one.)
- 
-	This is intended to be called by UI controls. For example, you might have a button in your app interface which generates an "INVENTORY" command.
+
+ If no windows are accepting line input, nothing happens (and the method returns NO). If a window is, it succeeds and returns YES. (If more than one is, it picks one.)
+
+ This is intended to be called by UI controls. For example, you might have a button in your app interface which generates an "INVENTORY" command.
  */
 - (BOOL) forceLineInput:(NSString *)text enter:(BOOL)enter
 {
-	if (![GlkAppWrapper singleton].acceptingEvent) {
-		/* The VM is not currently awaiting input. */
-		return NO;
-	}
-	
-	for (NSNumber *tag in frameview.windowviews) {
-		GlkWindowView *winv = (frameview.windowviews)[tag];
-		if (winv.inputfield && winv.winstate.line_request) {
-			if (!enter) {
-				winv.inputfield.text = text;
-			}
-			else {
-				// We can't absolutely guarantee that this will succeed -- the VM has to decide that. But we'll return YES anyhow.
-				[[GlkAppWrapper singleton] acceptEvent:[GlkEventState lineEvent:text inWindow:winv.winstate.tag]];
-			}
-			return YES;
-		}
-	}
-	
-	return NO;
+    if (![GlkAppWrapper singleton].acceptingEvent) {
+        /* The VM is not currently awaiting input. */
+        return NO;
+    }
+
+    for (NSNumber *tag in _frameview.windowviews) {
+        GlkWindowView *winv = (_frameview.windowviews)[tag];
+        if (winv.inputfield && winv.winstate.line_request) {
+            if (!enter) {
+                winv.inputfield.text = text;
+            }
+            else {
+                // We can't absolutely guarantee that this will succeed -- the VM has to decide that. But we'll return YES anyhow.
+                [[GlkAppWrapper singleton] acceptEvent:[GlkEventState lineEvent:text inWindow:winv.winstate.tag]];
+            }
+            return YES;
+        }
+    }
+
+    return NO;
 }
 
 /* Send a custom event directly to the VM. Returns YES if the VM is in glk_select(); if not, does nothing and returns NO.
- 
-	The tag argument will be converted to a window ID in the event structure. If tag is nil, the window ID will be zero.
+
+ The tag argument will be converted to a window ID in the event structure. If tag is nil, the window ID will be zero.
  */
 - (BOOL) forceCustomEvent:(uint32_t)evtype windowTag:(NSNumber *)tag val1:(uint32_t)val1 val2:(uint32_t)val2
 {
-	if (![GlkAppWrapper singleton].acceptingEvent) {
-		/* The VM is not currently awaiting input. */
-		return NO;
-	}
-	
-	GlkEventState *event = [[GlkEventState alloc] init];
-	event.type = evtype;
-	event.tag = tag;
-	event.genval1 = val1;
-	event.genval2 = val2;
-	
-	[[GlkAppWrapper singleton] acceptEvent:event];
-	return YES;
+    if (![GlkAppWrapper singleton].acceptingEvent) {
+        /* The VM is not currently awaiting input. */
+        return NO;
+    }
+
+    GlkEventState *event = [[GlkEventState alloc] init];
+    event.type = evtype;
+    event.tag = tag;
+    event.genval1 = val1;
+    event.genval2 = val2;
+
+    [[GlkAppWrapper singleton] acceptEvent:event];
+    return YES;
 }
 
 /* Display the "game over, what now?" popup. This is called when the player taps after glk_main() has exited.
  */
 - (void) postGameOver {
-	CGRect rect = frameview.bounds;
-	GameOverView *menuview = [[GameOverView alloc] initWithFrame:frameview.bounds centerInFrame:rect];
-	[frameview postPopMenu:menuview];	
+    CGRect rect = _frameview.bounds;
+    GameOverView *menuview = [[GameOverView alloc] initWithFrame:_frameview.bounds centerInFrame:rect];
+    [_frameview postPopMenu:menuview];
 }
 
-/* Display the appropriate modal pop-up when updating the display (at glk_select time, or whenever the VM blocks.) 
- 
-	Called from updateFromLibraryState. It can also be called after the game is over. (IosFizmo has a "Restore" button in the postGameOver dialog.)
+/* Display the appropriate modal pop-up when updating the display (at glk_select time, or whenever the VM blocks.)
+
+ Called from updateFromLibraryState. It can also be called after the game is over. (IosFizmo has a "Restore" button in the postGameOver dialog.)
  */
 - (void) displayModalRequest:(id)special {
-	if (!special) {
-		/* Regular glk_select(); no modal view here. */
-		return;
-	}
-	
-	if ([special isKindOfClass:[NSNull class]]) {
-		/* glk_exit(): no modal view here. (The game-over dialog is handled differently.) */
-		return;
-	}
-	
-	if ([special isKindOfClass:[GlkFileRefPrompt class]]) {
-		/* File selection. */
-		GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
-		
-		NSString *sbname;
-		if (prompt.fmode == filemode_Read)
-			sbname = @"GlkFileSelectLoad";
-		else
-			sbname = @"GlkFileSelectStore";
+    if (!special) {
+        /* Regular glk_select(); no modal view here. */
+        return;
+    }
+
+    if ([special isKindOfClass:[NSNull class]]) {
+        /* glk_exit(): no modal view here. (The game-over dialog is handled differently.) */
+        return;
+    }
+
+    if ([special isKindOfClass:[GlkFileRefPrompt class]]) {
+        /* File selection. */
+        GlkFileRefPrompt *prompt = (GlkFileRefPrompt *)special;
+
+        NSString *sbname;
+        if (prompt.fmode == filemode_Read)
+            sbname = @"GlkFileSelectLoad";
+        else
+            sbname = @"GlkFileSelectStore";
 
         UIStoryboard *sb = [UIStoryboard storyboardWithName:@"GlkFileSelect" bundle:nil];
 
-		UINavigationController *navc = [sb instantiateViewControllerWithIdentifier:sbname];
+        UINavigationController *navc = [sb instantiateViewControllerWithIdentifier:sbname];
         GlkFileSelectViewController *viewc = (GlkFileSelectViewController *)navc.viewControllers[0];
         viewc.prompt = prompt;
-		[self presentViewController:navc animated:YES completion:nil];
-		return;
-	}
+        [self presentViewController:navc animated:YES completion:nil];
+        return;
+    }
 
-	[NSException raise:@"GlkException" format:@"tried to raise unknown modal request"];
+    [NSException raise:@"GlkException" format:@"tried to raise unknown modal request"];
 }
 
 - (void) addToCommandHistory:(NSString *)str {
-	NSArray *arr = [str componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	if (arr.count == 0)
-		return;
-	NSMutableArray *arr2 = [NSMutableArray arrayWithCapacity:arr.count];
-	for (NSString *substr in arr) {
-		if (substr.length)
-			[arr2 addObject:substr];
-	}
-	if (!arr2.count)
-		return;
-	str = [arr2 componentsJoinedByString:@" "];
-	//str = str.lowercaseString;
-	
-	// for this test, should really measure the string's length excluding closing punctuation and spaces
-	if (str.length <= 2)
-		return;
-	
-	[commandhistory removeObject:str];
-	[commandhistory addObject:str];
-	if (commandhistory.count > MAX_HISTORY_LENGTH) {
-		NSRange range;
-		range.location = 0;
-		range.length = commandhistory.count - MAX_HISTORY_LENGTH;
-		[commandhistory removeObjectsInRange:range];
-	}
-	
-	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	[defaults setObject:commandhistory forKey:@"CommandHistory"];
+    NSArray *arr = [str componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (arr.count == 0)
+        return;
+    NSMutableArray *arr2 = [NSMutableArray arrayWithCapacity:arr.count];
+    for (NSString *substr in arr) {
+        if (substr.length)
+            [arr2 addObject:substr];
+    }
+    if (!arr2.count)
+        return;
+    str = [arr2 componentsJoinedByString:@" "];
+    //str = str.lowercaseString;
+
+    // for this test, should really measure the string's length excluding closing punctuation and spaces
+    if (str.length <= 2)
+        return;
+
+    [_commandhistory removeObject:str];
+    [_commandhistory addObject:str];
+    if (_commandhistory.count > MAX_HISTORY_LENGTH) {
+        NSRange range;
+        range.location = 0;
+        range.length = _commandhistory.count - MAX_HISTORY_LENGTH;
+        [_commandhistory removeObjectsInRange:range];
+    }
+
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:_commandhistory forKey:@"CommandHistory"];
 }
 
 /* Display an alert sheet that doesn't come from the game. For example, this might be called when a file is passed to the app from another app.
@@ -388,12 +379,12 @@
  If there's already a question sheet visible, this fails and auto-cancels. (Weak, I know, sorry.)
  */
 - (void) displayAdHocQuestion:(NSString *)msg option:(NSString *)opt1 option:(NSString *)opt2 callback:(questioncallback)qcallback {
-	if (self.currentquestion) {
-		NSLog(@"displayAdHocQuestion: current question already exists; cancelling");
-		qcallback(0);
-		return;
-	}
-	self.currentquestion = qcallback;
+    if (self.currentquestion) {
+        NSLog(@"displayAdHocQuestion: current question already exists; cancelling");
+        qcallback(0);
+        return;
+    }
+    self.currentquestion = qcallback;
 
     UIAlertController *sheet = [UIAlertController alertControllerWithTitle:msg message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
@@ -426,6 +417,73 @@
 
     [self presentViewController:sheet animated:YES completion:nil];
 
+}
+
+- (void)textTapped:(UITapGestureRecognizer *)recognizer
+{
+    GlkWindowView *winv = [self preferredInputWindow];
+
+    /* If there is no input line (anywhere), ignore single-tap and double-tap. (Unless the game is over, in which case we post that dialog.) */
+    if (!winv || !winv.inputfield) {
+        NSLog(@"no input line (anywhere)");
+        if (_vmexited)
+            [self postGameOver];
+        return;
+    }
+
+    /* Otherwise, single-tap focuses the input line. */
+    if (!winv.inputfield.singleChar) {
+
+        UITextView *textView = (UITextView *)recognizer.view;
+        NSRange selected = textView.selectedRange;
+        if (selected.length) {
+            textView.selectedRange = NSMakeRange(0, 0);
+            return;
+        }
+
+        NSLayoutManager *layoutManager = textView.layoutManager;
+        CGPoint location = [recognizer locationInView:textView];
+        location.x -= textView.textContainerInset.left;
+        location.y -= textView.textContainerInset.top;
+
+        NSUInteger
+        characterIndex = [layoutManager characterIndexForPoint:location
+                                               inTextContainer:textView.textContainer
+                      fractionOfDistanceBetweenInsertionPoints:NULL];
+
+        if (characterIndex < textView.textStorage.length) {
+            CGRect rect;
+            NSRange range;
+            NSAttributedString *wd = attributedWordAtIndex(characterIndex, textView.textStorage, &range);
+            if (wd) {
+                /* Send an animated label flying downhill */
+                UITextPosition *start = [textView positionFromPosition:textView.beginningOfDocument offset:range.location];
+                UITextPosition *end = [textView positionFromPosition:start offset:range.length];
+                UITextRange *textRange = [textView textRangeFromPosition:start toPosition:end];
+                rect = [textView firstRectForRange:textRange];
+                rect = [textView convertRect:rect toView:textView.superview];
+                rect = CGRectInset(rect, -4, -2);
+                UILabel *label = [[UILabel alloc] initWithFrame:rect];
+                label.attributedText = wd;
+                label.textAlignment = NSTextAlignmentCenter;
+                label.backgroundColor = nil;
+                label.opaque = NO;
+                [textView.superview addSubview:label];
+                CGPoint newpt = RectCenter(winv.inputholder.frame);
+                CGSize curinputsize = [winv.inputfield.text sizeWithAttributes:@{NSFontAttributeName:winv.inputfield.font}];
+                newpt.x = winv.inputholder.frame.origin.x + curinputsize.width + 0.5 * rect.size.width;
+                newpt = [winv.inputholder.superview convertPoint:newpt toView:textView.superview];
+                [UIView animateWithDuration:0.4 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+                    label.center = newpt;
+                    label.alpha = 0.25;
+                } completion:^(BOOL finished) {
+                    [label removeFromSuperview];
+                    /* Put the word into the input field */
+                    [winv.inputfield applyInputString:wd.string replace:NO];
+                }];
+            }
+        }
+    }
 }
 
 @end

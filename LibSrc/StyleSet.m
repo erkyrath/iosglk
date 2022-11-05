@@ -12,14 +12,6 @@
 
 @implementation StyleSet
 
-@synthesize fonts;
-@synthesize colors;
-@synthesize leading;
-@synthesize charbox;
-@synthesize backgroundcolor;
-@synthesize margins;
-@synthesize margintotal;
-
 /* Generate a styleset appropriate to the given window (as identified by window type and rock). The glkdelegate handles this.
  
 	Pedantically, we should note that this is invoked from both the VM and UI threads.
@@ -115,17 +107,19 @@
 	self = [super init];
 	
 	if (self) {
-		charbox = CGSizeZero;
-		margins = UIEdgeInsetsZero;
-		leading = 0;
-		margintotal = CGSizeZero;
+        _charbox = CGSizeZero;
+		_margins = UIEdgeInsetsZero;
+		_leading = 0;
+		_margintotal = CGSizeZero;
 		self.backgroundcolor = [UIColor whiteColor];
-		fonts = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
+		_fonts = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
-            fonts[ix] = [NSNull null];
-        colors = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
+            _fonts[ix] = [NSNull null];
+        _colors = [[NSMutableArray alloc] initWithCapacity:style_NUMSTYLES];
 		for (int ix=0; ix<style_NUMSTYLES; ix++)
-            colors[ix] = [NSNull null];
+            _colors[ix] = [NSNull null];
+        _gridattributes = [[NSMutableArray<NSDictionary *> alloc] initWithCapacity:style_NUMSTYLES];
+        _bufferattributes  = [[NSMutableArray<NSDictionary *> alloc] initWithCapacity:style_NUMSTYLES];
 	}
 	
 	return self;
@@ -134,45 +128,64 @@
 - (void) completeForWindowType:(glui32)wintype {
 	/* Fill in any fonts and colors that were omitted. */
 
+    NSMutableArray *attrarray = [[NSMutableArray<NSDictionary*> alloc] initWithCapacity:style_NUMSTYLES];
+
 	for (int ix=0; ix<style_NUMSTYLES; ix++) {
-		if ([fonts[ix] isEqual:[NSNull null]]) {
+        if ([_fonts[ix] isEqual:[NSNull null]]) {
 			switch (ix) {
 				case style_Normal:
 					if (wintype == wintype_TextBuffer)
-						fonts[ix] = [UIFont systemFontOfSize:14];
+                        _fonts[ix] = [UIFont systemFontOfSize:14];
 					else
-						fonts[ix] = [UIFont fontWithName:@"Courier" size:14];
+						_fonts[ix] = [UIFont fontWithName:@"Courier" size:14];
 					break;
 				default:
-					fonts[ix] = fonts[style_Normal];
+					_fonts[ix] = _fonts[style_Normal];
 					break;
 			}
 		}
 
-        if ([colors[ix] isEqual:[NSNull null]]) {
+        if ([_colors[ix] isEqual:[NSNull null]]) {
 			switch (ix) {
 				case style_Normal:
-					colors[ix] = [UIColor blackColor];
+					_colors[ix] = [UIColor blackColor];
 					break;
 				default:
-					colors[ix] = colors[style_Normal];
+					_colors[ix] = _colors[style_Normal];
 					break;
 			}
 		}
-	}
-	
-	CGSize size;
-    size = [@"W" sizeWithAttributes:@{NSFontAttributeName:fonts[style_Normal]}];
-	charbox = size;
-	size = [@"qld" sizeWithAttributes:@{NSFontAttributeName:fonts[style_Normal]}];
-	if (charbox.height < size.height)
-		charbox.height = size.height;
-	
-	charbox.height += leading;
-	
-	margintotal.width = margins.left + margins.right;
-	margintotal.height = margins.top + margins.bottom;
-}
 
+        NSMutableParagraphStyle *parastyle = [NSParagraphStyle defaultParagraphStyle].mutableCopy;
+
+        //    parastyle.alignment = self.styleset.
+        //    parastyle.maximumLineHeight = self.styleset.charbox.height;
+
+        parastyle.lineSpacing = self.leading;
+        NSDictionary *attributes = @{ @"GlkStyle": @(ix),
+                                      NSFontAttributeName: _fonts[ix],
+                                      NSForegroundColorAttributeName: _colors[ix],
+                                      NSParagraphStyleAttributeName: parastyle };
+        [attrarray addObject:attributes];
+	}
+
+    if (wintype == wintype_TextGrid)
+        _gridattributes = attrarray;
+    else
+        _bufferattributes = attrarray;
+
+    NSDictionary *attributes = attrarray[style_Normal];
+	
+	CGSize size = [@"W" sizeWithAttributes:attributes];
+	_charbox = size;
+	size = [@"qld" sizeWithAttributes:attributes];
+	if (_charbox.height < size.height)
+		_charbox.height = size.height;
+	
+	_charbox.height += _leading;
+	
+	_margintotal.width = _margins.left + _margins.right;
+	_margintotal.height = _margins.top + _margins.bottom;
+}
 
 @end

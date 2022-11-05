@@ -398,9 +398,7 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 }
 
 /* Clone the library display state for a UI update. (This doesn't produce a GlkLibrary object; rather, it builds a subset which contains only what the UI cares about.)
- 
-	Despite the name "clone", this returns an autoreleased object, not a retained one.
- 
+
 	This runs in the VM thread; the cloned GlkLibraryState is then thrown across to the UI thread, which owns it thereafter.
  */
 - (GlkLibraryState *) cloneState {
@@ -575,15 +573,17 @@ static void (*extra_unarchive_hook)(NSCoder *) = nil;
 				
 			case wintype_TextBuffer: {
 				GlkWindowBuffer *bufwin = (GlkWindowBuffer *)win;
-				if (!bufwin.lines)
-					NSLog(@"SANITY: buffer window has no lines");
+                if (!bufwin.attrstring) {
+                    NSLog(@"SANITY: buffer window has no attributed string");
+                    bufwin.attrstring = [NSMutableAttributedString new];
+                }
 			}
 			break;
 				
 			case wintype_TextGrid: {
 				GlkWindowGrid *gridwin = (GlkWindowGrid *)win;
-				if (!gridwin.lines)
-					NSLog(@"SANITY: grid window has no lines");
+				if (!gridwin.attrstring)
+					NSLog(@"SANITY: grid window has no attributed string");
 			}
 			break;
 		}

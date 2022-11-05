@@ -30,11 +30,9 @@
 
 @implementation GlkFrameView
 
-@synthesize librarystate;
-@synthesize windowviews;
-@synthesize wingeometries;
-@synthesize rootwintag;
-@synthesize menuview;
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
 - (instancetype) initWithCoder:(NSCoder *)decoder
 {
@@ -42,7 +40,7 @@
 	if (self) {
 		self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 		self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
-		rootwintag = nil;
+		_rootwintag = nil;
 		
 		cachedGlkBox = CGRectNull;
 		cachedGlkBoxInvalid = YES;
@@ -54,7 +52,7 @@
 
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag {
-	return windowviews[tag];
+	return _windowviews[tag];
 }
 
 /* Force all the windows to pick up new stylesets, and force all the windowviews to notice that fact.
@@ -63,8 +61,8 @@
  */
 - (void) updateWindowStyles {
 	[self setNeedsLayout];
-	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = windowviews[tag];
+	for (NSNumber *tag in _windowviews) {
+		GlkWindowView *winv = _windowviews[tag];
 		StyleSet *styleset = [StyleSet buildForWindowType:winv.winstate.type rock:winv.winstate.rock];
 		winv.winstate.styleset = styleset;
 		winv.styleset = styleset;
@@ -79,8 +77,8 @@
 }
 
 - (void) updateInputTraits {
-	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = windowviews[tag];
+	for (NSNumber *tag in _windowviews) {
+		GlkWindowView *winv = _windowviews[tag];
 		if (winv.inputfield)
 			[winv.inputfield adjustInputTraits];
 	}
@@ -115,10 +113,10 @@
 	cachedGlkBox = box;
 	cachedGlkBoxInvalid = NO;
 
-	if (menuview && menuview.vertalign < 0)
+	if (_menuview && _menuview.vertalign < 0)
 		[self removePopMenuAnimated:YES];
 
-	if (rootwintag) {
+	if (_rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
 		//NSLog(@"### root window exists; layout performing windowViewRearrange, box %@", StringFromRect(box));
         GlkFrameView __weak *weakSelf = self;
@@ -134,8 +132,10 @@
 	Calls setNeedsLayout for any window which changes size.
 */
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box {
-	GlkWindowView *winv = windowviews[tag];
-	Geometry *geometry = wingeometries[tag];
+    if (isnan(box.origin.x) || isinf(box.origin.x))
+        return;
+	GlkWindowView *winv = _windowviews[tag];
+	Geometry *geometry = _wingeometries[tag];
 	
 	/* Exactly one of winv and geom should be set here. (geom for pair windows, winv for all others.) */
 	if (winv && geometry)
@@ -199,7 +199,7 @@
 	// vmexited is cached in the viewc also.
 	
 	/* Build a list of windowviews which need to be closed. */
-	NSMutableDictionary *closed = [NSMutableDictionary dictionaryWithDictionary:windowviews];
+	NSMutableDictionary *closed = [NSMutableDictionary dictionaryWithDictionary:_windowviews];
 	for (GlkWindowState *win in library.windows) {
 		[closed removeObjectForKey:win.tag];
 	}
@@ -210,14 +210,14 @@
 		[winv removeFromSuperview];
 		winv.inputfield = nil; /* detach this now */
 		winv.inputholder = nil;
-		[windowviews removeObjectForKey:tag];
+		[_windowviews removeObjectForKey:tag];
 	}
 	
 	closed = nil;
 	
 	/* If there are any new windows, create windowviews for them. */
 	for (GlkWindowState *win in library.windows) {
-		if (win.type != wintype_Pair && !windowviews[win.tag]) {
+		if (win.type != wintype_Pair && !_windowviews[win.tag]) {
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 			UIEdgeInsets viewmargin = UIEdgeInsetsZero;
 			if (glkviewc.glkdelegate)
@@ -241,7 +241,7 @@
 				default:
 					[NSException raise:@"GlkException" format:@"no windowview class for this window"];
 			}
-			windowviews[win.tag] = winv;
+			_windowviews[win.tag] = winv;
 			[self addSubview:winv];
 		}
 	}
@@ -250,16 +250,16 @@
 	if (library.geometrychanged || library.metricschanged) {
 		//NSLog(@"Recaching window geometries");
 		self.rootwintag = library.rootwintag;
-		[wingeometries removeAllObjects];
+		[_wingeometries removeAllObjects];
 		for (GlkWindowState *win in library.windows) {
 			if (win.type == wintype_Pair) {
 				GlkWindowPairState *pairwin = (GlkWindowPairState *)win;
-				wingeometries[win.tag] = pairwin.geometry;
+				_wingeometries[win.tag] = pairwin.geometry;
 			}
 		}
 	}
 	
-	if (rootwintag) {
+	if (_rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
 		//NSLog(@"### root window exists; update performing windowViewRearrange, cachedGlkBox %@ (valid %d)", StringFromRect(cachedGlkBox), cachedGlkBoxInvalid);
         GlkFrameView __weak *weakSelf = self;
@@ -281,12 +281,12 @@
 
 	/* Now go through all the window views, and tell them to update to match their windows. */
 	for (GlkWindowState *win in library.windows) {
-		GlkWindowView *winv = windowviews[win.tag];
+		GlkWindowView *winv = _windowviews[win.tag];
 		if (winv)
 			winv.winstate = win;
 	}
-	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = windowviews[tag];
+	for (NSNumber *tag in _windowviews) {
+		GlkWindowView *winv = _windowviews[tag];
 		[winv updateFromWindowState];
 		[winv updateFromWindowInputs];
 	}
@@ -295,27 +295,27 @@
 	if (UIAccessibilityIsVoiceOverRunning()) {
 		for (GlkWindowState *win in library.windows) {
 			if ([win isKindOfClass:[GlkWindowBufferState class]]) {
-				GlkWindowBufferState *bufwin = (GlkWindowBufferState *)win;
-				NSArray *lines = bufwin.lines;
-				if (lines && lines.count && bufwin.linesdirtyto > bufwin.linesdirtyfrom) {
-					int slinestart = ((GlkStyledLine *)lines[0]).index;
-					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(1 + bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
-					for (int ix=bufwin.linesdirtyfrom-slinestart; ix<bufwin.linesdirtyto-slinestart; ix++) {
-						if (ix < 0 || ix >= lines.count)
-							continue;
-						GlkStyledLine *vln = lines[ix];
-						NSString *str = vln.concatLine;
-						if (str.length)
-							[arr addObject:[GlkAccVisualLine lineForSpeaking:str]];
-					}
-					if (arr.count) {
-						NSString *speakbuffer = [arr componentsJoinedByString:@"\n"];
-						//NSLog(@"### speak: %@", speakbuffer);
-						UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, speakbuffer);
-						/* We only speak once per update. */
-						break;
-					}
-				}
+//				GlkWindowBufferState *bufwin = (GlkWindowBufferState *)win;
+//				NSArray *lines = bufwin.lines;
+//				if (lines && lines.count && bufwin.linesdirtyto > bufwin.linesdirtyfrom) {
+//					int slinestart = ((GlkStyledLine *)lines[0]).index;
+//					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(1 + bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
+//					for (int ix=bufwin.linesdirtyfrom-slinestart; ix<bufwin.linesdirtyto-slinestart; ix++) {
+//						if (ix < 0 || ix >= lines.count)
+//							continue;
+//						GlkStyledLine *vln = lines[ix];
+//						NSString *str = vln.concatLine;
+//						if (str.length)
+//							[arr addObject:[GlkAccVisualLine lineForSpeaking:str]];
+//					}
+//					if (arr.count) {
+//						NSString *speakbuffer = [arr componentsJoinedByString:@"\n"];
+//						//NSLog(@"### speak: %@", speakbuffer);
+//						UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, speakbuffer);
+//						/* We only speak once per update. */
+//						break;
+//					}
+//				}
 			}
 		}
 	}
@@ -330,7 +330,7 @@
 	This is invoked in the main thread, by the VM thread, which is waiting on the result. We're safe from deadlock because the VM thread can't be in glk_select(); it can't be holding the iowait lock, and it can't get into the code path that rearranges the view structure.
 */
 - (void) editingTextForWindow:(GlkTagString *)tagstring {
-	GlkWindowView *winv = windowviews[tagstring.tag];
+	GlkWindowView *winv = _windowviews[tagstring.tag];
 	if (!winv)
 		return;
 	
@@ -346,61 +346,61 @@
 }
 
 - (void) postPopMenu:(PopMenuView *)menu {
-	if (menuview) {
+	if (_menuview) {
 		[self removePopMenuAnimated:YES];
 	}
 	
 	self.menuview = menu;
-	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:menuview options:nil];
+	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:_menuview options:nil];
 	
 	NSString *decorname = menu.bottomDecorNib;
 	if (decorname) {
-		[[NSBundle mainBundle] loadNibNamed:decorname owner:menuview options:nil];
-		CGRect menubox = menuview.frameview.bounds;
-		CGRect decorbox = menuview.decor.bounds;
-		CGRect contentbox = menuview.content.frame;
+		[[NSBundle mainBundle] loadNibNamed:decorname owner:_menuview options:nil];
+		CGRect menubox = _menuview.frameview.bounds;
+		CGRect decorbox = _menuview.decor.bounds;
+		CGRect contentbox = _menuview.content.frame;
 		contentbox.size.height -= decorbox.size.height;
-		menuview.content.frame = contentbox;
+		_menuview.content.frame = contentbox;
 		decorbox.origin.y = menubox.origin.y + menubox.size.height - decorbox.size.height;
 		decorbox.origin.x = menubox.origin.x;
 		decorbox.size.width = menubox.size.width;
-		menuview.decor.frame = decorbox;
-		if (menuview.faderview)
-			[menuview.frameview insertSubview:menuview.decor belowSubview:menuview.faderview];
+		_menuview.decor.frame = decorbox;
+		if (_menuview.faderview)
+			[_menuview.frameview insertSubview:_menuview.decor belowSubview:_menuview.faderview];
 		else
-			[menuview.frameview addSubview:menuview.decor];
+			[_menuview.frameview addSubview:_menuview.decor];
 	}
 
-	menuview.framemargins = UIEdgeInsetsRectDiff(menuview.frameview.frame, menuview.content.frame);
-	[menuview loadContent];
+	_menuview.framemargins = UIEdgeInsetsRectDiff(_menuview.frameview.frame, _menuview.content.frame);
+	[_menuview loadContent];
 	
-	[menuview addSubview:menuview.frameview];
+	[_menuview addSubview:_menuview.frameview];
 	if (/* DISABLES CODE */ (true)) {
-		menuview.alpha = 0;
-		[self addSubview:menuview];
+		_menuview.alpha = 0;
+		[self addSubview:_menuview];
         GlkFrameView __weak *weakSelf = self;
 		[UIView animateWithDuration:0.1 
                          animations:^{ weakSelf.menuview.alpha = 1; } ];
 	}
 	else {
-		[self addSubview:menuview];
+		[self addSubview:_menuview];
 	}
 }
 
 - (void) removePopMenuAnimated:(BOOL)animated {
-	if (!menuview)
+	if (!_menuview)
 		return;
 	
-	[menuview willRemove];
+	[_menuview willRemove];
 	
 	if (animated) {
-		UIView *oldview = menuview;
+		UIView *oldview = _menuview;
 		[UIView animateWithDuration:0.25 
 						 animations:^{ oldview.alpha = 0; } 
 						 completion:^(BOOL finished) { [oldview removeFromSuperview]; } ];
 	}
 	else {
-		[menuview removeFromSuperview];
+		[_menuview removeFromSuperview];
 	}
 	self.menuview = nil;
 }

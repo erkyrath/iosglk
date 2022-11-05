@@ -15,6 +15,8 @@ extern NSString *StringToCondensedString(NSString *str);
 extern NSString *StringFromDumbEncoding(NSString *str);
 extern NSString *StringToDumbEncoding(NSString *str);
 
+extern NSAttributedString *attributedWordAtIndex(NSUInteger index, NSAttributedString *attrstring, NSRange *range);
+
 extern BOOL NumberMatch(NSNumber *num1, NSNumber *num2);
 extern BOOL StringsMatch(NSString *val1, NSString *val2);
 

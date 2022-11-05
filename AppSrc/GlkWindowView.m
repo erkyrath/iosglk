@@ -31,11 +31,30 @@
 @synthesize inputholder;
 @synthesize morewaiting;
 
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
+- (instancetype) initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+        _tagobj = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSNumber class]]] forKey:@"tag"];
+    }
+    return self;
+}
+
+- (void) encodeWithCoder:(NSCoder *)encoder {
+    [encoder encodeObject:_tagobj forKey:@"tag"];
+    [super encodeWithCoder:encoder];
+}
+
 - (instancetype) initWithWindow:(GlkWindowState *)winstateref frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	self = [super initWithFrame:box];
 	if (self) {
+        self.restorationIdentifier = [NSString stringWithFormat:@"GlkWin%@", winstateref.tag];
 		viewmargin = margin;
 		self.winstate = winstateref;
+        _tagobj = winstateref.tag;
 		self.styleset = winstate.styleset;
 		input_request_id = 0;
 	}

@@ -16,46 +16,24 @@
 #import "GlkAppWrapper.h"
 #import "GlkUtilities.h"
 
-//#import "TerpGlkViewController.h"
-
 #include "glk.h"
 
 @implementation IosGlkAppDelegate
 
-@synthesize library;
-@synthesize glkapp;
-
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
-static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 
 + (IosGlkAppDelegate *) singleton {
 	return singleton;
 }
 
-+ (BOOL) oldstyleui {
-	return oldstyleui;
-}
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions {
+    singleton = self;
 
-- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
-	//NSLog(@"AppDelegate finished launching");	
-	singleton = self;
-	
-	{
-		NSString *currSysVer = [UIDevice currentDevice].systemVersion;
-		
-		/* Test if we have the old (iOS6, gradient-and-gloss) interface style. */
-		NSString *reqSysVer = @"7.0";
-		oldstyleui = !([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
-	}
+    [self.window makeKeyAndVisible];
 
-	[self.window makeKeyAndVisible];
-
-	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
-//	glkviewc.view;
-	
-	self.library = [[GlkLibrary alloc] init];
-	self.glkapp = [[GlkAppWrapper alloc] init];
-	/* Set library.glkdelegate to a default value, if the glkviewc doesn't provide one. (Remember, from now on, that glkviewc.glkdelegate may be null!) */
+    self.library = [[GlkLibrary alloc] init];
+    self.glkapp = [[GlkAppWrapper alloc] init];
+    /* Set library.glkdelegate to a default value, if the glkviewc doesn't provide one. (Remember, from now on, that glkviewc.glkdelegate may be null!) */
 
     UITabBarController *rootNavigationController = (UITabBarController *)self.window.rootViewController;
     UINavigationController *gameNavController = (UINavigationController *)rootNavigationController.viewControllers[0];
@@ -63,28 +41,33 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
     _glkviewc = (IosGlkViewController *)gameNavController.viewControllers[0];
 
     if (_glkviewc.glkdelegate)
-        library.glkdelegate = _glkviewc.glkdelegate;
-	else
-		library.glkdelegate = [DefaultGlkLibDelegate singleton];
-	
+        _library.glkdelegate = _glkviewc.glkdelegate;
+    else
+        _library.glkdelegate = [DefaultGlkLibDelegate singleton];
+
     [[NSNotificationCenter defaultCenter] addObserver:_glkviewc
-											 selector:@selector(keyboardWillBeShown:)
-												 name:UIKeyboardWillShowNotification object:nil];
-	
+                                             selector:@selector(keyboardWillBeShown:)
+                                                 name:UIKeyboardWillShowNotification object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:_glkviewc
-											 selector:@selector(keyboardWillBeHidden:)
-												 name:UIKeyboardWillHideNotification object:nil];
-	
+                                             selector:@selector(keyboardWillBeHidden:)
+                                                 name:UIKeyboardWillHideNotification object:nil];
+
+    return YES;
+}
+
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
+
     [_glkviewc didFinishLaunching];
 	
     CGRect box = _glkviewc.frameview.bounds;
     if (_glkviewc.glkdelegate)
         box = [_glkviewc.glkdelegate adjustFrame:box];
-	[library setMetricsChanged:YES bounds:&box];
+	[_library setMetricsChanged:YES bounds:&box];
 
-	//NSLog(@"AppDelegate launching app thread");
-	
-	[glkapp launchAppThread];
+    //NSLog(@"AppDelegate launching app thread");
+
+	[_glkapp launchAppThread];
 	return YES;
 }
 

@@ -9,17 +9,6 @@
 
 @implementation GlkWindowState
 
-@synthesize library;
-@synthesize type;
-@synthesize rock;
-@synthesize styleset;
-@synthesize bbox;
-@synthesize tag;
-@synthesize input_request_id;
-@synthesize char_request;
-@synthesize line_request;
-@synthesize line_request_initial;
-
 + (GlkWindowState *) windowStateWithType:(glui32)type rock:(glui32)rock {
 	GlkWindowState *state = nil;
 	
@@ -45,8 +34,8 @@
 - (instancetype) initWithType:(glui32)typeval rock:(glui32)rockval {
 	self = [super init];
 	if (self) {
-		type = typeval;
-		rock = rockval;
+		_type = typeval;
+		_rock = rockval;
 	}
 	return self;
 }
@@ -60,33 +49,14 @@
 
 
 @implementation GlkWindowGridState
-
-@synthesize lines;
-@synthesize width;
-@synthesize height;
-@synthesize curx;
-@synthesize cury;
-
-
 @end
 
 
 @implementation GlkWindowBufferState
-
-@synthesize lines;
-@synthesize linesdirtyfrom;
-@synthesize linesdirtyto;
-@synthesize clearcount;
-
-
 @end
 
 
 @implementation GlkWindowPairState
-
-@synthesize geometry;
-
-
 @end
 
 
