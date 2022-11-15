@@ -37,7 +37,7 @@
         _textview.delegate = self;
         _textview.textContainerInset = margin;
         _textview.editable = NO;
-        _textview.restorationIdentifier = [NSString stringWithFormat:@"GlkBufferTextView%@", winref.tag];
+        _textview.accessibilityCustomRotors = [super accessibilityCustomRotors];
 
         [self addSubview:_textview];
 

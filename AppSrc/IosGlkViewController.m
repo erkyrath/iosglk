@@ -19,6 +19,7 @@
 #import "GlkWindowState.h"
 #import "CmdTextField.h"
 #import "GlkUtilities.h"
+#import "RotorHandler.h"
 
 #define MAX_HISTORY_LENGTH (12)
 

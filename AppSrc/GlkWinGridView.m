@@ -44,7 +44,7 @@
         _textview.scrollEnabled = NO;
         _textview.showsVerticalScrollIndicator = NO;
         _textview.showsHorizontalScrollIndicator = NO;
-        _textview.restorationIdentifier = [NSString stringWithFormat:@"GlkGridTextView%@", winref.tag];
+        _textview.accessibilityCustomRotors = [super accessibilityCustomRotors];
         [self addSubview:_textview];
 		/* Without this contentMode setting, any window resize would cause weird font scaling. */
 		self.contentMode = UIViewContentModeRedraw;
