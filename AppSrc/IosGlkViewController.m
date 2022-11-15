@@ -57,6 +57,9 @@
 - (void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+    RotorHandler *rotorHandler = [[RotorHandler alloc] init];
+    self.view.accessibilityCustomRotors = [rotorHandler createCustomRotors];
+
     UIInterfaceOrientation orientation = UIInterfaceOrientationPortrait;
 
     UIWindow *firstWindow = UIApplication.sharedApplication.windows[0];
