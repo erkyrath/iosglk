@@ -26,49 +26,29 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 	return singleton;
 }
 
-- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions {
-    singleton = self;
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
-    [self.window makeKeyAndVisible];
+    singleton = self;
 
     self.library = [[GlkLibrary alloc] init];
     self.glkapp = [[GlkAppWrapper alloc] init];
-    /* Set library.glkdelegate to a default value, if the glkviewc doesn't provide one. (Remember, from now on, that glkviewc.glkdelegate may be null!) */
 
-    UITabBarController *rootNavigationController = (UITabBarController *)self.window.rootViewController;
-    UINavigationController *gameNavController = (UINavigationController *)rootNavigationController.viewControllers[0];
-
-    _glkviewc = (IosGlkViewController *)gameNavController.viewControllers[0];
-
-    if (_glkviewc.glkdelegate)
-        _library.glkdelegate = _glkviewc.glkdelegate;
-    else
-        _library.glkdelegate = [DefaultGlkLibDelegate singleton];
-
-    [[NSNotificationCenter defaultCenter] addObserver:_glkviewc
-                                             selector:@selector(keyboardWillBeShown:)
-                                                 name:UIKeyboardWillShowNotification object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:_glkviewc
-                                             selector:@selector(keyboardWillBeHidden:)
-                                                 name:UIKeyboardWillHideNotification object:nil];
-
-    return YES;
+	return YES;
 }
 
-- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
 
-    [_glkviewc didFinishLaunching];
-	
-    CGRect box = _glkviewc.frameview.bounds;
-    if (_glkviewc.glkdelegate)
-        box = [_glkviewc.glkdelegate adjustFrame:box];
-	[_library setMetricsChanged:YES bounds:&box];
+    UISceneConfiguration *sceneConfig = connectingSceneSession.configuration;
+    // Find the user activity, if available, to create the scene configuration.
+    NSUserActivity *currentActivity = nil;
+    for (NSUserActivity *activity in options.userActivities) {
+        currentActivity = activity;
+    }
+    return sceneConfig;
+//    return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:UIWindowSceneSessionRoleApplication];
+}
 
-    //NSLog(@"AppDelegate launching app thread");
-
-	[_glkapp launchAppThread];
-	return YES;
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
 }
 
 
@@ -265,7 +245,5 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 	 Free up as much memory as possible by purging cached data objects that can be recreated (or reloaded from disk) later.
 	 */
 }
-
-
 
 @end

@@ -6,6 +6,7 @@
 
 #import "IosGlkViewController.h"
 #import "IosGlkAppDelegate.h"
+#import "IosGlkSceneDelegate.h"
 #import "GlkAppWrapper.h"
 #import "GlkFrameView.h"
 #import "GlkWindowView.h"
@@ -19,7 +20,6 @@
 #import "GlkWindowState.h"
 #import "CmdTextField.h"
 #import "GlkUtilities.h"
-#import "RotorHandler.h"
 
 #define MAX_HISTORY_LENGTH (12)
 
@@ -57,9 +57,6 @@
 - (void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-    RotorHandler *rotorHandler = [[RotorHandler alloc] init];
-    self.view.accessibilityCustomRotors = [rotorHandler createCustomRotors];
-
     UIInterfaceOrientation orientation = UIInterfaceOrientationPortrait;
 
     UIWindow *firstWindow = UIApplication.sharedApplication.windows[0];
@@ -75,6 +72,34 @@
 	}
 }
 
+- (void) viewDidAppear:(BOOL)animated {
+    NSLog(@"IosGlkViewController viewDidAppear");
+    [super viewDidAppear:animated];
+    NSDictionary *activityUserInfo = self.view.window.windowScene.userActivity.userInfo;
+    // Restore
+
+    if (!self.view)
+        NSLog(@"IosGlkViewController has no view");
+    else if (!self.view.window)
+        NSLog(@"IosGlkViewController view has no window");
+    else if (!self.view.window.windowScene)
+        NSLog(@"IosGlkViewController view window has no scene");
+    else if (!self.view.window.windowScene.userActivity)
+        NSLog(@"viewDidAppear: IosGlkViewController view window scene has no userActivity");
+    else if (!self.view.window.windowScene.userActivity.userInfo)
+        NSLog(@"IosGlkViewController view window scene userActivity has no userInfo");
+
+    if (activityUserInfo) {
+        NSDictionary *stateOfViews = activityUserInfo[@"GlkWindowViewStates"];
+        if (stateOfViews) {
+            [_frameview updateWithUIStates:stateOfViews];
+        } else {
+            NSLog(@"No GlkWindowViewStates value in activityUserInfo");
+        }
+    }
+    [self updateUserActivity:nil];
+}
+
 - (void) viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
 	[_frameview removePopMenuAnimated:NO];
@@ -87,13 +112,26 @@
 		[_frameview requestLibraryState:appdelegate.glkapp];
 }
 
+//- (void)viewWillLayoutSubviews {
+//    [_frameview preserveScrollPositions];
+//}
+//
+//- (void)viewDidLayoutSubviews {
+//    [_frameview restoreScrollPositions];
+//}
+
 - (void) viewWillTransitionToSize:(CGSize)size
         withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [_frameview preserveScrollPositions];
+    _frameview.inOrientationAnimation = YES;
 	if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
 		BOOL hidenavbar = (size.width > size.height);
         
         [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) { self.navigationController.navigationBarHidden = hidenavbar; }
-                                     completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {} ];
+                                     completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            [self.frameview restoreScrollPositions];
+        } ];
 	}
 }
 
@@ -142,7 +180,7 @@
 - (void) keyboardWillBeShown:(NSNotification*)notification {
     NSDictionary *info = notification.userInfo;
     CGRect rect = CGRectZero;
-    UIWindow *window = [IosGlkAppDelegate singleton].window;
+    UIWindow *window = UIApplication.sharedApplication.windows[0];
     rect = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     rect = [window convertRect:rect fromWindow:nil];
     //NSLog(@"Keyboard will be shown, box %@ (window coords)", StringFromRect(rect));
@@ -223,7 +261,7 @@
     if (!winv || !winv.inputfield)
         return;
 
-    if ((winv.inputfield).isFirstResponder) {
+    if (winv.inputfield.isFirstResponder) {
         //NSLog(@"Hiding keyboard for %@", winv);
         [winv.inputfield resignFirstResponder];
     }
@@ -488,6 +526,28 @@
             }
         }
     }
+}
+
+- (NSUserActivity *)updateUserActivity:(nullable id)sender {
+    NSLog(@"IosGlkViewController updateUserActivity");
+
+    /** Update the user activity for this view controller's scene.
+     viewDidAppear calls this upon initial presentation. The IosGlkSceneDelegate stateRestorationActivityForScene also calls it.
+     */
+
+    NSUserActivity *currentUserActivity = self.view.window.windowScene.userActivity;
+    if (currentUserActivity == nil) {
+        IosGlkSceneDelegate *sceneDelegate = (IosGlkSceneDelegate *)self.view.window.windowScene.delegate;
+        if (sceneDelegate) {
+            currentUserActivity = [[NSUserActivity alloc] initWithActivityType:[sceneDelegate mainSceneActivityType]];
+        } else
+            return nil;
+    }
+
+    [currentUserActivity addUserInfoEntriesFromDictionary:[_frameview getCurrentViewStates]];
+    self.view.window.windowScene.userActivity = currentUserActivity;
+    
+    return currentUserActivity;
 }
 
 @end

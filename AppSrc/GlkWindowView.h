@@ -19,36 +19,27 @@ typedef enum SelDragMode_enum {
 @class CmdTextField;
 @class StyleSet;
 
-@interface GlkWindowView : UIView <UITextFieldDelegate> {
-	GlkWindowState *winstate; /* a clone of the most recent window state */
-	StyleSet *styleset; /* the same as the window's, unless the player is changing things */
-	
-	UIEdgeInsets viewmargin; /* the view has this much extra margin beyond the window state's bounding box */
-	
-	CmdTextField *inputfield; /* if input is happening (but not necessarily a subview of this view) */
-	UIScrollView *inputholder; /* terrible hack: all textfields must be wrapped in a UIScrollView container of the same size. */
-	int input_request_id; /* matches the value in the GlkWindow if this input field is current */
-	BOOL input_single_char; /* if we're grabbing character (rather than line) input */
-	
-	BOOL morewaiting; /* only used for buffer windows */
-}
+@interface GlkWindowView : UIView <UITextFieldDelegate>
 
-@property (nonatomic, strong) GlkWindowState *winstate;
-@property (nonatomic, strong) StyleSet *styleset;
-@property (nonatomic) UIEdgeInsets viewmargin;
-@property (nonatomic, strong) CmdTextField *inputfield;
-@property (nonatomic, strong) UIScrollView *inputholder;
+@property (nonatomic, strong) GlkWindowState *winstate; /* a clone of the most recent window state */
+@property (nonatomic, strong) StyleSet *styleset; /* the same as the window's, unless the player is changing things */
+@property (nonatomic) UIEdgeInsets viewmargin; /* the view has this much extra margin beyond the window state's bounding box */
+@property (nonatomic, strong) CmdTextField *inputfield;  /* if input is happening (but not necessarily a subview of this view) */
+@property (nonatomic, strong) UIScrollView *inputholder;  /* terrible hack: all textfields must be wrapped in a UIScrollView container of the same size. */
 @property (nonatomic, strong) NSNumber *tagobj;
-@property (nonatomic) BOOL morewaiting;
+@property (nonatomic) BOOL morewaiting; /* only used for buffer windows */
+@property (nonatomic) BOOL input_single_char; /* if we're grabbing character (rather than line) input */
+@property (nonatomic) NSUInteger input_request_id; /* matches the value in the GlkWindow if this input field is current */
+
 
 - (instancetype) initWithWindow:(GlkWindowState *)winstate frame:(CGRect)box margin:(UIEdgeInsets)margin;
+
 @property (NS_NONATOMIC_IOSONLY, readonly, strong) GlkFrameView *superviewAsFrameView;
 - (void) updateFromWindowState;
 - (void) updateFromWindowInputs;
+- (void) updateFromUIState:(NSDictionary *)state;
 - (void) uncacheLayoutAndStyles;
 
-@property (NS_NONATOMIC_IOSONLY, readonly) CGRect textSelectArea;
-- (void) setMoreFlag:(BOOL)flag;
 - (void) placeInputField:(UITextField *)field holder:(UIScrollView *)holder;
 - (void) textFieldContinueReturn:(UITextField *)textField;
 - (void) postInputMenu;

@@ -779,7 +779,7 @@
     width = newwidth;
     height = newheight;
 
-    NSUInteger desiredLength =
+    NSInteger desiredLength =
     height * (width + 1) - 1; // -1 because we don't want a newline at the very end
     if (desiredLength < 1 || height == 1)
         desiredLength = width;

@@ -32,6 +32,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, Geometry *> *wingeometries;
 @property (nonatomic, strong) NSNumber *rootwintag;
 @property (nonatomic, strong) PopMenuView *menuview;
+@property (nonatomic) BOOL inOrientationAnimation;
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag;
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp;
@@ -42,6 +43,10 @@
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 - (void) postPopMenu:(PopMenuView *)menuview;
 - (void) removePopMenuAnimated:(BOOL)animated;
+- (NSDictionary *)getCurrentViewStates;
+- (void) updateWithUIStates:(NSDictionary *)states;
+- (void) preserveScrollPositions;
+- (void) restoreScrollPositions;
 
 @end
 

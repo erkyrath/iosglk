@@ -83,7 +83,6 @@
 }
 
 - (void) adjustForWindowStyles:(StyleSet *)styleset {
-	//self.backgroundColor = styleset.backgroundcolor;
 	self.font = styleset.fonts[style_Input];
 	self.textColor = styleset.colors[style_Input];
 }

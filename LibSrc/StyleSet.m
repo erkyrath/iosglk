@@ -30,7 +30,7 @@
  
 	This will use the first listed font which is available. The list of font names must be nil-terminated.
  
-	This returns a struct containing non-retained (autoreleased) UIFont objects.
+	This returns a struct containing UIFont objects.
  */
 + (FontVariants) fontVariantsForSize:(CGFloat)size name:(NSString *)first, ... {
 	FontVariants variants;
@@ -157,8 +157,8 @@
 		}
 
         NSMutableParagraphStyle *parastyle = [NSParagraphStyle defaultParagraphStyle].mutableCopy;
-
-        //    parastyle.alignment = self.styleset.
+        parastyle.headIndent = 0;
+        parastyle.firstLineHeadIndent = 0;
         //    parastyle.maximumLineHeight = self.styleset.charbox.height;
 
         parastyle.lineSpacing = self.leading;

@@ -62,6 +62,7 @@ typedef void (^questioncallback)(int); // callback block type for displayAdHocQu
 - (void) displayAdHocAlert:(NSString *)msg title:(NSString *)title;
 - (void) displayAdHocQuestion:(NSString *)msg option:(NSString *)opt1 option:(NSString *)opt2 callback:(questioncallback)qcallback;
 - (void)textTapped:(UITapGestureRecognizer *)recognizer;
+- (NSUserActivity *)updateUserActivity:(id)sender;
 
 @end
 

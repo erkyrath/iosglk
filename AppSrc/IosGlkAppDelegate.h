@@ -12,7 +12,6 @@
 
 @interface IosGlkAppDelegate : NSObject <UIApplicationDelegate>
 
-@property (nonatomic, strong) IBOutlet UIWindow *window;
 @property (nonatomic, strong) IosGlkViewController *glkviewc;
 
 /* These could refer to the same IosGlkViewController, or rootviewc could be a UINavigationController. Up to the application. TheMainWindow nib determines the layout. */

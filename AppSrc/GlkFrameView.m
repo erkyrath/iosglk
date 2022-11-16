@@ -16,6 +16,7 @@
 #import "GlkWindowView.h"
 #import "GlkWinGridView.h"
 #import "GlkWinBufferView.h"
+#import "GlkWindowViewUIState.h"
 #import "CmdTextField.h"
 #import "PopMenuView.h"
 #import "InputMenuView.h"
@@ -403,6 +404,43 @@
 		[_menuview removeFromSuperview];
 	}
 	self.menuview = nil;
+}
+
+- (NSDictionary *)getCurrentViewStates {
+    NSMutableDictionary *states = [[NSMutableDictionary alloc] initWithCapacity:_windowviews.count];
+    for (NSNumber *key in _windowviews.allKeys) {
+        GlkWindowViewUIState *state = [[GlkWindowViewUIState alloc] initWithGlkWindowView:_windowviews[key]];
+        states[key] = [state dictionaryFromState];
+    }
+    return @{ @"GlkWindowViewStates" : states };
+}
+
+- (void) updateWithUIStates:(NSDictionary *)states {
+    NSLog(@"GlkFrameView updateWithUIStates");
+    for (NSNumber *tag in states.allKeys) {
+        NSLog(@"Looking for view with tag %@", tag);
+        GlkWindowView *view = [self windowViewForTag:tag];
+        if (view) {
+            [view updateFromUIState:states[tag]];
+        }
+    }
+}
+
+- (void) preserveScrollPositions {
+    for (GlkWindowView *view in _windowviews.allValues) {
+        if ([view isKindOfClass:[GlkWinBufferView class]]) {
+            [(GlkWinBufferView *)view preserveScrollPosition];
+        }
+    }
+
+}
+- (void) restoreScrollPositions {
+    _inOrientationAnimation = NO;
+    for (GlkWindowView *view in _windowviews.allValues) {
+        if ([view isKindOfClass:[GlkWinBufferView class]]) {
+            [(GlkWinBufferView *)view restoreScrollPosition];
+        }
+    }
 }
 
 @end

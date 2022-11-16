@@ -22,59 +22,29 @@
 #import "CmdTextField.h"
 #import "InputMenuView.h"
 #import "StyleSet.h"
+#import "GlkWindowViewUIState.h"
+#import "IosGlkAppDelegate.h"
 
 @implementation GlkWindowView
-
-@synthesize winstate;
-@synthesize styleset;
-@synthesize inputfield;
-@synthesize inputholder;
-@synthesize morewaiting;
-
-+ (BOOL) supportsSecureCoding {
-    return YES;
-}
-
-- (instancetype) initWithCoder:(NSCoder *)decoder {
-    self = [super initWithCoder:decoder];
-    if (self) {
-        _tagobj = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSNumber class]]] forKey:@"tag"];
-    }
-    return self;
-}
-
-- (void) encodeWithCoder:(NSCoder *)encoder {
-    [encoder encodeObject:_tagobj forKey:@"tag"];
-    [super encodeWithCoder:encoder];
-}
 
 - (instancetype) initWithWindow:(GlkWindowState *)winstateref frame:(CGRect)box margin:(UIEdgeInsets)margin {
 	self = [super initWithFrame:box];
 	if (self) {
-        self.restorationIdentifier = [NSString stringWithFormat:@"GlkWin%@", winstateref.tag];
-		viewmargin = margin;
+		_viewmargin = margin;
 		self.winstate = winstateref;
         _tagobj = winstateref.tag;
-		self.styleset = winstate.styleset;
-		input_request_id = 0;
+		self.styleset = _winstate.styleset;
+		_input_request_id = 0;
 	}
 	return self;
-}
-
-- (void) dealloc {
-	input_request_id = 0;
 }
 
 - (GlkFrameView *) superviewAsFrameView {
 	return (GlkFrameView *)self.superview;
 }
 
-- (UIEdgeInsets) viewmargin {
-	return viewmargin;
-}
-
 - (void) setViewmargin:(UIEdgeInsets)newmargin {
-	viewmargin = newmargin;
+	_viewmargin = newmargin;
 	[self setNeedsLayout];
 }
 
@@ -90,20 +60,37 @@
 	/* By default, do nothing. */
 }
 
-- (CGRect) textSelectArea {
-	return CGRectNull;
+- (void) updateFromUIState:(NSDictionary *)state {
+    if (self.inputfield) {
+        NSLog(@"state[@@\"inputText\"]: %@", state[@"inputText"]);
+        self.inputfield.text = state[@"inputText"];
+
+        NSNumber *location = state[@"inputSelectionLoc"];
+        NSNumber *length = state[@"inputSelectionLen"];
+        if (location && length) {
+            UITextField *field = self.inputfield;
+            UITextPosition *beginning = field.beginningOfDocument;
+            UITextPosition *start = [field positionFromPosition:beginning offset:location.integerValue];
+            UITextPosition *end = [field positionFromPosition:start offset:length.integerValue];
+            self.inputfield.selectedTextRange = [field textRangeFromPosition:start toPosition:end];
+        }
+        NSNumber *inputIsFirstResponder = state[@"inputIsFirstResponder"];
+        if (inputIsFirstResponder) {
+            if (inputIsFirstResponder.integerValue == 1) {
+                [self.inputfield becomeFirstResponder];
+            } else {
+                [self.inputfield resignFirstResponder];
+            }
+        }
+    }
 }
 
-/* The buffer view subclass overrides this. */
-- (void) setMoreFlag:(BOOL)flag {
-	/* By default, do nothing. */
-}
 
 
 /* Read data from the GlkWindow object, and update the input field.
  */
 - (void) updateFromWindowInputs {
-	BOOL wants_input = (winstate.char_request || winstate.line_request) && (!winstate.library.vmexited);
+	BOOL wants_input = (_winstate.char_request || _winstate.line_request) && (!_winstate.library.vmexited);
 	
 	/* The logic here will make more sense if you remember that any *change* in input request -- including a change from char to line input -- will be accompanied by a change in input_request_id. 
 	
@@ -112,39 +99,39 @@
 		(If an input request is cancelled in one window and started in a different window, the keyboard will roll down. That's unfortunate, but we'll fix it later. It will require some coordinating between updateFromWindowInputs calls.) */
 	
 	if (!wants_input) {
-		if (inputfield) {
+		if (_inputfield) {
 			/* The window doesn't want any input at all. Get rid of the textfield. */
 			[self.superviewAsFrameView removePopMenuAnimated:YES];
-			[inputfield removeFromSuperview];
-			[inputholder removeFromSuperview];
+			[_inputfield removeFromSuperview];
+			[_inputholder removeFromSuperview];
 			self.inputfield = nil;
 			self.inputholder = nil;
-			input_request_id = 0;
+			_input_request_id = 0;
 		}
 	}
 	
 	if (wants_input) {
-		if (!inputfield) {
+		if (!_inputfield) {
 			self.inputfield = [[CmdTextField alloc] initWithFrame:CGRectZero];
 			self.inputfield.opaque = NO;
 			self.inputfield.backgroundColor = nil;
 			self.inputholder = [[UIScrollView alloc] initWithFrame:CGRectZero];
 			self.inputholder.opaque = NO;
 			self.inputholder.backgroundColor = nil;
-			[inputholder addSubview:inputfield];
-			input_request_id = 0;
+			[_inputholder addSubview:_inputfield];
+			_input_request_id = 0;
 		}
 		
-		if (input_request_id != winstate.input_request_id) {
+		if (_input_request_id != _winstate.input_request_id) {
 			/* Either the text field is brand-new, or last cycle's text field needs to be adjusted for a new request. */
-			input_request_id = winstate.input_request_id;
-			input_single_char = winstate.char_request;
+			_input_request_id = _winstate.input_request_id;
+			_input_single_char = _winstate.char_request;
 			
-			[inputfield setUpForWindow:self singleChar:input_single_char];
+			[_inputfield setUpForWindow:self singleChar:_input_single_char];
 			
 			/* This places the field correctly, and adds it as a subview if it isn't already. */
-			[self placeInputField:inputfield holder:inputholder];
-            [inputfield becomeFirstResponder];
+			[self placeInputField:_inputfield holder:_inputholder];
+            [_inputfield becomeFirstResponder];
 		}
 	}
 }
@@ -162,7 +149,7 @@
 	if ([self isKindOfClass:[GlkWinBufferView class]]) {
 		GlkWinBufferView *winv = (GlkWinBufferView *)self;
 		if (winv.pageDownOnInput) {
-			if (input_single_char) {
+			if (_input_single_char) {
 				/* While paging: ignore everything, if we're waiting for char input. */
 				return NO;
 			}
@@ -177,12 +164,12 @@
 		}
 	}
 	
-	if (input_single_char) {
+    if (_input_single_char) {
 		if (str.length) {
 			/* We should crunch utf16 characters here. */
 			glui32 ch = [str characterAtIndex:(str.length-1)];
-			if (winstate.char_request)
-				[[GlkAppWrapper singleton] acceptEvent:[GlkEventState charEvent:ch inWindow:winstate.tag]];
+			if (_winstate.char_request)
+				[[GlkAppWrapper singleton] acceptEvent:[GlkEventState charEvent:ch inWindow:_winstate.tag]];
 		}
 		return NO;
 	}
@@ -200,10 +187,10 @@
 		}
 	}
 	
-	if (input_single_char) {
+    if (_input_single_char) {
 		glui32 ch = keycode_Return;
-		if (winstate.char_request)
-			[[GlkAppWrapper singleton] acceptEvent:[GlkEventState charEvent:ch inWindow:winstate.tag]];
+		if (_winstate.char_request)
+			[[GlkAppWrapper singleton] acceptEvent:[GlkEventState charEvent:ch inWindow:_winstate.tag]];
 		return NO;
 	}
 
@@ -226,27 +213,27 @@
 	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 	[glkviewc addToCommandHistory:text];
 	
-	if (!winstate.line_request) {
+	if (!_winstate.line_request) {
 		/* This window isn't accepting input. Oh well. */
 		return; 
 	}
 	
-	[[GlkAppWrapper singleton] acceptEvent:[GlkEventState lineEvent:text inWindow:winstate.tag]];
+	[[GlkAppWrapper singleton] acceptEvent:[GlkEventState lineEvent:text inWindow:_winstate.tag]];
 }
 
 - (void) postInputMenu {
-	if (!inputfield || inputfield.singleChar)
+	if (!_inputfield || _inputfield.singleChar)
 		return;
 	if (self.superviewAsFrameView.menuview)
 		return;
 
-	if (inputfield && inputfield.menubutton)
-		inputfield.menubutton.selected = YES;
+	if (_inputfield && _inputfield.menubutton)
+		_inputfield.menubutton.selected = YES;
 
 	IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 	GlkFrameView *frameview = self.superviewAsFrameView;
-	CGRect rect = [inputfield rightViewRectForBounds:inputfield.bounds];
-	rect = [frameview convertRect:rect fromView:inputfield];
+	CGRect rect = [_inputfield rightViewRectForBounds:_inputfield.bounds];
+	rect = [frameview convertRect:rect fromView:_inputfield];
 	InputMenuView *menuview = [[InputMenuView alloc] initWithFrame:frameview.bounds buttonFrame:rect view:self history:glkviewc.commandhistory];
 	[frameview postPopMenu:menuview];	
 }

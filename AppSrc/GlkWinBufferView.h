@@ -12,14 +12,26 @@
 
 @interface GlkWinBufferView : GlkWindowView <UIScrollViewDelegate, UITextViewDelegate> {
 	CGRect lastLayoutBounds;
-    NSUInteger lastSeenCharacterIndex;
+    NSLayoutConstraint *textviewHeightConstraint;
+    BOOL firstUpdate;
+    NSUInteger recursionLock;
+    BOOL storedAtBottom;
+    BOOL storedAtTop;
+    NSUInteger lastVisibleGlyph;
+    BOOL inAnimatedScrollToBottom;
 }
 
 @property (nonatomic, strong) UITextView *textview;
 @property (nonatomic, strong) MoreBoxView *moreview;
 @property (nonatomic) BOOL nowcontentscrolling;
 @property (nonatomic) NSUInteger clearcount;
+@property (nonatomic) NSUInteger lastSeenCharacterIndex;
 
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL pageDownOnInput;
+
+- (BOOL) scrolledToBottom;
+- (void) scrollTextViewToBottomAnimate:(BOOL)animate;
+- (void) preserveScrollPosition;
+- (void) restoreScrollPosition;
 
 @end

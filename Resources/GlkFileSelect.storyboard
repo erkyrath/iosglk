@@ -13,7 +13,7 @@
         <!--Restore Nav Controller-->
         <scene sceneID="EID-ok-cHu">
             <objects>
-                <navigationController storyboardIdentifier="GlkFileSelectLoad" modalPresentationStyle="formSheet" id="eIA-ai-fCM" userLabel="Restore Nav Controller" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="GlkFileSelectLoad" modalPresentationStyle="formSheet" useStoryboardIdentifierAsRestorationIdentifier="YES" id="eIA-ai-fCM" userLabel="Restore Nav Controller" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="FsT-Pe-sob">
                         <rect key="frame" x="0.0" y="47" width="390" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -29,7 +29,7 @@
         <!--Restore game-->
         <scene sceneID="lzt-XL-BnS">
             <objects>
-                <viewController id="bGD-je-zG7" userLabel="Restore game" customClass="GlkFileSelectViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RestoreGame" useStoryboardIdentifierAsRestorationIdentifier="YES" id="bGD-je-zG7" userLabel="Restore game" customClass="GlkFileSelectViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="qsR-GM-6C5">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -75,7 +75,7 @@
         <!--Save Nav Controller-->
         <scene sceneID="aTh-AS-LKg">
             <objects>
-                <navigationController storyboardIdentifier="GlkFileSelectStore" automaticallyAdjustsScrollViewInsets="NO" id="Zma-W7-TOY" userLabel="Save Nav Controller" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="GlkFileSelectStore" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Zma-W7-TOY" userLabel="Save Nav Controller" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="2qn-Ap-R6e">
                         <rect key="frame" x="0.0" y="47" width="390" height="44"/>
@@ -93,7 +93,7 @@
         <!--Save game-->
         <scene sceneID="Kv8-67-hNz">
             <objects>
-                <viewController id="IkV-gT-Pon" userLabel="Save game" customClass="GlkFileSelectViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SaveGame" useStoryboardIdentifierAsRestorationIdentifier="YES" id="IkV-gT-Pon" userLabel="Save game" customClass="GlkFileSelectViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Han-al-6Mp">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -174,7 +174,7 @@
         <image name="button-done-hi.png" width="44.799999237060547" height="44.799999237060547"/>
         <image name="button-done.png" width="44.799999237060547" height="44.799999237060547"/>
         <namedColor name="CustomCellText">
-            <color red="0.34999999999999998" green="0.215" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.34999999403953552" green="0.21500000357627869" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
