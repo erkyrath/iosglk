@@ -736,7 +736,7 @@
 - (void) windowRearrange:(CGRect)box {
 	self.bbox = box;
 	
-	int newwidth = ((self.bbox.size.width-self.styleset.margintotal.width) / self.styleset.charbox.width);
+	int newwidth = ((self.bbox.size.width-self.styleset.margintotal.width) / self.styleset.charbox.width) - 2;
 	int newheight = ((self.bbox.size.height-self.styleset.margintotal.height) / self.styleset.charbox.height);
 	if (newwidth < 0)
 		newwidth = 0;
@@ -890,7 +890,7 @@
     if (ch == ' ')
         ch = 0xa0;
 
-    NSUInteger location = cury * (width + 1) + curx;
+    NSUInteger location = cury * (width + 1) + curx - 1;
     if ([_attrstring.string characterAtIndex:location] == '\n' || location >= _attrstring.length)
         return;
     NSRange replaceRange = NSMakeRange(location, 1);
