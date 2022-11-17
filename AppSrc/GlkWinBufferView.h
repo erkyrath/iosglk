@@ -14,7 +14,7 @@
 	CGRect lastLayoutBounds;
     NSLayoutConstraint *textviewHeightConstraint;
     BOOL firstUpdate;
-    NSUInteger recursionLock;
+    NSUInteger recursionDepth;
     BOOL storedAtBottom;
     BOOL storedAtTop;
     NSUInteger lastVisibleGlyph;

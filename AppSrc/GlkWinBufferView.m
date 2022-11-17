@@ -42,7 +42,7 @@
         [_textview.leadingAnchor constraintEqualToAnchor:margin.leadingAnchor].active = YES;
         [_textview.trailingAnchor constraintEqualToAnchor:margin.trailingAnchor].active = YES;
         [_textview.bottomAnchor constraintEqualToAnchor:margin.bottomAnchor].active = YES;
-//        [_textview.topAnchor constraintEqualToAnchor:margin.topAnchor].active = YES;
+        [_textview.topAnchor constraintEqualToAnchor:margin.topAnchor].active = YES;
 
         textviewHeightConstraint = [_textview.heightAnchor constraintEqualToConstant:self.bounds.size.height];
         textviewHeightConstraint.active = YES;
@@ -71,7 +71,7 @@
         storedAtBottom = NO;
         storedAtTop = NO;
         inAnimatedScrollToBottom = NO;
-        recursionLock = 0;
+        recursionDepth = 0;
         lastVisibleGlyph = 0;
 	}
 	return self;
@@ -112,11 +112,11 @@
 	rect.origin.y = lastLayoutBounds.size.height - (rect.size.height + 4);
 	_moreview.frame = rect;
 
-    if (self.bounds.size.height > _textview.contentSize.height) {
-        textviewHeightConstraint.constant = _textview.contentSize.height;
-    } else {
-        textviewHeightConstraint.constant = self.bounds.size.height;
-    }
+//    if (self.bounds.size.height > _textview.contentSize.height) {
+//        textviewHeightConstraint.constant = _textview.contentSize.height;
+//    } else {
+//        textviewHeightConstraint.constant = self.bounds.size.height;
+//    }
 
     if (atBottom && _textview.text.length) {
         [self scrollTextViewToBottomAnimate:NO];
@@ -194,9 +194,11 @@
     if (firstUpdate) {
         [self uncacheLayoutAndStyles];
     } else {
-        if (bufwin.attrstring.length) {
+        /* Slightly awkward, but mostly right: if voiceover is on, speak the most recent buffer window update. */
+        if (bufwin.attrstring.length &&
+            UIAccessibilityIsVoiceOverRunning()) {
             NSString *toSpeak = bufwin.attrstring.string;
-            // Don't speak actual command
+            // Don't speak the actual command
             NSRange stylerange;
             NSNumber *style = [bufwin.attrstring attribute:@"GlkStyle" atIndex:0 effectiveRange:&stylerange];
             if (style.integerValue == style_Input && NSMaxRange(stylerange) < toSpeak.length - 1)
@@ -211,11 +213,11 @@
 
     [_textview.layoutManager ensureLayoutForBoundingRect:nextPage inTextContainer:_textview.textContainer];
 
-    if (self.bounds.size.height > _textview.contentSize.height) {
-        textviewHeightConstraint.constant = _textview.contentSize.height;
-    } else {
-        textviewHeightConstraint.constant = self.bounds.size.height;
-    }
+//    if (self.bounds.size.height > _textview.contentSize.height) {
+//        textviewHeightConstraint.constant = _textview.contentSize.height;
+//    } else {
+//        textviewHeightConstraint.constant = self.bounds.size.height;
+//    }
 
     [_textview setNeedsDisplay];
 
@@ -305,28 +307,32 @@
         _textview.scrollEnabled = NO;
         _textview.scrollEnabled = YES;
     } else {
-        if (recursionLock > 100) {
-            recursionLock = 0;
-            [_textview scrollRangeToVisible:NSMakeRange(_textview.text.length - 1, 1)];
-            if (self.inputfield)
-                [self placeInputField:self.inputfield holder:self.inputholder];
-            return;
-        }
         _textview.contentOffset = CGPointMake(_textview.contentOffset.x, _textview.contentSize.height - self.frame.size.height);
         NSUInteger lastVisible = [self lastVisible];
         if (lastVisible < self.textview.text.length - 1) {
-            recursionLock++;
+        // Last visibile character is not the last character in the text. We have not, in fact, scrolled to the bottom. Retrying.
+            if (recursionDepth > 100) {
+                // Give up after 100 attempts
+                recursionDepth = 0;
+                [_textview scrollRangeToVisible:NSMakeRange(_textview.text.length - 1, 1)];
+                if (self.inputfield)
+                    [self placeInputField:self.inputfield holder:self.inputholder];
+                return;
+            }
+            recursionDepth++;
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void){
                 [self scrollTextViewToBottomAnimate:NO];
             });
         } else {
-            recursionLock = 0;
+            recursionDepth = 0;
             if (self.inputfield)
                 [self placeInputField:self.inputfield holder:self.inputholder];
         }
     }
 }
 
+// Only called when orientation changes. We try to prevent excessive attempts to
+// retain scroll position at bottom during animation
 - (void) preserveScrollPosition {
     if (self.superviewAsFrameView.inOrientationAnimation)
         return;
@@ -335,6 +341,7 @@
     lastVisibleGlyph = [self lastVisible];
 }
 
+// Called when orientation change is finished
 - (void) restoreScrollPosition {
     if (storedAtBottom) {
         [self scrollTextViewToBottomAnimate:NO];
@@ -394,16 +401,15 @@
 /* UIScrollView delegate methods: */
 
 - (void) scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    NSLog(@"scrollViewDidEndScrollingAnimation");
     _nowcontentscrolling = NO;
     if (inAnimatedScrollToBottom && ![self scrolledToBottom]) {
-        NSLog(@"scrollViewDidEndScrollingAnimation: Did not actually scroll to bottom. Retrying.");
+        // Did not actually scroll to bottom. Retrying.
         inAnimatedScrollToBottom = NO;
         [self scrollTextViewToBottomAnimate:NO];
     }
     inAnimatedScrollToBottom = NO;
 //    /* If the scroll animation left us below the desired bottom edge, we'll extend the content height to include it. But only temporarily! This is to avoid jerkiness when the player scrolls to recover. */
-//    CGFloat offset = (_textview.contentOffset.y+_textview.bounds.size.height) - _textview.contentSize.height;
+//    CGFloat offset = (_textview.contentOffset.y + _textview.bounds.size.height) - _textview.contentSize.height;
 //    if (offset > 1) {
 //        CGSize size = _textview.contentSize;
 //        size.height += offset;
@@ -440,15 +446,6 @@
     UITextRange *textRange = [_textview textRangeFromPosition:start toPosition:_textview.endOfDocument];
 
     CGRect fragmentRect = [_textview firstRectForRange:textRange];
-
-    // If layout is not done?
-//    if (self.lastLaidOutLine < firstsline+self.slines.count) {
-//        box.origin.x = styleset.margins.left + viewmargin.left;
-//        box.size.width = totalwidth - styleset.margintotal.width;
-//        box.origin.y = _textview.bounds.size.height;
-//        box.size.height = 24;
-//        return box;
-//    }
 
     CGFloat ptx = CGRectGetMaxX(fragmentRect);
     if (ptx >= totalwidth * 0.75)

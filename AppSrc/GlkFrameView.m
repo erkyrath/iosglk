@@ -180,7 +180,6 @@
 /* This is invoked when the frameview is reloaded. (Although not at startup time, because that load is manual.) We request a special out-of-sequence state update, with the special flag that means "we have no idea what's dirty, just feed us the lot".
  */
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp {
-	//NSLog(@"requestLibraryState");
 	[glkapp requestViewUpdate];
 }
 
@@ -290,35 +289,6 @@
 		GlkWindowView *winv = _windowviews[tag];
 		[winv updateFromWindowState];
 		[winv updateFromWindowInputs];
-	}
-	
-	/* Slightly awkward, but mostly right: if voiceover is on, speak the most recent buffer window update. */
-	if (UIAccessibilityIsVoiceOverRunning()) {
-		for (GlkWindowState *win in library.windows) {
-			if ([win isKindOfClass:[GlkWindowBufferState class]]) {
-//				GlkWindowBufferState *bufwin = (GlkWindowBufferState *)win;
-//				NSArray *lines = bufwin.lines;
-//				if (lines && lines.count && bufwin.linesdirtyto > bufwin.linesdirtyfrom) {
-//					int slinestart = ((GlkStyledLine *)lines[0]).index;
-//					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(1 + bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
-//					for (int ix=bufwin.linesdirtyfrom-slinestart; ix<bufwin.linesdirtyto-slinestart; ix++) {
-//						if (ix < 0 || ix >= lines.count)
-//							continue;
-//						GlkStyledLine *vln = lines[ix];
-//						NSString *str = vln.concatLine;
-//						if (str.length)
-//							[arr addObject:[GlkAccVisualLine lineForSpeaking:str]];
-//					}
-//					if (arr.count) {
-//						NSString *speakbuffer = [arr componentsJoinedByString:@"\n"];
-//						//NSLog(@"### speak: %@", speakbuffer);
-//						UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, speakbuffer);
-//						/* We only speak once per update. */
-//						break;
-//					}
-//				}
-			}
-		}
 	}
 	
 	/* And now, if there's a special prompt going on, fill the screen with it. */
