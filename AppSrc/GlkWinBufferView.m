@@ -42,14 +42,8 @@
         [_textview.leadingAnchor constraintEqualToAnchor:margin.leadingAnchor].active = YES;
         [_textview.trailingAnchor constraintEqualToAnchor:margin.trailingAnchor].active = YES;
         [_textview.bottomAnchor constraintEqualToAnchor:margin.bottomAnchor].active = YES;
-        [_textview.topAnchor constraintEqualToAnchor:margin.topAnchor].active = YES;
-
         textviewHeightConstraint = [_textview.heightAnchor constraintEqualToConstant:self.bounds.size.height];
         textviewHeightConstraint.active = YES;
-//        textviewHeightEqualsSuperConstraint = [_textview.topAnchor constraintEqualToAnchor:margin.topAnchor];
-//        textviewHeightEqualsSuperConstraint.active = YES;
-//        textviewHeightEqualsTextConstraint = [_textview.heightAnchor constraintEqualToConstant:_textview.contentSize.height];
-//        textviewHeightEqualsSuperConstraint.active = NO;
 
         IosGlkViewController *viewc = [IosGlkViewController singleton];
         UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:viewc action:@selector(textTapped:)];
@@ -112,18 +106,20 @@
 	rect.origin.y = lastLayoutBounds.size.height - (rect.size.height + 4);
 	_moreview.frame = rect;
 
-//    if (self.bounds.size.height > _textview.contentSize.height) {
-//        textviewHeightConstraint.constant = _textview.contentSize.height;
-//    } else {
-//        textviewHeightConstraint.constant = self.bounds.size.height;
-//    }
-
     if (atBottom && _textview.text.length) {
         [self scrollTextViewToBottomAnimate:NO];
+    } else {
+        [self setMoreFlag:[self moreToSee]];
     }
 
     if (self.inputfield)
         [self placeInputField:self.inputfield holder:self.inputholder];
+
+    if (self.bounds.size.height > _textview.contentSize.height) {
+        textviewHeightConstraint.constant = _textview.contentSize.height;
+    } else {
+        textviewHeightConstraint.constant = self.bounds.size.height;
+    }
 }
 
 - (void) uncacheLayoutAndStyles {
@@ -183,6 +179,8 @@
         _clearcount = bufwin.clearcount;
         [textstorage setAttributedString:bufwin.attrstring];
         _lastSeenCharacterIndex = 0;
+        _nowcontentscrolling = NO;
+        _textview.contentOffset = CGPointZero;
         anychanges = YES;
     } else {
         [textstorage appendAttributedString:bufwin.attrstring];
@@ -213,19 +211,21 @@
 
     [_textview.layoutManager ensureLayoutForBoundingRect:nextPage inTextContainer:_textview.textContainer];
 
-//    if (self.bounds.size.height > _textview.contentSize.height) {
-//        textviewHeightConstraint.constant = _textview.contentSize.height;
-//    } else {
-//        textviewHeightConstraint.constant = self.bounds.size.height;
-//    }
-
     [_textview setNeedsDisplay];
 
-    if (!firstUpdate) {
+    if (!firstUpdate && _lastSeenCharacterIndex != 0) {
         _nowcontentscrolling = YES;
         [_textview scrollRectToVisible:nextPage animated:YES];
     }
     firstUpdate = NO;
+
+    if (self.bounds.size.height > _textview.contentSize.height) {
+        textviewHeightConstraint.constant = _textview.contentSize.height;
+        [self setMoreFlag:NO];
+    } else {
+        textviewHeightConstraint.constant = self.bounds.size.height;
+        [self setMoreFlag:(_textview.contentOffset.y + 2 * (_textview.bounds.size.height - self.styleset.margintotal.height) < _textview.contentSize.height)];
+    }
 }
 
 - (void)speakString:(NSString *)string {
@@ -247,11 +247,19 @@
 - (BOOL) pageDownOnInput {
     [self placeInputField:self.inputfield holder:self.inputholder];
 	if ([self moreToSee]) {
+        if (_nowcontentscrolling) {
+            return YES;
+        }
         CGRect rect = CGRectZero;
-        rect.size = _textview.bounds.size;
-        rect.origin.y = _textview.contentOffset.y + rect.size.height;
+        rect.size = self.bounds.size;
+        rect.size.height -= self.styleset.margintotal.height;
 
-        NSLog(@"pageDownOnInput: Scrolling to rect %@", NSStringFromCGRect(rect));
+        NSUInteger lastVisible = [self lastVisible];
+
+        UITextPosition *start = [_textview positionFromPosition:_textview.beginningOfDocument offset:lastVisible];
+        UITextPosition *end = [_textview positionFromPosition:start inDirection:UITextLayoutDirectionRight offset:1];
+        CGRect charRect = [_textview firstRectForRange:[_textview textRangeFromPosition:start toPosition:end]];
+        rect.origin.y = charRect.origin.y - self.styleset.charbox.height;
         _nowcontentscrolling = YES;
         inAnimatedScrollToBottom = NO;
         [_textview scrollRectToVisible:rect animated:YES];
@@ -266,16 +274,13 @@
 
 - (BOOL) moreToSee {
     NSUInteger lastVisible = [self lastVisible];
+    if (lastVisible > _lastSeenCharacterIndex)
+        _lastSeenCharacterIndex = lastVisible;
 
     if (lastVisible && _textview.layoutManager.numberOfGlyphs)
     {
-        if (lastVisible > _lastSeenCharacterIndex)
-            _lastSeenCharacterIndex = lastVisible;
         if (_lastSeenCharacterIndex >= _textview.layoutManager.numberOfGlyphs - 1) {
-            //            NSLog(@"No unseen text");
             return NO;
-        } else {
-            //            NSLog(@"%ld unseen glyphs", _textview.layoutManager.numberOfGlyphs - 1 - lastSeenCharacterIndex);
         }
         return YES;
     }
@@ -285,18 +290,15 @@
 
 - (NSUInteger)lastVisible {
     CGPoint bottomright = CGPointMake(_textview.bounds.size.width, _textview.contentOffset.y + _textview.bounds.size.height - _textview.contentInset.bottom);
-
     NSUInteger lastVisible = [_textview.layoutManager characterIndexForPoint:bottomright inTextContainer:_textview.textContainer fractionOfDistanceBetweenInsertionPoints:NULL];
     return lastVisible;
 }
 
 - (void) scrollTextViewToBottomAnimate:(BOOL)animate {
-//    NSLog(@"scrollTextViewToBottomAnimate %@", animate ? @"YES" : @"NO");
-    if (_textview.text.length == 0)
+    [self setMoreFlag:NO];
+    if (_textview.text.length == 0 || self.superviewAsFrameView.inOrientationAnimation) {
         return;
-
-    if (self.superviewAsFrameView.inOrientationAnimation)
-        return;
+    }
 
     if (animate) {
         inAnimatedScrollToBottom = YES;
@@ -307,6 +309,9 @@
         _textview.scrollEnabled = NO;
         _textview.scrollEnabled = YES;
     } else {
+        if (_textview.contentSize.height - self.frame.size.height < _textview.contentOffset.y) {
+            return;
+        }
         _textview.contentOffset = CGPointMake(_textview.contentOffset.x, _textview.contentSize.height - self.frame.size.height);
         NSUInteger lastVisible = [self lastVisible];
         if (lastVisible < self.textview.text.length - 1) {
@@ -376,6 +381,7 @@
         GlkWinBufferView __weak *weakSelf = self;
         [UIView animateWithDuration:0.5
                          animations:^{ weakSelf.moreview.alpha = 0.5; } ];
+        _lastSeenCharacterIndex = [self lastVisible];
     }
     else {
         GlkWinBufferView __weak *weakSelf = self;
@@ -408,21 +414,14 @@
         [self scrollTextViewToBottomAnimate:NO];
     }
     inAnimatedScrollToBottom = NO;
-//    /* If the scroll animation left us below the desired bottom edge, we'll extend the content height to include it. But only temporarily! This is to avoid jerkiness when the player scrolls to recover. */
-//    CGFloat offset = (_textview.contentOffset.y + _textview.bounds.size.height) - _textview.contentSize.height;
-//    if (offset > 1) {
-//        CGSize size = _textview.contentSize;
-//        size.height += offset;
-//        _textview.contentSize = size;
-//    }
-
     [self setMoreFlag:[self moreToSee]];
 }
 
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView {
     if (!_nowcontentscrolling) {
         inAnimatedScrollToBottom = NO;
-        [self setMoreFlag:[self moreToSee]];
+        if (self.morewaiting)
+            [self setMoreFlag:[self moreToSee]];
     }
 }
 
@@ -464,9 +463,10 @@
     NSLog(@"GlkWinBufferView %@ updateFromUIState", self.tagobj);
 
     NSNumber *lastSeen = state[@"lastSeenCharacterIndex"];
-    if (lastSeen)
+    _lastSeenCharacterIndex = 0;
+    if (lastSeen) {
         _lastSeenCharacterIndex = lastSeen.integerValue;
-
+    }
     if (_textview) {
         NSNumber *location = state[@"selectionLoc"];
         NSNumber *length = state[@"selectionLen"];
@@ -475,19 +475,21 @@
         }
         NSNumber *atBottomNumber = state[@"scrolledToBottom"];
         if (atBottomNumber && atBottomNumber.intValue) {
+            NSLog(@"Scrolling restored GlkWinBufferView to bottom");
             [self scrollTextViewToBottomAnimate:NO];
-            NSLog(@"GlkWinBufferView updateFromUIState: scrolling to bottom");
         } else {
             NSNumber *contentOffsetY = state[@"contentOffsetY"];
+            NSLog(@"Restoring contentOffsetY as %@", contentOffsetY);
             if (contentOffsetY) {
                 CGPoint contentOffset = _textview.contentOffset;
                 contentOffset.y = contentOffsetY.floatValue;
                 _textview.contentOffset = contentOffset;
+            } else {
+                _textview.contentOffset = CGPointZero;
             }
         }
-    } else {
-        NSLog(@"GlkWinBufferView: updateFromUIState found no textview!");
     }
+    _nowcontentscrolling = NO;
 }
 
 @end

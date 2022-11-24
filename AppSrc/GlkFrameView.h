@@ -44,9 +44,10 @@
 - (void) postPopMenu:(PopMenuView *)menuview;
 - (void) removePopMenuAnimated:(BOOL)animated;
 - (NSDictionary *)getCurrentViewStates;
-- (void) updateWithUIStates:(NSDictionary *)states;
+- (BOOL) updateWithUIStates:(NSDictionary *)states;
 - (void) preserveScrollPositions;
 - (void) restoreScrollPositions;
+- (BOOL) hasStandardGlkSetup;
 
 @end
 

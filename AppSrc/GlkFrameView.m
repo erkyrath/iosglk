@@ -114,6 +114,9 @@
 	if ((!cachedGlkBoxInvalid) && CGRectEqualToRect(cachedGlkBox, box)) {
 		return;
 	}
+
+    BOOL onlyHeightChanged = ([self hasStandardGlkSetup] && cachedGlkBox.size.width == box.size.width);
+
 	cachedGlkBox = box;
 	cachedGlkBoxInvalid = NO;
 
@@ -128,7 +131,9 @@
 	}
 	
 	/* Now tell the VM thread. */
-	[[GlkAppWrapper singleton] setFrameSize:box];
+
+    if (!onlyHeightChanged)
+        [[GlkAppWrapper singleton] setFrameSize:box];
 }
 
 /* Set all the window view sizes, based on their cached geometry information. Note that this does not touch the GlkLibrary structures at all -- that could be under modification by the VM thread.
@@ -388,15 +393,22 @@
     return @{ @"GlkWindowViewStates" : states };
 }
 
-- (void) updateWithUIStates:(NSDictionary *)states {
+- (BOOL) updateWithUIStates:(NSDictionary *)states {
     NSLog(@"GlkFrameView updateWithUIStates");
+    BOOL found = NO;
     for (NSNumber *tag in states.allKeys) {
-        NSLog(@"Looking for view with tag %@", tag);
-        GlkWindowView *view = [self windowViewForTag:tag];
+        GlkWindowView *view = _windowviews[tag];
         if (view) {
             [view updateFromUIState:states[tag]];
+            found = YES;
+        } else {
+            NSLog(@"Could not find view with tag %@", tag);
         }
     }
+    if (!found) {
+        NSLog(@"Error! Missing window views");
+    }
+    return found;
 }
 
 - (void) preserveScrollPositions {
@@ -407,6 +419,7 @@
     }
 
 }
+
 - (void) restoreScrollPositions {
     _inOrientationAnimation = NO;
     for (GlkWindowView *view in _windowviews.allValues) {
@@ -414,6 +427,12 @@
             [(GlkWinBufferView *)view restoreScrollPosition];
         }
     }
+}
+
+// FIXME: This is supposed to check if we have the standard layout with a grid status bar plus buffer main window, but it doesn't really currently. Its main use is that if it is true, we do not send rearrange events to the VM thread when the keyboard is shown or hidden, as this breaks the help menu.
+- (BOOL) hasStandardGlkSetup {
+    NSArray *views = _windowviews.allValues;
+    return (views.count == 2 && ([views.firstObject isKindOfClass:[GlkWinBufferView class]] || [views.lastObject isKindOfClass:[GlkWinBufferView class]]));
 }
 
 @end

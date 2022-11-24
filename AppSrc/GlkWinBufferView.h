@@ -33,5 +33,6 @@
 - (void) scrollTextViewToBottomAnimate:(BOOL)animate;
 - (void) preserveScrollPosition;
 - (void) restoreScrollPosition;
+- (BOOL) pageDownOnInput;
 
 @end
