@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 #import "GlkWindowView.h"
 
-@class TextSelectView;
 @class GlkStyledLine;
 
 @interface GlkWinGridView : GlkWindowView <UITextViewDelegate>

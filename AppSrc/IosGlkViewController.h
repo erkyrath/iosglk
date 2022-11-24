@@ -22,8 +22,6 @@ typedef void (^questioncallback)(int); // callback block type for displayAdHocQu
 
 /* Tag for the window which most recently had input focus */
 @property (nonatomic, strong) NSNumber *prefinputwintag;
-/* Tag for the window which currently has text selected */
-@property (nonatomic, strong) NSNumber *textselecttag;
 /* As of the most recent update */
 @property (nonatomic) BOOL vmexited;
 
@@ -44,7 +42,6 @@ typedef void (^questioncallback)(int); // callback block type for displayAdHocQu
 - (void) updateFromLibraryState:(GlkLibraryState *)library;
 - (id) filterEvent:(id)data;
 
-- (void) textSelectionWindow:(NSNumber *)tag;
 - (void) preferInputWindow:(NSNumber *)tag;
 @property (NS_NONATOMIC_IOSONLY, readonly, strong) GlkWindowView *preferredInputWindow;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL keyboardIsShown;

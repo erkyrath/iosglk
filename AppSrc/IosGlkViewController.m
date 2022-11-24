@@ -20,6 +20,7 @@
 #import "GlkWindowState.h"
 #import "CmdTextField.h"
 #import "GlkUtilities.h"
+#import "GlkWinBufferView.h"
 
 #define MAX_HISTORY_LENGTH (12)
 
@@ -204,10 +205,6 @@
  */
 - (BOOL) hasDarkTheme {
     return (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
-}
-
-- (void) textSelectionWindow:(NSNumber *)tag {
-    self.textselecttag = tag;
 }
 
 - (void) preferInputWindow:(NSNumber *)tag {
@@ -473,16 +470,29 @@
         return;
     }
 
-    /* Otherwise, single-tap focuses the input line. */
-    if (!winv.inputfield.singleChar) {
-
-        UITextView *textView = (UITextView *)recognizer.view;
-        NSRange selected = textView.selectedRange;
-        if (selected.length) {
-            textView.selectedRange = NSMakeRange(0, 0);
+    /* If there is a visible "more" indicator, all taps page down */
+    if ([winv isKindOfClass:[GlkWinBufferView class]]) {
+        GlkWinBufferView *bufview = (GlkWinBufferView *)winv;
+        if (bufview.moreview.hidden == NO) {
+            [bufview pageDownOnInput];
             return;
         }
+    }
 
+    UITextView *textView = (UITextView *)recognizer.view;
+    NSRange selected = textView.selectedRange;
+    if (selected.length) {
+        textView.selectedRange = NSMakeRange(0, 0);
+        if (![winv.inputfield isFirstResponder]) {
+            [winv.inputfield becomeFirstResponder];
+            return;
+        }
+    }
+
+    /* Otherwise, single-tap focuses the input line or sends tapped word to input line */
+    if (![winv.inputfield isFirstResponder]) {
+        [winv.inputfield becomeFirstResponder];
+    } else if (!winv.inputfield.singleChar) {
         NSLayoutManager *layoutManager = textView.layoutManager;
         CGPoint location = [recognizer locationInView:textView];
         location.x -= textView.textContainerInset.left;
@@ -529,7 +539,6 @@
 }
 
 - (NSUserActivity *)updateUserActivity:(nullable id)sender {
-    NSLog(@"IosGlkViewController updateUserActivity");
 
     /** Update the user activity for this view controller's scene.
      viewDidAppear calls this upon initial presentation. The IosGlkSceneDelegate stateRestorationActivityForScene also calls it.

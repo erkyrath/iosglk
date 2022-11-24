@@ -27,10 +27,6 @@
     NSUserActivity *userActivity = connectionOptions.userActivities.anyObject;
     if (!userActivity) {
         userActivity = session.stateRestorationActivity;
-        if (session.stateRestorationActivity == nil)
-            NSLog(@"session.stateRestorationActivity is nil!");
-        if (!userActivity)
-            return;
     }
 
     UIWindowScene *winScene = (UIWindowScene *)scene;

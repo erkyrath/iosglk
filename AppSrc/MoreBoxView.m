@@ -8,7 +8,4 @@
 
 @implementation MoreBoxView
 
-@synthesize frameview;
-
-
 @end

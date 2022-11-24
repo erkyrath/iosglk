@@ -48,10 +48,6 @@ static IosGlkAppDelegate *singleton = nil; /* retained forever */
 //    return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:UIWindowSceneSessionRoleApplication];
 }
 
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
-}
-
-
 - (void) dealloc {
 	singleton = nil;
 }
