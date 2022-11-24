@@ -86,6 +86,9 @@
 }
 
 - (void) layoutSubviews {
+    /* FIXME: If the player selects text while the keyboard is visible, this will hide the keyboard and
+    call this, which will issue an arrange event. If we are in a help menu and showing help text, this will
+     usually throw us back to the menu. The same thing happens if we change orientation while showing help text. */
 	CGRect keyboardbox = [IosGlkViewController singleton].keyboardbox;
 	
 	//NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardbox.size));
