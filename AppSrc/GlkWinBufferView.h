@@ -19,6 +19,7 @@
     BOOL storedAtTop;
     NSUInteger lastVisibleGlyph;
     BOOL inAnimatedScrollToBottom;
+    CGFloat expectedYAfterPageDown;
 }
 
 @property (nonatomic, strong) UITextView *textview;

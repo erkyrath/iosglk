@@ -74,28 +74,21 @@
 }
 
 - (void) viewDidAppear:(BOOL)animated {
-    NSLog(@"IosGlkViewController viewDidAppear");
     [super viewDidAppear:animated];
     NSDictionary *activityUserInfo = self.view.window.windowScene.userActivity.userInfo;
-    // Restore
-
-    if (!self.view)
-        NSLog(@"IosGlkViewController has no view");
-    else if (!self.view.window)
-        NSLog(@"IosGlkViewController view has no window");
-    else if (!self.view.window.windowScene)
-        NSLog(@"IosGlkViewController view window has no scene");
-    else if (!self.view.window.windowScene.userActivity)
-        NSLog(@"viewDidAppear: IosGlkViewController view window scene has no userActivity");
-    else if (!self.view.window.windowScene.userActivity.userInfo)
-        NSLog(@"IosGlkViewController view window scene userActivity has no userInfo");
-
+    // Restore state
     if (activityUserInfo) {
         NSDictionary *stateOfViews = activityUserInfo[@"GlkWindowViewStates"];
         if (stateOfViews) {
-            [_frameview updateWithUIStates:stateOfViews];
-        } else {
-            NSLog(@"No GlkWindowViewStates value in activityUserInfo");
+            BOOL success = [_frameview updateWithUIStates:stateOfViews];
+            if (!success) {
+                // This only seems to happen when running on Catalyst
+                // Missing _windowviews in _frameview, retrying in .1 secs
+                GlkFrameView __block *blockFrameView = _frameview;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void){
+                    [blockFrameView updateWithUIStates:stateOfViews];
+                });
+            }
         }
     }
     [self updateUserActivity:nil];
