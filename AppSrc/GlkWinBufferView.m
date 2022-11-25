@@ -180,6 +180,7 @@
         [textstorage setAttributedString:bufwin.attrstring];
         _lastSeenCharacterIndex = 0;
         _nowcontentscrolling = NO;
+        _textview.contentOffset = CGPointZero;
         anychanges = YES;
     } else {
         [textstorage appendAttributedString:bufwin.attrstring];
@@ -234,7 +235,10 @@
         [self setMoreFlag:NO];
     } else {
         textviewHeightConstraint.constant = self.bounds.size.height;
-        [self setMoreFlag:(_textview.contentOffset.y + 2 * (_textview.bounds.size.height - self.styleset.margintotal.height) < _textview.contentSize.height)];
+        CGFloat pageHeight = _textview.bounds.size.height - self.styleset.margintotal.height;
+        if (_nowcontentscrolling)
+            pageHeight += pageHeight;
+        [self setMoreFlag:(_textview.contentOffset.y + pageHeight < _textview.contentSize.height)];
     }
 }
 
