@@ -416,7 +416,6 @@
             [(GlkWinBufferView *)view preserveScrollPosition];
         }
     }
-
 }
 
 - (void) restoreScrollPositions {

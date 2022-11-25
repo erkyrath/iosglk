@@ -212,13 +212,16 @@
 
     [_textview setNeedsDisplay];
 
-    if (!firstUpdate && _lastSeenCharacterIndex != 0 && self.bounds.size.height - self.styleset.margintotal.height <= _textview.contentSize.height) {
+    BOOL allTextFitsOnScreen = self.bounds.size.height - self.styleset.margintotal.height > _textview.contentSize.height;
+
+    if (!firstUpdate && _lastSeenCharacterIndex != 0 && !allTextFitsOnScreen) {
         _nowcontentscrolling = YES;
         [_textview scrollRectToVisible:nextPage animated:YES];
+        expectedYAfterPageDown = nextPage.origin.y - self.styleset.margintotal.height;
     }
     firstUpdate = NO;
 
-    if (self.bounds.size.height > _textview.contentSize.height) {
+    if (allTextFitsOnScreen) {
         [self layoutIfNeeded];
         NSLayoutConstraint *blockConstraint = textviewHeightConstraint;
         UITextView *blockTextView = _textview;
@@ -421,11 +424,11 @@
         inAnimatedScrollToBottom = NO;
         [self scrollTextViewToBottomAnimate:NO];
     }
+    // Without this, the text view will sometimes scroll all the way to the bottom instead of one page down. It is reproducible: the first time the help text to Colossal Cave is displayed, page down works, after that it doesn't. But it seems to be an Apple bug where scrollRectToVisible really wants to scroll the UITextView down to the view which is currently the first responder, which in this case is the input text field.
     if (expectedYAfterPageDown && _textview.contentOffset.y > expectedYAfterPageDown) {
         _textview.contentOffset = CGPointMake(_textview.contentOffset.x, expectedYAfterPageDown);
     }
     expectedYAfterPageDown = 0;
-    NSLog(@"contentOffset.y: %f", _textview.contentOffset.y);
     inAnimatedScrollToBottom = NO;
     [self setMoreFlag:[self moreToSee]];
 }

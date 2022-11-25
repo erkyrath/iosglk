@@ -31,16 +31,11 @@
         GlkWindowState *state = view.winstate;
         if (state) {
             _tag = state.tag;
-            NSLog(@"Creating a GlkWindowViewUIState with tag %@", _tag);
-            NSLog(@"Window is %@", [view isKindOfClass:[GlkWinBufferView class]] ? @"buffer" : @"grid");
-            NSLog(@"_selection: %@", NSStringFromRange(_selection));
         }
         CmdTextField *input = view.inputfield;
         if (input) {
             _inputSelection = [GlkWindowViewUIState rangeFromTextRange:input.selectedTextRange textField:input];
             _inputText = input.text;
-            if (_inputText.length)
-                NSLog(@"storing the input text %@", _inputText);
             _inputIsFirstResponder = input.isFirstResponder;
         }
     }
@@ -65,8 +60,6 @@
         dict[@"inputText"] = _inputText;
     dict[@"lastSeenCharacterIndex"] = @(_lastSeenCharacterIndex);
     dict[@"scrolledToBottom"] = @(_scrolledToBottom);
-
-    NSLog(@"Storing state as %@scrolled to bottom", _scrolledToBottom ? @"" : @"NOT ");
 
     dict[@"selectionLoc"] = @(_selection.location);
     dict[@"selectionLen"] = @(_selection.length);

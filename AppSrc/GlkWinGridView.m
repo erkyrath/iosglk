@@ -126,7 +126,6 @@
 
 - (void) updateFromUIState:(NSDictionary *)state {
     [super updateFromUIState:state];
-    NSLog(@"GlkWinGridView %@ updateFromUIState", self.tagobj);
     if (_textview) {
         NSNumber *location = state[@"selectionLoc"];
         NSNumber *length = state[@"selectionLen"];

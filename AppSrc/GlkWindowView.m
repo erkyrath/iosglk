@@ -62,7 +62,6 @@
 
 - (void) updateFromUIState:(NSDictionary *)state {
     if (self.inputfield) {
-        NSLog(@"state[@@\"inputText\"]: %@", state[@"inputText"]);
         self.inputfield.text = state[@"inputText"];
 
         NSNumber *location = state[@"inputSelectionLoc"];
