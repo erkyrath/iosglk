@@ -473,8 +473,6 @@
 
 - (void) updateFromUIState:(NSDictionary *)state {
     [super updateFromUIState:state];
-    NSLog(@"GlkWinBufferView %@ updateFromUIState", self.tagobj);
-
     NSNumber *lastSeen = state[@"lastSeenCharacterIndex"];
     _lastSeenCharacterIndex = 0;
     if (lastSeen) {
@@ -488,11 +486,9 @@
         }
         NSNumber *atBottomNumber = state[@"scrolledToBottom"];
         if (atBottomNumber && atBottomNumber.intValue) {
-            NSLog(@"Scrolling restored GlkWinBufferView to bottom");
             [self scrollTextViewToBottomAnimate:NO];
         } else {
             NSNumber *contentOffsetY = state[@"contentOffsetY"];
-            NSLog(@"Restoring contentOffsetY as %@", contentOffsetY);
             if (contentOffsetY) {
                 CGPoint contentOffset = _textview.contentOffset;
                 contentOffset.y = contentOffsetY.floatValue;

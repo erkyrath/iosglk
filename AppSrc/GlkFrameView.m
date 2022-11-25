@@ -394,7 +394,6 @@
 }
 
 - (BOOL) updateWithUIStates:(NSDictionary *)states {
-    NSLog(@"GlkFrameView updateWithUIStates");
     BOOL found = NO;
     for (NSNumber *tag in states.allKeys) {
         GlkWindowView *view = _windowviews[tag];
