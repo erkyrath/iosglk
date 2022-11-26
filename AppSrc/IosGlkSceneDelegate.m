@@ -60,25 +60,6 @@
         self.window = [[UIWindow alloc] initWithWindowScene:winScene];
         self.window.rootViewController = vc;
 
-        if (userActivity) {
-            NSLog(@"Found userActivity in connectionOptions");
-            NSDictionary *activityUserInfo = userActivity.userInfo;
-            if (activityUserInfo) {
-                NSDictionary *stateOfViews = activityUserInfo[@"GlkWindowViewStates"];
-                if (stateOfViews) {
-                    appdel.glkviewc.frameview.waitingToRestoreFromState = YES;
-                    NSLog(@"scene: willConnectToSession calling frameview updateWithUIStates");
-                    [appdel.glkviewc.frameview updateWithUIStates:stateOfViews];
-                } else {
-                    NSLog(@"No stateOfViews in activityUserInfo");
-                }
-            } else {
-                NSLog(@"No activityUserInfo in userActivity");
-            }
-        } else {
-            NSLog(@"No userActivity in connectionOptions");
-        }
-
         [self.window makeKeyAndVisible];
 
         [appdel.glkviewc didFinishLaunching];
@@ -131,7 +112,7 @@
         NSLog(@"Wanted IosGlkViewController, got %@", NSStringFromClass([gameNavController.viewControllers[0] class]));
         return nil;
     }
-//
+
     NSUserActivity *userActivity = [glkViewController updateUserActivity:nil];
     NSLog(@"Returning userActivity %@", userActivity);
 
