@@ -33,6 +33,7 @@
 @property (nonatomic, strong) NSNumber *rootwintag;
 @property (nonatomic, strong) PopMenuView *menuview;
 @property (nonatomic) BOOL inOrientationAnimation;
+@property (nonatomic) BOOL waitingToRestoreFromState;
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag;
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp;

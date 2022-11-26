@@ -66,6 +66,7 @@
             if (activityUserInfo) {
                 NSDictionary *stateOfViews = activityUserInfo[@"GlkWindowViewStates"];
                 if (stateOfViews) {
+                    appdel.glkviewc.frameview.waitingToRestoreFromState = YES;
                     NSLog(@"scene: willConnectToSession calling frameview updateWithUIStates");
                     [appdel.glkviewc.frameview updateWithUIStates:stateOfViews];
                 } else {

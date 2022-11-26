@@ -58,7 +58,8 @@
 		_moreview.frame = rect;
 		[_moreview addSubview:_moreview.frameview];
 		_moreview.userInteractionEnabled = NO;
-		_moreview.hidden = YES;
+		_moreview.hidden = NO;
+        self.morewaiting = YES;
 		[self addSubview:_moreview];
 
         firstUpdate = YES;
@@ -97,7 +98,9 @@
 	}
 
     BOOL atBottom = ([self scrolledToBottom]);
-
+    if (!_textview || !_textview.text.length || self.superviewAsFrameView.waitingToRestoreFromState) {
+        atBottom = NO;
+    }
 	lastLayoutBounds = self.bounds;
 	//NSLog(@"WBV: layoutSubviews to %@", StringFromRect(self.bounds));
 
@@ -108,9 +111,10 @@
 
     if (atBottom && _textview.text.length) {
         [self scrollTextViewToBottomAnimate:NO];
-    } else {
-        [self setMoreFlag:[self moreToSee]];
     }
+//    else {
+//        [self setMoreFlag:[self moreToSee]];
+//    }
 
     if (self.inputfield)
         [self placeInputField:self.inputfield holder:self.inputholder];
@@ -182,27 +186,16 @@
         _nowcontentscrolling = NO;
         _textview.contentOffset = CGPointZero;
         anychanges = YES;
-    } else {
-        [textstorage appendAttributedString:bufwin.attrstring];
-    }
+        } else {
+            [textstorage appendAttributedString:bufwin.attrstring];
+        }
 
     if (!anychanges)
         return;
 
     if (firstUpdate) {
         [self uncacheLayoutAndStyles];
-    } else {
-        /* Slightly awkward, but mostly right: if voiceover is on, speak the most recent buffer window update. */
-        if (bufwin.attrstring.length &&
-            UIAccessibilityIsVoiceOverRunning()) {
-            NSString *toSpeak = bufwin.attrstring.string;
-            // Don't speak the actual command
-            NSRange stylerange;
-            NSNumber *style = [bufwin.attrstring attribute:@"GlkStyle" atIndex:0 effectiveRange:&stylerange];
-            if (style.integerValue == style_Input && NSMaxRange(stylerange) < toSpeak.length - 1)
-                toSpeak = [toSpeak substringFromIndex:NSMaxRange(stylerange)];
-            [self speakString:toSpeak];
-        }
+        _lastSeenCharacterIndex = 0;
     }
 
     CGRect nextPage = CGRectZero;
@@ -214,6 +207,19 @@
     [_textview setNeedsDisplay];
 
     BOOL allTextFitsOnScreen = self.bounds.size.height - self.styleset.margintotal.height > _textview.contentSize.height;
+
+    /* Slightly awkward, but mostly right: if voiceover is on, speak the most recent buffer window update. */
+    if (bufwin.attrstring.length &&
+        UIAccessibilityIsVoiceOverRunning() && !self.superviewAsFrameView.waitingToRestoreFromState) {
+        NSString *toSpeak = bufwin.attrstring.string;
+
+        // Don't speak the actual command
+        NSRange stylerange;
+        NSNumber *style = [bufwin.attrstring attribute:@"GlkStyle" atIndex:0 effectiveRange:&stylerange];
+        if (style.integerValue == style_Input && NSMaxRange(stylerange) < toSpeak.length - 1)
+            toSpeak = [toSpeak substringFromIndex:NSMaxRange(stylerange)];
+        [GlkWinBufferView speakString:toSpeak];
+    }
 
     if (!firstUpdate && _lastSeenCharacterIndex != 0 && !allTextFitsOnScreen) {
         _nowcontentscrolling = YES;
@@ -242,7 +248,7 @@
     }
 }
 
-- (void)speakString:(NSString *)string {
++ (void)speakString:(NSString *)string {
     if (!string || string.length == 0) {
         return;
     }
@@ -292,7 +298,7 @@
     if (lastVisible > _lastSeenCharacterIndex)
         _lastSeenCharacterIndex = lastVisible;
 
-    if (lastVisible && _textview.layoutManager.numberOfGlyphs)
+    if (_textview.layoutManager.numberOfGlyphs)
     {
         if (_lastSeenCharacterIndex >= _textview.layoutManager.numberOfGlyphs - 1) {
             return NO;
@@ -307,6 +313,12 @@
     CGPoint bottomright = CGPointMake(_textview.bounds.size.width, _textview.contentOffset.y + _textview.bounds.size.height - _textview.contentInset.bottom);
     NSUInteger lastVisible = [_textview.layoutManager characterIndexForPoint:bottomright inTextContainer:_textview.textContainer fractionOfDistanceBetweenInsertionPoints:NULL];
     return lastVisible;
+}
+
+- (NSUInteger)firstVisible {
+    CGPoint topleft = CGPointMake(_textview.contentInset.left, _textview.contentOffset.y + self.styleset.margintotal.height);
+    NSUInteger firstVisible = [_textview.layoutManager characterIndexForPoint:topleft inTextContainer:_textview.textContainer fractionOfDistanceBetweenInsertionPoints:NULL];
+    return firstVisible;
 }
 
 - (void) scrollTextViewToBottomAnimate:(BOOL)animate {
@@ -504,6 +516,19 @@
                 _textview.contentOffset = CGPointZero;
             }
         }
+    }
+
+    if (_textview.text.length &&
+        UIAccessibilityIsVoiceOverRunning()) {
+        NSString *toSpeak = _textview.text;
+        NSUInteger firstVisible = [self firstVisible];
+        toSpeak = [toSpeak substringFromIndex:firstVisible];
+        // Don't speak the actual command
+        NSRange stylerange;
+        NSNumber *style = [_textview.textStorage attribute:@"GlkStyle" atIndex:firstVisible effectiveRange:&stylerange];
+        if (style.integerValue == style_Input && NSMaxRange(stylerange) < toSpeak.length - 1)
+            toSpeak = [toSpeak substringFromIndex:NSMaxRange(stylerange)];
+        [GlkWinBufferView speakString:toSpeak];
     }
     _nowcontentscrolling = NO;
 }

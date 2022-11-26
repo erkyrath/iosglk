@@ -30,6 +30,7 @@
 
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL pageDownOnInput;
 
++ (void)speakString:(NSString *)string;
 - (BOOL) scrolledToBottom;
 - (void) scrollTextViewToBottomAnimate:(BOOL)animate;
 - (void) preserveScrollPosition;

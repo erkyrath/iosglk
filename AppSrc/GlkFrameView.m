@@ -47,6 +47,7 @@
 		cachedGlkBoxInvalid = YES;
 		
 		inputmenumode = inputmenu_Palette;
+        _waitingToRestoreFromState = YES;
 	}
 	return self;
 }
@@ -406,6 +407,8 @@
     }
     if (!found) {
         NSLog(@"Error! Missing window views");
+    } else {
+        _waitingToRestoreFromState = NO;
     }
     return found;
 }
