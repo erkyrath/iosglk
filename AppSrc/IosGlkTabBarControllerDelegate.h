@@ -1,5 +1,5 @@
 //
-//  IosGlkUITabBarControllerDelegate.h
+//  IosGlkTabBarControllerDelegate.h
 //  iosglulxe
 //
 //  Created by Administrator on 2022-11-30.
@@ -9,12 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class NotesViewController, SettingsViewController;
-
 @interface IosGlkTabBarControllerDelegate : NSObject <UITabBarControllerDelegate>
 
-@property (nonatomic, assign) NotesViewController *notesvc;
-@property (nonatomic, assign) SettingsViewController *settingsvc;
 @property (nonatomic, weak) IBOutlet UITabBarController *tabBarController;
 
 @end
