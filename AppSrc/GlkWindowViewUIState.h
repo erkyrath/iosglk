@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GlkWindowViewUIState : NSObject
 
-+ (NSDictionary *) dictionaryFromState:(GlkWindowView *)view;
++ (NSDictionary *) stateDictionaryFromWinView:(GlkWindowView *)view;
 
 @end
 

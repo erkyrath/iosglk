@@ -24,7 +24,7 @@
     return NSMakeRange(location, length);
 }
 
-+ (NSDictionary *) dictionaryFromState:(GlkWindowView *)view  {
++ (NSDictionary *) stateDictionaryFromWinView:(GlkWindowView *)view  {
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:6];
     
     UIView *firstsubview = view.subviews[0];
