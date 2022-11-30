@@ -1,9 +1,8 @@
-//
-//  IosGlkTabBarControllerDelegate.m
-//  iosglulxe
-//
-//  Created by Administrator on 2022-11-30.
-//
+/* IosGlkTabBarControllerDelegate.m
+ for IosGlk, the iOS implementation of the Glk API.
+ Designed by Andrew Plotkin <erkyrath@eblong.com>
+ http://eblong.com/zarf/glk/
+ */
 
 #import "IosGlkViewController.h"
 #import "IosGlkSceneDelegate.h"

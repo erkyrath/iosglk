@@ -1,9 +1,9 @@
-//
-//  IosGlkSceneDelegate.m
-//  iosglulxe
-//
-//  Created by Administrator on 2022-11-05.
-//
+/* IosGlkSceneDelegate.m
+ for IosGlk, the iOS implementation of the Glk API.
+ Designed by Andrew Plotkin <erkyrath@eblong.com>
+ http://eblong.com/zarf/glk/
+ */
+
 #import "IosGlkAppDelegate.h"
 #import "IosGlkViewController.h"
 #import "IosGlkLibDelegate.h"
