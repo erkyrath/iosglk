@@ -31,7 +31,6 @@
 
     UIWindowScene *winScene = (UIWindowScene *)scene;
     if (winScene) {
-
         scene.userActivity = userActivity;
 
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
@@ -76,6 +75,11 @@
         if (session.stateRestorationActivity == nil)
             NSLog(@"session.stateRestorationActivity is still nil!");
 
+        NSNumber *selectedTabObj = scene.userActivity.userInfo[@"selectedTabIndex"];
+        if (selectedTabObj) {
+            vc.selectedIndex = selectedTabObj.integerValue;
+        }
+
         NSURL *url = connectionOptions.URLContexts.allObjects.firstObject.URL;
         if (url) {
             [self scene:scene openURLContexts:connectionOptions.URLContexts];
@@ -113,8 +117,9 @@
         return nil;
     }
 
-    NSUserActivity *userActivity = [glkViewController updateUserActivity:nil];
-    NSLog(@"Returning userActivity %@", userActivity);
+    NSUserActivity *userActivity = scene.userActivity;
+    if (vc.selectedIndex == 0)
+        userActivity = [glkViewController updateUserActivity:nil];
 
     [userActivity addUserInfoEntriesFromDictionary:@{@"selectedTabIndex":@(vc.selectedIndex)}];
     if ([vc.presentedViewController respondsToSelector:@selector(updateUserActivity:)] && ![vc.presentedViewController isKindOfClass:[IosGlkViewController class]]) {
@@ -163,12 +168,13 @@
 
     /* I think maybe this happens automatically, but I'm not positive. Doesn't hurt to be sure. */
     [[NSUserDefaults standardUserDefaults] synchronize];
-    self.window.windowScene.userActivity = [[NSUserActivity alloc] initWithActivityType:[self mainSceneActivityType]];
 
     UITabBarController *vc = (UITabBarController *)_window.rootViewController;
-    UINavigationController *gameNavController = vc.viewControllers[0];
-    IosGlkViewController *glkViewController = (IosGlkViewController *)gameNavController.viewControllers[0];
-    [glkViewController updateUserActivity:nil];
+    if (vc.selectedIndex == 0) {
+        UINavigationController *gameNavController = vc.viewControllers[0];
+        IosGlkViewController *glkViewController = (IosGlkViewController *)gameNavController.viewControllers[0];
+        [glkViewController updateUserActivity:nil];
+    }
 }
 
 - (void)sceneWillEnterForeground:(UIScene *)scene {
@@ -194,9 +200,6 @@
 
     // Check the user activity type to know which part of the app to restore.
     if (activity.activityType == self.mainSceneActivityType) {
-        // The activity type is for restoring DetailParentViewController.
-
-        // Present a parent detail view controller with the specified product and selected tab.
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
         UITabBarController *vc = (UITabBarController *)[storyboard instantiateViewControllerWithIdentifier:@"RootTabBarController"];
 
@@ -207,20 +210,15 @@
 
         appdel.glkviewc = (IosGlkViewController *)gameNavController.viewControllers[0];
 
-//        guard let detailParentViewController =
-//        storyboard.instantiateViewController(withIdentifier: DetailParentViewController.viewControllerIdentifier)
-//        as? DetailParentViewController else { return false }
-
         NSDictionary *userInfo = activity.userInfo;
         if (userInfo) {
-            //            // Decode the user activity product identifier from the userInfo.
-            //            if let productIdentifier = userInfo[SceneDelegate.productKey] as? String {
-            //                let product = DataModelManager.sharedInstance.product(fromIdentifier: productIdentifier)
-            //                detailParentViewController.product = product
-            //            }
             //
             //                // Decode the selected tab bar controller tab from the userInfo.
-            //                if let selectedTab = userInfo[SceneDelegate.selectedTabKey] as? Int {
+            NSNumber *selectedTabObj = userInfo[@"selectedTabIndex"];
+            if (selectedTabObj) {
+                NSUInteger selectedTab = selectedTabObj.integerValue;
+                vc.selectedIndex = selectedTab;
+            }
             //                    detailParentViewController.restoredSelectedTab = selectedTab
             //                }
             //

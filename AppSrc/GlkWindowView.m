@@ -22,7 +22,6 @@
 #import "CmdTextField.h"
 #import "InputMenuView.h"
 #import "StyleSet.h"
-#import "GlkWindowViewUIState.h"
 #import "IosGlkAppDelegate.h"
 
 @implementation GlkWindowView
