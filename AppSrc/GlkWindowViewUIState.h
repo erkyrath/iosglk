@@ -14,17 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GlkWindowViewUIState : NSObject
 
-@property (nonatomic, strong) NSNumber *tag;
-@property (nonatomic, strong) NSString *inputText;
-@property (nonatomic) NSUInteger lastSeenCharacterIndex;
-@property (nonatomic) NSRange selection;
-@property (nonatomic) BOOL inputIsFirstResponder;
-@property (nonatomic) BOOL scrolledToBottom;
-@property (nonatomic) NSRange inputSelection;
-@property (nonatomic) CGFloat contentOffsetY;
-
-- (instancetype) initWithGlkWindowView:(GlkWindowView *)view;
-- (NSDictionary *) dictionaryFromState;
++ (NSDictionary *) dictionaryFromState:(GlkWindowView *)view;
 
 @end
 

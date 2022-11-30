@@ -388,8 +388,7 @@
 - (NSDictionary *)getCurrentViewStates {
     NSMutableDictionary *states = [[NSMutableDictionary alloc] initWithCapacity:_windowviews.count];
     for (NSNumber *key in _windowviews.allKeys) {
-        GlkWindowViewUIState *state = [[GlkWindowViewUIState alloc] initWithGlkWindowView:_windowviews[key]];
-        states[key] = [state dictionaryFromState];
+        states[key] = [GlkWindowViewUIState dictionaryFromState:_windowviews[key]];
     }
     return @{ @"GlkWindowViewStates" : states };
 }
