@@ -212,20 +212,12 @@
 
         NSDictionary *userInfo = activity.userInfo;
         if (userInfo) {
-            //
-            //                // Decode the selected tab bar controller tab from the userInfo.
+            // Decode the selected tab from the userInfo.
             NSNumber *selectedTabObj = userInfo[@"selectedTabIndex"];
             if (selectedTabObj) {
                 NSUInteger selectedTab = selectedTabObj.integerValue;
                 vc.selectedIndex = selectedTab;
             }
-            //                    detailParentViewController.restoredSelectedTab = selectedTab
-            //                }
-            //
-            //                // Push the detail view controller for the user activity product.
-            //                if let navigationController = window?.rootViewController as? UINavigationController {
-            //                    navigationController.pushViewController(detailParentViewController, animated: false)
-            //                }
 
             succeeded = YES;
         }
