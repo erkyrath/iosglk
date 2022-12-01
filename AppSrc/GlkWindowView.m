@@ -31,7 +31,6 @@
 	if (self) {
 		_viewmargin = margin;
 		self.winstate = winstateref;
-        _tagobj = winstateref.tag;
 		self.styleset = _winstate.styleset;
 		_input_request_id = 0;
 	}

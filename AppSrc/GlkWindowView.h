@@ -26,7 +26,6 @@ typedef enum SelDragMode_enum {
 @property (nonatomic) UIEdgeInsets viewmargin; /* the view has this much extra margin beyond the window state's bounding box */
 @property (nonatomic, strong) CmdTextField *inputfield;  /* if input is happening (but not necessarily a subview of this view) */
 @property (nonatomic, strong) UIScrollView *inputholder;  /* terrible hack: all textfields must be wrapped in a UIScrollView container of the same size. */
-@property (nonatomic, strong) NSNumber *tagobj;
 @property (nonatomic) BOOL morewaiting; /* only used for buffer windows */
 @property (nonatomic) BOOL input_single_char; /* if we're grabbing character (rather than line) input */
 @property (nonatomic) NSUInteger input_request_id; /* matches the value in the GlkWindow if this input field is current */
