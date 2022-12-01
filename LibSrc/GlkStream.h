@@ -18,35 +18,25 @@ typedef enum GlkStreamType_enum {
 	strtype_Memory=3
 } GlkStreamType;
 
-@interface GlkStream : NSObject {
-	GlkLibrary *library;
+@interface GlkStream : NSObject <NSSecureCoding> {
 	BOOL inlibrary;
-	
-	NSNumber *tag;
-	gidispatch_rock_t disprock;
-
-	GlkStreamType type; /* file, window, or memory stream */
-	glui32 rock;
-	BOOL unicode; /* one-byte or four-byte chars? Not meaningful for windows */
-
 	glui32 readcount, writecount;
-	BOOL readable, writable;
 }
 
-@property (nonatomic, retain) GlkLibrary *library;
-@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, weak) GlkLibrary *library;
+@property (nonatomic, weak) NSNumber *tag;
 @property (nonatomic) gidispatch_rock_t disprock;
-@property (nonatomic, readonly) GlkStreamType type;
-@property (nonatomic, readonly) glui32 rock;
-@property (nonatomic, readonly) BOOL unicode;
-@property (nonatomic, readonly) BOOL readable;
-@property (nonatomic, readonly) BOOL writable;
+@property (nonatomic) GlkStreamType type; /* file, window, or memory stream */
+@property (nonatomic) glui32 rock;
+@property (nonatomic) BOOL unicode; /* one-byte or four-byte chars? Not meaningful for windows */
+@property (nonatomic) BOOL readable;
+@property (nonatomic) BOOL writable;
 
-- (id) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock;
+- (instancetype) initWithType:(GlkStreamType)strtype readable:(BOOL)isreadable writable:(BOOL)iswritable rock:(glui32)strrock;
 - (void) streamDelete;
 - (void) fillResult:(stream_result_t *)result;
 - (void) setPosition:(glsi32)pos seekmode:(glui32)seekmode;
-- (glui32) getPosition;
+@property (NS_NONATOMIC_IOSONLY, getter=getPosition, readonly) glui32 position;
 - (void) putChar:(unsigned char)ch;
 - (void) putCString:(char *)s;
 - (void) putBuffer:(char *)buf len:(glui32)len;
@@ -61,29 +51,23 @@ typedef enum GlkStreamType_enum {
 @end
 
 
-@interface GlkStreamWindow : GlkStream {
-	GlkWindow *win;
-	NSNumber *wintag;
-}
+@interface GlkStreamWindow : GlkStream
 
-@property (nonatomic, retain) GlkWindow *win;
-@property (nonatomic, retain) NSNumber *wintag;
+@property (nonatomic, weak) GlkWindow *win;
+@property (nonatomic, strong) NSNumber *wintag;
 
-- (id) initWithWindow:(GlkWindow *)win;
+- (instancetype) initWithWindow:(GlkWindow *)win;
 
 @end
 
 @interface GlkStreamMemory : GlkStream {
 	/* The pointers needed for stream operation. We keep separate sets for the one-byte and four-byte cases. */
-	unsigned char *buf;
 	unsigned char *bufptr;
 	unsigned char *bufend;
 	unsigned char *bufeof;
-	glui32 *ubuf;
 	glui32 *ubufptr;
 	glui32 *ubufend;
 	glui32 *ubufeof;
-	glui32 buflen;
 	gidispatch_rock_t arrayrock;
 	
 	/* These values are only used in a temporary GlkLibrary, while deserializing. */
@@ -93,12 +77,12 @@ typedef enum GlkStreamType_enum {
 	glui32 tempbufptr, tempbufend, tempbufeof;
 }
 
-@property (nonatomic, readonly) glui32 buflen;
-@property (nonatomic, readonly) unsigned char *buf;
-@property (nonatomic, readonly) glui32 *ubuf;
+@property (NS_NONATOMIC_IOSONLY) glui32 buflen;
+@property (NS_NONATOMIC_IOSONLY) unsigned char *buf;
+@property (NS_NONATOMIC_IOSONLY) glui32 *ubuf;
 
-- (id) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)buf len:(glui32)buflen;
-- (id) initUniWithMode:(glui32)fmode rock:(glui32)rockval buf:(glui32 *)ubufval len:(glui32)ubuflenval;
+- (instancetype) initWithMode:(glui32)fmode rock:(glui32)rockval buf:(char *)buf len:(glui32)buflen;
+- (instancetype) initUniWithMode:(glui32)fmode rock:(glui32)rockval buf:(glui32 *)ubufval len:(glui32)ubuflenval;
 - (void) updateRegisterArray;
 
 @end
@@ -122,18 +106,18 @@ typedef enum GlkStreamType_enum {
 	unsigned long long offsetinfile; // (in bytes) only used during deserialization; zero normally
 }
 
-@property (nonatomic, retain) NSFileHandle *handle;
-@property (nonatomic, retain) NSString *pathname;
-@property (nonatomic, retain) NSData *readbuffer;
-@property (nonatomic, retain) NSMutableData *writebuffer;
+@property (nonatomic, strong) NSFileHandle *handle;
+@property (nonatomic, strong) NSString *pathname;
+@property (nonatomic, strong) NSData *readbuffer;
+@property (nonatomic, strong) NSMutableData *writebuffer;
 @property (nonatomic) unsigned long long offsetinfile;
 
-- (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)unicode fileref:(GlkFileRef *)fref;
-- (id) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname;
+- (instancetype) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)unicode fileref:(GlkFileRef *)fref;
+- (instancetype) initWithMode:(glui32)fmode rock:(glui32)rockval unicode:(BOOL)isunicode textmode:(BOOL)istextmode dirname:(NSString *)dirname pathname:(NSString *)pathname;
 
 - (void) flush;
-- (BOOL) reopenInternal;
-- (int) readByte;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL reopenInternal;
+@property (NS_NONATOMIC_IOSONLY, readonly) int readByte;
 - (glui32) readBytes:(void **)byteref len:(glui32)len;
 - (void) writeByte:(char)ch;
 - (void) writeBytes:(void *)bytes len:(glui32)len;

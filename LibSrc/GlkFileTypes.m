@@ -15,7 +15,7 @@
 @synthesize filename;
 @synthesize pathname;
 
-- (id) initWithUsage:(glui32)usageval fmode:(glui32)fmodeval dirname:(NSString *)dirnameval {
+- (instancetype) initWithUsage:(glui32)usageval fmode:(glui32)fmodeval dirname:(NSString *)dirnameval {
 	self = [super init];
 	
 	if (self) {
@@ -29,12 +29,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.dirname = nil;
-	self.filename = nil;
-	self.pathname = nil;
-	[super dealloc];
-}
 
 @end
 
@@ -92,13 +86,6 @@
 	return res;
 }
 
-- (void) dealloc {
-	self.label = nil;
-	self.filename = nil;
-	self.pathname = nil;
-	self.modtime = nil;
-	[super dealloc];
-}
 
 - (NSComparisonResult) compareModTime:(GlkFileThumb *)other {
 	return [other.modtime compare:modtime];

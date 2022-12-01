@@ -12,31 +12,28 @@
 @class GlkWindowView;
 @class GlkTagString;
 @class PopMenuView;
+@class Geometry;
 
-@interface GlkFrameView : UIView {
-	/* A clone of the library's state, as of the last updateFromLibraryState call. */
-	GlkLibraryState *librarystate;
-	
+@interface GlkFrameView : UIView {	
 	/* The current size of the bounds minus keyboard. */
 	CGRect cachedGlkBox;
 	/* True if we should re-layout even when the box hasn't changed. */
 	BOOL cachedGlkBoxInvalid;
-	
-	/* Maps tags (NSNumbers) to GlkWindowViews. (But pair windows are excluded.) */
-	NSMutableDictionary *windowviews;
-	/* Maps tags (NSNumbers) to Geometry objects. (Only for pair windows.) */
-	NSMutableDictionary *wingeometries;
-	NSNumber *rootwintag;
-	
-	PopMenuView *menuview;
+
 	InputMenuMode inputmenumode;
 }
 
-@property (nonatomic, retain) GlkLibraryState *librarystate;
-@property (nonatomic, retain) NSMutableDictionary *windowviews;
-@property (nonatomic, retain) NSMutableDictionary *wingeometries;
-@property (nonatomic, retain) NSNumber *rootwintag;
-@property (nonatomic, retain) PopMenuView *menuview;
+/* A clone of the library's state, as of the last updateFromLibraryState call. */
+@property (nonatomic, strong) GlkLibraryState *librarystate;
+/* Maps tags (NSNumbers) to GlkWindowViews. (But pair windows are excluded.) */
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, GlkWindowView *> *windowviews;
+
+/* Maps tags (NSNumbers) to Geometry objects. (Only for pair windows.) */
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, Geometry *> *wingeometries;
+@property (nonatomic, strong) NSNumber *rootwintag;
+@property (nonatomic, strong) PopMenuView *menuview;
+@property (nonatomic) BOOL inOrientationAnimation;
+@property (nonatomic) BOOL waitingToRestoreFromState;
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag;
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp;
@@ -47,6 +44,11 @@
 - (void) editingTextForWindow:(GlkTagString *)tagstring;
 - (void) postPopMenu:(PopMenuView *)menuview;
 - (void) removePopMenuAnimated:(BOOL)animated;
+- (NSDictionary *)getCurrentViewStates;
+- (BOOL) updateWithUIStates:(NSDictionary *)states;
+- (void) preserveScrollPositions;
+- (void) restoreScrollPositions;
+- (BOOL) hasStandardGlkSetup;
 
 @end
 

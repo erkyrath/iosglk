@@ -18,15 +18,15 @@
 	NSNumber *wintag;
 }
 
-@property (nonatomic, retain) IBOutlet UIView *rightsideview;
-@property (nonatomic, retain) IBOutlet UIButton *clearbutton;
-@property (nonatomic, retain) IBOutlet UIButton *menubutton;
-@property (nonatomic, retain) NSNumber *wintag;
+@property (nonatomic, strong) IBOutlet UIView *rightsideview;
+@property (nonatomic, strong) IBOutlet UIButton *clearbutton;
+@property (nonatomic, strong) IBOutlet UIButton *menubutton;
+@property (nonatomic, strong) NSNumber *wintag;
 
 - (void) setUpForWindow:(GlkWindowView *)winv singleChar:(BOOL)singleChar;
 - (void) adjustInputTraits;
 - (void) adjustForWindowStyles:(StyleSet *)styleset;
-- (BOOL) singleChar;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL singleChar;
 - (void) applyInputString:(NSString *)cmd replace:(BOOL)replace;
 
 - (IBAction) handleMenuButton:(id)sender;

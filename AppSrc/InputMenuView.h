@@ -26,16 +26,16 @@ typedef enum InputMenuMode_enum {
 	NSArray *history;
 }
 
-@property (nonatomic, retain) GlkWindowView *winview;
-@property (nonatomic, retain) IBOutlet UIButton *historybutton;
-@property (nonatomic, retain) IBOutlet UIButton *palettebutton;
-@property (nonatomic, retain) IBOutlet HistoryMenuView *historymenu;
-@property (nonatomic, retain) IBOutlet PaletteMenuView *palettemenu;
-@property (nonatomic, retain) UILabel *displaylabel;
-@property (nonatomic, retain) NSArray *history;
-@property (nonatomic, retain) NSString *displaycommand;
+@property (nonatomic, strong) GlkWindowView *winview;
+@property (nonatomic, strong) IBOutlet UIButton *historybutton;
+@property (nonatomic, strong) IBOutlet UIButton *palettebutton;
+@property (nonatomic, strong) IBOutlet HistoryMenuView *historymenu;
+@property (nonatomic, strong) IBOutlet PaletteMenuView *palettemenu;
+@property (nonatomic, strong) UILabel *displaylabel;
+@property (nonatomic, strong) NSArray *history;
+@property (nonatomic, strong) NSString *displaycommand;
 
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winview history:(NSArray *)historylist;
+- (instancetype) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winview history:(NSArray *)historylist;
 - (void) setMode:(InputMenuMode)mode;
 - (void) setDisplayCommand:(NSString *)val;
 - (void) acceptCommand:(NSString *)cmd replace:(BOOL)replace close:(BOOL)closemenu;
@@ -58,9 +58,9 @@ typedef enum InputMenuMode_enum {
 	int selection;
 }
 
-@property (nonatomic, retain) IBOutlet InputMenuView *menuview;
-@property (nonatomic, retain) IBOutlet UILabel *baselabel;
-@property (nonatomic, retain) NSMutableArray *labels;
+@property (nonatomic, strong) IBOutlet InputMenuView *menuview;
+@property (nonatomic, strong) IBOutlet UILabel *baselabel;
+@property (nonatomic, strong) NSMutableArray *labels;
 
 - (void) setUpFromHistory:(NSArray *)history;
 - (void) selectLabel:(int)val;
@@ -77,8 +77,8 @@ typedef enum InputMenuMode_enum {
 	UILabel *selection; // not retained; always refers to an entry in labels
 }
 
-@property (nonatomic, retain) IBOutlet InputMenuView *menuview;
-@property (nonatomic, retain) NSMutableArray *labels;
+@property (nonatomic, strong) IBOutlet InputMenuView *menuview;
+@property (nonatomic, strong) NSMutableArray *labels;
 
 - (void) setUp;
 - (void) selectLabel:(UILabel *)val;

@@ -14,10 +14,6 @@
 
 @synthesize container;
 
-- (void) dealloc {
-	self.container = nil;
-	[super dealloc];
-}
 
 - (NSString *) nibForContent {
 	return @"GameOverView";
@@ -30,7 +26,7 @@
 
 	if (faderview) {
 		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
-		faderview.alpha = ((glkviewc.glkdelegate.hasDarkTheme) ? 1.0 : 0.0);
+		faderview.alpha = ((glkviewc.hasDarkTheme) ? 1.0 : 0.0);
 		faderview.hidden = NO;
 	}
 }

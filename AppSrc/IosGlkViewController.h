@@ -15,36 +15,22 @@
 
 typedef void (^questioncallback)(int); // callback block type for displayAdHocQuestion
 
-@interface IosGlkViewController : UIViewController <UIActionSheetDelegate> {
-	id <IosGlkLibDelegate> glkdelegate;
-	GlkFrameView *frameview;
-	
-	/* Tag for the window which most recently had input focus */
-	NSNumber *prefinputwintag;
-	/* Tag for the window which currently has text selected */
-	NSNumber *textselecttag;
-	/* As of the most recent update */
-	BOOL vmexited;
+@interface IosGlkViewController : UIViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate>
 
-	/* Strings typed into input lines (across all windows) */
-	NSMutableArray *commandhistory;
-	/* Size of the keyboard, if present *and blocking* (in window coords) */
-	CGRect keyboardbox;
-	
-	/* Currently-displayed ad-hoc question callback */
-	questioncallback currentquestion;
-}
+@property (nonatomic, weak) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
+@property (nonatomic, strong) IBOutlet GlkFrameView *frameview;
 
-@property (nonatomic, assign) IBOutlet id <IosGlkLibDelegate> glkdelegate; // delegates are nonretained
-@property (nonatomic, retain) IBOutlet GlkFrameView *frameview;
-
-@property (nonatomic, retain) NSNumber *prefinputwintag;
-@property (nonatomic, retain) NSNumber *textselecttag;
+/* Tag for the window which most recently had input focus */
+@property (nonatomic, strong) NSNumber *prefinputwintag;
+/* As of the most recent update */
 @property (nonatomic) BOOL vmexited;
 
-@property (nonatomic, retain) NSMutableArray *commandhistory;	
+/* Strings typed into input lines (across all windows) */
+@property (nonatomic, strong) NSMutableArray *commandhistory;
+/* Size of the keyboard, if present *and blocking* (in window coords) */
 @property (nonatomic) CGRect keyboardbox;
 
+/* Currently-displayed ad-hoc question callback */
 @property (nonatomic, copy) questioncallback currentquestion;
 
 + (IosGlkViewController *) singleton;
@@ -56,10 +42,10 @@ typedef void (^questioncallback)(int); // callback block type for displayAdHocQu
 - (void) updateFromLibraryState:(GlkLibraryState *)library;
 - (id) filterEvent:(id)data;
 
-- (void) textSelectionWindow:(NSNumber *)tag;
 - (void) preferInputWindow:(NSNumber *)tag;
-- (GlkWindowView *) preferredInputWindow;
-- (BOOL) keyboardIsShown;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) GlkWindowView *preferredInputWindow;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL keyboardIsShown;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasDarkTheme;
 - (void) hideKeyboard;
 - (void) postGameOver;
 - (void) displayModalRequest:(id)special;
@@ -72,6 +58,8 @@ typedef void (^questioncallback)(int); // callback block type for displayAdHocQu
 - (void) addToCommandHistory:(NSString *)str;
 - (void) displayAdHocAlert:(NSString *)msg title:(NSString *)title;
 - (void) displayAdHocQuestion:(NSString *)msg option:(NSString *)opt1 option:(NSString *)opt2 callback:(questioncallback)qcallback;
+- (void)textTapped:(UITapGestureRecognizer *)recognizer;
+- (NSUserActivity *)updateUserActivity:(id)sender;
 
 @end
 

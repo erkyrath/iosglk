@@ -20,18 +20,18 @@
 @synthesize vertalign;
 @synthesize horizalign;
 
-- (id) initWithFrame:(CGRect)frame centerInFrame:(CGRect)rect {
+- (instancetype) initWithFrame:(CGRect)frame centerInFrame:(CGRect)rect {
 	return [self initWithFrame:frame buttonFrame:rect vertAlign:0 horizAlign:0];
 }
 
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below {
+- (instancetype) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below {
 	int horval = (below ? 1 : -1);
 	int vertval = horval;
 	
 	return [self initWithFrame:frame buttonFrame:rect vertAlign:vertval horizAlign:horval];
 }
 
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect vertAlign:(int)vertval horizAlign:(int)horval {
+- (instancetype) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect vertAlign:(int)vertval horizAlign:(int)horval {
 	self = [super initWithFrame:frame];
 	if (self) {
 		//self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5]; //###
@@ -42,13 +42,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.frameview = nil;
-	self.content = nil;
-	self.decor = nil;
-	self.faderview = nil;
-	[super dealloc];
-}
 
 - (GlkFrameView *) superviewAsFrameView {
 	return (GlkFrameView *)self.superview;
@@ -59,7 +52,7 @@
 }
 
 - (void) loadContent {
-	UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)] autorelease];
+	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
 	view.backgroundColor = [UIColor redColor];
 	view.layer.cornerRadius = 10;
 	view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -97,8 +90,9 @@
 	}
 	
 	if (animated && self.superview) {
+        PopMenuView __weak *weakSelf = self;
 		[UIView animateWithDuration:0.25 
-						 animations:^{ frameview.frame = rect; } ];
+                         animations:^{ weakSelf.frameview.frame = rect; } ];
 	}
 	else {
 		frameview.frame = rect;

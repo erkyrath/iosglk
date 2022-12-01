@@ -11,71 +11,44 @@
 @class StyleSet;
 @class Geometry;
 
-@interface GlkWindowState : NSObject {
-	GlkLibraryState *library; // weak parent link (unretained)
-	
-	NSNumber *tag;
-	glui32 type;
-	glui32 rock;
-	
-	StyleSet *styleset;
-	CGRect bbox;
-	int input_request_id;
-	BOOL char_request;
-	BOOL line_request;
-	NSString *line_request_initial;
-}
+@interface GlkWindowState : NSObject
 
-@property (nonatomic, assign) GlkLibraryState *library; // unretained
-@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, weak) GlkLibraryState *library; // weak parent link
+@property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic) glui32 type;
 @property (nonatomic) glui32 rock;
-@property (nonatomic, retain) StyleSet *styleset;
+@property (nonatomic, strong) StyleSet *styleset;
 @property (nonatomic) CGRect bbox;
 @property (nonatomic) int input_request_id;
 @property (nonatomic) BOOL char_request;
 @property (nonatomic) BOOL line_request;
-@property (nonatomic, retain) NSString *line_request_initial;
+@property (nonatomic, strong) NSString *line_request_initial;
 
 + (GlkWindowState *) windowStateWithType:(glui32)type rock:(glui32)rock;
 
 @end
 
 
-@interface GlkWindowBufferState : GlkWindowState {
-	int clearcount; /* incremented whenever the buffer is cleared */
-	int linesdirtyfrom; /* index of first new (or changed) line */
-	int linesdirtyto; /* the index of the last line, plus one (or zero if there are no lines */
-	NSArray *lines; /* array of GlkStyledLine (indexes do not necessarily start at zero!) */
-}
+@interface GlkWindowBufferState : GlkWindowState
 
-@property (nonatomic) int clearcount;
-@property (nonatomic) int linesdirtyfrom;
-@property (nonatomic) int linesdirtyto;
-@property (nonatomic, retain) NSArray *lines;
+@property (nonatomic) int clearcount; /* incremented whenever the buffer is cleared */
+@property (nonatomic, strong) NSAttributedString *attrstring;
 
 @end
 
-@interface GlkWindowGridState : GlkWindowState {
-	int width, height;
-	NSArray *lines; /* array of GlkStyledLine (may be sparse or empty) */
-	
-	int curx, cury; /* the window cursor position */
-}
+@interface GlkWindowGridState : GlkWindowState
 
-@property (nonatomic, retain) NSArray *lines;
 @property (nonatomic) int width;
 @property (nonatomic) int height;
-@property (nonatomic) int curx;
+@property (nonatomic) int curx; /* the window cursor position */
 @property (nonatomic) int cury;
+@property (nonatomic, strong) NSAttributedString *attrstring;
 
 @end
 
-@interface GlkWindowPairState : GlkWindowState {
-	Geometry *geometry;
-}
+@interface GlkWindowPairState : GlkWindowState
 
-@property (nonatomic, retain) Geometry *geometry;
+@property (nonatomic, strong) Geometry *geometry;
 
 @end
 

@@ -23,7 +23,7 @@
 @synthesize history;
 @synthesize displaycommand;
 
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winval history:(NSArray *)historylist {
+- (instancetype) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect view:(GlkWindowView *)winval history:(NSArray *)historylist {
 	self = [super initWithFrame:frame buttonFrame:rect belowButton:NO];
 	if (self) {
 		mode = inputmenu_None;
@@ -33,15 +33,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.winview = nil;
-	self.historymenu = nil;
-	self.palettemenu = nil;
-	self.history = nil;
-	self.displaylabel = nil;
-	self.displaycommand = nil;
-	[super dealloc];
-}
 
 - (NSString *) bottomDecorNib {
 	return @"InputMenuDecor";
@@ -58,7 +49,7 @@
 	
 	if (faderview) {
 		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
-		faderview.alpha = ((glkviewc.glkdelegate.hasDarkTheme) ? 1.0 : 0.0);
+		faderview.alpha = ((glkviewc.hasDarkTheme) ? 1.0 : 0.0);
 		faderview.hidden = NO;
 	}
 	
@@ -132,9 +123,9 @@
 		IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 		CGRect selfbounds = frameview.bounds;
 		CGRect rect = CGRectMake(0, selfbounds.size.height, selfbounds.size.width, 20);
-		self.displaylabel = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		self.displaylabel = [[UILabel alloc] initWithFrame:rect];
 		
-		displaylabel.backgroundColor = (glkviewc.glkdelegate.hasDarkTheme) ? [UIColor colorWithWhite:0.42 alpha:1] : [UIColor whiteColor];
+		displaylabel.backgroundColor = (glkviewc.hasDarkTheme) ? [UIColor colorWithWhite:0.42 alpha:1] : [UIColor whiteColor];
 		displaylabel.layer.cornerRadius = 10;
 		displaylabel.layer.borderWidth = 1;
 		displaylabel.layer.borderColor = [UIColor colorWithWhite:0.66 alpha:1].CGColor;
@@ -189,12 +180,6 @@
 @synthesize baselabel;
 @synthesize labels;
 
-- (void) dealloc {
-	self.menuview = nil;
-	self.baselabel = nil;
-	self.labels = nil;
-	[super dealloc];
-}
 
 - (void) awakeFromNib {
 	[super awakeFromNib];
@@ -205,7 +190,7 @@
 
 - (void) setUpFromHistory:(NSArray *)history {
 	/* The iPhone only has room for a few items. On the iPad we allow more. */
-	int maxlen = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 6 : 12;
+	int maxlen = (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) ? 6 : 12;
 	if (history.count > maxlen) {
 		NSRange range;
 		range.location = history.count - maxlen;
@@ -224,14 +209,14 @@
 	
 	if (history.count == 0) {
 		disabled = YES;
-		history = [NSArray arrayWithObject:NSLocalizedString(@"label.no-history", nil)];
+		history = @[NSLocalizedString(@"label.no-history", nil)];
 	}
 
 	CGRect rect = labelbox;
 
 	self.labels = [NSMutableArray arrayWithCapacity:history.count];
 	for (NSString *str in history) {
-		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		UILabel *label = [[UILabel alloc] initWithFrame:rect];
 		label.font = baselabel.font;
 		if (!disabled)
 			label.textColor = baselabel.textColor;
@@ -262,14 +247,14 @@
 		return;
 	
 	if (selection >= 0 && selection < labels.count) {
-		UILabel *label = [labels objectAtIndex:selection];
+		UILabel *label = labels[selection];
 		label.backgroundColor = nil;
 	}
 	
 	selection = val;
 
 	if (selection >= 0 && selection < labels.count) {
-		UILabel *label = [labels objectAtIndex:selection];
+		UILabel *label = labels[selection];
 		label.backgroundColor = [UIColor whiteColor];
 		[menuview setDisplayCommand:label.text];
 	}
@@ -302,7 +287,7 @@
 	if (disabled)
 		return;
 	if (selection >= 0 && selection < labels.count) {
-		UILabel *label = [labels objectAtIndex:selection];
+		UILabel *label = labels[selection];
 		if (menuview && menuview.superview) {
 			[self selectLabel:-1];
 			[menuview acceptCommand:label.text replace:YES close:YES];
@@ -323,10 +308,7 @@
 @synthesize labels;
 
 - (void) dealloc {
-	self.menuview = nil;
 	selection = nil;
-	self.labels = nil;
-	[super dealloc];
 }
 
 - (void) awakeFromNib {

@@ -39,7 +39,7 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 	static glui32 temp_file_counter = 0;
 
 	NSDate *date = [NSDate date];
-	NSString *tempname = [NSString stringWithFormat:@"_glk_temp_%f-%d", [date timeIntervalSince1970], temp_file_counter++];
+	NSString *tempname = [NSString stringWithFormat:@"_glk_temp_%f-%d", date.timeIntervalSince1970, temp_file_counter++];
 	tempname = [tempname stringByReplacingOccurrencesOfString:@"." withString:@"-"];
 	NSString *tempdir = NSTemporaryDirectory();
 
@@ -49,7 +49,7 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 		return NULL;
 	}
 
-	return [fref autorelease];
+	return fref;
 }
 
 frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref, glui32 rock)
@@ -65,7 +65,7 @@ frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref, glui32 
 		return NULL;
 	}
 
-	return [fref autorelease];
+	return fref;
 }
 
 frefid_t glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
@@ -75,7 +75,7 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 	/* Take out all '/' and '.' characters, and make sure the length is greater than zero. (Taking out dots is not that necessary, but it avoids the edge cases of "." and "..".) */
 	filename = [filename stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
 	filename = [filename stringByReplacingOccurrencesOfString:@"." withString:@"-"];
-	if ([filename length] == 0)
+	if (filename.length == 0)
 		filename = @"X";
 		
 	NSString *dir = [GlkFileRef documentsDirectory];
@@ -88,7 +88,7 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 		return NULL;
 	}
 
-	return [fref autorelease];
+	return fref;
 }
 
 frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
@@ -108,12 +108,10 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	/* We call selectEvent, which will block and put up the file-selection UI. Note that the autorelease pool gets wiped, which is why we've retained the prompt object above! */
 	library.specialrequest = prompt;
 	[appwrap selectEvent:nil special:prompt];
-	NSString *filename = [[prompt.filename retain] autorelease];
-	NSString *pathnamecheck = [[prompt.pathname retain] autorelease];
+	NSString *filename = prompt.filename;
+	NSString *pathnamecheck = prompt.pathname;
 	
 	library.specialrequest = nil;
-	[prompt autorelease];
-	
 	if (!filename) {
 		/* The file selection was cancelled. */
 		return NULL;
@@ -128,7 +126,7 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock)
 	if (![pathnamecheck isEqualToString:fref.pathname])
 		NSLog(@"Selected pathname %@ did not match %@!", pathnamecheck, fref.pathname);
 
-	return [fref autorelease];
+	return fref;
 }
 
 frefid_t glk_fileref_iterate(frefid_t fref, glui32 *rock) 
@@ -137,7 +135,7 @@ frefid_t glk_fileref_iterate(frefid_t fref, glui32 *rock)
 
 	if (!fref) {
 		if (library.filerefs.count)
-			fref = [library.filerefs objectAtIndex:0];
+			fref = (library.filerefs)[0];
 		else
 			fref = nil;
 	}
@@ -152,7 +150,7 @@ frefid_t glk_fileref_iterate(frefid_t fref, glui32 *rock)
 			if (pos >= library.filerefs.count)
 				fref = nil;
 			else 
-				fref = [library.filerefs objectAtIndex:pos];
+				fref = (library.filerefs)[pos];
 		}
 	}
 	

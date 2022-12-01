@@ -15,75 +15,52 @@
 @class StyleSet;
 @class Geometry;
 
-@interface GlkWindow : NSObject {
-	GlkLibrary *library;
+@interface GlkWindow : NSObject <NSSecureCoding> {
 	BOOL inlibrary;
-	
-	NSNumber *tag;
-	gidispatch_rock_t disprock;
-	glui32 type;
-	glui32 rock;
-	
-	GlkWindowPair *parent;
-	NSNumber *parenttag;
-	int input_request_id;
+
 	void *line_buffer;
 	gidispatch_rock_t inarrayrock;
 	int line_buffer_length;
-	BOOL char_request;
-	BOOL line_request;
 	BOOL char_request_uni;
 	BOOL line_request_uni;
-	NSString *line_request_initial;
 	BOOL pending_echo_line_input; // applies to current input; only meaningful for buffer windows
 	
-	BOOL echo_line_input; // applies to future inputs
-	glui32 style;
-	
-	GlkStream *stream;
-	NSNumber *streamtag;
-	GlkStream *echostream;
-	NSNumber *echostreamtag;
-	
-	StyleSet *styleset; // not serialized
-	CGRect bbox;
-
 	/* These values are only used in a temporary GlkLibrary, while deserializing. */
 	uint8_t *tempbufdata;
 	NSUInteger tempbufdatalen;
 	long tempbufkey;
 }
 
-@property (nonatomic, retain) GlkLibrary *library;
-@property (nonatomic, retain) NSNumber *tag;
+@property (nonatomic, weak) GlkLibrary *library;
+@property (nonatomic, strong) NSNumber *tag;
 @property (nonatomic) gidispatch_rock_t disprock;
 @property (nonatomic, readonly) glui32 type;
 @property (nonatomic, readonly) glui32 rock;
-@property (nonatomic, retain) GlkWindowPair *parent;
-@property (nonatomic, retain) NSNumber *parenttag;
-@property (nonatomic, retain) NSString *line_request_initial;
+@property (nonatomic, weak) GlkWindowPair *parent;
+@property (nonatomic, strong) NSNumber *parenttag;
+@property (nonatomic, weak) NSString *line_request_initial;
 @property (nonatomic, readonly) int input_request_id;
 @property (nonatomic, readonly) BOOL char_request;
 @property (nonatomic, readonly) BOOL line_request;
-@property (nonatomic) BOOL echo_line_input;
+@property (nonatomic) BOOL echo_line_input; // applies to future inputs
 @property (nonatomic) glui32 style;
-@property (nonatomic, retain) GlkStream *stream;
-@property (nonatomic, retain) NSNumber *streamtag;
-@property (nonatomic, retain) GlkStream *echostream;
-@property (nonatomic, retain) NSNumber *echostreamtag;
-@property (nonatomic, retain) StyleSet *styleset;
-@property (nonatomic, readonly) CGRect bbox;
+@property (nonatomic, strong) GlkStream *stream;
+@property (nonatomic, strong) NSNumber *streamtag;
+@property (nonatomic, strong) GlkStream *echostream;
+@property (nonatomic, strong) NSNumber *echostreamtag;
+@property (nonatomic, strong) StyleSet *styleset; // not serialized
+@property (nonatomic) CGRect bbox;
 
 + (GlkWindow *) windowWithType:(glui32)type rock:(glui32)rock;
 
-- (id) initWithType:(glui32)type rock:(glui32)rock;
+- (instancetype) initWithType:(glui32)type rock:(glui32)rock;
 - (void) updateRegisterArray;
 - (void) windowCloseRecurse:(BOOL)recurse;
 - (void) windowRearrange:(CGRect)box;
 - (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref;
-- (BOOL) supportsInput;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL supportsInput;
 - (void) dirtyAllData;
-- (GlkWindowState *) cloneState;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) GlkWindowState *cloneState;
 
 + (void) unEchoStream:(strid_t)str;
 - (void) putBuffer:(char *)buf len:(glui32)len;
@@ -100,16 +77,12 @@
 @end
 
 
-@interface GlkWindowBuffer : GlkWindow {
-	int clearcount; /* incremented whenever the buffer is cleared */
-	int linesdirtyfrom; /* index of first new (or changed) line */
-	NSMutableArray *lines; /* array of GlkStyledLine */
-}
+@interface GlkWindowBuffer : GlkWindow
 
+/* incremented whenever the buffer is cleared */
 @property (nonatomic) int clearcount;
-@property (nonatomic) int linesdirtyfrom;
-@property (nonatomic, retain) NSMutableArray *lines;
-
+@property (nonatomic, strong) NSMutableAttributedString *attrstring;
+@property (nonatomic, strong) NSMutableAttributedString *savedattrstring;
 - (void) putString:(NSString *)str;
 
 @end
@@ -117,16 +90,14 @@
 
 @interface GlkWindowGrid : GlkWindow {
 	int width, height;
-	NSMutableArray *lines; /* array of GlkGridLine (length is self.height) */
-	
 	int curx, cury; /* the window cursor position */
 }
 
-@property (nonatomic, retain) NSMutableArray *lines;
 @property (nonatomic, readonly) int width;
 @property (nonatomic, readonly) int height;
 @property (nonatomic, readonly) int curx;
 @property (nonatomic, readonly) int cury;
+@property (nonatomic, strong) NSMutableAttributedString *attrstring;
 
 - (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos;
 - (void) putUChar:(glui32)ch;
@@ -134,20 +105,14 @@
 @end
 
 
-@interface GlkWindowPair : GlkWindow {
-	Geometry *geometry;
-	BOOL keydamage; // only used within glk_window_close().
-	
-	GlkWindow *child1;
-	GlkWindow *child2;
-}
+@interface GlkWindowPair : GlkWindow
 
-@property (nonatomic, retain) Geometry *geometry;
-@property (nonatomic) BOOL keydamage;
-@property (nonatomic, retain) GlkWindow *child1;
-@property (nonatomic, retain) GlkWindow *child2;
+@property (nonatomic, strong) Geometry *geometry;
+@property (nonatomic) BOOL keydamage; // only used within glk_window_close().
+@property (nonatomic, strong) GlkWindow *child1;
+@property (nonatomic, strong) GlkWindow *child2;
 
-- (id) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)size;
+- (instancetype) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)size;
 
 @end
 

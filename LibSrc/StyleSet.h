@@ -13,23 +13,18 @@ typedef struct FontVariants_struct {
 	UIFont *bold;
 } FontVariants;
 
-@interface StyleSet : NSObject {
-	UIFont **fonts; /* array[style_NUMSTYLES] of retained UIFonts (malloced) */
-	UIColor **colors; /* array[style_NUMSTYLES] of retained UIColors (malloced) */
-	CGFloat leading; /* extra space below each line (uniform across all styles) */
-	CGSize charbox; /* maximum size of a single rendered character (normal style) (including leading) */
-	UIColor *backgroundcolor; /* background color for window */
-	UIEdgeInsets margins; /* margin widths around the text */
-	CGSize margintotal; /* width = left+right; height = top+bottom */
-}
+@interface StyleSet : NSObject
 
-@property (nonatomic, readonly) UIFont **fonts;
-@property (nonatomic, readonly) UIColor **colors;
-@property (nonatomic) CGFloat leading;
-@property (nonatomic) CGSize charbox;
-@property (nonatomic, retain) UIColor *backgroundcolor;
-@property (nonatomic) UIEdgeInsets margins;
-@property (nonatomic) CGSize margintotal;
+@property (nonatomic, readonly) NSMutableArray *fonts;
+@property (nonatomic, readonly) NSMutableArray *colors;
+@property (nonatomic) CGFloat leading; /* extra space below each line (uniform across all styles) */
+@property (nonatomic) CGSize charbox; /* maximum size of a single rendered character (normal style) (including leading) */
+@property (nonatomic, strong) UIColor *backgroundcolor; /* background color for window */
+@property (nonatomic) UIEdgeInsets margins; /* margin widths around the text */
+@property (nonatomic) CGSize margintotal; /* width = left+right; height = top+bottom */
+@property NSArray<NSDictionary *> *gridattributes; /* array[style_NUMSTYLES] of attributes NSDictionary */
+@property NSArray<NSDictionary *> *bufferattributes; /* array[style_NUMSTYLES] of attributes NSDictionary */
+
 
 + (StyleSet *) buildForWindowType:(glui32)wintype rock:(glui32)rock;
 + (FontVariants) fontVariantsForSize:(CGFloat)size name:(NSString *)first, ...;

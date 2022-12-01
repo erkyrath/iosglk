@@ -6,10 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MoreBoxView : UIView {
-	UIView *frameview;
-}
+@interface MoreBoxView : UIView
 
-@property (nonatomic, retain) IBOutlet UIView *frameview;
+@property (nonatomic, weak) IBOutlet UIView *frameview;
 
 @end

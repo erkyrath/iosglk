@@ -58,7 +58,7 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 	This is invoked from both the VM and UI threads.
  */
 - (void) prepareStyles:(StyleSet *)styles forWindowType:(glui32)wintype rock:(glui32)rock {
-	CGFloat fontsize = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 14 : 16;
+	CGFloat fontsize = (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) ? 14 : 16;
 	
 	if (wintype == wintype_TextGrid) {
 		styles.margins = UIEdgeInsetsMake(4, 6, 4, 6);
@@ -86,12 +86,6 @@ DefaultGlkLibDelegate *_DefaultGlkLibDelegate_singleton = nil; // retained forev
 		styles.fonts[style_Note] = variants.italic;
 		
 	}
-}
-
-/* Return whether the app styles are set to a generally dark palette. The app uses this to decide some minor display details, like scroll bar tint.
- */
-- (BOOL) hasDarkTheme {
-	return NO;
 }
 
 /* Define the width/height of the blank space between windows.

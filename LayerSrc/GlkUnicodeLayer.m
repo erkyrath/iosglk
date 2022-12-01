@@ -98,7 +98,7 @@ unsigned char glk_char_to_upper(unsigned char ch)
 glui32 glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
-	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	NSMutableString *str = [[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 	CFStringLowercase((CFMutableStringRef)str, CFLocaleGetSystem());
 	
 	int ix;
@@ -115,7 +115,7 @@ glui32 glk_buffer_to_lower_case_uni(glui32 *buf, glui32 len,
 glui32 glk_buffer_to_upper_case_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
-	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	NSMutableString *str = [[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 	CFStringUppercase((CFMutableStringRef)str, CFLocaleGetSystem());
 	
 	int ix;
@@ -137,8 +137,8 @@ glui32 glk_buffer_to_title_case_uni(glui32 *buf, glui32 len,
 	if (numchars == 0)
 		return 0;
 		
-	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:1*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
-	NSMutableString *strtail = [[[NSMutableString alloc] initWithBytes:buf+1 length:(numchars-1)*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	NSMutableString *str = [[NSMutableString alloc] initWithBytes:buf length:1*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
+	NSMutableString *strtail = [[NSMutableString alloc] initWithBytes:buf+1 length:(numchars-1)*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 		
 	CFStringCapitalize((CFMutableStringRef)str, CFLocaleGetSystem());
 	if (lowerrest)
@@ -160,7 +160,7 @@ glui32 glk_buffer_to_title_case_uni(glui32 *buf, glui32 len,
 glui32 glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
-	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	NSMutableString *str = [[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 	CFStringNormalize((CFMutableStringRef)str, kCFStringNormalizationFormD);
 	
 	int ix;
@@ -177,7 +177,7 @@ glui32 glk_buffer_canon_decompose_uni(glui32 *buf, glui32 len,
 glui32 glk_buffer_canon_normalize_uni(glui32 *buf, glui32 len,
     glui32 numchars)
 {
-	NSMutableString *str = [[[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding] autorelease];
+	NSMutableString *str = [[NSMutableString alloc] initWithBytes:buf length:numchars*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 	CFStringNormalize((CFMutableStringRef)str, kCFStringNormalizationFormC);
 	
 	int ix;

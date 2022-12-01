@@ -7,27 +7,10 @@
 #import <UIKit/UIKit.h>
 #import "GlkWindowView.h"
 
-@class TextSelectView;
 @class GlkStyledLine;
 
-@interface GlkWinGridView : GlkWindowView {
-	NSMutableArray *lines; /* array of GlkStyledLine */
+@interface GlkWinGridView : GlkWindowView <UITextViewDelegate>
 
-	int selectvstart; /* index of the first selected line (or -1 if no selection) */
-	int selectvend; /* index of the last selected line + 1 */
-	CGRect selectionarea; /* only meaningful if a selection exists */
-	TextSelectView *selectionview;
-	
-	BOOL taptracking;
-	SelDragMode tapseldragging;
-	CGPoint taploc;
-	NSTimeInterval taplastat;
-	int tapnumber;
-}
-
-@property (nonatomic, retain) NSMutableArray *lines;
-@property (nonatomic, retain) TextSelectView *selectionview;
-
-- (GlkStyledLine *) lineAtPos:(CGFloat)ypos;
+@property (nonatomic, strong) UITextView *textview;
 
 @end

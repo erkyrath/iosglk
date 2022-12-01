@@ -20,92 +20,50 @@
 
 @implementation IosGlkAppDelegate
 
-@synthesize window;
-@synthesize rootviewc;
-@synthesize glkviewc;
-@synthesize library;
-@synthesize glkapp;
-
 static IosGlkAppDelegate *singleton = nil; /* retained forever */
-static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 
 + (IosGlkAppDelegate *) singleton {
 	return singleton;
 }
 
-+ (BOOL) oldstyleui {
-	return oldstyleui;
-}
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
-- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
-	//NSLog(@"AppDelegate finished launching");	
-	singleton = self;
-	
-	{
-		NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
-		
-		/* Test if we have the old (iOS6, gradient-and-gloss) interface style. */
-		NSString *reqSysVer = @"7.0";
-		oldstyleui = !([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
-	}
+    singleton = self;
 
-	// Add the view controller's view to the window and display. If we're not on iOS3, set the window's rootViewController too.
-	[self.window addSubview:rootviewc.view];
-	[self.window setRootViewController:rootviewc];
-	[self.window makeKeyAndVisible];
+    self.library = [[GlkLibrary alloc] init];
+    self.glkapp = [[GlkAppWrapper alloc] init];
 
-	/* In an interpreter app, glkviewc is different from rootviewc, which means that glkviewc might not have loaded its view. We must force this now, or the VM thread gets all confused and sad. We force the load by accessing glkviewc.view. */
-	[glkviewc view];
-	
-	self.library = [[[GlkLibrary alloc] init] autorelease];
-	self.glkapp = [[[GlkAppWrapper alloc] init] autorelease];
-	/* Set library.glkdelegate to a default value, if the glkviewc doesn't provide one. (Remember, from now on, that glkviewc.glkdelegate may be null!) */
-	if (glkviewc.glkdelegate)
-		library.glkdelegate = glkviewc.glkdelegate;
-	else
-		library.glkdelegate = [DefaultGlkLibDelegate singleton];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
-											 selector:@selector(keyboardWillBeShown:)
-												 name:UIKeyboardWillShowNotification object:nil];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:glkviewc
-											 selector:@selector(keyboardWillBeHidden:)
-												 name:UIKeyboardWillHideNotification object:nil];
-	
-	[glkviewc didFinishLaunching];
-	
-	CGRect box = glkviewc.frameview.bounds;
-	if (glkviewc.glkdelegate)
-		box = [glkviewc.glkdelegate adjustFrame:box];
-	[library setMetricsChanged:YES bounds:&box];
-
-	//NSLog(@"AppDelegate launching app thread");
-	
-	[glkapp launchAppThread];
 	return YES;
 }
 
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+
+    UISceneConfiguration *sceneConfig = connectingSceneSession.configuration;
+    // Find the user activity, if available, to create the scene configuration.
+    NSUserActivity *currentActivity = nil;
+    for (NSUserActivity *activity in options.userActivities) {
+        currentActivity = activity;
+    }
+    return sceneConfig;
+//    return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:UIWindowSceneSessionRoleApplication];
+}
 
 - (void) dealloc {
 	singleton = nil;
-	self.library = nil;
-	self.rootviewc = nil;
-	self.glkviewc = nil;
-	[window release];
-	[super dealloc];
 }
 
 /* A .glksave URL was passed to this application by another. The URL will be a file in Documents/Inbox. We should check whether it matches our game; if so, move it to the appropriate directory and return YES; if not, delete it and return NO.
  
  This is only called if the Info.plist file contains CFBundleDocumentTypes for the .glksave UTI. If the URL launched us, this will be called immediately after diFinishLaunching.
  */
-- (BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (BOOL) application:(UIApplication *)application openURL:(NSURL *)url
+             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
-	NSLog(@"applicationOpenURL: %@ (from %@)", url, sourceApplication);
+
+    NSLog(@"applicationOpenURL: %@ (from %@)", url,     options[UIApplicationOpenURLOptionsSourceApplicationKey]);
 	
 	// This function is iOS5+. The project is set to require iOS5.1.1, so that's fine, but be careful if you're back-porting.
-	if (![url isFileURL]) {
+	if (!url.fileURL) {
 		[self.glkviewc displayAdHocAlert:NSLocalizedString(@"openfile.not-file-url", nil) title:nil];
 		[[NSFileManager defaultManager] removeItemAtURL:url error:nil];
 		return NO;
@@ -114,7 +72,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	NSString *path = url.path;
 	
 	// Now we try to work out the type (UTI). This has to be done through the file extension, apparently. The UTType functions are C, so we need manual release.
-	CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)(path.pathExtension), NULL);
+	CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)(path.pathExtension), NULL);
 	BOOL issavefile = UTTypeConformsTo(uti, (CFStringRef)(@"com.eblong.glk.glksave"));
 	//NSLog(@"### ... dropped file path %@, type '%@' (issavefile %d)", path, uti, issavefile);
 	CFRelease(uti);
@@ -150,8 +108,8 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	}
 	
 	// Move the file into the appropriate subdirectory for fileusage_SavedGame. We'll need to give it the appropriate name -- dumbass-encoded and with no file extension.
-	NSString *filename = [path lastPathComponent];
-	NSString *barefilename = [filename stringByDeletingPathExtension];
+	NSString *filename = path.lastPathComponent;
+	NSString *barefilename = filename.stringByDeletingPathExtension;
 	if (barefilename.length == 0)
 		barefilename = @"Save file";
 	NSString *newfilename = StringToDumbEncoding(barefilename);
@@ -249,7 +207,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
  We should save, and also pause tasks and timers.
  */
 - (void) applicationWillResignActive:(UIApplication *)application {
-	[glkviewc becameInactive];
+    [_glkviewc becameInactive];
 	
 	/* I think maybe this happens automatically, but I'm not positive. Doesn't hurt to be sure. */
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -258,7 +216,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 /* User "quit" the application, either with the home button or the process-bar. We should release as much memory as possible.
  */
 - (void) applicationDidEnterBackground:(UIApplication *)application {
-	[glkviewc enteredBackground];
+    [_glkviewc enteredBackground];
 }
 
 /* User "launched" the application. This will be followed immediately by applicationDidBecomeActive.
@@ -269,7 +227,7 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 /* The application has returned to being active.
  */
 - (void) applicationDidBecomeActive:(UIApplication *)application {
-	[glkviewc becameActive];
+    [_glkviewc becameActive];
 }
 
 /* The application is being seriously shut down. (This is only called for OS3 and for old (third-gen) devices, where backgrounding doesn't exist.)
@@ -283,7 +241,5 @@ static BOOL oldstyleui = NO; /* true for everything *before* iOS7 */
 	 Free up as much memory as possible by purging cached data objects that can be recreated (or reloaded from disk) later.
 	 */
 }
-
-
 
 @end

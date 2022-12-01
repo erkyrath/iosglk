@@ -16,6 +16,7 @@
 #import "GlkWindowView.h"
 #import "GlkWinGridView.h"
 #import "GlkWinBufferView.h"
+#import "GlkWindowViewUIState.h"
 #import "CmdTextField.h"
 #import "PopMenuView.h"
 #import "InputMenuView.h"
@@ -30,39 +31,30 @@
 
 @implementation GlkFrameView
 
-@synthesize librarystate;
-@synthesize windowviews;
-@synthesize wingeometries;
-@synthesize rootwintag;
-@synthesize menuview;
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
-- (id) initWithCoder:(NSCoder *)decoder
+- (instancetype) initWithCoder:(NSCoder *)decoder
 {
 	self = [super initWithCoder:decoder];
 	if (self) {
 		self.windowviews = [NSMutableDictionary dictionaryWithCapacity:8];
 		self.wingeometries = [NSMutableDictionary dictionaryWithCapacity:8];
-		rootwintag = nil;
+		_rootwintag = nil;
 		
 		cachedGlkBox = CGRectNull;
 		cachedGlkBoxInvalid = YES;
 		
 		inputmenumode = inputmenu_Palette;
+        _waitingToRestoreFromState = YES;
 	}
 	return self;
 }
 
-- (void) dealloc {
-	self.librarystate = nil;
-	self.windowviews = nil;
-	self.wingeometries = nil;
-	self.rootwintag = nil;
-	self.menuview = nil;
-	[super dealloc];
-}
 
 - (GlkWindowView *) windowViewForTag:(NSNumber *)tag {
-	return [windowviews objectForKey:tag];
+	return _windowviews[tag];
 }
 
 /* Force all the windows to pick up new stylesets, and force all the windowviews to notice that fact.
@@ -71,8 +63,8 @@
  */
 - (void) updateWindowStyles {
 	[self setNeedsLayout];
-	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = [windowviews objectForKey:tag];
+	for (NSNumber *tag in _windowviews) {
+		GlkWindowView *winv = _windowviews[tag];
 		StyleSet *styleset = [StyleSet buildForWindowType:winv.winstate.type rock:winv.winstate.rock];
 		winv.winstate.styleset = styleset;
 		winv.styleset = styleset;
@@ -87,14 +79,17 @@
 }
 
 - (void) updateInputTraits {
-	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = [windowviews objectForKey:tag];
+	for (NSNumber *tag in _windowviews) {
+		GlkWindowView *winv = _windowviews[tag];
 		if (winv.inputfield)
 			[winv.inputfield adjustInputTraits];
 	}
 }
 
 - (void) layoutSubviews {
+    /* FIXME: If the player selects text while the keyboard is visible, this will hide the keyboard and
+    call this, which will issue an arrange event. If we are in a help menu and showing help text, this will
+     usually throw us back to the menu. The same thing happens if we change orientation while showing help text. */
 	CGRect keyboardbox = [IosGlkViewController singleton].keyboardbox;
 	
 	//NSLog(@"frameview layoutSubviews to %@ (keyboard %@)", StringFromRect(self.bounds), StringFromSize(keyboardbox.size));
@@ -120,24 +115,26 @@
 	if ((!cachedGlkBoxInvalid) && CGRectEqualToRect(cachedGlkBox, box)) {
 		return;
 	}
+
+    BOOL onlyHeightChanged = ([self hasStandardGlkSetup] && cachedGlkBox.size.width == box.size.width);
+
 	cachedGlkBox = box;
 	cachedGlkBoxInvalid = NO;
 
-	if (menuview && menuview.vertalign < 0)
+	if (_menuview && _menuview.vertalign < 0)
 		[self removePopMenuAnimated:YES];
 
-	if (rootwintag) {
+	if (_rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
 		//NSLog(@"### root window exists; layout performing windowViewRearrange, box %@", StringFromRect(box));
-		[UIView beginAnimations:@"windowViewRearrange" context:nil];
-		[UIView setAnimationDuration:0.0];
-		/* This calls setNeedsLayout for all windows. */
-		[self windowViewRearrange:rootwintag rect:box];
-		[UIView commitAnimations];
+        GlkFrameView __weak *weakSelf = self;
+        [UIView animateWithDuration:0.0 animations:^{ [weakSelf windowViewRearrange:weakSelf.rootwintag rect:box]; } ];
 	}
 	
 	/* Now tell the VM thread. */
-	[[GlkAppWrapper singleton] setFrameSize:box];
+
+    if (!onlyHeightChanged)
+        [[GlkAppWrapper singleton] setFrameSize:box];
 }
 
 /* Set all the window view sizes, based on their cached geometry information. Note that this does not touch the GlkLibrary structures at all -- that could be under modification by the VM thread.
@@ -145,8 +142,10 @@
 	Calls setNeedsLayout for any window which changes size.
 */
 - (void) windowViewRearrange:(NSNumber *)tag rect:(CGRect)box {
-	GlkWindowView *winv = [windowviews objectForKey:tag];
-	Geometry *geometry = [wingeometries objectForKey:tag];
+    if (isnan(box.origin.x) || isinf(box.origin.x))
+        return;
+	GlkWindowView *winv = _windowviews[tag];
+	Geometry *geometry = _wingeometries[tag];
 	
 	/* Exactly one of winv and geom should be set here. (geom for pair windows, winv for all others.) */
 	if (winv && geometry)
@@ -190,7 +189,6 @@
 /* This is invoked when the frameview is reloaded. (Although not at startup time, because that load is manual.) We request a special out-of-sequence state update, with the special flag that means "we have no idea what's dirty, just feed us the lot".
  */
 - (void) requestLibraryState:(GlkAppWrapper *)glkapp {
-	//NSLog(@"requestLibraryState");
 	[glkapp requestViewUpdate];
 }
 
@@ -210,25 +208,25 @@
 	// vmexited is cached in the viewc also.
 	
 	/* Build a list of windowviews which need to be closed. */
-	NSMutableDictionary *closed = [NSMutableDictionary dictionaryWithDictionary:windowviews];
+	NSMutableDictionary *closed = [NSMutableDictionary dictionaryWithDictionary:_windowviews];
 	for (GlkWindowState *win in library.windows) {
 		[closed removeObjectForKey:win.tag];
 	}
 
 	/* And close them. */
 	for (NSNumber *tag in closed) {
-		GlkWindowView *winv = [closed objectForKey:tag];
+		GlkWindowView *winv = closed[tag];
 		[winv removeFromSuperview];
 		winv.inputfield = nil; /* detach this now */
 		winv.inputholder = nil;
-		[windowviews removeObjectForKey:tag];
+		[_windowviews removeObjectForKey:tag];
 	}
 	
 	closed = nil;
 	
 	/* If there are any new windows, create windowviews for them. */
 	for (GlkWindowState *win in library.windows) {
-		if (win.type != wintype_Pair && ![windowviews objectForKey:win.tag]) {
+		if (win.type != wintype_Pair && !_windowviews[win.tag]) {
 			IosGlkViewController *glkviewc = [IosGlkViewController singleton];
 			UIEdgeInsets viewmargin = UIEdgeInsetsZero;
 			if (glkviewc.glkdelegate)
@@ -241,18 +239,18 @@
 					if (glkviewc.glkdelegate)
 						winv = [glkviewc.glkdelegate viewForBufferWindow:win frame:viewbox margin:viewmargin];
 					if (!winv)
-						winv = [[[GlkWinBufferView alloc] initWithWindow:win frame:viewbox margin:viewmargin] autorelease];
+						winv = [[GlkWinBufferView alloc] initWithWindow:win frame:viewbox margin:viewmargin];
 					break;
 				case wintype_TextGrid:
 					if (glkviewc.glkdelegate)
 						winv = [glkviewc.glkdelegate viewForGridWindow:win frame:viewbox margin:viewmargin];
 					if (!winv)
-						winv = [[[GlkWinGridView alloc] initWithWindow:win frame:viewbox margin:viewmargin] autorelease];
+						winv = [[GlkWinGridView alloc] initWithWindow:win frame:viewbox margin:viewmargin];
 					break;
 				default:
 					[NSException raise:@"GlkException" format:@"no windowview class for this window"];
 			}
-			[windowviews setObject:winv forKey:win.tag];
+			_windowviews[win.tag] = winv;
 			[self addSubview:winv];
 		}
 	}
@@ -261,23 +259,24 @@
 	if (library.geometrychanged || library.metricschanged) {
 		//NSLog(@"Recaching window geometries");
 		self.rootwintag = library.rootwintag;
-		[wingeometries removeAllObjects];
+		[_wingeometries removeAllObjects];
 		for (GlkWindowState *win in library.windows) {
 			if (win.type == wintype_Pair) {
 				GlkWindowPairState *pairwin = (GlkWindowPairState *)win;
-				[wingeometries setObject:pairwin.geometry forKey:win.tag];
+				_wingeometries[win.tag] = pairwin.geometry;
 			}
 		}
 	}
 	
-	if (rootwintag) {
+	if (_rootwintag) {
 		/* We perform all of the frame-size-changing in a zero-length animation. Yes, I tried using setAnimationsEnabled:NO to turn off the animations entirely. But that spiked the WinBufferView's scrollToBottom animation. Sorry -- it makes no sense to me either. */
 		//NSLog(@"### root window exists; update performing windowViewRearrange, cachedGlkBox %@ (valid %d)", StringFromRect(cachedGlkBox), cachedGlkBoxInvalid);
-		[UIView beginAnimations:@"windowViewRearrange" context:nil];
-		[UIView setAnimationDuration:0.0];
-		/* This calls setNeedsLayout for all windows. */
-		[self windowViewRearrange:rootwintag rect:cachedGlkBox];
-		[UIView commitAnimations];
+        GlkFrameView __weak *weakSelf = self;
+        [UIView animateWithDuration:0.0 animations:^{
+            GlkFrameView *strongSelf = weakSelf;
+            if (strongSelf)
+                [strongSelf windowViewRearrange:strongSelf.rootwintag rect:strongSelf->cachedGlkBox];
+        }];
 	}
 	
 	/*
@@ -291,43 +290,14 @@
 
 	/* Now go through all the window views, and tell them to update to match their windows. */
 	for (GlkWindowState *win in library.windows) {
-		GlkWindowView *winv = [windowviews objectForKey:win.tag];
+		GlkWindowView *winv = _windowviews[win.tag];
 		if (winv)
 			winv.winstate = win;
 	}
-	for (NSNumber *tag in windowviews) {
-		GlkWindowView *winv = [windowviews objectForKey:tag];
+	for (NSNumber *tag in _windowviews) {
+		GlkWindowView *winv = _windowviews[tag];
 		[winv updateFromWindowState];
 		[winv updateFromWindowInputs];
-	}
-	
-	/* Slightly awkward, but mostly right: if voiceover is on, speak the most recent buffer window update. */
-	if (UIAccessibilityIsVoiceOverRunning()) {
-		for (GlkWindowState *win in library.windows) {
-			if ([win isKindOfClass:[GlkWindowBufferState class]]) {
-				GlkWindowBufferState *bufwin = (GlkWindowBufferState *)win;
-				NSArray *lines = bufwin.lines;
-				if (lines && lines.count && bufwin.linesdirtyto > bufwin.linesdirtyfrom) {
-					int slinestart = ((GlkStyledLine *)[lines objectAtIndex:0]).index;
-					NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(1 + bufwin.linesdirtyto - bufwin.linesdirtyfrom)];
-					for (int ix=bufwin.linesdirtyfrom-slinestart; ix<bufwin.linesdirtyto-slinestart; ix++) {
-						if (ix < 0 || ix >= lines.count)
-							continue;
-						GlkStyledLine *vln = [lines objectAtIndex:ix];
-						NSString *str = vln.concatLine;
-						if (str.length)
-							[arr addObject:[GlkAccVisualLine lineForSpeaking:str]];
-					}
-					if (arr.count) {
-						NSString *speakbuffer = [arr componentsJoinedByString:@"\n"];
-						//NSLog(@"### speak: %@", speakbuffer);
-						UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, speakbuffer);
-						/* We only speak once per update. */
-						break;
-					}
-				}
-			}
-		}
 	}
 	
 	/* And now, if there's a special prompt going on, fill the screen with it. */
@@ -340,7 +310,7 @@
 	This is invoked in the main thread, by the VM thread, which is waiting on the result. We're safe from deadlock because the VM thread can't be in glk_select(); it can't be holding the iowait lock, and it can't get into the code path that rearranges the view structure.
 */
 - (void) editingTextForWindow:(GlkTagString *)tagstring {
-	GlkWindowView *winv = [windowviews objectForKey:tagstring.tag];
+	GlkWindowView *winv = _windowviews[tagstring.tag];
 	if (!winv)
 		return;
 	
@@ -356,62 +326,113 @@
 }
 
 - (void) postPopMenu:(PopMenuView *)menu {
-	if (menuview) {
+	if (_menuview) {
 		[self removePopMenuAnimated:YES];
 	}
 	
 	self.menuview = menu;
-	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:menuview options:nil];
+	[[NSBundle mainBundle] loadNibNamed:@"PopBoxView" owner:_menuview options:nil];
 	
 	NSString *decorname = menu.bottomDecorNib;
 	if (decorname) {
-		[[NSBundle mainBundle] loadNibNamed:decorname owner:menuview options:nil];
-		CGRect menubox = menuview.frameview.bounds;
-		CGRect decorbox = menuview.decor.bounds;
-		CGRect contentbox = menuview.content.frame;
+		[[NSBundle mainBundle] loadNibNamed:decorname owner:_menuview options:nil];
+		CGRect menubox = _menuview.frameview.bounds;
+		CGRect decorbox = _menuview.decor.bounds;
+		CGRect contentbox = _menuview.content.frame;
 		contentbox.size.height -= decorbox.size.height;
-		menuview.content.frame = contentbox;
+		_menuview.content.frame = contentbox;
 		decorbox.origin.y = menubox.origin.y + menubox.size.height - decorbox.size.height;
 		decorbox.origin.x = menubox.origin.x;
 		decorbox.size.width = menubox.size.width;
-		menuview.decor.frame = decorbox;
-		if (menuview.faderview)
-			[menuview.frameview insertSubview:menuview.decor belowSubview:menuview.faderview];
+		_menuview.decor.frame = decorbox;
+		if (_menuview.faderview)
+			[_menuview.frameview insertSubview:_menuview.decor belowSubview:_menuview.faderview];
 		else
-			[menuview.frameview addSubview:menuview.decor];
+			[_menuview.frameview addSubview:_menuview.decor];
 	}
 
-	menuview.framemargins = UIEdgeInsetsRectDiff(menuview.frameview.frame, menuview.content.frame);
-	[menuview loadContent];
+	_menuview.framemargins = UIEdgeInsetsRectDiff(_menuview.frameview.frame, _menuview.content.frame);
+	[_menuview loadContent];
 	
-	[menuview addSubview:menuview.frameview];
+	[_menuview addSubview:_menuview.frameview];
 	if (/* DISABLES CODE */ (true)) {
-		menuview.alpha = 0;
-		[self addSubview:menuview];
+		_menuview.alpha = 0;
+		[self addSubview:_menuview];
+        GlkFrameView __weak *weakSelf = self;
 		[UIView animateWithDuration:0.1 
-						 animations:^{ menuview.alpha = 1; } ];
+                         animations:^{ weakSelf.menuview.alpha = 1; } ];
 	}
 	else {
-		[self addSubview:menuview];
+		[self addSubview:_menuview];
 	}
 }
 
 - (void) removePopMenuAnimated:(BOOL)animated {
-	if (!menuview)
+	if (!_menuview)
 		return;
 	
-	[menuview willRemove];
+	[_menuview willRemove];
 	
 	if (animated) {
-		UIView *oldview = menuview;
+		UIView *oldview = _menuview;
 		[UIView animateWithDuration:0.25 
 						 animations:^{ oldview.alpha = 0; } 
 						 completion:^(BOOL finished) { [oldview removeFromSuperview]; } ];
 	}
 	else {
-		[menuview removeFromSuperview];
+		[_menuview removeFromSuperview];
 	}
 	self.menuview = nil;
+}
+
+- (NSDictionary *)getCurrentViewStates {
+    NSMutableDictionary *states = [[NSMutableDictionary alloc] initWithCapacity:_windowviews.count];
+    for (NSNumber *key in _windowviews.allKeys) {
+        states[key] = [GlkWindowViewUIState stateDictionaryFromWinView:_windowviews[key]];
+    }
+    return @{ @"GlkWindowViewStates" : states };
+}
+
+- (BOOL) updateWithUIStates:(NSDictionary *)states {
+    BOOL found = NO;
+    for (NSNumber *tag in states.allKeys) {
+        GlkWindowView *view = _windowviews[tag];
+        if (view) {
+            [view updateFromUIState:states[tag]];
+            found = YES;
+        } else {
+            NSLog(@"Could not find view with tag %@", tag);
+        }
+    }
+    if (!found) {
+        NSLog(@"Error! Missing window views");
+    } else {
+        _waitingToRestoreFromState = NO;
+    }
+    return found;
+}
+
+- (void) preserveScrollPositions {
+    for (GlkWindowView *view in _windowviews.allValues) {
+        if ([view isKindOfClass:[GlkWinBufferView class]]) {
+            [(GlkWinBufferView *)view preserveScrollPosition];
+        }
+    }
+}
+
+- (void) restoreScrollPositions {
+    _inOrientationAnimation = NO;
+    for (GlkWindowView *view in _windowviews.allValues) {
+        if ([view isKindOfClass:[GlkWinBufferView class]]) {
+            [(GlkWinBufferView *)view restoreScrollPosition];
+        }
+    }
+}
+
+// FIXME: This is supposed to check if we have the standard layout with a grid status bar plus buffer main window, but it doesn't really currently. Its main use is that if it is true, we do not send rearrange events to the VM thread when the keyboard is shown or hidden, as this breaks the help menu.
+- (BOOL) hasStandardGlkSetup {
+    NSArray *views = _windowviews.allValues;
+    return (views.count == 2 && ([views.firstObject isKindOfClass:[GlkWinBufferView class]] || [views.lastObject isKindOfClass:[GlkWinBufferView class]]));
 }
 
 @end

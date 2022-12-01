@@ -19,20 +19,20 @@
 	int horizalign; /* 1: to the right of the buttonrect; -1: to the left; 0: centered */
 }
 
-@property (nonatomic, retain) IBOutlet UIView *frameview;
-@property (nonatomic, retain) IBOutlet UIView *content;
-@property (nonatomic, retain) IBOutlet UIView *decor;
-@property (nonatomic, retain) IBOutlet UIView *faderview;
+@property (nonatomic, strong) IBOutlet UIView *frameview;
+@property (nonatomic, strong) IBOutlet UIView *content;
+@property (nonatomic, strong) IBOutlet UIView *decor;
+@property (nonatomic, strong) IBOutlet UIView *faderview;
 @property (nonatomic) UIEdgeInsets framemargins;
 @property (nonatomic, readonly) CGRect buttonrect;
 @property (nonatomic, readonly) int vertalign;
 @property (nonatomic, readonly) int horizalign;
 
-- (id) initWithFrame:(CGRect)frame centerInFrame:(CGRect)rect;
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below;
-- (id) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect vertAlign:(int)vertval horizAlign:(int)horval;
-- (GlkFrameView *) superviewAsFrameView;
-- (NSString *) bottomDecorNib;
+- (instancetype) initWithFrame:(CGRect)frame centerInFrame:(CGRect)rect;
+- (instancetype) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect belowButton:(BOOL)below;
+- (instancetype) initWithFrame:(CGRect)frame buttonFrame:(CGRect)rect vertAlign:(int)vertval horizAlign:(int)horval;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) GlkFrameView *superviewAsFrameView;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *bottomDecorNib;
 - (void) loadContent;
 - (void) resizeContentTo:(CGSize)size animated:(BOOL)animated;
 - (void) willRemove;

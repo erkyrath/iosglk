@@ -22,15 +22,14 @@
 	NSDateFormatter *dateformatter;
 }
 
-@property (nonatomic, retain) IBOutlet UITableView *tableView;
-@property (nonatomic, retain) IBOutlet UITextField *textfield;
-@property (nonatomic, retain) IBOutlet UIButton *savebutton;
-@property (nonatomic, retain) GlkFileRefPrompt *prompt;
-@property (nonatomic, retain) NSString *usekey;
-@property (nonatomic, retain) NSMutableArray *filelist;
-@property (nonatomic, retain) NSDateFormatter *dateformatter;
+@property (nonatomic, strong) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) IBOutlet UITextField *textfield;
+@property (nonatomic, strong) IBOutlet UIButton *savebutton;
+@property (nonatomic, strong) GlkFileRefPrompt *prompt;
+@property (nonatomic, strong) NSString *usekey;
+@property (nonatomic, strong) NSMutableArray *filelist;
+@property (nonatomic, strong) NSDateFormatter *dateformatter;
 
-- (id) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)prompt bundle:(NSBundle *)nibBundle;
 - (void) addBlankThumb;
 - (IBAction) buttonCancel:(id)sender;
 - (IBAction) buttonSave:(id)sender;

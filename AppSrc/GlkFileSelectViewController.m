@@ -25,23 +25,16 @@
 @synthesize filelist;
 @synthesize dateformatter;
 
-- (id) initWithNibName:(NSString *)nibName prompt:(GlkFileRefPrompt *)promptref bundle:(NSBundle *)nibBundle {
-	self = [super initWithNibName:nibName bundle:nibBundle];
-	if (self) {
-		self.prompt = promptref;
-		self.filelist = [NSMutableArray arrayWithCapacity:16];
-		self.dateformatter = [[[RelDateFormatter alloc] init] autorelease];
-		[dateformatter setDateStyle:NSDateFormatterMediumStyle];
-		[dateformatter setTimeStyle:NSDateFormatterShortStyle];
-		
-		self.usekey = [GlkFileThumb labelForFileUsage:(prompt.usage & fileusage_TypeMask) localize:nil];
-	}
-	return self;
-}
-
 - (void) viewDidLoad {
 	[super viewDidLoad];
-	
+
+    self.filelist = [NSMutableArray arrayWithCapacity:16];
+    self.dateformatter = [[RelDateFormatter alloc] init];
+    dateformatter.dateStyle = NSDateFormatterMediumStyle;
+    dateformatter.timeStyle = NSDateFormatterShortStyle;
+
+    self.usekey = [GlkFileThumb labelForFileUsage:(prompt.usage & fileusage_TypeMask) localize:nil];
+
 	isload = (prompt.fmode == filemode_Read);
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -78,17 +71,17 @@
 		self.navigationItem.title = NSLocalizedString([usekey stringByAppendingString:@".writetitle"], nil);
 		textfield.placeholder = placeholder;
 		CGRect rect = CGRectMake(0, 0, tableView.frame.size.width, 32);
-		UILabel *label = [[[UILabel alloc] initWithFrame:rect] autorelease];
+		UILabel *label = [[UILabel alloc] initWithFrame:rect];
 		label.text = NSLocalizedString([usekey stringByAppendingString:@".listlabel"], nil);
 		label.textAlignment = NSTextAlignmentCenter;
 		label.textColor = [UIColor lightGrayColor];
 		tableView.tableHeaderView = label;
 	}
 	
-	UIBarButtonItem *cancelbutton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(buttonCancel:)] autorelease];
+	UIBarButtonItem *cancelbutton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(buttonCancel:)];
 	
 	self.navigationItem.leftBarButtonItem = cancelbutton;
-	self.navigationItem.rightBarButtonItem = [self editButtonItem];
+	self.navigationItem.rightBarButtonItem = self.editButtonItem;
 	
 	[filelist removeAllObjects];
 	NSArray *ls = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:prompt.dirname error:nil];
@@ -106,7 +99,7 @@
 			if (!label)
 				label = filename;
 			
-			GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
+			GlkFileThumb *thumb = [[GlkFileThumb alloc] init];
 			thumb.filename = filename;
 			thumb.pathname = pathname;
 			thumb.usage = (prompt.usage & fileusage_TypeMask);
@@ -130,18 +123,15 @@
 	}
 }
 
-- (void) dealloc {
-	self.prompt = nil;
-	self.usekey = nil;
-	self.filelist = nil;
-	self.dateformatter = nil;
-	self.savebutton = nil;
-	self.textfield = nil;
-	[super dealloc];
+- (void) viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([GlkAppWrapper singleton].acceptingEventFileSelect)
+        [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 }
 
+
 - (void) addBlankThumb {
-	GlkFileThumb *thumb = [[[GlkFileThumb alloc] init] autorelease];
+	GlkFileThumb *thumb = [[GlkFileThumb alloc] init];
 	thumb.isfake = YES;
 	thumb.modtime = [NSDate date];
 	thumb.label = NSLocalizedString([usekey stringByAppendingString:@".nofiles"], nil);
@@ -149,9 +139,9 @@
 }
 
 - (void) keyboardWillBeShown:(NSNotification*)notification {
-	NSDictionary *info = [notification userInfo];
+	NSDictionary *info = notification.userInfo;
 	CGFloat diff = 0;
-	CGRect rect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+	CGRect rect = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
 	rect = [self.tableView convertRect:rect fromView:nil];
 	/* The rect is the keyboard size in view coordinates (properly rotated). */
 	CGRect tablerect = self.tableView.bounds;
@@ -170,17 +160,13 @@
 }
 
 - (IBAction) buttonCancel:(id)sender {
+    [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 	[self dismissViewControllerAnimated:YES completion:nil];
-	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 }
 
 - (IBAction) buttonSave:(id)sender {
 	if (self.textfield)
 		[self performSelector:@selector(textFieldContinueReturn:) withObject:self.textfield afterDelay:0.0];
-}
-
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation {
-	return [[IosGlkViewController singleton] shouldAutorotateToInterfaceOrientation:orientation];
 }
 
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated {
@@ -199,7 +185,7 @@
 	
 	int row = indexPath.row;
 	if (row >= 0 && row < filelist.count)
-		thumb = [filelist objectAtIndex:row];
+		thumb = filelist[row];
 		
 	return (thumb && !thumb.isfake);
 }
@@ -210,22 +196,22 @@
 	// This is boilerplate and I haven't touched it.
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 	if (cell == nil) {
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
 	}
 	
 	GlkFileThumb *thumb = nil;
 	
 	int row = indexPath.row;
 	if (row >= 0 && row < filelist.count)
-		thumb = [filelist objectAtIndex:row];
+		thumb = filelist[row];
 		
 	/* Make the cell look right... */
 	
 	if (!thumb) {
 		// shouldn't happen
 		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-		cell.textLabel.text = @"(null)";
-		cell.textLabel.textColor = [UIColor blackColor];
+		cell.textLabel.text = NSLocalizedString(@"(null)", nil);
+		cell.textLabel.textColor = [UIColor colorNamed:@"CustomText"];
 		cell.detailTextLabel.text = @"?";
 	}
 	else if (thumb.isfake) {
@@ -237,7 +223,7 @@
 	else {
 		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		cell.textLabel.text = thumb.label;
-		cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.textColor = [UIColor colorNamed:@"CustomText"];
 		cell.detailTextLabel.text = [dateformatter stringFromDate:thumb.modtime];
 	}
 
@@ -249,16 +235,16 @@
 		GlkFileThumb *thumb = nil;
 		int row = indexPath.row;
 		if (row >= 0 && row < filelist.count)
-			thumb = [filelist objectAtIndex:row];
+			thumb = filelist[row];
 		if (thumb && !thumb.isfake) {
-			GlkFileThumb *thumb = [filelist objectAtIndex:row];
+			GlkFileThumb *thumb = filelist[row];
 			BOOL res = [[NSFileManager defaultManager] removeItemAtPath:thumb.pathname error:nil];
 			if (res) {
 				[filelist removeObjectAtIndex:row];
-				[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+				[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
 				if (filelist.count == 0) {
 					[self addBlankThumb];
-					[tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+					[tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
 				}
 			}
 		}
@@ -271,7 +257,7 @@
 	GlkFileThumb *thumb = nil;
 	int row = indexPath.row;
 	if (row >= 0 && row < filelist.count)
-		thumb = [filelist objectAtIndex:row];
+		thumb = filelist[row];
 	if (!thumb)
 		return;
 	if (thumb.isfake)
@@ -285,8 +271,8 @@
 		/* The user has selected a file. */
 		prompt.filename = thumb.filename;
 		prompt.pathname = thumb.pathname;
+        [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 		[self dismissViewControllerAnimated:YES completion:nil];
-		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 	}
 }
 
@@ -305,7 +291,7 @@
 }
 
 - (void) textFieldContinueReturn:(UITextField *)textField {
-	if (![[GlkAppWrapper singleton] acceptingEventFileSelect]) {
+	if (![GlkAppWrapper singleton].acceptingEventFileSelect) {
 		/* A filename must already have been accepted. */
 		return;
 	}
@@ -324,27 +310,32 @@
 	
 	if (prompt.fmode != filemode_WriteAppend && [[NSFileManager defaultManager] fileExistsAtPath:prompt.pathname]) {
 		NSString *str = [NSString stringWithFormat:NSLocalizedString([usekey stringByAppendingString:@".replacequery"], nil), label];
-		UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:str delegate:self cancelButtonTitle:NSLocalizedString(@"button.cancel", nil) destructiveButtonTitle:NSLocalizedString(@"button.replace", nil) otherButtonTitles:nil] autorelease];
-		[sheet showInView:textfield];
+
+        UIAlertController *sheet = [UIAlertController alertControllerWithTitle:str message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+        [sheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}]];
+
+        GlkFileSelectViewController __weak *weakSelf = self;
+        [sheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"button.replace", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+            // Destructive button tapped.
+            [self dismissViewControllerAnimated:YES completion:^{}];
+            [[GlkAppWrapper singleton] acceptEventFileSelect:weakSelf.prompt];
+        }]];
+
+        UIPopoverPresentationController *popoverController = sheet.popoverPresentationController;
+        if (popoverController) {
+            popoverController.sourceView = self.view;
+            popoverController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds), 0, 0);
+            popoverController.permittedArrowDirections = 0;
+        }
+
+        // Present action sheet.
+        [self presentViewController:sheet animated:YES completion:nil];
 		return;
 	}
-	
+
+    [[GlkAppWrapper singleton] acceptEventFileSelect:prompt];
 	[self dismissViewControllerAnimated:YES completion:nil];
-	[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
-}
-
-- (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 0) {
-		[self dismissViewControllerAnimated:YES completion:nil];
-		[[GlkAppWrapper singleton] acceptEventFileSelect:prompt];	
-	}
-}
-
-- (void) didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-	[super didReceiveMemoryWarning];
-
-	// Release any cached data, images, etc. that aren't in use.
 }
 
 @end

@@ -30,7 +30,11 @@
 @synthesize child1tag;
 @synthesize child2tag;
 
-- (id) init {
++ (BOOL)supportsSecureCoding {
+    return YES;
+}
+
+- (instancetype) init {
 	self = [super init];
 	
 	if (self) {
@@ -43,28 +47,23 @@
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
-	self.dir = [decoder decodeInt32ForKey:@"dir"]; // use setter to set vertical and backward too
-	division = [decoder decodeInt32ForKey:@"division"];
-	hasborder = [decoder decodeBoolForKey:@"hasborder"];
-				 
-	self.keytag = [decoder decodeObjectForKey:@"keytag"];
-	// self.keystyleset will have to be filled in later, once all the windows are loaded
-
-	size = [decoder decodeInt32ForKey:@"size"];
-	self.child1tag = [decoder decodeObjectForKey:@"child1tag"];
-	self.child2tag = [decoder decodeObjectForKey:@"child2tag"];
-	
+- (instancetype) initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (self) {
+        self.dir = [decoder decodeInt32ForKey:@"dir"]; // use setter to set vertical and backward too
+        division = [decoder decodeInt32ForKey:@"division"];
+        hasborder = [decoder decodeBoolForKey:@"hasborder"];
+        
+        self.keytag = [decoder decodeObjectForKey:@"keytag"];
+        // self.keystyleset will have to be filled in later, once all the windows are loaded
+        
+        size = [decoder decodeInt32ForKey:@"size"];
+        self.child1tag = [decoder decodeObjectForKey:@"child1tag"];
+        self.child2tag = [decoder decodeObjectForKey:@"child2tag"];
+    }
 	return self;
 }
 
-- (void) dealloc {
-	self.keytag = nil;
-	self.keystyleset = nil;
-	self.child1tag = nil;
-	self.child2tag = nil;
-	[super dealloc];
-}
 
 /* Standard copy method. Returns a retained object which is a (shallow) copy. */
 - (id) copyWithZone:(NSZone *)zone {

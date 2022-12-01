@@ -12,7 +12,7 @@
 @synthesize selectimage;
 @synthesize selectview;
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
@@ -32,11 +32,6 @@
 	return self;
 }
 
-- (void) dealloc {
-	self.selectimage = nil;
-	self.selectview = nil;
-	[super dealloc];
-}
 
 - (void) setSelectImage:(UIImage *)img {
 	if (img == selectimage)
@@ -61,7 +56,7 @@
 	rect.origin.y = floorf(0.5 * (selfbounds.size.height - rect.size.height));
 	rect.origin.x = selfbounds.size.width - rect.size.width - margin;
 	
-	self.selectview = [[[UIImageView alloc] initWithImage:img] autorelease];
+	self.selectview = [[UIImageView alloc] initWithImage:img];
 	selectview.frame = rect;
 	selectview.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
 	selectview.hidden = !self.selected;
@@ -69,7 +64,7 @@
 }
 
 - (void) setSelected:(BOOL)val {
-	[super setSelected:val];
+	super.selected = val;
 	
 	if (selectimage) {
 		selectview.hidden = !val;

@@ -10,18 +10,31 @@
 @class StyledTextView;
 @class MoreBoxView;
 
-@interface GlkWinBufferView : GlkWindowView <UIScrollViewDelegate> {
-	StyledTextView *textview;
-	MoreBoxView *moreview;
-	
+@interface GlkWinBufferView : GlkWindowView <UIScrollViewDelegate, UITextViewDelegate> {
 	CGRect lastLayoutBounds;
-	BOOL nowcontentscrolling;
+    NSLayoutConstraint *textviewHeightConstraint;
+    BOOL firstUpdate;
+    NSUInteger recursionDepth;
+    BOOL storedAtBottom;
+    BOOL storedAtTop;
+    NSUInteger lastVisibleGlyph;
+    BOOL inAnimatedScrollToBottom;
+    CGFloat expectedYAfterPageDown;
 }
 
-@property (nonatomic, retain) StyledTextView *textview;
-@property (nonatomic, retain) MoreBoxView *moreview;
+@property (nonatomic, strong) UITextView *textview;
+@property (nonatomic, strong) MoreBoxView *moreview;
 @property (nonatomic) BOOL nowcontentscrolling;
+@property (nonatomic) NSUInteger clearcount;
+@property (nonatomic) NSUInteger lastSeenCharacterIndex;
 
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL pageDownOnInput;
+
++ (void)speakString:(NSString *)string;
+- (BOOL) scrolledToBottom;
+- (void) scrollTextViewToBottomAnimate:(BOOL)animate;
+- (void) preserveScrollPosition;
+- (void) restoreScrollPosition;
 - (BOOL) pageDownOnInput;
 
 @end

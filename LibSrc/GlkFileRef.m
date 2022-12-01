@@ -27,17 +27,21 @@
 @synthesize rock;
 @synthesize textmode;
 
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
 /* Find the user's Documents directory. 
  */
 + (NSString *) documentsDirectory {
 	/* We use an old-fashioned way of locating the Documents directory. (The NSFileManager method for this is iOS 4.0 and later.) */
 	
 	NSArray *dirlist = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	if (!dirlist || [dirlist count] == 0) {
+	if (!dirlist || dirlist.count == 0) {
 		[GlkLibrary strictWarning:@"unable to locate Documents directory."];
 		return nil;
 	}
-	return [dirlist objectAtIndex:0];
+	return dirlist[0];
 }
 
 /* Convert paths in the bundle or Documents directory to use the token $APP or $DOC instead of the literal pathname. This is necessary for serialization. (I think in iOS8 these directories are randomized on every run.)
@@ -112,14 +116,14 @@
 }
 
 
-- (id) initWithBase:(NSString *)basedirval filename:(NSString *)filenameval type:(glui32)usage rock:(glui32)frefrock {
+- (instancetype) initWithBase:(NSString *)basedirval filename:(NSString *)filenameval type:(glui32)usage rock:(glui32)frefrock {
 	self = [super init];
 	
 	if (self) {
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
-		self.tag = [library generateTag];
+		self.tag = library.generateTag;
 		rock = frefrock;
 		
 		textmode = ((usage & fileusage_TextMode) != 0);
@@ -134,27 +138,29 @@
 		[library.filerefs addObject:self];
 		
 		if (library.dispatch_register_obj)
-			disprock = (*library.dispatch_register_obj)(self, gidisp_Class_Fileref);
+			disprock = (*library.dispatch_register_obj)((__bridge void *)(self), gidisp_Class_Fileref);
 	}
 	
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
-	self.tag = [decoder decodeObjectForKey:@"tag"];
-	inlibrary = YES;
-	// self.library will be set later
-
-	rock = [decoder decodeInt32ForKey:@"rock"];
-	// disprock is handled by the app
-	
-	self.filename = [decoder decodeObjectForKey:@"filename"];
-	self.basedir = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"basedir"]];
-	self.dirname = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"dirname"]];
-	self.pathname = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"pathname"]];
-	filetype = [decoder decodeInt32ForKey:@"filetype"];
-	textmode = [decoder decodeBoolForKey:@"textmode"];
-	
+- (instancetype) initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (self) {
+        self.tag = [decoder decodeObjectForKey:@"tag"];
+        inlibrary = YES;
+        // self.library will be set later
+        
+        rock = [decoder decodeInt32ForKey:@"rock"];
+        // disprock is handled by the app
+        
+        self.filename = [decoder decodeObjectForKey:@"filename"];
+        self.basedir = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"basedir"]];
+        self.dirname = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"dirname"]];
+        self.pathname = [GlkFileRef unrelativizePath:[decoder decodeObjectForKey:@"pathname"]];
+        filetype = [decoder decodeInt32ForKey:@"filetype"];
+        textmode = [decoder decodeBoolForKey:@"textmode"];
+    }
 	return self;
 }
 
@@ -163,17 +169,10 @@
 		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc while in library"];
 	if (!pathname)
 		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc with pathname unset"];
-	self.pathname = nil;
-	self.basedir = nil;
-	self.dirname = nil;
-	self.filename = nil;
 	if (!tag)
 		[NSException raise:@"GlkException" format:@"GlkFileRef reached dealloc with tag unset"];
-	self.tag = nil;
 	
-	self.library = nil;
 
-	[super dealloc];
 }
 
 - (NSString *) description {
@@ -196,11 +195,8 @@
 }
 
 - (void) filerefDelete {
-	/* We don't want this object to evaporate in the middle of this method. */
-	[[self retain] autorelease];
-	
 	if (library.dispatch_unregister_obj)
-		(*library.dispatch_unregister_obj)(self, gidisp_Class_Fileref, disprock);
+		(*library.dispatch_unregister_obj)((__bridge void *)(self), gidisp_Class_Fileref, disprock);
 		
 	if (![library.filerefs containsObject:self])
 		[NSException raise:@"GlkException" format:@"GlkFileRef was not in library filerefs list"];

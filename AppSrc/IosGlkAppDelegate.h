@@ -10,26 +10,15 @@
 @class GlkLibrary;
 @class GlkAppWrapper;
 
-@interface IosGlkAppDelegate : NSObject <UIApplicationDelegate> {
-	UIWindow *window;
-	
-	/* These could refer to the same IosGlkViewController, or rootviewc could be a UINavigationController. Up to the application. TheMainWindow nib determines the layout. */
-	UIViewController *rootviewc;
-	IosGlkViewController *glkviewc;
-	
-	GlkLibrary *library;
-	GlkAppWrapper *glkapp;
-}
+@interface IosGlkAppDelegate : NSObject <UIApplicationDelegate>
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet UIViewController *rootviewc;
-@property (nonatomic, retain) IBOutlet IosGlkViewController *glkviewc;
+@property (nonatomic, strong) IosGlkViewController *glkviewc;
 
-@property (nonatomic, retain) GlkLibrary *library;
-@property (nonatomic, retain) GlkAppWrapper *glkapp;
+/* These could refer to the same IosGlkViewController, or rootviewc could be a UINavigationController. Up to the application. TheMainWindow nib determines the layout. */
+@property (nonatomic, strong) GlkLibrary *library;
+@property (nonatomic, strong) GlkAppWrapper *glkapp;
 
 + (IosGlkAppDelegate *) singleton;
-+ (BOOL) oldstyleui;
 
 @end
 

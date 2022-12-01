@@ -24,27 +24,9 @@
 @implementation GlkWindow
 /* GlkWindow: the base class. */
 
-@synthesize library;
-@synthesize tag;
-@synthesize disprock;
-@synthesize type;
-@synthesize rock;
-@synthesize parent;
-@synthesize parenttag;
-@synthesize line_request_initial;
-@synthesize input_request_id;
-@synthesize char_request;
-@synthesize line_request;
-@synthesize echo_line_input;
-@synthesize style;
-@synthesize stream;
-@synthesize streamtag;
-@synthesize echostream;
-@synthesize echostreamtag;
-@synthesize styleset;
-@synthesize bbox;
-
-NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
 /* Create a window with a given type. (But not Pair windows -- those use a different path.) This is invoked by glk_window_open().
 */
@@ -52,11 +34,11 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	GlkWindow *win;
 	switch (type) {
 		case wintype_TextBuffer:
-			win = [[[GlkWindowBuffer alloc] initWithType:type rock:rock] autorelease];
+			win = [[GlkWindowBuffer alloc] initWithType:type rock:rock];
 			win.styleset = [StyleSet buildForWindowType:type rock:rock];
 			break;
 		case wintype_TextGrid:
-			win = [[[GlkWindowGrid alloc] initWithType:type rock:rock] autorelease];
+			win = [[GlkWindowGrid alloc] initWithType:type rock:rock];
 			win.styleset = [StyleSet buildForWindowType:type rock:rock];
 			break;
 		case wintype_Pair:
@@ -73,127 +55,119 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 /* GlkWindow designated initializer. */
-- (id) initWithType:(glui32)wintype rock:(glui32)winrock {
+- (instancetype) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super init];
-	
-	if (!_GlkWindow_newlineCharSet) {
-		/* We need this for breaking up printing strings, so we set it up at init time. I think this shows up as a memory leak in Apple's tools -- sorry about that. */
-		_GlkWindow_newlineCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"\n"] retain];
-	}
 	
 	if (self) {
 		self.library = [GlkLibrary singleton];
 		inlibrary = YES;
 		
-		self.tag = [library generateTag];
-		type = wintype;
-		rock = winrock;
+		self.tag = _library.generateTag;
+		_type = wintype;
+		_rock = winrock;
 		
 		self.parent = nil;
 		self.parenttag = nil;
-		input_request_id = 0;
-		line_request_initial = nil;
+		_input_request_id = 0;
+		_line_request_initial = nil;
 		line_buffer = nil;
-		char_request = NO;
-		line_request = NO;
+		_char_request = NO;
+		_line_request = NO;
 		char_request_uni = NO;
 		line_request_uni = NO;
-		echo_line_input = YES;
+		_echo_line_input = YES;
 		pending_echo_line_input = NO;
 		//terminate_line_input = 0;
-		style = style_Normal;
+		_style = style_Normal;
 		
-		self.stream = [[[GlkStreamWindow alloc] initWithWindow:self] autorelease];
+		self.stream = [[GlkStreamWindow alloc] initWithWindow:self];
 		self.streamtag = self.stream.tag;
 		self.echostream = nil;
 		self.echostreamtag = nil;
 		
 		self.styleset = nil;
-		[library.windows addObject:self];
+		[_library.windows addObject:self];
 		
-		if (library.dispatch_register_obj)
-			disprock = (*library.dispatch_register_obj)(self, gidisp_Class_Window);
+		if (_library.dispatch_register_obj)
+			_disprock = (*_library.dispatch_register_obj)((__bridge void *)(self), gidisp_Class_Window);
 	}
 	
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
-	if (!_GlkWindow_newlineCharSet) {
-		/* We need this for breaking up printing strings, so we set it up at init time. I think this shows up as a memory leak in Apple's tools -- sorry about that. */
-		_GlkWindow_newlineCharSet = [[NSCharacterSet characterSetWithCharactersInString:@"\n"] retain];
-	}
-	
-	self.tag = [decoder decodeObjectForKey:@"tag"];
-	inlibrary = YES;
-	// self.library will be set later
-	
-	type = [decoder decodeInt32ForKey:@"type"];
-	rock = [decoder decodeInt32ForKey:@"rock"];
-	// disprock is handled by the app
+- (instancetype) initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (self) {
+        self.tag = [decoder decodeObjectForKey:@"tag"];
+        inlibrary = YES;
+        // self.library will be set later
 
-	self.parenttag = [decoder decodeObjectForKey:@"parenttag"];
-	// parent will be set later
-	
-	input_request_id = [decoder decodeIntForKey:@"input_request_id"];
-	
-	char_request = [decoder decodeBoolForKey:@"char_request"];
-	line_request = [decoder decodeBoolForKey:@"line_request"];
-	char_request_uni = [decoder decodeBoolForKey:@"char_request_uni"];
-	line_request_uni = [decoder decodeBoolForKey:@"line_request_uni"];
+        _type = [decoder decodeInt32ForKey:@"type"];
+        _rock = [decoder decodeInt32ForKey:@"rock"];
+        // disprock is handled by the app
 
-	line_buffer_length = [decoder decodeInt32ForKey:@"line_buffer_length"];
-	if (line_buffer_length) {
-		// the decoded "line_buffer" values are originally Glulx addresses (glui32), so stuffing them into a long is safe.
-		if (!line_request_uni) {
-			tempbufkey = (long)[decoder decodeInt64ForKey:@"line_buffer"];
-			uint8_t *rawdata;
-			NSUInteger rawdatalen;
-			rawdata = (uint8_t *)[decoder decodeBytesForKey:@"line_buffer_data" returnedLength:&rawdatalen];
-			if (rawdata && rawdatalen) {
-				tempbufdatalen = rawdatalen;
-				tempbufdata = malloc(rawdatalen);
-				memcpy(tempbufdata, rawdata, rawdatalen);
-			}
-		}
-		else {
-			tempbufkey = (long)[decoder decodeInt64ForKey:@"line_buffer"];
-			uint8_t *rawdata;
-			NSUInteger rawdatalen;
-			rawdata = (uint8_t *)[decoder decodeBytesForKey:@"line_buffer_data" returnedLength:&rawdatalen];
-			if (rawdata && rawdatalen) {
-				tempbufdatalen = rawdatalen;
-				tempbufdata = malloc(rawdatalen);
-				memcpy(tempbufdata, rawdata, rawdatalen);
-			}
-		}
-	}
-	
-	self.line_request_initial = [decoder decodeObjectForKey:@"line_request_initial"];
-	pending_echo_line_input = [decoder decodeBoolForKey:@"pending_echo_line_input"];
-	echo_line_input = [decoder decodeBoolForKey:@"echo_line_input"];
-	style = [decoder decodeInt32ForKey:@"style"];
+        self.parenttag = [decoder decodeObjectForKey:@"parenttag"];
+        // parent will be set later
 
-	self.streamtag = [decoder decodeObjectForKey:@"streamtag"];
-	// streamtag will be set later
-	self.echostreamtag = [decoder decodeObjectForKey:@"echostreamtag"];
-	// echostreamtag will be set later
+        _input_request_id = [decoder decodeIntForKey:@"input_request_id"];
 
-	bbox = [decoder decodeCGRectForKey:@"bbox"];
-	// styleset is not deserialized.
+        _char_request = [decoder decodeBoolForKey:@"char_request"];
+        _line_request = [decoder decodeBoolForKey:@"line_request"];
+        char_request_uni = [decoder decodeBoolForKey:@"char_request_uni"];
+        line_request_uni = [decoder decodeBoolForKey:@"line_request_uni"];
 
+        line_buffer_length = [decoder decodeInt32ForKey:@"line_buffer_length"];
+        if (line_buffer_length) {
+            // the decoded "line_buffer" values are originally Glulx addresses (glui32), so stuffing them into a long is safe.
+            if (!line_request_uni) {
+                tempbufkey = (long)[decoder decodeInt64ForKey:@"line_buffer"];
+                uint8_t *rawdata;
+                NSUInteger rawdatalen;
+                rawdata = (uint8_t *)[decoder decodeBytesForKey:@"line_buffer_data" returnedLength:&rawdatalen];
+                if (rawdata && rawdatalen) {
+                    tempbufdatalen = rawdatalen;
+                    tempbufdata = malloc(rawdatalen);
+                    memcpy(tempbufdata, rawdata, rawdatalen);
+                }
+            }
+            else {
+                tempbufkey = (long)[decoder decodeInt64ForKey:@"line_buffer"];
+                uint8_t *rawdata;
+                NSUInteger rawdatalen;
+                rawdata = (uint8_t *)[decoder decodeBytesForKey:@"line_buffer_data" returnedLength:&rawdatalen];
+                if (rawdata && rawdatalen) {
+                    tempbufdatalen = rawdatalen;
+                    tempbufdata = malloc(rawdatalen);
+                    memcpy(tempbufdata, rawdata, rawdatalen);
+                }
+            }
+        }
+
+        self.line_request_initial = [decoder decodeObjectForKey:@"line_request_initial"];
+        pending_echo_line_input = [decoder decodeBoolForKey:@"pending_echo_line_input"];
+        _echo_line_input = [decoder decodeBoolForKey:@"echo_line_input"];
+        _style = [decoder decodeInt32ForKey:@"style"];
+
+        self.streamtag = [decoder decodeObjectForKey:@"streamtag"];
+        // streamtag will be set later
+        self.echostreamtag = [decoder decodeObjectForKey:@"echostreamtag"];
+        // echostreamtag will be set later
+
+        _bbox = [decoder decodeCGRectForKey:@"bbox"];
+        // styleset is not deserialized.
+    }
 	return self;
 }
 
 - (void) updateRegisterArray {
-	if (!library.dispatch_restore_arr)
+	if (!_library.dispatch_restore_arr)
 		return;
 	if (!line_buffer_length)
 		return;
 	
 	if (!line_request_uni) {
 		void *voidbuf = nil;
-		inarrayrock = (*library.dispatch_restore_arr)(tempbufkey, line_buffer_length, "&+#!Cn", &voidbuf);
+		inarrayrock = (*_library.dispatch_restore_arr)(tempbufkey, line_buffer_length, "&+#!Cn", &voidbuf);
 		if (voidbuf) {
 			line_buffer = voidbuf;
 			if (tempbufdata) {
@@ -207,7 +181,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	}
 	else {
 		void *voidbuf = nil;
-		inarrayrock = (*library.dispatch_restore_arr)(tempbufkey, line_buffer_length, "&+#!Iu", &voidbuf);
+		inarrayrock = (*_library.dispatch_restore_arr)(tempbufkey, line_buffer_length, "&+#!Iu", &voidbuf);
 		if (voidbuf) {
 			line_buffer = voidbuf;
 			if (tempbufdata) {
@@ -224,50 +198,35 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 - (void) dealloc {
 	if (inlibrary)
 		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc while in library"];
-	if (!type)
+	if (!_type)
 		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc with type unset"];
-	type = 0;
-	if (!tag)
+	_type = 0;
+	if (!_tag)
 		[NSException raise:@"GlkException" format:@"GlkWindow reached dealloc with tag unset"];
-	self.tag = nil;
-	
-	self.line_request_initial = nil;
-	
-	self.stream = nil;
-	self.streamtag = nil;
-	self.echostream = nil;
-	self.echostreamtag = nil;
-	self.parent = nil;
-	self.parenttag = nil;
-	
-	self.styleset = nil;
-	self.library = nil;
-
-	[super dealloc];
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
-	[encoder encodeObject:tag forKey:@"tag"];
+	[encoder encodeObject:_tag forKey:@"tag"];
 	
-	[encoder encodeInt32:type forKey:@"type"];
-	[encoder encodeInt32:rock forKey:@"rock"];
+	[encoder encodeInt32:_type forKey:@"type"];
+	[encoder encodeInt32:_rock forKey:@"rock"];
 	// disprock is handled by the app
 	
-	[encoder encodeObject:parenttag forKey:@"parenttag"];
+	[encoder encodeObject:_parenttag forKey:@"parenttag"];
 
-	[encoder encodeInt:input_request_id forKey:@"input_request_id"];
+	[encoder encodeInt:_input_request_id forKey:@"input_request_id"];
 
-	[encoder encodeBool:char_request forKey:@"char_request"];
-	[encoder encodeBool:line_request forKey:@"line_request"];
+	[encoder encodeBool:_char_request forKey:@"char_request"];
+	[encoder encodeBool:_line_request forKey:@"line_request"];
 	[encoder encodeBool:char_request_uni forKey:@"char_request_uni"];
 	[encoder encodeBool:line_request_uni forKey:@"line_request_uni"];
 
-	if (line_buffer && line_buffer_length && library.dispatch_locate_arr) {
+	if (line_buffer && line_buffer_length && _library.dispatch_locate_arr) {
 		long bufaddr;
 		int elemsize;
 		[encoder encodeInt:line_buffer_length forKey:@"line_buffer_length"];
 		if (!line_request_uni) {
-			bufaddr = (*library.dispatch_locate_arr)(line_buffer, line_buffer_length, "&+#!Cn", inarrayrock, &elemsize);
+			bufaddr = (*_library.dispatch_locate_arr)(line_buffer, line_buffer_length, "&+#!Cn", inarrayrock, &elemsize);
 			[encoder encodeInt64:bufaddr forKey:@"line_buffer"];
 			if (elemsize) {
 				NSAssert(elemsize == 1, @"GlkWindow encoding char array: wrong elemsize");
@@ -276,7 +235,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 			}
 		}
 		else {
-			bufaddr = (*library.dispatch_locate_arr)(line_buffer, line_buffer_length, "&+#!Iu", inarrayrock, &elemsize);
+			bufaddr = (*_library.dispatch_locate_arr)(line_buffer, line_buffer_length, "&+#!Iu", inarrayrock, &elemsize);
 			[encoder encodeInt64:bufaddr forKey:@"line_buffer"];
 			if (elemsize) {
 				NSAssert(elemsize == 4, @"GlkWindow encoding uni array: wrong elemsize");
@@ -286,27 +245,25 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		}
 	}
 
-	[encoder encodeObject:line_request_initial forKey:@"line_request_initial"];
+	[encoder encodeObject:_line_request_initial forKey:@"line_request_initial"];
 	[encoder encodeBool:pending_echo_line_input forKey:@"pending_echo_line_input"];
-	[encoder encodeBool:echo_line_input forKey:@"echo_line_input"];
-	[encoder encodeInt32:style forKey:@"style"];
+	[encoder encodeBool:_echo_line_input forKey:@"echo_line_input"];
+	[encoder encodeInt32:_style forKey:@"style"];
 
-	[encoder encodeObject:streamtag forKey:@"streamtag"];
-	[encoder encodeObject:echostreamtag forKey:@"echostreamtag"];
+	[encoder encodeObject:_streamtag forKey:@"streamtag"];
+	[encoder encodeObject:_echostreamtag forKey:@"echostreamtag"];
 
-	[encoder encodeCGRect:bbox forKey:@"bbox"];
+	[encoder encodeCGRect:_bbox forKey:@"bbox"];
 }
 
 /* Close a window, and perhaps its subwindows too. 
 */
 - (void) windowCloseRecurse:(BOOL)recurse {
-	/* We don't want this object to evaporate in the middle of this method. */
-	[[self retain] autorelease];
-	
+	/* We don't want this object to evaporate in the middle of this method. */	
 	if (line_buffer) {
-		if (library.dispatch_unregister_arr) {
+		if (_library.dispatch_unregister_arr) {
 			char *typedesc = (line_request_uni ? "&+#!Iu" : "&+#!Cn");
-			(*library.dispatch_unregister_arr)(line_buffer, line_buffer_length, typedesc, inarrayrock);
+			(*_library.dispatch_unregister_arr)(line_buffer, line_buffer_length, typedesc, inarrayrock);
 		}
 	}
 	
@@ -320,7 +277,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		}
 	}
 	
-	if (recurse && type == wintype_Pair) {
+	if (recurse && _type == wintype_Pair) {
 		GlkWindowPair *pwx = (GlkWindowPair *)self;
 		if (pwx.child1)
 			[pwx.child1 windowCloseRecurse:YES];
@@ -328,11 +285,11 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 			[pwx.child2 windowCloseRecurse:YES];
 	}
 
-	if (library.dispatch_unregister_obj)
-		(*library.dispatch_unregister_obj)(self, gidisp_Class_Window, disprock);
+	if (_library.dispatch_unregister_obj)
+		(*_library.dispatch_unregister_obj)((__bridge void *)(self), gidisp_Class_Window, _disprock);
 		
-	if (stream) {
-		[stream streamDelete];
+	if (_stream) {
+		[_stream streamDelete];
 		self.stream = nil;
 		self.streamtag = nil;
 	}
@@ -341,9 +298,9 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	self.parent = nil;
 	self.parenttag = nil;
 	
-	if (![library.windows containsObject:self])
+	if (![_library.windows containsObject:self])
 		[NSException raise:@"GlkException" format:@"GlkWindow was not in library windows list"];
-	[library.windows removeObject:self];
+	[_library.windows removeObject:self];
 	inlibrary = NO;
 }
 
@@ -365,14 +322,14 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (GlkWindowState *) cloneState {
-	GlkWindowState *state = [GlkWindowState windowStateWithType:type rock:rock];
+	GlkWindowState *state = [GlkWindowState windowStateWithType:_type rock:_rock];
 	// state.library will be set later
-	state.tag = tag;
-	state.styleset = styleset;
-	state.input_request_id = input_request_id;
-	state.char_request = char_request;
-	state.line_request = line_request;
-	state.bbox = bbox;
+	state.tag = _tag;
+	state.styleset = _styleset;
+	state.input_request_id = _input_request_id;
+	state.char_request = _char_request;
+	state.line_request = _line_request;
+	state.bbox = _bbox;
 	return state;
 }
 
@@ -412,24 +369,24 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 /* Set up the window for character input. (The next updateFromWindowInputs call will make use of this information.)
 */
 - (void) beginCharInput:(BOOL)unicode {
-	if (![self supportsInput]) {
+	if (!self.supportsInput) {
 		[GlkLibrary strictWarning:@"beginCharInput: window does not support keyboard input"];
 		return;
 	}
-	if (char_request || line_request) {
+	if (_char_request || _line_request) {
 		[GlkLibrary strictWarning:@"beginCharInput: window already has keyboard request"];
 		return;
 	}
 	
-	char_request = YES;
+	_char_request = YES;
 	char_request_uni = unicode;
-	input_request_id++;
+	_input_request_id++;
 }
 
 /* Complete character input. Returns YES if the window is accepting char input right now. This also changes the character, if necessary, if non-unicode input was requested originally.
 */
 - (BOOL) acceptCharInput:(glui32 *)chref {
-	if (!char_request)
+	if (!_char_request)
 		return NO;
 		
 	glui32 ch = *chref;
@@ -437,36 +394,36 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		ch = '?';
 	*chref = ch;
 		
-	char_request = NO;
+	_char_request = NO;
 	char_request_uni = NO;
 	return YES;
 }
 
 - (void) cancelCharInput {
-	char_request = NO;
+	_char_request = NO;
 	char_request_uni = NO;
 }
 
 /* Set up the window for line input. (The next updateFromWindowInputs call will make use of this information.)
 */
 - (void) beginLineInput:(void *)buf unicode:(BOOL)unicode maxlen:(glui32)maxlen initlen:(glui32)initlen {
-	if (![self supportsInput]) {
+	if (!self.supportsInput) {
 		[GlkLibrary strictWarning:@"beginLineInput: window does not support keyboard input"];
 		return;
 	}
-	if (char_request || line_request) {
+	if (_char_request || _line_request) {
 		[GlkLibrary strictWarning:@"beginLineInput: window already has keyboard request"];
 		return;
 	}
 	
-	line_request = YES;
+	_line_request = YES;
 	line_request_uni = unicode;
 	line_buffer = buf;
 	line_buffer_length = maxlen;
-	input_request_id++;
+	_input_request_id++;
 	
 	if (self.type == wintype_TextBuffer)
-		pending_echo_line_input = echo_line_input;
+		pending_echo_line_input = _echo_line_input;
 	else
 		pending_echo_line_input = NO;
 	
@@ -477,12 +434,12 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 			str = [[NSString alloc] initWithBytes:buf length:initlen encoding:NSISOLatin1StringEncoding];
 		else
 			str = [[NSString alloc] initWithBytes:buf length:initlen*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
-		line_request_initial = str; // retained
+		_line_request_initial = str; // retained
 	}
 	
-	if (library.dispatch_register_arr) {
+	if (_library.dispatch_register_arr) {
 		char *typedesc = (line_request_uni ? "&+#!Iu" : "&+#!Cn");
-		inarrayrock = (*library.dispatch_register_arr)(line_buffer, maxlen, typedesc);
+		inarrayrock = (*_library.dispatch_register_arr)(line_buffer, maxlen, typedesc);
 	}
 }
 
@@ -495,7 +452,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	void *vbuf = line_buffer;
 	glui32 maxlen = line_buffer_length;
 	
-	if (!line_buffer || !line_request)
+	if (!line_buffer || !_line_request)
 		return -1;
 	
 	/* Stash this in a local, because we're about to clear the line_buffer field. */
@@ -522,7 +479,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	
 	buflen = ix;
 	
-	line_request = NO;
+	_line_request = NO;
 	line_request_uni = NO;
 	line_buffer = nil;
 	line_buffer_length = 0;
@@ -530,38 +487,40 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	
 	/* Echo the input, if needed. (On a grid window, it won't be needed.) */
 	if (pending_echo_line_input) {
-		glui32 origstyle = style;
-		style = style_Input;
+		glui32 origstyle = _style;
+		_style = style_Input;
 		
 		if (!unicode) {
 			[self putBuffer:buf len:buflen];
-			if (echostream)
-				[echostream putBuffer:buf len:buflen];
+			if (_echostream)
+				[_echostream putBuffer:buf len:buflen];
 		}
 		else {
 			[self putUBuffer:ubuf len:buflen];
-			if (echostream)
-				[echostream putUBuffer:ubuf len:buflen];
+			if (_echostream)
+				[_echostream putUBuffer:ubuf len:buflen];
 		}
 		[self putBuffer:"\n" len:1];
-		if (echostream)
-			[echostream putBuffer:"\n" len:1];
+		if (_echostream)
+			[_echostream putBuffer:"\n" len:1];
 			
-		style = origstyle;
+		_style = origstyle;
 	}
 	pending_echo_line_input = NO;
 	
-    if (library.dispatch_unregister_arr) {
+    if (_library.dispatch_unregister_arr) {
         char *typedesc = (unicode ? "&+#!Iu" : "&+#!Cn");
-        (*library.dispatch_unregister_arr)(vbuf, maxlen, typedesc, inarrayrock);
+        (*_library.dispatch_unregister_arr)(vbuf, maxlen, typedesc, inarrayrock);
     }
 	
 	return buflen;
 }
 
 - (void) cancelLineInput:(event_t *)event {
-	bzero(event, sizeof(event_t));
-	
+    event->type = 0;
+    event->win = NULL;
+    event->val1 = 0;
+    event->val2 = 0;
 	/* We have to get the current editing state of the text field. That really should be touched only by the main thread, but we'll sneak it out. */
 
 	NSString *str = [[GlkAppWrapper singleton] editingTextForWindow:self.tag];
@@ -585,92 +544,60 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 @implementation GlkWindowBuffer
 /* GlkWindowBuffer: a textbuffer window. */
 
-#define TRIM_LINES_MAX (200)
-#define TRIM_LINES_MIN (100)
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
-@synthesize clearcount;
-@synthesize linesdirtyfrom;
-@synthesize lines;
-
-- (id) initWithType:(glui32)wintype rock:(glui32)winrock {
+- (instancetype) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super initWithType:wintype rock:winrock];
 	
 	if (self) {
-		clearcount = 1; // contents start out clear
-		linesdirtyfrom = 0;
-		self.lines = [NSMutableArray arrayWithCapacity:32];
+		_clearcount = 1; // contents start out clear
+		self.attrstring = [NSMutableAttributedString new];
+        self.savedattrstring = [NSMutableAttributedString new];
 	}
 	
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
-		clearcount = [decoder decodeIntForKey:@"clearcount"];
-		self.lines = [decoder decodeObjectForKey:@"lines"];
-		[self dirtyAllData];
+		_clearcount = [decoder decodeIntForKey:@"clearcount"];
+		self.attrstring = [decoder decodeObjectForKey:@"attrstring"];
+        self.savedattrstring = [self.attrstring mutableCopy];
+
+//		[self dirtyAllData];
 	}
 	
 	return self;
 }
 
-- (void) dealloc {
-	self.lines = nil;
-	[super dealloc];
-}
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
 	
-	[encoder encodeInt:clearcount forKey:@"clearcount"];
-	[encoder encodeObject:lines forKey:@"lines"];
-	// linesdirtyfrom is always 0 at deserialize time
-	
+	[encoder encodeInt:_clearcount forKey:@"clearcount"];
+	[encoder encodeObject:self.savedattrstring forKey:@"attrstring"];
+
 	//### should we cap the number of lines written out?
 }
 
 - (GlkWindowState *) cloneState {
 	GlkWindowBufferState *state = (GlkWindowBufferState *)[super cloneState];
 	
-	/* First, trim lines from the top if linesdirtyfrom is too large. We use linesdirtyfrom as the measure because that's the number of lines the player has seen -- at least, the number that have been cloned off to the view previously. (We also measure lines.count, for double-safety.) */
-	
-	if (linesdirtyfrom >= TRIM_LINES_MAX && lines.count >= TRIM_LINES_MAX) {
-		NSRange range;
-		range.location = 0;
-		range.length = TRIM_LINES_MAX - TRIM_LINES_MIN;
-		[lines removeObjectsInRange:range];
-		
-		linesdirtyfrom -= range.length;
-	}
+    state.attrstring = [self.attrstring copy];
+    self.attrstring = [NSMutableAttributedString new];
 
-	int dirtyto = 0;
-	if (lines.count) {
-		GlkStyledLine *sln = [lines lastObject];
-		dirtyto = sln.index+1;
-	}
-	
-	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:lines.count];
-	for (GlkStyledLine *sln in lines) {
-		GlkStyledLine *newsln = [sln copy];
-		[arr addObject:newsln];
-		[newsln release];
-	}
-	state.lines = arr;
-	
-	state.clearcount = clearcount;
-	state.linesdirtyfrom = linesdirtyfrom;
-	state.linesdirtyto = dirtyto;
-	state.line_request_initial = line_request_initial;
-	
-	linesdirtyfrom = dirtyto;
+	state.clearcount = _clearcount;
+	state.line_request_initial = self.line_request_initial;
 
 	return state;
 }
 
 - (void) windowRearrange:(CGRect)box {
-	bbox = box;
+	self.bbox = box;
 	//### count on-screen lines, maybe
 }
 
@@ -687,7 +614,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	/* Turn the buffer into an NSString. We'll release this at the end of the function. */
 	NSString *str = [[NSString alloc] initWithBytes:buf length:len encoding:NSISOLatin1StringEncoding];
 	[self putString:str];	
-	[str release];
 }
 
 - (void) putUBuffer:(glui32 *)buf len:(glui32)len {
@@ -698,75 +624,33 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		This is an endianness dependency; we're telling NSString that our array of 32-bit words in stored little-endian. (True for all iOS, as I write this.) */
 	NSString *str = [[NSString alloc] initWithBytes:buf length:len*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding];
 	[self putString:str];	
-	[str release];
 }
 
 /* Break the string up into GlkStyledLines. When the GlkWinBufferView updates, it will pluck these out and make use of them.
 */
 - (void) putString:(NSString *)str {
-	NSArray *linearr = [str componentsSeparatedByCharactersInSet:_GlkWindow_newlineCharSet];
-	BOOL isfirst = YES;
-	
-	int linestart = 0;
-	if (lines.count) {
-		GlkStyledLine *firstln = [lines objectAtIndex:0];
-		linestart = firstln.index;
-	}
-	
-	for (NSString *ln in linearr) {
-		if (isfirst) {
-			/* The first line is always a paragraph continuation. (Perhaps an empty one.) */
-			isfirst = NO;
-		}
-		else {
-			/* This is a succeeding line, so it's the start of a new paragraph. */
-			GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithIndex:linestart+lines.count status:linestat_NewLine] autorelease];
-			[lines addObject:sln];
-		}
-		
-		if (ln.length == 0) {
-			/* This line has no content. (We've already added the new paragraph.) */
-			continue;
-		}
-		
-		GlkStyledLine *lastsln = [lines lastObject];
-		if (!lastsln) {
-			lastsln = [[[GlkStyledLine alloc] initWithIndex:linestart+lines.count status:linestat_Continue] autorelease];
-			[lines addObject:lastsln];
-		}
-		if (linesdirtyfrom > lastsln.index)
-			linesdirtyfrom = lastsln.index;
-		
-		GlkStyledString *laststr = [lastsln.arr lastObject];
-		if (laststr && laststr.style == style) {
-			[laststr appendString:ln];
-		}
-		else {
-			GlkStyledString *newstr = [[[GlkStyledString alloc] initWithText:ln style:style] autorelease];
-			[lastsln.arr addObject:newstr];
-		}
-	}
+    NSDictionary *attributes = self.styleset.bufferattributes[self.style];
+    if (!self.attrstring) {
+        NSLog(@"GlkWindowBuffer: no attrstring!");
+        self.attrstring = [[NSMutableAttributedString alloc] initWithString:str attributes:attributes];
+    }
+    if (!self.savedattrstring) {
+        self.savedattrstring = [self.attrstring mutableCopy];
+    }
+
+    NSAttributedString *attrstr = [[NSAttributedString alloc] initWithString:str attributes:attributes];
+    [self.attrstring appendAttributedString:attrstr];
+    [self.savedattrstring appendAttributedString:attrstr];
 }
 
 - (BOOL) supportsInput {
 	return YES;
 }
 
-- (void) dirtyAllData {
-	linesdirtyfrom = 0;
-	if (lines.count) {
-		GlkStyledLine *firstln = [lines objectAtIndex:0];
-		linesdirtyfrom = firstln.index;
-	}
-}
-
 - (void) clearWindow {
-	[lines removeAllObjects];
-	linesdirtyfrom = 0;
-	clearcount++;
-	
-	GlkStyledLine *sln = [[[GlkStyledLine alloc] initWithIndex:0 status:linestat_ClearPage] autorelease];
-	[lines addObject:sln];
+	_clearcount++;
+    self.attrstring = [NSMutableAttributedString new];
+    self.savedattrstring = [NSMutableAttributedString new];
 }
 
 @end
@@ -775,13 +659,16 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 @implementation GlkWindowGrid
 /* GlkWindowGrid: a textgrid window. */
 
-@synthesize lines;
 @synthesize width;
 @synthesize height;
 @synthesize curx;
 @synthesize cury;
 
-- (id) initWithType:(glui32)wintype rock:(glui32)winrock {
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
+
+- (instancetype) initWithType:(glui32)wintype rock:(glui32)winrock {
 	self = [super initWithType:wintype rock:winrock];
 	
 	if (self) {
@@ -790,19 +677,19 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		curx = 0;
 		cury = 0;
 		
-		self.lines = [NSMutableArray arrayWithCapacity:8];
+		self.attrstring = [NSMutableAttributedString new];
 	}
 	
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
 		width = [decoder decodeIntForKey:@"width"];
 		height = [decoder decodeIntForKey:@"height"];
-		self.lines = [decoder decodeObjectForKey:@"lines"];
+		_attrstring = [decoder decodeObjectForKey:@"attrstring"];
 		curx = [decoder decodeIntForKey:@"curx"];
 		cury = [decoder decodeIntForKey:@"cury"];
 		
@@ -812,23 +699,19 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return self;
 }
 
-- (void) dealloc {
-	self.lines = nil;
-	[super dealloc];
-}
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
 	
 	[encoder encodeInt:width forKey:@"width"];
 	[encoder encodeInt:height forKey:@"height"];
-	[encoder encodeObject:lines forKey:@"lines"];
+	[encoder encodeObject:_attrstring forKey:@"attrstring"];
 	[encoder encodeInt:curx forKey:@"curx"];
 	[encoder encodeInt:cury forKey:@"cury"];
 }
 
 - (GlkWindowState *) cloneState {
-	GlkWindowGridState *state = (GlkWindowGridState *)[super cloneState];
+	GlkWindowGridState *state = (GlkWindowGridState *)super.cloneState;
 	
 	state.width = width;
 	state.height = height;
@@ -845,62 +728,93 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		}
 	}
 	
-	NSMutableArray *linearr = [NSMutableArray arrayWithCapacity:lines.count];
-
-	for (int jx=0; jx<lines.count; jx++) {
-		GlkGridLine *ln = [lines objectAtIndex:jx];
-		if (!ln.dirty)
-			continue;
-		ln.dirty = NO;
-		
-		GlkStyledLine *sln = [[GlkStyledLine alloc] initWithIndex:jx]; // release soon
-		[linearr addObject:sln];
-		[sln release];
-		
-		NSMutableArray *arr = sln.arr;
-		glui32 cursty;
-		int ix = 0;
-		while (ix < ln.width) {
-			int pos = ix;
-			cursty = ln.styles[pos];
-			while (ix < ln.width && ln.styles[ix] == cursty)
-				ix++;
-			NSString *str = [[NSString alloc] initWithBytes:&ln.chars[pos] length:(ix-pos)*sizeof(glui32) encoding:NSUTF32LittleEndianStringEncoding]; // release soon
-			GlkStyledString *span = [[GlkStyledString alloc] initWithText:str style:cursty]; // release soon
-			span.pos = pos;
-			[arr addObject:span];
-			[span release];
-			[str release];
-		}
-	}
-	
-	state.lines = linearr;
+	state.attrstring = [self.attrstring copy];
 	
 	return state;
 }
 
 - (void) windowRearrange:(CGRect)box {
-	bbox = box;
+	self.bbox = box;
 	
-	int newwidth = ((bbox.size.width-styleset.margintotal.width) / styleset.charbox.width);
-	int newheight = ((bbox.size.height-styleset.margintotal.height) / styleset.charbox.height);
+	int newwidth = ((self.bbox.size.width-self.styleset.margintotal.width) / self.styleset.charbox.width) - 2;
+	int newheight = ((self.bbox.size.height-self.styleset.margintotal.height) / self.styleset.charbox.height);
 	if (newwidth < 0)
 		newwidth = 0;
 	if (newheight < 0)
 		newheight = 0;
-		
-	width = newwidth;
-	height = newheight;
-	
-	//NSLog(@"grid window now %dx%d", width, height);
-	
-	while (lines.count > height)
-		[lines removeLastObject];
-	while (lines.count < height)
-		[lines addObject:[[[GlkGridLine alloc] init] autorelease]];
-		
-	for (GlkGridLine *ln in lines)
-		[ln setWidth:width];
+
+    if (!_attrstring || _attrstring.length == 0)
+        _attrstring = [self blankAttributedString];
+
+    if (newwidth < width) {
+        // Delete characters if the window has become narrower
+        NSUInteger diff = width - newwidth;
+        for (NSUInteger i = width - 1; i < _attrstring.length; i += width + 1 - diff) {
+            if (i < diff)
+                continue;
+            NSRange deleteRange =
+            NSMakeRange(i - diff, diff);
+            if (NSMaxRange(deleteRange) > _attrstring.length)
+                deleteRange =
+                NSMakeRange(i - diff,
+                            _attrstring.length - (i - diff));
+
+            [_attrstring deleteCharactersInRange:deleteRange];
+        }
+    } else if (newwidth > width) {
+        // Pad with spaces if the window has become wider
+        NSUInteger diff = newwidth - width;
+        NSString *spaces =
+        [[[NSString alloc] init] stringByPaddingToLength:diff
+                                              withString:@"\u00a0" /* Non-breaking space */
+                                         startingAtIndex:0];
+        NSAttributedString *padding;
+        for (NSUInteger i = width; i < _attrstring.length - 1; i += width + 1 + diff) {
+            padding = [[NSAttributedString alloc]
+                      initWithString:spaces
+                      attributes:self.styleset.gridattributes[self.style]];
+            [_attrstring insertAttributedString:padding atIndex:i];
+        }
+    }
+    width = newwidth;
+    height = newheight;
+
+    NSInteger desiredLength =
+    height * (width + 1) - 1; // -1 because we don't want a newline at the very end
+    if (desiredLength < 1 || height == 1)
+        desiredLength = width;
+
+    // Cut off characters or pad with spaces if height has changed
+    if (_attrstring.length < desiredLength) {
+        NSString *spaces = [[[NSString alloc] init]
+                            stringByPaddingToLength:desiredLength - _attrstring.length
+                            withString:@"\u00a0" /* Non-breaking space */
+                            startingAtIndex:0];
+        NSAttributedString *string = [[NSAttributedString alloc]
+                                      initWithString:spaces
+                                      attributes:self.styleset.gridattributes[self.style]];
+        [_attrstring appendAttributedString:string];
+    } else if (_attrstring.length > desiredLength)
+        [_attrstring
+         deleteCharactersInRange:NSMakeRange(desiredLength,
+                                             _attrstring.length -
+                                             desiredLength)];
+
+    [self insertNewlines];
+    //NSLog(@"grid window now %dx%d", width, height);
+}
+
+- (void) insertNewlines {
+    NSAttributedString *newlinestring = [[NSAttributedString alloc]
+                                         initWithString:@"\n"
+                                         attributes:self.styleset.gridattributes[self.style]];
+
+    // Instert a newline character at the end of each line to avoid reflow when the view size changes.
+    // (We carefully have to print around these in the putUChar method)
+    for (NSUInteger i = width; i < _attrstring.length; i += width + 1) {
+        [_attrstring replaceCharactersInRange:NSMakeRange(i, 1)
+                         withAttributedString:newlinestring];
+    }
 }
 
 - (void) getWidth:(glui32 *)widthref height:(glui32 *)heightref {
@@ -910,12 +824,6 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 
 - (BOOL) supportsInput {
 	return YES;
-}
-
-- (void) dirtyAllData {
-	for (GlkGridLine *ln in lines) {
-		ln.dirty = YES;
-	}
 }
 
 - (void) moveCursorToX:(glui32)xpos Y:(glui32)ypos {
@@ -930,9 +838,18 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (void) clearWindow {
-	for (GlkGridLine *ln in lines) {
-		[ln clear];
-	}
+    _attrstring = [self blankAttributedString];
+    [self insertNewlines];
+}
+
+- (NSMutableAttributedString *) blankAttributedString {
+    NSString *spaces = [[[NSString alloc] init]
+                        stringByPaddingToLength:(NSUInteger)(height * (width + 1) - (width > 1))
+                        withString:@"\u00a0" /* Non-breaking space */
+                        startingAtIndex:0];
+    return [[NSMutableAttributedString alloc]
+                   initWithString:spaces
+                   attributes:self.styleset.gridattributes[self.style]];
 }
 
 - (void) putBuffer:(char *)buf len:(glui32)len {
@@ -965,14 +882,24 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 		return;
 	}
 	
-	GlkGridLine *ln = [lines objectAtIndex:cury];
-	DEBUG_PARANOID_ASSERT(curx < ln.width, @"grid putUChar overflow");
-	ln.chars[curx] = ch;
-	ln.styles[curx] = style;
-	ln.dirty = YES;
-	
 	curx++;
-	
+
+    // Sometimes the text layout system seems to "collapse" spaces-only lines into a single space.
+    // Not sure if this actually matters currently, but it doesn't hurt to replace all standard spaces
+    // with non-breakable ones.
+    if (ch == ' ')
+        ch = 0xa0;
+
+    NSUInteger location = cury * (width + 1) + curx - 1;
+    if ([_attrstring.string characterAtIndex:location] == '\n' || location >= _attrstring.length)
+        return;
+    NSRange replaceRange = NSMakeRange(location, 1);
+    NSAttributedString *attrch = [[NSAttributedString alloc]
+                                  initWithString:[NSString stringWithFormat:@"%c", ch]
+                                  attributes:self.styleset.gridattributes[self.style]];
+    [_attrstring
+     replaceCharactersInRange:replaceRange withAttributedString:attrch];
+
 	/* We can leave the cursor outside the window, since it will be canonicalized next time a character is printed. */
 }
 
@@ -982,23 +909,24 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 @implementation GlkWindowPair
 /* GlkWindowPair: a pair window (the kind of window that has subwindows). */
 
-@synthesize geometry;
-@synthesize keydamage;
++ (BOOL) supportsSecureCoding {
+    return YES;
+}
 
 /* GlkWindowPair gets a special initializer. (Only called from glk_window_open() when a window is split.)
 */
-- (id) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)initsize {
+- (instancetype) initWithMethod:(glui32)method keywin:(GlkWindow *)keywin size:(glui32)initsize {
 	self = [super initWithType:wintype_Pair rock:0];
 	
 	if (self) {
-		geometry = [[Geometry alloc] init]; // retained
-		geometry.dir = method & winmethod_DirMask;
-		geometry.division = method & winmethod_DivisionMask;
-		geometry.hasborder = ((method & winmethod_BorderMask) == winmethod_Border);
-		geometry.keytag = keywin.tag;
-		geometry.keystyleset = keywin.styleset;
-		keydamage = FALSE;
-		geometry.size = initsize;
+		_geometry = [[Geometry alloc] init]; // retained
+		_geometry.dir = method & winmethod_DirMask;
+		_geometry.division = method & winmethod_DivisionMask;
+		_geometry.hasborder = ((method & winmethod_BorderMask) == winmethod_Border);
+		_geometry.keytag = keywin.tag;
+		_geometry.keystyleset = keywin.styleset;
+		_keydamage = FALSE;
+		_geometry.size = initsize;
 
 		self.child1 = nil;
 		self.child2 = nil;
@@ -1007,7 +935,7 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 	return self;
 }
 
-- (id) initWithCoder:(NSCoder *)decoder {
+- (instancetype) initWithCoder:(NSCoder *)decoder {
 	self = [super initWithCoder:decoder];
 	
 	if (self) {
@@ -1020,76 +948,62 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 - (void) dealloc {
-	self.geometry = nil;
-	self.child1 = nil;
-	self.child2 = nil;
-	[super dealloc];
+	_child1 = nil;
+	_child2 = nil;
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
 	[super encodeWithCoder:encoder];
 	
-	[encoder encodeObject:geometry forKey:@"geometry"];
+	[encoder encodeObject:_geometry forKey:@"geometry"];
 	// child1 and child2 tags are serialized from inside the geometry.
 }
 
 - (GlkWindowState *) cloneState {
-	GlkWindowPairState *state = (GlkWindowPairState *)[super cloneState];
+	GlkWindowPairState *state = (GlkWindowPairState *)super.cloneState;
 	/* Clone the geometry object, since it's not immutable */
-	state.geometry = [[geometry copy] autorelease];
+	state.geometry = [_geometry copy];
 	return state;
-}
-
-- (GlkWindow *) child1 {
-	return child1;
-}
-
-- (GlkWindow *) child2 {
-	return child2;
 }
 
 - (void) setChild1:(GlkWindow *)newwin {
 	if (newwin) {
-		[newwin retain];
-		geometry.child1tag = newwin.tag;
+		_geometry.child1tag = newwin.tag;
 	}
 	else {
-		geometry.child1tag = nil;
+		_geometry.child1tag = nil;
 	}
-	[child1 release];
-	child1 = newwin;
+	_child1 = newwin;
 }
 
 - (void) setChild2:(GlkWindow *)newwin {
 	if (newwin) {
-		[newwin retain];
-		geometry.child2tag = newwin.tag;
+		_geometry.child2tag = newwin.tag;
 	}
 	else {
-		geometry.child2tag = nil;
+		_geometry.child2tag = nil;
 	}
-	[child2 release];
-	child2 = newwin;
+	_child2 = newwin;
 }
 
 /* For a pair window, the task is to figure out how to divide the box between its children. Then recursively call windowRearrange on them.
 */
 - (void) windowRearrange:(CGRect)box {
-	bbox = box;
+    self.bbox = box;
 
 	CGRect box1;
 	CGRect box2;
 	GlkWindow *ch1, *ch2;
 	
-	[geometry computeDivision:bbox for1:&box1 for2:&box2];
+	[_geometry computeDivision:self.bbox for1:&box1 for2:&box2];
 
-	if (!geometry.backward) {
-		ch1 = child1;
-		ch2 = child2;
+	if (!_geometry.backward) {
+		ch1 = _child1;
+		ch2 = _child2;
 	}
 	else {
-		ch1 = child2;
-		ch2 = child1;
+		ch1 = _child2;
+		ch2 = _child1;
 	}
 
 	[ch1 windowRearrange:box1];
@@ -1097,5 +1011,3 @@ NSCharacterSet *_GlkWindow_newlineCharSet; /* retained forever */
 }
 
 @end
-
-
